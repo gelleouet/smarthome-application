@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gregory (generated)" id="1425912148032-1">
+        <createTable tableName="chambre_dlc">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-2">
+        <createTable tableName="client_arbo_norme">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arbo_norme_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-3">
+        <createTable tableName="client_echantillon_screen">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="echantillon_screen_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-4">
+        <createTable tableName="client_service_arbo_norme">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arbo_norme_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-5">
+        <createTable tableName="dlc_detail">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chambre_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_entree" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dlc_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ordre" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="present" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-6">
+        <createTable tableName="echantillon_dlc">
+            <column name="echantillon_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_from" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nb_jour" type="INT4"/>
+            <column name="note" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vieillissement_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-7">
+        <createTable tableName="vieillissement_dlc">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="script" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-8">
+        <addColumn tableName="norme">
+            <column name="echantillon_screen_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-9">
+        <addPrimaryKey columnNames="id" constraintName="chambre_dlc_pkey" tableName="chambre_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-10">
+        <addPrimaryKey columnNames="id" constraintName="client_arbo_norme_pkey" tableName="client_arbo_norme"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-11">
+        <addPrimaryKey columnNames="id" constraintName="client_echantillon_screen_pkey" tableName="client_echantillon_screen"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-12">
+        <addPrimaryKey columnNames="id" constraintName="client_service_arbo_norme_pkey" tableName="client_service_arbo_norme"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-13">
+        <addPrimaryKey columnNames="id" constraintName="dlc_detail_pkey" tableName="dlc_detail"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-14">
+        <addPrimaryKey columnNames="echantillon_id" constraintName="echantillon_dlc_pkey" tableName="echantillon_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-15">
+        <addPrimaryKey columnNames="id" constraintName="vieillissement_dlc_pkey" tableName="vieillissement_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-16">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_gqooutr7w6bt56477039ne2pe" deferrable="false" disabled="false" initiallyDeferred="false" tableName="vieillissement_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-17">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_t4g0nt2hx2ixanf7lpdgtl6do" deferrable="false" disabled="false" initiallyDeferred="false" tableName="chambre_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-18">
+        <addUniqueConstraint columnNames="service_id, client_id" constraintName="unique_client_id" deferrable="false" disabled="false" initiallyDeferred="false" tableName="client_service_arbo_norme"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-19">
+        <addForeignKeyConstraint baseColumnNames="dlc_id" baseTableName="dlc_detail" constraintName="fk_5sqdikmlm0dcgm74vh9pop01d" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="echantillon_id" referencedTableName="echantillon_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-20">
+        <addForeignKeyConstraint baseColumnNames="echantillon_screen_id" baseTableName="norme" constraintName="fk_dhqqngal6piubp47okev84b3d" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="echantillon_screen"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-21">
+        <addForeignKeyConstraint baseColumnNames="vieillissement_id" baseTableName="echantillon_dlc" constraintName="fk_gt01bywesyx41nrlyegrfm53c" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="vieillissement_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-22">
+        <addForeignKeyConstraint baseColumnNames="echantillon_screen_id" baseTableName="client_echantillon_screen" constraintName="fk_jee0baofx5m8qv1uoso1p0u37" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="echantillon_screen"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-23">
+        <addForeignKeyConstraint baseColumnNames="arbo_norme_id" baseTableName="client_arbo_norme" constraintName="fk_o5fuev505vj21ksdn5p5nqpru" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="arbo_norme"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-24">
+        <addForeignKeyConstraint baseColumnNames="service_id" baseTableName="client_service_arbo_norme" constraintName="fk_phrjcpp2r8y4ijdfavgypip95" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="service"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-25">
+        <addForeignKeyConstraint baseColumnNames="chambre_id" baseTableName="dlc_detail" constraintName="fk_piytkpq952o9w0ij5h0gna81c" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="chambre_dlc"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-26">
+        <addForeignKeyConstraint baseColumnNames="echantillon_id" baseTableName="echantillon_dlc" constraintName="fk_renw7559radse7efo2b8qo07h" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="echantillon"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-27">
+        <addForeignKeyConstraint baseColumnNames="arbo_norme_id" baseTableName="client_service_arbo_norme" constraintName="fk_roq6q8tou2sjvq86ty9a89gb9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="arbo_norme"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-28">
+        <createIndex indexName="clientarbonorme_client_idx" tableName="client_arbo_norme" unique="false">
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-29">
+        <createIndex indexName="clientechantillonscreen_client_idx" tableName="client_echantillon_screen" unique="false">
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-30">
+        <createIndex indexName="clientservicearbonorme_client_idx" tableName="client_service_arbo_norme" unique="false">
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1425912148032-31">
+        <createIndex indexName="dlcdetail_dlc_idx" tableName="dlc_detail" unique="false">
+            <column name="dlc_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

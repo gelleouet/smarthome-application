@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gregory (generated)" id="1424166795229-1">
+        <createTable tableName="composant_vue">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="page" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166795229-2">
+        <addPrimaryKey columnNames="id" constraintName="composant_vue_pkey" tableName="composant_vue"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166795229-3">
+        <addUniqueConstraint columnNames="user_id, page, name" constraintName="unique_name" deferrable="false" disabled="false" initiallyDeferred="false" tableName="composant_vue"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166795229-4">
+        <createIndex indexName="composantvue_namepageuser_idx" tableName="composant_vue" unique="false">
+            <column name="name"/>
+            <column name="page"/>
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166954375-1">
+        <createTable tableName="composant_vue">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="page" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166954375-2">
+        <addPrimaryKey columnNames="id" constraintName="composant_vue_pkey" tableName="composant_vue"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166954375-3">
+        <addUniqueConstraint columnNames="user_id, page, name" constraintName="unique_name" deferrable="false" disabled="false" initiallyDeferred="false" tableName="composant_vue"/>
+    </changeSet>
+    <changeSet author="gregory (generated)" id="1424166954375-4">
+        <createIndex indexName="composantvue_namepageuser_idx" tableName="composant_vue" unique="false">
+            <column name="name"/>
+            <column name="page"/>
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
