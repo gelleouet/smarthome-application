@@ -39,13 +39,15 @@
 		        <tr>
 		            <th>Libellé</th>
 		            <th>Classe</th>
+		            <th>Capteur</th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ deviceTypeInstanceList }">
 			        <tr>
 			            <td><g:link action="deviceType" id="${bean.id }">${ bean.libelle }</g:link></td>
-			            <td>${ bean.class.name }</td>
+			            <td>${ bean.implClass }</td>
+			            <td>${ bean.capteur ? 'X' : '' }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

@@ -9,13 +9,21 @@
 		</label>
 		<g:textField name="libelle" required="true" value="${deviceType?.libelle}" class="text long-field"/>
 	</div>
+
+	<div class="field-group">
+		<label for="libelle">
+			Implémentation
+			<span class="aui-icon icon-required">*</span>
+		</label>
+		<g:textField name="implClass" required="true" value="${deviceType?.implClass}" class="text long-field"/>
+	</div>
 	
 	<div class="field-group">
 		<label for="libelle">
 			Capteur
 			<span class="aui-icon icon-required">*</span>
 		</label>
-		<g:checkBox name="capteur" required="true" value="${deviceType?.capteur}"/>
+		<g:checkBox name="capteur" value="${deviceType?.capteur}"/>
 	</div>
 </fieldset>
 

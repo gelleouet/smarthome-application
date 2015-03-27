@@ -77,7 +77,7 @@ class UserService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(routingKey = 'resetUserPassword')
+	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
 	def changePassword(ChangePasswordCommand command) throws SmartHomeException {
 		log.info "Changement mot de passe user ${command.username}"
 		

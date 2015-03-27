@@ -50,6 +50,39 @@ class DeviceController extends AbstractController {
 	}
 	
 	
+	
+	/**
+	 * Tous les devices organisés par groupe sous forme de grille
+	 * 
+	 * @return
+	 */
+	@NavigableAction(label = "Périphériques", navigation = NavigationEnum.navbarPrimary)
+	def devicesGrid(String deviceSearch) {
+		int recordsTotal
+		def userId = principal.id
+		def search = QueryUtils.decorateMatchAll(deviceSearch)
+		
+		def devices = Device.createCriteria().list(this.getPagination([:])) {
+			user {
+				idEq(userId)
+			}
+			
+			if (deviceSearch) {
+				or {
+					ilike 'label', search
+					ilike 'groupe', search
+				}
+			}
+		}
+		
+		recordsTotal = devices.totalCount
+		
+		// devices est accessible depuis le model avec la variable device[Instance]List
+		// @see grails.scaffolding.templates.domainSuffix
+		respond devices, model: [recordsTotal: recordsTotal, deviceSearch: deviceSearch]
+	}
+	
+	
 	/**
 	 * Edition
 	 *
@@ -103,7 +136,7 @@ class DeviceController extends AbstractController {
 	def saveEdit(Device device) {
 		this.preAuthorize(device)
 		checkErrors(this, device)
-		deviceService.save(device)
+		deviceService.saveAndSendMessage(device, null)
 		redirect(action: COMMAND_NAME + 's')
 	}
 
@@ -119,7 +152,31 @@ class DeviceController extends AbstractController {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sorrt en erreur
 		checkErrors(this, device)
-		deviceService.save(device)
+		deviceService.saveAndSendMessage(device, null)
 		redirect(action: COMMAND_NAME + 's')
+	}
+	
+	
+	/**
+	 * Graphique des values du device
+	 * 
+	 * @return
+	 */
+	def chart(Device device, Long sinceHour) {
+		this.preAuthorize(device)
+		render(view: 'chart', model: [device: device, sinceHour: sinceHour])
+	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 * 
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
+	def invokeAction(Device device, String actionName) {
+		this.preAuthorize(device)
+		deviceService.invokeAction(device, actionName)
+		redirect(action: 'devicesGrid')
 	}
 }

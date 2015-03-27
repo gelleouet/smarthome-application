@@ -25,7 +25,7 @@ class AccountRouteBuilder extends RouteBuilder {
 	private static final log = LogFactory.getLog(this)
 	
 	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "registerService.createAccount"
+	final String QUEUE = "smarthome.security.registerService.createAccount"
 	
 	
 	@Autowired
@@ -48,7 +48,7 @@ class AccountRouteBuilder extends RouteBuilder {
 		String smtpFrom = grailsApplication.config.smtp.from
 		
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=false&automaticRecoveryEnabled=true")
+		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
 		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)

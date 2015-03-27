@@ -2,6 +2,8 @@ package smarthome.core
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Méthodes utilitaires sur les classes
  * 
@@ -20,5 +22,16 @@ class ClassUtils {
 		classe.methods.findAll { method ->
 			method.name == methodName
 		}
+	}
+	
+	
+	/**
+	 * Retourne le nom pour un exchange ou routingKey d'un service
+	 * 
+	 * @param objet
+	 * @return
+	 */
+	static String prefixAMQ(Object object) {
+		object.getClass().getPackage().getName() + "." + StringUtils.uncapitalize(object.class.simpleName)
 	}
 }

@@ -149,6 +149,7 @@ grails.cache.enabled = true
 // 	USER CONFIGURATION (override by grails.config.locations if not empty)
 // ---------------------------------------------------------------------
 
+smarthome.cluster.serverId = System.properties["smarthome.cluster.serverId"]
 
 rabbitmq {
 	connectionfactory {

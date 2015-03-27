@@ -142,6 +142,59 @@ tr.incluNorme td {
 }
 
 
+.device-grid {
+	margin: 15px;
+	border-radius: 5px;
+	border: 1px solid #3b73af;
+	width: 175px;
+	height: 80px;
+	display: inline-block;
+}
+
+
+.device-grid-header {
+	background-color: #3b73af;
+	color: white;
+	font-weight: bold;
+	padding: 2px;
+	min-height: 20px;
+}
+
+
+.device-grid-body {
+	padding: 5px;
+	min-height: 50px;
+}
+
+
+.device-grid-header-title {
+	float: left;
+	display: block;
+}
+
+
+.device-grid-header-menu {
+	float: right;
+	display: block;
+}
+
+
+.device-grid-body-content {
+	float: left;
+	display: block;
+}
+
+
+.device-grid-body-menu {
+	float: right;
+	display: block;
+}
+
+.device-grid-body-menu a.aui-button {
+	display: table-row;
+}
+
+
 .widget {
 	margin: 15px;
 	border-bottom-left-radius: 5px;
@@ -149,6 +202,7 @@ tr.incluNorme td {
 	border-top-right-radius: 5px;
 	border: 1px solid #ddd;
 }
+
 
 .widget-container {
 	
@@ -306,4 +360,12 @@ table tr:hover td.command-column a {
 
 .column-3-buttons {
 	width: 150px;
+}
+
+.h6 {
+	font-size: x-small;
+	color: #707070;
+	font-weight: 700;
+	text-transform: uppercase;
+	margin-top: 5px;
 }

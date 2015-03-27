@@ -68,7 +68,7 @@ class AsynchronousMessageAspect {
 					if (asynchronousMessage.routingKey() != "") {
 						routingKey = asynchronousMessage.routingKey()
 					} else {
-						routingKey = StringUtils.uncapitalize(serviceLims.class.simpleName) + '.' + joinPoint.signature.name
+						routingKey = ClassUtils.prefixAMQ(serviceLims) + '.' + joinPoint.signature.name
 					}
 					
 					// construction d'une map contenant les paramètres d'entrée et le résultat de la méthode

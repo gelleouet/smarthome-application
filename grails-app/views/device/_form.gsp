@@ -10,14 +10,6 @@
 </div>
 
 <div class="field-group">
-	<label for="agent">
-		Agent
-		<span class="aui-icon icon-required">*</span>
-	</label>
-	<g:select name="agent.id" from="${agents}" optionKey="id" optionValue="mac" required="true" value="${device?.agent?.id}" class="select"/>
-</div>
-
-<div class="field-group">
 	<label for="label">
 		Nom
 		<span class="aui-icon icon-required">*</span>
@@ -32,6 +24,13 @@
 	</label>
 	<g:textField name="mac" required="true" value="${device?.mac}" class="text long-field"/>
 	<div class="description">Identifiant unique. Peut-être un port GPIO (Raspberry), une adresse MAC, un pin Arduino, etc.</div>
+</div>
+
+<div class="field-group">
+	<label for="agent">
+		Agent
+	</label>
+	<g:select name="agent.id" from="${agents}" optionKey="id" optionValue="mac" required="true" value="${device?.agent?.id}" class="select" noSelection="[null: '']"/>
 </div>
 
 <div class="field-group">

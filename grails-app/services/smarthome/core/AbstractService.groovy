@@ -70,7 +70,7 @@ abstract class AbstractService {
 			
 			rabbitTemplate.convertAndSend(exchangeName, routingKey, jsonPayload)
 		} catch (Exception ex) {
-			log.error("Envoi message sur $queueName", ex)
+			log.error("Envoi message", ex)
 			// conversion de l'exception pour déclencher les rollback de transaction en cas d'erreur
 			throw new SmartHomeException(ex)
 		}

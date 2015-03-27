@@ -17,5 +17,6 @@ class AgentEndPointMessage {
 	String token
 	String applicationKey
 	String username
-	String data
+	String websocketKey
+	Map data
 }

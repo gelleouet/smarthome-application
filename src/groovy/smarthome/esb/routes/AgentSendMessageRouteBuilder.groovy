@@ -12,6 +12,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import smarthome.core.SmartHomeException;
+
 /**
  * Prend en charge les messages AMQP de la queue registerService.resetPassowrd.
  * Envoit d'un mail à l'utilisateur contenant un lien avec le token d'identification
@@ -20,12 +22,12 @@ import org.springframework.stereotype.Component;
  * @author gregory
  *
  */
-class ResetPasswordRouteBuilder extends RouteBuilder {
+class AgentSendMessageRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
 	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "smarthome.security.resetUserPassword"
+	final String QUEUE = "smarthome.automation.agentService.sendMessage"
 	
 	
 	@Autowired
@@ -41,23 +43,27 @@ class ResetPasswordRouteBuilder extends RouteBuilder {
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
 		String messageDirectory = grailsApplication.config.rabbitmq.messageDirectory
 
-		String smtpHostname = grailsApplication.config.smtp.hostname
-		String smtpPort = grailsApplication.config.smtp.port
-		String smtpPassword = grailsApplication.config.smtp.password
-		String smtpUsername = grailsApplication.config.smtp.username
-		String smtpFrom = grailsApplication.config.smtp.from
+		// ATTENTION : l'envoi des messages passent par le websocket mais dans un cluster seul un serveur est connecté
+		// C'est pour cela qu'une queue est créée pour chaque serveur et seul un serveur répondra au message
+		// on rajoute donc le nom du serveur à la queue par défaut
+		def serverId = grailsApplication.config.smarthome.cluster.serverId
+		
+		if (!serverId) {
+			throw new SmartHomeException("smarthome.cluster.serverId property must be set !")
+		}
+		
+		def queueName = QUEUE + '.' + serverId
 		
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
+		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=${queueName}&routingKey=${queueName}&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
+		// garde le message original qui sera envoyé tel quel à l'agent
+		.setProperty("message").simple('${bodyAs(String)}')
 		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
-		.setHeader("to").groovy("body.result.username")
-		// template mail
-		.to("velocity:/smarthome/esb/routes/ResetPasswordMailTemplate.vm")
-		// envoi mail SMTP
-		.setHeader("subject", constant("Réinitilisation mot de passe"))
-		.setHeader("from", constant(smtpFrom))
-		.to("smtp://$smtpHostname:$smtpPort?password=$smtpPassword&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
+		// extrait les options et les datas
+		.setProperty("token").groovy('body.token')
+		.setProperty("websocketKey").groovy('body.websocketKey')
+		.to("bean:agentService?method=sendMessageToWebsocket(property.token, property.websocketKey, property.message)")
 	}
 }

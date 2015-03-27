@@ -8,12 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.ClassUtils;
+import smarthome.core.ExchangeType;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
 
 class AgentService extends AbstractService {
 
+	
+	// auto inject
+	def grailsApplication
 	
 	/**
 	 * Activation d'un agent pour qu'il se puisse se connecter au websocket
@@ -73,8 +78,7 @@ class AgentService extends AbstractService {
 			}
 			
 			if (agentToken.hasExpired()) {
-				agentToken.dateExpiration = new Date() + 1 // 24H
-				agentToken.token = UUID.randomUUID()
+				agentToken.refreshToken()
 				
 				if (!agentToken.save()) {
 					throw new SmartHomeException("Erreur refresh expired token !")
@@ -89,13 +93,13 @@ class AgentService extends AbstractService {
 			}
 		} else {
 			// pas d'agent mais les identifiants sont bons donc on le créé auto mais 
-			//en mode bloqué le temps de l'activation
+			//en mode bloqué le temps de l'activation par le user
 			agent.lastConnexion = new Date()
 			agent.locked = true
 			agent.user = user
 			
 			if (!agent.save()) {
-				throw new SmartHomeException("Erreur subscribe agent !")
+				throw new SmartHomeException("Auto-created agent not activated !")
 			}
 		}
 		
@@ -113,6 +117,8 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def bindWebsocket(String websocketId, AgentEndPointMessage message) throws SmartHomeException {
+		log.info "Bind websocket ${message.username}"
+		
 		// recherche utilisateur avec paire username, applicationKey
 		def user = User.findByUsernameAndApplicationKey(message.username, message.applicationKey)
 		
@@ -145,9 +151,23 @@ class AgentService extends AbstractService {
 		
 		// associe le websocket au token et rend l'agent online
 		token.websocketKey = websocketId
-		token.save()
+		def serverId = grailsApplication.config.smarthome.cluster.serverId
+		
+		if (!serverId) {
+			throw new SmartHomeException("smarthome.cluster.serverId property must be set !")
+		}
+		
+		token.serverId = serverId
+		
+		if (!token.save()) {
+			throw new SmartHomeException("Can't bind websocket : ${token.errors}")
+		}
+		
 		agent.online = true
-		agent.save()
+		
+		if (!agent.save()) {
+			throw new SmartHomeException("Can't bind websocket : ${agent.errors}")
+		}
 		
 		return token
 	}
@@ -162,6 +182,8 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def unbindWebsocket(String token) throws SmartHomeException {
+		log.info "Unbind websocket ${token}"
+		
 		def agentToken = AgentToken.findByToken(token)
 		
 		if (!agentToken) {
@@ -178,23 +200,108 @@ class AgentService extends AbstractService {
 	
 	/**
 	 * Réception d'un message. Ce service ne fait presque rien à part vérifier le bon format des datas.
-	 * Le système de message asynchrone avec des règles de routage est utilisé pour lancer le bon service en fonction des datas 
+	 * Le système de message asynchrone avec des règles de routage est utilisé pour lancer le bon service en fonction des datas
+	 * Il authentifie l'agent pour éviter de le faire dans les autres services 
 	 * 
 	 * @param message
+	 * @param agentToken
+	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage()
-	def receiveMessage(AgentEndPointMessage message) throws SmartHomeException {
-		if (message.data) {
-			try {
-				JSON.parse(message.data)
-			} catch (Exception e) {
-				throw new SmartHomeException("Erreur format JSON data !")
+	def receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
+		log.info "Receive message agent ${message.data}..."
+		
+		if (! message.data) {
+			throw new SmartHomeException("Data is empty !")
+		}
+		
+		if (agentToken.hasExpired()) {
+			throw new SmartHomeException("Token has expired !")
+		}
+		
+		agentToken.agent
+	}
+	
+	
+	
+	/**
+	 * Envoi d'un message à l'agent en passant par le websocket. Les messages doivent être dirigés
+	 * sur le bon serveur dans un environnement clusterisé car seul un serveur est connecté au websocket
+	 * 
+	 * @param agent
+	 * @param message
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def sendMessage(Agent agent, Map data) throws SmartHomeException {
+		if (!agent.tokens.size()) {
+			throw new SmartHomeException("Agent not subscribe !")
+		}
+		
+		def token = agent.tokens[0]
+		
+		if (!token.serverId || !token.websocketKey) {
+			throw new SmartHomeException("Websocket not bind !")
+		}
+		
+		if (token.hasExpired()) {
+			throw new SmartHomeException("Token has expired !")
+		}
+		
+		// prépare le message avec les infos de connexion pour permette aussi à l'agent d'authentifier les messages recus
+		AgentEndPointMessage message = new AgentEndPointMessage(mac: agent.mac, token: token.token, 
+			username: agent.user.username, applicationKey: agent.user.applicationKey, data: data, websocketKey: token.websocketKey)
+		
+		// il faut envoyer le message au bon serveur dans la bonne Queue 
+		// on se sert du serverId qu'on passe en routingKey
+		// Seul le bon serveur ayant le websocket va recevoir le message à traiter
+		this.sendAsynchronousMessage("amq.direct", ClassUtils.prefixAMQ(this) + '.sendMessage.' + token.serverId, message, ExchangeType.DIRECT)
+	}
+	
+	
+	/**
+	 * Méthode bas niveau pour envoyer un message à l'agent. cette méthode ne doit pas être appelée directement (utiliser sendMessage)
+	 * Cette méthode doit être appelée sur le bon serveur ayant le websocket
+	 * 
+	 * 
+	 * @param token
+	 * @param websocketKey
+	 * @param message
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def sendMessageToWebsocket(String token, String websocketKey, String message) throws SmartHomeException {
+		log.info "Send message to websocket ${token} : ${message}"
+		AgentEndPoint.sendMessage(token, websocketKey, message)
+	}
+	
+	
+	
+	/**
+	 * Envoi la configuration des capteurs à l'agent. 
+	 * Comme les actionneurs sont créés à la volée, pas besoin de s'embeter avec eux
+	 * 
+	 * @param agentToken
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def sendCapteurConfiguration(AgentToken agentToken) throws SmartHomeException {
+		def token = AgentToken.get(agentToken.id)
+		
+		def capteurs = Device.createCriteria().list {
+			eq 'user', token.agent.user
+			eq 'agent', token.agent
+			deviceType {
+				eq 'capteur', true
 			}
 		}
 		
-		return null
+		capteurs?.each {
+			sendMessage(token.agent, [header: 'config', device: it])
+		}
 	}
+	
 }

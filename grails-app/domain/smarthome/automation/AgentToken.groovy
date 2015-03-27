@@ -2,6 +2,7 @@ package smarthome.automation
 
 import smarthome.security.User;
 import grails.validation.Validateable;
+import groovy.time.TimeCategory;
 
 /**
  * Token de connexion pour un agent
@@ -18,10 +19,12 @@ class AgentToken {
 	String token
 	String websocketKey
 	String websocketUrl
+	String serverId // identifie le serveur dans un cluster
 	
     static constraints = {
 		token unique: true
 		websocketKey nullable: true
+		serverId nullable: true
 		websocketUrl nullable: true, bindable: true
     }
 	
@@ -37,7 +40,26 @@ class AgentToken {
 	}
 	
 	
+	/**
+	 * Token est expiré
+	 * 
+	 * @return
+	 */
 	def hasExpired() {
 		!dateExpiration || dateExpiration < new Date()
+	}
+	
+	
+	/**
+	 * Calcul un nouveau token avec sa date d'expiration
+	 * 
+	 * @return
+	 */
+	def refreshToken() {
+		use(TimeCategory) {
+			dateExpiration = new Date() + 2.hours
+		}
+		
+		token = UUID.randomUUID()
 	}
 }

@@ -40,7 +40,8 @@
 		            <th>Nom</th>
 		            <th>Groupe</th>
 		            <th>Mac</th>
-		            <th>Valeur courante</th>
+		            <th>Type</th>
+		            <th>Agent</th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -49,11 +50,8 @@
 			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
 			            <td>${ bean.groupe }</td>
 			            <td>${ bean.mac }</td>
-			            <td>
-			            	<g:if test="${ bean.value }">
-			            		${ bean.value } le ${ bean.dateValue }
-			            	</g:if>
-			            </td>
+			            <td>${ bean.deviceType.libelle }</td>
+			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

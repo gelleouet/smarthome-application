@@ -22,7 +22,7 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(routingKey = 'resetUserPassword')
+	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
     def forgotPassword(String username) throws SmartHomeException {
 		log.info "Demande reset mot de passe ${username}"
 		

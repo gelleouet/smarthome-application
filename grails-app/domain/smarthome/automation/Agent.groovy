@@ -31,4 +31,11 @@ class Agent {
 	static mapping = {
 		user index: "Agent_User_Idx"
 	}
+	
+	
+	static {
+		grails.converters.JSON.registerObjectMarshaller(Agent) {
+			[id: it.id, mac: it.mac, agentModel: it.agentModel, locked: it.locked, online: it.online]
+		}
+	}
 }

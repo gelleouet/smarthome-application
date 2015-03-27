@@ -13,6 +13,7 @@ import grails.validation.Validateable;
 class DeviceType {
 	String libelle
 	boolean capteur
+	String implClass
 	
 	
     static constraints = {

@@ -25,6 +25,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.stereotype.Component;
 
 import smarthome.core.EndPointUtils;
+import smarthome.core.SmartHomeException;
 
 /**
  * Websocket entre l'application et un agent
@@ -55,6 +56,42 @@ class AgentEndPoint extends Endpoint {
 		return EndPointUtils.register(servletContext, AgentEndPoint, URL)
 	}
 
+	
+	
+	/**
+	 * Envoi d'un message sur le bon websocket
+	 * 
+	 * @param token
+	 * @param websocketKey
+	 * @param data
+	 * @throws SmartHomeException
+	 */
+	static void sendMessage(String token, String websocketKey, String message) throws SmartHomeException {
+		if (!token || !websocketKey || ! message) {
+			throw new SmartHomeException("sendMessage parameters must be set !")
+		}
+		
+		def session = sessions.get(token)
+		
+		// recherche session en fonction token
+		if (!session) {
+			throw new SmartHomeException("Session not found for this token !")
+		}
+		
+		// vérifie les ID sessions
+		if (websocketKey != session.getId()) {
+			throw new SmartHomeException("Session ID is not compatible !")
+		}
+		
+		// on est clean pour envoyer le message
+		if (! session.isOpen()) {
+			throw new SmartHomeException("Session is already close !")
+		}
+		
+		session.getBasicRemote().sendText(message);
+	}
+	
+	
 
 	@Override
 	void onOpen(Session session, EndpointConfig config) {
@@ -76,7 +113,8 @@ class AgentEndPoint extends Endpoint {
 							def token = agentService.bindWebsocket(session.getId(), message)
 							session.userProperties.token = token
 							sessions.put(token.token, session)
-							
+							// bien faire APRES l'enregistrement de la session dans la queue car sinon le message ne partira pas
+							agentService.sendCapteurConfiguration(token)
 							log.info "Bind ${sessions.size()} websockets"
 						} else {
 							// tout est ok pour traiter le message. 
@@ -91,7 +129,7 @@ class AgentEndPoint extends Endpoint {
 								throw new Exception("Session incompatible avec le token !");
 							}
 							
-							agentService.receiveMessage(message)
+							agentService.receiveMessage(message, agentToken)
 						}
 					} else {
 						// session est fermée direct car pas de token

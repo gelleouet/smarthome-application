@@ -20,12 +20,12 @@ import org.springframework.stereotype.Component;
  * @author gregory
  *
  */
-class AgentMessageRouteBuilder extends RouteBuilder {
+class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
 	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "agentService.receiveMessage"
+	final String QUEUE = "smarthome.automation.agentService.receiveMessage"
 	
 	
 	@Autowired
@@ -42,9 +42,15 @@ class AgentMessageRouteBuilder extends RouteBuilder {
 		String messageDirectory = grailsApplication.config.rabbitmq.messageDirectory
 
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=false&automaticRecoveryEnabled=true")
+		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
 		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
-		//.unmarshal().json(JsonLibrary.Gson, Map.class)
+		.unmarshal().json(JsonLibrary.Gson, Map.class)
+		// extrait les options et les datas
+		.setProperty("header").groovy('body.arg0.data.header')
+		.setProperty("datas").groovy('body.arg0.data')
+		.setProperty("agent").groovy('smarthome.automation.Agent.get(body.result.id)')
+		.choice()
+		.when(simple('${property.header} == "deviceValue"')).to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
 	}
 }
