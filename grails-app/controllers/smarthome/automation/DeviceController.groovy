@@ -162,9 +162,12 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def chart(Device device, Long sinceHour) {
+	def chart(Device device, Long sinceHour, String chartType) {
+		sinceHour = sinceHour ?: 1
 		this.preAuthorize(device)
-		render(view: 'chart', model: [device: device, sinceHour: sinceHour])
+		def datas = deviceService.values(device, sinceHour)
+		def timesAgo = [1: '1 heure', 6: '6 heures', 12: '12 heures', 24: '24 heures']
+		render(view: 'chart', model: [device: device, sinceHour: sinceHour, chartType: chartType, datas: datas, timesAgo: timesAgo])
 	}
 	
 	

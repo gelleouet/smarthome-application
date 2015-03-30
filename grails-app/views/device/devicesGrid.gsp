@@ -37,7 +37,7 @@
 						</div>
 						<div class="device-grid-body-menu">
 							<g:link action="edit" id="${ device.id }" class="aui-button aui-button-subtle" title="Modifier"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span></g:link>
-							<g:link action="chart" id="${ device.id }" class="aui-button aui-button-subtle" title="Graphique"><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span></g:link>
+							<g:link action="chart" id="${ device.id }" params="[chartType: device.defaultChartType()]" class="aui-button aui-button-subtle" title="Graphique"><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span></g:link>
 						</div>
 					</div>
 				</div>

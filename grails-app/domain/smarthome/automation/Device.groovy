@@ -48,6 +48,7 @@ class Device {
 	
 	static {
 		grails.converters.JSON.registerObjectMarshaller(Device) {
+			it.fetchParams()
 			[id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, deviceType: it.deviceType, params: it.params]
 		}
 	}
@@ -65,6 +66,10 @@ class Device {
 	
 	String icon() {
 		deviceType.icon(this)
+	}
+
+	String defaultChartType() {
+		deviceType.defaultChartType(this)
 	}
 	
 	

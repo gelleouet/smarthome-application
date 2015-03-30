@@ -9,5 +9,12 @@ package smarthome.automation.deviceType.catalogue
  *
  */
 class ContactSec extends AbstractDeviceType {
-	
+	/**
+	 * Retourne le type de graphique par défaut
+	 *
+	 * @return
+	 */
+	def defaultChartType() {
+		'scatter'
+	}
 }

@@ -38,4 +38,14 @@ abstract class AbstractDeviceType {
 	def icon() {
 		'/deviceType/catalogue/' + StringUtils.uncapitalize(this.getClass().simpleName) + '.png'
 	}
+	
+	
+	/**
+	 * Retourne le type de graphique par défaut
+	 * 
+	 * @return
+	 */
+	def defaultChartType() {
+		device.deviceType.capteur ? 'line' : 'scatter'
+	}
 }

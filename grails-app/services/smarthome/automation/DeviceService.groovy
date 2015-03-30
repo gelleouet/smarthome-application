@@ -45,6 +45,18 @@ class DeviceService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def delete(Device device) throws SmartHomeException {
+		// si le device est attaché à un agent, on lui envoit un message (si demandé)
+		if (device.agent) {
+			def data = [header: 'delete', device: device]
+			
+			try {
+				agentService.sendMessage(device.agent, data)
+			} catch (Exception e) {
+				log.error("Can't send delete change to agent : ${e.message}")
+			}
+			
+		}
+		
 		device.delete();
 		return device
 	}
@@ -64,7 +76,6 @@ class DeviceService extends AbstractService {
 		
 		// si le device est attaché à un agent, on lui envoit un message (si demandé)
 		if (device.agent) {
-			device.fetchParams()
 			def data = datas ?: [header: 'config', device: device]
 			
 			try {
@@ -178,4 +189,26 @@ class DeviceService extends AbstractService {
 	}
 	
 	
+	/**
+	 * Charge les valeurs du device depuis sinceHour
+	 * 
+	 * @param device
+	 * @param sinceHour
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	List<DeviceValue> values(Device device, Long sinceHour)	throws SmartHomeException {
+		Date now = new Date()
+		TimeDuration duration = new TimeDuration(sinceHour.toInteger(), 0, 0, 0)
+		
+		use(TimeCategory) {
+			now = now - duration	
+		}
+		
+		DeviceValue.createCriteria().list {
+			eq 'device', device
+			ge 'dateValue', now
+			order 'dateValue'
+		}
+	}
 }

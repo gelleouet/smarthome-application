@@ -299,7 +299,6 @@ class AgentService extends AbstractService {
 		}
 		
 		devices?.each {
-			it.fetchParams()
 			sendMessage(token.agent, [header: 'config', device: it])
 		}
 	}

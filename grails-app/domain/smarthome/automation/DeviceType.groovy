@@ -44,4 +44,11 @@ class DeviceType {
 		deviceType.device = device
 		deviceType.icon()
 	}
+	
+	
+	String defaultChartType(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.defaultChartType()
+	}
 }
