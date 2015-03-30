@@ -56,7 +56,7 @@ class ResetPasswordRouteBuilder extends RouteBuilder {
 		// template mail
 		.to("velocity:/smarthome/esb/routes/ResetPasswordMailTemplate.vm")
 		// envoi mail SMTP
-		.setHeader("subject", constant("Réinitilisation mot de passe"))
+		.setHeader("subject", constant("Réinitialisation mot de passe"))
 		.setHeader("from", constant(smtpFrom))
 		.to("smtp://$smtpHostname:$smtpPort?password=$smtpPassword&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
 	}

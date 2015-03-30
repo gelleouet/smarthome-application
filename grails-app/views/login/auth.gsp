@@ -7,7 +7,7 @@
 	<g:applyLayout name="applicationContent">
     
     <h1>Bienvenue sur l'application <g:meta name="app.code"/></h1>
-    <h6 >L'application gratuite qui rend votre maison intelligente ! <br/>Cette application est entièrement sécurisée avec un certificat SSL, ce qui garantit la confidentialité des échanges entre votre maison et l'application.</h6>
+    <h6 >L'application gratuite qui rend votre maison intelligente !</h6>
       
      <h3 class="separator">Veuillez saisir vos identifiants</h3>
           

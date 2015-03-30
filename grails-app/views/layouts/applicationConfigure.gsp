@@ -8,7 +8,7 @@
 	</div>
 	<div class="aui-page-header-main">
 		<h3>
-			<g:set var="itemRoot" value="${app.currentItem(item: grailsApplication.navigationItems['configuration']) }"/>
+			<g:set var="itemRoot" value="${app.currentItem(item: app.navigationItems(category: 'configuration')) }"/>
 			${ itemRoot ? itemRoot.label : 'Administration' }
 		</h3>
 	</div>
@@ -21,7 +21,7 @@
         <div class="aui-navgroup-primary">
             <ul class="aui-nav">
             	
-            	<g:set var="navItems" value="${grailsApplication.navigationItems['configuration'].subitems.findAll({app.isChildCurrentItem(item: it)}) }"/>
+            	<g:set var="navItems" value="${app.navigationItems(category: 'configuration')?.subitems?.findAll({app.isChildCurrentItem(item: it)}) }"/>
             	<g:render template="/templates/navItemDefaultLevel2" model="[items: navItems]"/>
             	
             </ul>
@@ -38,7 +38,7 @@
 		        <div class="aui-navgroup-inner">
 		        	
 		        	<!-- Le 1er niveau de configuration saute car classement application métier, application technique -->
-		        	<g:each var="level1" in="${ grailsApplication.navigationItems['configuration'].subitems }">
+		        	<g:each var="level1" in="${ app.navigationItems(category: 'configuration')?.subitems }">
 		        		<!-- Le 2e niveau saute aussi car il est affichée sur la barre de navigation horizontale -->
 		        		<g:each var="level2" in="${ level1.subitems.findAll({app.isChildCurrentItem(item: it)}) }">
 		        			<g:render template="/templates/navItem" model="[items: level2.subitems ]"/>

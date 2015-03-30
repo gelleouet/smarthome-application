@@ -29,7 +29,7 @@
       	 </div>	
       	 
       	 <ul class="aui-nav">
-      	 	<g:render template="/templates/menuDropDownItem" model="[items: grailsApplication.navigationItems['navbarPrimary']?.subitems, category: 'navbarPrimary' ]"/>
+      	 	<g:render template="/templates/menuDropDownItem" model="[items: app.navigationItems(category: 'navbarPrimary')?.subitems, category: 'navbarPrimary' ]"/>
       	 </ul>
           
       </div>
@@ -50,6 +50,12 @@
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-aide" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
                     <div class="aui-dropdown2-section">
                         <ul>
+                            <li><g:link action="decouvrir" controller="site" target="blank">Découvrir l'application</g:link></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank">Installation d'un agent Raspberry</a></li>
+                        </ul>
+                    </div>
+                    <div class="aui-dropdown2-section">
+                        <ul>
                             <li><a href=""><g:meta name="app.code"/> version <g:meta name="app.version"/></a></li>
                         </ul>
                     </div>
@@ -61,7 +67,7 @@
               <li><a href="#dropdown2-header8" aria-owns="dropdown2-header8" aria-haspopup="true" class="aui-dropdown2-trigger" ><span class="aui-icon aui-icon-small aui-iconfont-configure">Configuration</span><span class="aui-icon-dropdown"></span></a>
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-header8" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
                     
-                    <g:render template="/templates/dropDownItemDefaultLevel2" model="[items: grailsApplication.navigationItems['configuration']?.subitems ]"/>
+                    <g:render template="/templates/dropDownItemDefaultLevel2" model="[items: app.navigationItems(category: 'configuration')?.subitems ]"/>
                     
                 </div>
               </li>
@@ -77,7 +83,7 @@
                   </a>
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-header9" style="display: none; top: 40px; min-width: 160px; left: 1213px;" aria-hidden="true">
                     
-                    <g:render template="/templates/dropDownItem" model="[items: grailsApplication.navigationItems['user']?.subitems ]"/>
+                    <g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'user')?.subitems ]"/>
                     
                     <div class="aui-dropdown2-section">
                         <ul>

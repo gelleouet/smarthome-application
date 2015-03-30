@@ -6,7 +6,7 @@
 <body>
 	<g:applyLayout name="applicationContent">
 	
-		<g:each var="groupe" in="${ deviceInstanceList.groupBy({ it.groupe }).sort{ it.key } }">
+		<g:each var="groupe" in="${ deviceInstanceList?.groupBy({ it.groupe })?.sort{ it.key } }">
 			
 			<h3 class="separator">${ groupe.key ?: 'Autres' }</h3>
 		

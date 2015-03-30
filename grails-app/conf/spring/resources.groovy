@@ -20,6 +20,4 @@ beans = {
 	transactionAttributeSource(org.springframework.transaction.annotation.AnnotationTransactionAttributeSource)
 	
 	"defaultGrailsjava.lang.DoubleConverter"(smarthome.core.DoubleValueConverter)
-	
-	NavigationItemUtils.findNavigationItem(application)
 }
