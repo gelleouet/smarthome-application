@@ -165,7 +165,7 @@ rabbitmq {
 smtp {
 	hostname = 'smtp.jdevops.com'
 	port = 25
-	password = '3MrTfsYM73g5'
+	password = 'toto'
 	username = 'noreply@jdevops.com'
 	from = 'SMART-HOME <noreply@smarthome.fr>'
 }
