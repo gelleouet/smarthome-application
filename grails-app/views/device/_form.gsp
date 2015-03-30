@@ -6,7 +6,8 @@
 		Type
 		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:select name="deviceType.id" from="${deviceTypes}" optionKey="id" optionValue="libelle" required="true" value="${device?.deviceType?.id}" class="select"/>
+	<g:select id="deviceType.id" name="deviceType.id" from="${deviceTypes}" optionKey="id" optionValue="libelle" required="true" 
+		value="${device?.deviceType?.id}" class="select" metadata-url="${g.createLink(action: 'templateMetadataForm', controller: 'deviceType', params: [deviceId: device?.id]) }"/>
 </div>
 
 <div class="field-group">
@@ -23,7 +24,7 @@
 		<span class="aui-icon icon-required">*</span>
 	</label>
 	<g:textField name="mac" required="true" value="${device?.mac}" class="text long-field"/>
-	<div class="description">Identifiant unique. Peut-être un port GPIO (Raspberry), une adresse MAC, un pin Arduino, etc.</div>
+	<div class="description">Identifiant unique. Peut-être un port Raspberry (ex : gpio17, gpio02), une adresse MAC, etc.</div>
 </div>
 
 <div class="field-group">
@@ -38,21 +39,6 @@
 		Groupe
 	</label>
 	<g:textField name="groupe" value="${device?.groupe}" class="text long-field"/>
-
-</div>
-
-<div class="field-group">
-	<label for="value">
-		Valeur courante
-	</label>
-	<g:textField name="value" value="${device?.value}" class="text medium-field" disabled="true"/>
-</div>
-
-<div class="field-group">
-	<label for="dateValue">
-		Dernière valeur
-	</label>
-	<g:field name="dateValue" type="datetime"  value="${device?.dateValue}" class="text medium-field" disabled="true"/>
 </div>
 
 

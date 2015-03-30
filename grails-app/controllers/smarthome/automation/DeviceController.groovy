@@ -179,4 +179,19 @@ class DeviceController extends AbstractController {
 		deviceService.invokeAction(device, actionName)
 		redirect(action: 'devicesGrid')
 	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "devices", modelName = "")
+	def delete(Device device) {
+		this.preAuthorize(device)
+		deviceService.delete(device)
+		redirect(action: 'devices')
+	}
+	
+	
 }

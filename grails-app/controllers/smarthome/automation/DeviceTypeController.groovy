@@ -117,4 +117,15 @@ class DeviceTypeController extends AbstractController {
 		deviceTypeService.save(deviceType)
 		redirect(action: COMMAND_NAME + 's')
 	}
+	
+	
+	/**
+	 * 
+	 * @param implClass
+	 * @return
+	 */
+	def templateMetadataForm(DeviceType deviceType) {
+		def device = params.deviceId ? Device.get(params.deviceId) : null
+		render(template: deviceType.viewForm(), model: [device: device])
+	}
 }

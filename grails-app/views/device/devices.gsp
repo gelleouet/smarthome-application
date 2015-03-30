@@ -42,16 +42,30 @@
 		            <th>Mac</th>
 		            <th>Type</th>
 		            <th>Agent</th>
+		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ deviceInstanceList }">
 			        <tr>
-			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
+			            <td>
+			            	<g:link action="edit" id="${bean.id }">
+			            		<g:set var="icon" value="${ bean.icon() }"/>
+								<g:if test="${icon }">
+			            			<asset:image src="${ bean.icon() }" class="device-icon-list"/>
+			            		</g:if>
+			            		${ bean.label }
+			            	</g:link>
+			            </td>
 			            <td>${ bean.groupe }</td>
 			            <td>${ bean.mac }</td>
 			            <td>${ bean.deviceType.libelle }</td>
 			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
+			            <td class="column-1-buttons command-column">
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            	</g:link>
+			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>

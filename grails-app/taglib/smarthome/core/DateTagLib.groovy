@@ -6,7 +6,7 @@ class DateTagLib {
 	//static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
 
 	// les tags renvoyant directement une valeur pouvant être utilisé comme fonction
-	static returnObjectForTags = ['formatUser', 'formatPicker', 'formatUserDateTime']
+	static returnObjectForTags = ['formatUser', 'formatPicker', 'formatUserDateTime', 'formatTimeAgo']
 
 
 	/**
@@ -16,6 +16,15 @@ class DateTagLib {
 	 */
 	def formatUser = {attrs, body ->
 		g.formatDate(date: attrs.date, format: 'dd/MM/yyyy')
+	}
+	
+	
+	/**
+	 * formatte suivant "Il y a ....."
+	 * 
+	 */
+	def formatTimeAgo = { attrs, body ->
+		DateUtils.formatTimeAgo(attrs.date)
 	}
 
 

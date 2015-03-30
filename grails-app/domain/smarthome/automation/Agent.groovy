@@ -30,6 +30,7 @@ class Agent {
 	
 	static mapping = {
 		user index: "Agent_User_Idx"
+		sort 'mac'
 	}
 	
 	

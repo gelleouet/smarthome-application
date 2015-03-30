@@ -14,6 +14,6 @@
 			<span class="aui-lozenge" style="font-size: large;">OFF</span>
 		</g:else>
 		
-		<p class="h6">${ app.formatUserDateTime(date: device.dateValue) }</p>
+		<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>
 	</g:form>
 </div>

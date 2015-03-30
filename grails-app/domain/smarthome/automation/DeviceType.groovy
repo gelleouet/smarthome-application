@@ -22,5 +22,26 @@ class DeviceType {
 	
 	static mapping = {
 		capteur defaultValue: false
+		sort 'libelle'
+	}
+	
+	
+	String viewGrid(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.viewGrid()
+	}
+	
+	
+	String viewForm(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.viewForm()
+	}
+	
+	String icon(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.icon()
 	}
 }

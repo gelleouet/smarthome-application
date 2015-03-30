@@ -23,7 +23,17 @@
 					</div>
 					<div class="device-grid-body">
 						<div class="device-grid-body-content">
-							<g:render template="/deviceType/catalogue/${ device.view() }" model="[device: device]"></g:render>
+							<div>
+								<div class="device-grid-body-icon">
+									<g:set var="icon" value="${ device.icon() }"/>
+									<g:if test="${icon }">
+										<asset:image src="${ icon }" class="device-icon-grid"/>
+									</g:if>
+								</div>
+								<div class="device-grid-body-user">
+									<g:render template="${ device.viewGrid() }" model="[device: device]"></g:render>
+								</div>
+							</div>
 						</div>
 						<div class="device-grid-body-menu">
 							<g:link action="edit" id="${ device.id }" class="aui-button aui-button-subtle" title="Modifier"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span></g:link>

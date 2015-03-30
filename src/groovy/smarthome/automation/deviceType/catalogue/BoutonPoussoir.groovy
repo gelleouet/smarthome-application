@@ -13,7 +13,15 @@ package smarthome.automation.deviceType.catalogue
  */
 class BoutonPoussoir extends AbstractDeviceType {
 	
-	private static final String DEFAULT_TIMEOUT = "1000"
+	/**
+	 * Nom de l'image à associer au device
+	 *
+	 * @return
+	 */
+	def icon() {
+		'/deviceType/catalogue/boutonOnOff.png'
+	}
+	
 	
 	/**
 	 * Envoit une valeur ON juste pendant 1 seconde avant de renvoyer une valeur OFF
@@ -22,9 +30,5 @@ class BoutonPoussoir extends AbstractDeviceType {
 	 */
 	def push() {
 		device.value = "1"
-		
-		if (!device.params.timeout) {
-			device.params.timeout = DEFAULT_TIMEOUT
-		}
 	}
 }

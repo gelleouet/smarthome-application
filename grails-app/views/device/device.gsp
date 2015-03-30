@@ -12,6 +12,14 @@
 	
 			<g:render template="form"/>
 			
+			<h4>Informations spécifiques au périphérique</h4>
+			
+			<div id="deviceMetadatas">
+				<g:if test="${ device.id }">
+					<g:render template="${ device.viewForm() }" model="[device: device]"/>
+				</g:if>			
+			</div>
+			
 			<br/>
 	
 			<div class="buttons-container">

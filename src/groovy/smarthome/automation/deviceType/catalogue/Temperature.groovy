@@ -8,5 +8,4 @@ package smarthome.automation.deviceType.catalogue
  *
  */
 class Temperature extends AbstractDeviceType {
-
 }

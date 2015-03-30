@@ -14,7 +14,7 @@ import grails.validation.Validateable;
 @Validateable
 class Device {
 	static belongsTo = [agent: Agent, user: User]
-	static hasMany = [values: DeviceValue]
+	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata]
 	static transients = ['params']
 	
 	String label
@@ -41,6 +41,7 @@ class Device {
 		agent index: "Device_MacAgent_Idx"
 		user index: "Device_User_Idx"
 		values cascade: 'all-delete-orphan'
+		metadatas cascade: 'all-delete-orphan'
 		sort 'label'
 	}
 	
@@ -52,8 +53,37 @@ class Device {
 	}
 	
 	
-	String view() {
-		def className = Class.forName(deviceType.implClass)
-		StringUtils.uncapitalize(className.simpleName)
+	String viewGrid() {
+		deviceType.viewGrid(this)
+	}
+	
+	
+	String viewForm() {
+		deviceType.viewForm(this)
+	}
+	
+	
+	String icon() {
+		deviceType.icon(this)
+	}
+	
+	
+	def metadata(String name) {
+		metadatas?.find {
+			it.name == name
+		}
+	}
+	
+	
+	/**
+	 * charge les métadatas dans les params
+	 * 
+	 * @return
+	 */
+	def fetchParams() {
+		params = [:]
+		metadatas?.each {
+			params[(it.name)] = it.value
+		}
 	}
 }

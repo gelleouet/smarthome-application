@@ -116,5 +116,17 @@ function ajaxSubmitForm(eltSrcId, urlAttr, formId, divDstId, onSuccess) {
 }
 
 
+function ajaxRerender(url, datas, divDstId) {
+	jQuery.ajax({
+		type: 'POST',
+		data: datas,
+		url: url,
+		success: function(data, textStatus) {
+			$(divDstId).html(data);
+		}
+	});
+}
+
+
 
 

@@ -4,6 +4,7 @@ import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
@@ -236,6 +237,7 @@ class AgentService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	def sendMessage(Agent agent, Map data) throws SmartHomeException {
 		if (!agent.tokens.size()) {
 			throw new SmartHomeException("Agent not subscribe !")
@@ -288,20 +290,19 @@ class AgentService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def sendCapteurConfiguration(AgentToken agentToken) throws SmartHomeException {
+	def sendConfiguration(AgentToken agentToken) throws SmartHomeException {
 		def token = AgentToken.get(agentToken.id)
 		
-		def capteurs = Device.createCriteria().list {
+		def devices = Device.createCriteria().list {
 			eq 'user', token.agent.user
 			eq 'agent', token.agent
-			deviceType {
-				eq 'capteur', true
-			}
 		}
 		
-		capteurs?.each {
+		devices?.each {
+			it.fetchParams()
 			sendMessage(token.agent, [header: 'config', device: it])
 		}
 	}
+	
 	
 }

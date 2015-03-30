@@ -146,8 +146,8 @@ tr.incluNorme td {
 	margin: 15px;
 	border-radius: 5px;
 	border: 1px solid #3b73af;
-	width: 175px;
-	height: 80px;
+	width: 180px;
+	height: 85px;
 	display: inline-block;
 }
 
@@ -184,6 +184,15 @@ tr.incluNorme td {
 	display: block;
 }
 
+
+.device-grid-body-icon {
+	float: left;	
+}
+
+.device-grid-body-user {
+	float: right;	
+	padding-left: 10px;
+} 
 
 .device-grid-body-menu {
 	float: right;
@@ -368,4 +377,16 @@ table tr:hover td.command-column a {
 	font-weight: 700;
 	text-transform: uppercase;
 	margin-top: 5px;
+}
+
+.device-icon-list {
+	width: 32px;
+	height: 32px;	
+	vertical-align: middle;
+}
+
+.device-icon-grid {
+	width: 40px;
+	height: 40px;	
+	vertical-align: middle;
 }
