@@ -13,5 +13,7 @@
 		<a href="http://spring.io/" target="blank">
 			<asset:image src="springsource.png" class="logoFooter"/>
 		</a>
+		
+		<asset:image src="/gandi-ssl.png" />
 	</div>
 </div>
