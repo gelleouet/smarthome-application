@@ -65,8 +65,6 @@ class RegisterController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "forgotPassword", modelName = "username")
 	def confirmForgotPassword(String username) {
-		def url = createLink(action: 'resetPassword')
-		log.info("serverURL : ${grailsLinkGenerator.serverBaseURL} / url : ${url}")
 		registerService.forgotPassword(username)
 		flash.info = "Un email pour réinitialiser votre mot de passe vous a été envoyé à l'adresse suivante : $username !"
 		redirect(controller: 'login', action: 'auth')	

@@ -108,7 +108,7 @@ class AgentService extends AbstractService {
 		}
 		
 		// on y glisse l'url du websocket en gérant le SSL ou pas
-		def urlApplication = grailsLinkGenerator.serverBaseURL + AgentEndPoint.URL
+		def urlApplication = grailsLinkGenerator.link(uri: AgentEndPoint.URL, absolute: true)
 		
 		if (urlApplication.startsWith('https')) {
 			agentToken.websocketUrl = urlApplication.replace('https', 'wss')

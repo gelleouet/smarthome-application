@@ -148,6 +148,8 @@ grails.cache.enabled = true
 // 	USER CONFIGURATION (override by grails.config.locations if not empty)
 // ---------------------------------------------------------------------
 
+grails.serverURL = "https://www.jdevops.com"
+
 smarthome.cluster.serverId = System.properties["smarthome.cluster.serverId"]
 
 rabbitmq {

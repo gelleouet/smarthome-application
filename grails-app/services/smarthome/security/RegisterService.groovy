@@ -24,7 +24,7 @@ class RegisterService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
     def forgotPassword(String username) throws SmartHomeException {
-		log.info "Demande reset mot de passe ${username} for ${grailsLinkGenerator.serverBaseURL}"
+		log.info "Demande reset mot de passe ${username}"
 		
 		// on vérifie que l'adresse est connue
 		def user = User.findByUsername(username)
@@ -35,7 +35,8 @@ class RegisterService extends AbstractService {
 		
 		// création d'un code d'enregistrement
 		def registrationCode = new RegistrationCode(username: username)
-		registrationCode.serverUrl = grailsLinkGenerator.serverBaseURL + '/register/resetPassword?username=${username}&token=${registrationCode.token}'
+		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'resetPassword', 
+				params: [username: username, token: registrationCode.token], absolute: true)
 		
 		if (!registrationCode.save()) {
 			throw new SmartHomeException("Erreur création d'un token d'activation !", username)
@@ -65,7 +66,8 @@ class RegisterService extends AbstractService {
 		
 		// création d'un code d'enregistrement
 		def registrationCode = new RegistrationCode(username: account.username)
-		registrationCode.serverUrl = grailsLinkGenerator.serverBaseURL + '/register/confirmAccount?username=${account.username}&token=${registrationCode.token}'
+		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'confirmAccount',
+				params: [username: account.username, token: registrationCode.token], absolute: true)
 		
 		if (!registrationCode.save()) {
 			throw new SmartHomeException("Erreur création d'un token d'activation !", account)
