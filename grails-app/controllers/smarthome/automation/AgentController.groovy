@@ -36,14 +36,6 @@ class AgentController extends AbstractController {
 			def agentToken = agentService.subscribe(agent, username, applicationKey)
 			
 			if (agentToken) {
-				// on y glisse l'url du websocket en gérant ls SSL ou pas
-				def urlApplication = createLink(uri: AgentEndPoint.URL, absolute: true)
-				
-				if (urlApplication.startsWith('https')) {
-					agentToken.websocketUrl = urlApplication.replace('https', 'wss')
-				} else {
-				agentToken.websocketUrl = urlApplication.replace('http', 'ws')
-				}
 				render agentToken as JSON
 			} else {
 			render(status: 400, text: 'Error no token')

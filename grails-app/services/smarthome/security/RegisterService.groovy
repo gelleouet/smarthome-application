@@ -36,7 +36,7 @@ class RegisterService extends AbstractService {
 		// création d'un code d'enregistrement
 		def registrationCode = new RegistrationCode(username: username)
 		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'resetPassword', 
-			params: [username: username, token: registrationCode.token], absolute: true)
+			params: [username: username, token: registrationCode.token], base: grailsLinkGenerator.serverBaseURL)
 		
 		if (!registrationCode.save()) {
 			throw new SmartHomeException("Erreur création d'un token d'activation !", username)
@@ -67,7 +67,7 @@ class RegisterService extends AbstractService {
 		// création d'un code d'enregistrement
 		def registrationCode = new RegistrationCode(username: account.username)
 		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'confirmAccount',
-			params: [username: account.username, token: registrationCode.token], absolute: true)
+			params: [username: account.username, token: registrationCode.token], base: grailsLinkGenerator.serverBaseURL)
 		
 		if (!registrationCode.save()) {
 			throw new SmartHomeException("Erreur création d'un token d'activation !", account)

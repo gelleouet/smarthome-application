@@ -4,6 +4,7 @@ import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,8 @@ import smarthome.security.User;
 
 class AgentService extends AbstractService {
 
+	// auto inject
+	LinkGenerator grailsLinkGenerator
 	
 	// auto inject
 	def grailsApplication
@@ -102,6 +105,15 @@ class AgentService extends AbstractService {
 			if (!agent.save()) {
 				throw new SmartHomeException("Auto-created agent not activated !")
 			}
+		}
+		
+		// on y glisse l'url du websocket en gérant le SSL ou pas
+		def urlApplication = grailsLinkGenerator.serverBaseURL + AgentEndPoint.URL
+		
+		if (urlApplication.startsWith('https')) {
+			agentToken.websocketUrl = urlApplication.replace('https', 'wss')
+		} else {
+			agentToken.websocketUrl = urlApplication.replace('http', 'ws')
 		}
 		
 		return agentToken
