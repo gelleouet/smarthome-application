@@ -1,5 +1,7 @@
 package smarthome.security
 
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
+
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.core.AbstractController;
@@ -17,6 +19,7 @@ import smarthome.security.ResetPasswordCommand;
 class RegisterController extends AbstractController {
 
 	def registerService
+	LinkGenerator grailsLinkGenerator
 	
 	/**
 	 * Oubli du mot de passe et demande d'un nouveau par l'utilisateur (non admin)
@@ -62,6 +65,8 @@ class RegisterController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "forgotPassword", modelName = "username")
 	def confirmForgotPassword(String username) {
+		def url = createLink(action: 'resetPassword')
+		log.info("serverURL : ${grailsLinkGenerator.serverBaseURL} / url : ${url}")
 		registerService.forgotPassword(username)
 		flash.info = "Un email pour réinitialiser votre mot de passe vous a été envoyé à l'adresse suivante : $username !"
 		redirect(controller: 'login', action: 'auth')	
