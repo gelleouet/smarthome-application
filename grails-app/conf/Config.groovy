@@ -112,7 +112,7 @@ environments {
 		
 		log4j.main = {
 			appenders {
-				console name:'stdout', layout:pattern(conversionPattern: '[%p %d %c{1}] %m%n')
+				console name:'stdout', layout:pattern(conversionPattern: "[${appVersion}][%p %d %c{1}] %m%n")
 			}
 		
 			debug 'smarthome', 
@@ -132,7 +132,7 @@ environments {
 		
 		log4j.main = {
 			appenders {
-				console name:'stdout', layout:pattern(conversionPattern: '[%p %d %c{1}] %m%n')
+				console name:'stdout', layout:pattern(conversionPattern: '[${appVersion}][%p %d %c{1}] %m%n')
 			}
 			
 			debug 'smarthome', 'grails.app', 'org.apache.camel.component'
