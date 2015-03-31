@@ -116,6 +116,8 @@ class AgentService extends AbstractService {
 			agentToken.websocketUrl = urlApplication.replace('http', 'ws')
 		}
 		
+		log.info("Change url ${urlApplication} to websocket ${agentToken.websocketUrl}")
+		
 		return agentToken
 	}
 	
