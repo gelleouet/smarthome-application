@@ -24,7 +24,7 @@ class RegisterService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
     def forgotPassword(String username) throws SmartHomeException {
-		log.info "Demande reset mot de passe ${username}"
+		log.info "Demande reset mot de passe ${username} for ${grailsLinkGenerator.serverBaseURL}"
 		
 		// on vérifie que l'adresse est connue
 		def user = User.findByUsername(username)

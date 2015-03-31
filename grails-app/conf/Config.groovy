@@ -106,14 +106,13 @@ grails.hibernate.osiv.readonly = false
 
 environments {
 	
-	
 	development {
 		grails.logging.jul.usebridge = true
 		grails.plugin.springsecurity.debug.useFilter = true
 		
 		log4j.main = {
 			appenders {
-				console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+				console name:'stdout', layout:pattern(conversionPattern: '[%p %d %c{1}] %m%n')
 			}
 		
 			debug 'smarthome', 
@@ -133,12 +132,12 @@ environments {
 		
 		log4j.main = {
 			appenders {
-				console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+				console name:'stdout', layout:pattern(conversionPattern: '[%p %d %c{1}] %m%n')
 			}
 			
 			debug 'smarthome', 'grails.app', 'org.apache.camel.component'
 		}
-	}
+	}f
 }
 
 
@@ -165,7 +164,6 @@ rabbitmq {
 smtp {
 	hostname = 'smtp.jdevops.com'
 	port = 25
-	password = 'toto'
 	username = 'noreply@jdevops.com'
 	from = 'SMART-HOME <noreply@smarthome.fr>'
 }
