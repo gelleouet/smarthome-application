@@ -112,7 +112,7 @@ environments {
 		
 		log4j.main = {
 			appenders {
-				console name:'stdout', layout:pattern(conversionPattern: "[%p %d %c{1}] %m%n")
+				console name:'stdout', layout:pattern(conversionPattern: '[%p %d %c{1}] %m%n')
 			}
 		
 			debug 'smarthome', 
@@ -164,8 +164,9 @@ rabbitmq {
 smtp {
 	hostname = 'smtp.jdevops.com'
 	port = 25
+	password = '3MrTfsYM73g5'
 	username = 'noreply@jdevops.com'
-	from = 'SMART-HOME <noreply@smarthome.fr>'
+	from = 'SMARTHOME <noreply@smarthome.fr>'
 }
 
 
