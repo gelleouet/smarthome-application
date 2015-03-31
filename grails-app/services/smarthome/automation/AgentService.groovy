@@ -35,6 +35,7 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def activer(Agent agent, boolean actif) throws SmartHomeException {
+		log.info("agent ${agent.mac} activation : ${actif}")
 		agent.locked = !actif
 		
 		if (!agent.save()) {
@@ -53,6 +54,8 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def subscribe(Agent agent, String username, String applicationKey) throws SmartHomeException {
+		log.info("agent subscribe for user ${username}")
+		
 		// recherche user
 		def user = User.findByUsername(username)
 		
@@ -115,8 +118,6 @@ class AgentService extends AbstractService {
 		} else {
 			agentToken.websocketUrl = urlApplication.replace('http', 'ws')
 		}
-		
-		log.info("Change url ${urlApplication} to websocket ${agentToken.websocketUrl}")
 		
 		return agentToken
 	}
@@ -227,7 +228,7 @@ class AgentService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage()
 	def receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
-		log.info "Receive message agent ${message.data}..."
+		log.info "Receive message from agent token ${agentToken.token}..."
 		
 		if (! message.data) {
 			throw new SmartHomeException("Data is empty !")
@@ -253,6 +254,8 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	def sendMessage(Agent agent, Map data) throws SmartHomeException {
+		log.info "send message to agent ${agent.mac}"
+		
 		if (!agent.tokens.size()) {
 			throw new SmartHomeException("Agent not subscribe !")
 		}
@@ -290,7 +293,7 @@ class AgentService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	def sendMessageToWebsocket(String token, String websocketKey, String message) throws SmartHomeException {
-		log.info "Send message to websocket ${token} : ${message}"
+		log.info "Send message to websocket token ${token}"
 		AgentEndPoint.sendMessage(token, websocketKey, message)
 	}
 	
@@ -305,6 +308,7 @@ class AgentService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	def sendConfiguration(AgentToken agentToken) throws SmartHomeException {
+		log.info "send configuration to agent ${agentToken.agent.mac}"
 		def token = AgentToken.get(agentToken.id)
 		
 		def devices = Device.createCriteria().list {

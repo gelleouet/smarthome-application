@@ -72,6 +72,8 @@ class DeviceService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def saveAndSendMessage(Device device, Map datas) throws SmartHomeException {
+		log.info "save and send message for device ${device.mac}"
+		
 		this.save(device)
 		
 		// si le device est attaché à un agent, on lui envoit un message (si demandé)
@@ -152,6 +154,8 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue", exchangeType = ExchangeType.FANOUT)
 	Device invokeAction(Device device, String actionName) throws SmartHomeException {
+		log.info "Invoke action ${actionName} on device ${device.mac}"
+		
 		// instancie le type device pour exécuter l'action
 		def deviceImpl
 		
@@ -181,6 +185,8 @@ class DeviceService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	DeviceValue traceValue(Device device) throws SmartHomeException {
+		log.info "Trace value for device ${device.mac}"
+		
 		def value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
 		
 		if (!value.save()) {
@@ -198,6 +204,8 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	List<DeviceValue> values(Device device, Long sinceHour)	throws SmartHomeException {
+		log.info "Load trace values for ${device.mac} since ${sinceHour} hours"
+		
 		Date now = new Date()
 		TimeDuration duration = new TimeDuration(sinceHour.toInteger(), 0, 0, 0)
 		
