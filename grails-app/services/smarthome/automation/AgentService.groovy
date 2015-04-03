@@ -92,8 +92,10 @@ class AgentService extends AbstractService {
 				}
 			}
 			
-			// mise à jour dernière connexion
+			// mise à jour dernière connexion et des IP
 			domainAgent.lastConnexion = new Date()
+			domainAgent.privateIp = agent.privateIp
+			domainAgent.publicIp = agent.publicIp
 			
 			if (!domainAgent.save()) {
 				throw new SmartHomeException("Erreur subscribe agent !")
