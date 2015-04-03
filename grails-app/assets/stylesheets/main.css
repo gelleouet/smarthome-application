@@ -33,13 +33,13 @@
 
 .logoParentHeader {
 	position: relative;
-	width: 123px;
+	width: 150px;
 }
 
 .logoTextHeader {
 	font-weight: bold;
 	position:absolute;
-	top:25%;
+	top:35%;
 }
 
 .spinner {

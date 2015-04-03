@@ -119,6 +119,9 @@ environments {
 				'org.hibernate.SQL',
 				'org.apache.camel.component'
 			
+			trace 'org.springframework.security.web.authentication.rememberme',
+				'org.springframework.security.web.authentication'
+			
 			info 'org.hibernate',
 				'net.sf.ehcache.hibernate',
 				'grails.app.services',

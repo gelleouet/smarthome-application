@@ -18,7 +18,7 @@
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <input class="text" type="text" id="username" name="j_username" placeholder="you@example.com" autofocus="true">
+	            <input class="text" type="mail" id="username" name="j_username" placeholder="yourmail@example.com" autofocus="true">
 	        </div>
 	        <div class="field-group">
 	            <label for="password1" accesskey="p">Mot de passe<span class="aui-icon icon-required"> required</span></label>
@@ -28,7 +28,7 @@
 	     
 	     <fieldset class="group">
 	        <div class="checkbox">
-	            <input class="checkbox" type="checkbox" name="${rememberMeParameter}" id="remember_me" <g:if test='${hasCookie}'>checked='checked'</g:if>>
+	            <input class="checkbox" type="checkbox" name="${rememberMeParameter}" id="remember_me" checked='checked'>
 	            <label for="remember_me">Mémoriser mes identifiants</label>
 	        </div>                                
 	    </fieldset>

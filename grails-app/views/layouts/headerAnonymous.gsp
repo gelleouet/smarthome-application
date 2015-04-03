@@ -2,7 +2,7 @@
 <!-- App Header goes inside #header -->
 
   <nav class="aui-header aui-dropdown2-trigger-group" role="navigation">
-  	  <div class="aui-header-primary">
+  	  <div class="aui-header-primary desktop-only">
   	  	 <div class="aui-header-logo logoParentHeader" >
   	  		<a href="">
 	        	<span class="logoTextHeader"><g:meta name="app.code"/></span>
@@ -18,7 +18,7 @@
               <li>
               	<g:link controller="login" action="index" class="aui-button aui-button-primary">Se connecter</g:link>
               </li>
-              <li>
+              <li class="desktop-only">
               	<g:form controller="register" action="account">
               		<button class="aui-button aui-button-primary">Créer un compte</button>
               	</g:form>

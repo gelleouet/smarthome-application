@@ -4,7 +4,7 @@
   <nav class="aui-header aui-dropdown2-trigger-group" role="navigation" >
   	<div class="aui-header-inner">
   		
-  	  <div class="aui-header-before">
+  	  <div class="aui-header-before desktop-only">
   	  	<ul class="aui-nav">
   	  		<li><a href="#dropdown2-app-switch" aria-owns="dropdown2-app-switch" aria-haspopup="true" class="aui-dropdown2-trigger aui-dropdown2-trigger-arrowless" >
   	  			<span class="aui-icon aui-icon-small aui-iconfont-appswitcher">Mes applications</span></a>
@@ -24,7 +24,8 @@
       
           <div class="aui-header-logo logoParentHeader">
   	  		<g:link uri="/">
-	        	<span class="logoTextHeader"><g:meta name="app.code"/></span>
+  	  			<asset:image src="home_w.png"/>
+	        	<span class="logoTextHeader "><g:meta name="app.code"/></span>
         	</g:link>
       	 </div>	
       	 
@@ -37,7 +38,7 @@
       
       <div class="aui-header-secondary">
           <ul class="aui-nav">
-              <li>
+              <li class="desktop-only">
                   <g:form  class="aui-quicksearch">
                       <label for="numeroEchantillon" class="assistive">Search</label>
                       <input class="search" type="text" placeholder="Recherche rapide" name="numeroEchantillon">
@@ -46,7 +47,8 @@
               
               
               <!-- Menu aide (statique) -->
-              <li><a href="#dropdown2-aide" aria-owns="dropdown2-aide" aria-haspopup="true" class="aui-dropdown2-trigger" ><span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span></a>
+              <li class="desktop-only">
+              	<a href="#dropdown2-aide" aria-owns="dropdown2-aide" aria-haspopup="true" class="aui-dropdown2-trigger" ><span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span></a>
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-aide" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
                     <div class="aui-dropdown2-section">
                         <ul>

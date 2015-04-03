@@ -1,6 +1,23 @@
 /* Styles for mobile devices */
 
 @media screen and (max-width: 480px) {
+	
+	.mobile-only {
+        display:block;
+    }
+ 
+    .desktop-only {
+        display:none;
+    }
+    
+    .logoTextHeader {
+    	display: none;
+    }
+    
+    .logoParentHeader {
+    	width: 50px;
+    }
+	
 	.nav {
 		padding: 0.5em;
 	}

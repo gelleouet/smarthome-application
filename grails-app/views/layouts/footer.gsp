@@ -6,7 +6,7 @@
 	<g:meta name="app.code"/> v<g:meta name="app.version"/> build with Grails Framework v<g:meta name="app.grails.version"/>
 	</h6>
 	
-	<div>
+	<div class="desktop-only">
 		<a href="http://grails.org/" target="blank" style="padding-left:20px; padding-right:20px;">
 			<asset:image src="grails_logo.png" class="logoFooter"/>
 		</a>
