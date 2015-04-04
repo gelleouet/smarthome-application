@@ -16,12 +16,17 @@ class DeviceValue {
 	String value
 	Date dateValue
 	
+	// permet d'avoir plusieurs types de valeur pour un device
+	// si un seul type, ne rien mettre
+	String name 
+	
 	
     static constraints = {
-		
+		name nullable: true
     }
 	
 	static mapping = {
-		device index: "DeviceValue_Device_Idx"
+		name index: "DeviceValue_DeviceName_Idx"
+		device index: "DeviceValue_DeviceName_Idx"
 	}
 }

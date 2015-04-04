@@ -192,6 +192,15 @@ class DeviceService extends AbstractService {
 		if (!value.save()) {
 			throw new SmartHomeException("Erreur trace valeur !", value)
 		}
+		
+		// enregistrement des valeurs spécifiques
+		device.metavalues?.each {
+			value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
+			
+			if (!value.save()) {
+				throw new SmartHomeException("Erreur trace meta valeur !", value)
+			}
+		}
 	}
 	
 	

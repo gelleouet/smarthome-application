@@ -10,3 +10,4 @@ target/
 target-eclipse/
 .classpath
 wrapper/
+/bin/

@@ -14,7 +14,7 @@ import grails.validation.Validateable;
 @Validateable
 class Device {
 	static belongsTo = [agent: Agent, user: User]
-	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata]
+	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue]
 	static transients = ['params']
 	
 	String label
@@ -42,6 +42,7 @@ class Device {
 		user index: "Device_User_Idx"
 		values cascade: 'all-delete-orphan'
 		metadatas cascade: 'all-delete-orphan'
+		metavalues cascade: 'all-delete-orphan'
 		sort 'label'
 	}
 	
@@ -75,6 +76,12 @@ class Device {
 	
 	def metadata(String name) {
 		metadatas?.find {
+			it.name == name
+		}
+	}
+
+	def metavalue(String name) {
+		metavalues?.find {
 			it.name == name
 		}
 	}
