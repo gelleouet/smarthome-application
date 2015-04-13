@@ -26,7 +26,7 @@
 							<div>
 								<div class="device-grid-body-icon">
 									<g:set var="icon" value="${ device.icon() }"/>
-									<g:if test="${icon }">
+									<g:if test="${ icon }">
 										<asset:image src="${ icon }" class="device-icon-grid"/>
 									</g:if>
 								</div>

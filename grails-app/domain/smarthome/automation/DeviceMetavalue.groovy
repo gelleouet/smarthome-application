@@ -18,7 +18,7 @@ class DeviceMetavalue {
 	
 	
     static constraints = {
-		
+		value nullable: true;
     }
 	
 	static mapping = {

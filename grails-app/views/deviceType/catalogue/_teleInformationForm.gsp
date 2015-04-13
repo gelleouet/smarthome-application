@@ -17,7 +17,6 @@
 <div class="field-group">
 	<label>
 		Option tarifaire
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[0].value" disabled="true" value="${ opttarif?.value }" class="text medium-field"/>
 </div>
@@ -33,7 +32,6 @@
 <div class="field-group">
 	<label>
 		Période tarifaire en cours
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[1].value" disabled="true" value="${ ptec?.value }" class="text medium-field"/>
 </div>
@@ -49,7 +47,6 @@
 <div class="field-group">
 	<label>
 		Instansité souscrite (A)
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[2].value" disabled="true" value="${ isousc?.value }" class="text medium-field"/>
 </div>
@@ -65,7 +62,6 @@
 <div class="field-group">
 	<label>
 		Instansité maximale (A)
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[3].value" disabled="true" value="${ imax?.value }" class="text medium-field"/>
 </div>
@@ -81,7 +77,6 @@
 <div class="field-group">
 	<label>
 		Index heures creuses (Wh)
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[4].value" disabled="true" value="${ hchc?.value }" class="text long-field"/>
 </div>
@@ -97,7 +92,6 @@
 <div class="field-group">
 	<label>
 		Index heures pleines (Wh)
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[5].value" disabled="true" value="${ hchp?.value }" class="text long-field"/>
 </div>
@@ -113,7 +107,6 @@
 <div class="field-group">
 	<label>
 		Puissance apparente (VA)
-		<span class="aui-icon icon-required"></span>
 	</label>
 	<g:field type="string" name="metavalues[6].value" disabled="true" value="${ papp?.value }" class="text medium-field"/>
 </div>
