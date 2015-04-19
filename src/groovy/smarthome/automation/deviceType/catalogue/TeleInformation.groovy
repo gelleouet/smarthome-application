@@ -7,7 +7,5 @@ package smarthome.automation.deviceType.catalogue
  *
  */
 class TeleInformation extends AbstractDeviceType {
-	def icon() {
-		
-	}
+	
 }

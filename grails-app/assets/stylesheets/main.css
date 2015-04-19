@@ -19,6 +19,14 @@
 	padding-top: 10px;
 }
 
+.separator-left {
+	border-left-style: solid;
+	border-left-width: 1px;
+	border-left-color: lightgrey;
+	padding-left: 10px;
+	margin-left: 10px;
+}
+
 .footer {
 	padding-top:35px; 
 	font-size: small; 
@@ -146,8 +154,8 @@ tr.incluNorme td {
 	margin: 15px;
 	border-radius: 5px;
 	border: 1px solid #3b73af;
-	width: 180px;
-	height: 85px;
+	min-width: 180px;
+	min-height: 85px;
 	display: inline-block;
 }
 
@@ -185,13 +193,22 @@ tr.incluNorme td {
 }
 
 
+.device-grid-body-content-large {
+	max-width:310px;
+	margin-right:10px;
+	display:block;
+}
+
+
 .device-grid-body-icon {
 	float: left;	
+	width: 40px;
 }
 
 .device-grid-body-user {
 	float: right;	
 	padding-left: 10px;
+	display: block;
 } 
 
 .device-grid-body-menu {

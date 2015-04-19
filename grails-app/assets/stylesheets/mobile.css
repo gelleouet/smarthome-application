@@ -96,4 +96,13 @@
 	.error ul {
 		margin-left: 0;
 	}
+	
+	.device-grid {
+		margin: 15px;
+		border-radius: 5px;
+		border: 1px solid #3b73af;
+		width: 95%;
+		height: 85px;
+		display: inline-block;
+	}
 }
