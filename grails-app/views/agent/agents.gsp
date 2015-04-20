@@ -53,7 +53,7 @@
 			            <td>${ bean.mac }</td>
 			            <td>${ bean.privateIp }</td>
 			            <td>${ bean.publicIp }</td>
-			            <td>${ bean.lastConnexion }</td>
+			            <td>${ app.formatTimeAgo(date: bean.lastConnexion) }</td>
 			            <td>
 			            	<g:if test="${ bean.locked }">
 			            		<span class="aui-lozenge">verrouillé</span>

@@ -1,10 +1,10 @@
 <div class="device-grid-body-content-large">
-	<g:set var="ptec" value="${  device?.metadata('ptec') }"/>
-	<g:set var="isousc" value="${  device?.metadata('isousc') }"/>
-	<g:set var="imax" value="${  device?.metadata('imax') }"/>
-	<g:set var="hchp" value="${  device?.metadata('hchp') }"/>
-	<g:set var="hchc" value="${  device?.metadata('hchc') }"/>
-	<g:set var="papp" value="${  device?.metadata('papp') }"/>
+	<g:set var="ptec" value="${  device?.metavalue('ptec') }"/>
+	<g:set var="isousc" value="${  device?.metavalue('isousc') }"/>
+	<g:set var="imax" value="${  device?.metavalue('imax') }"/>
+	<g:set var="hchp" value="${  device?.metavalue('hchp') }"/>
+	<g:set var="hchc" value="${  device?.metavalue('hchc') }"/>
+	<g:set var="papp" value="${  device?.metavalue('papp') }"/>
 	
 	<div style="float:left;display:block;">
 		<h2>${ papp?.value ?: '-----' } VA

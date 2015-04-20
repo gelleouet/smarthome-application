@@ -139,6 +139,11 @@ class DeviceService extends AbstractService {
 			}
 		}
 		
+		// gestion des métavalues
+		datas.metavalues?.each { key, value ->
+			device.addMetavalue(key, value)
+		}
+		
 		return this.save(device)
 	}
 	
@@ -184,8 +189,9 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	DeviceValue traceValue(Device device) throws SmartHomeException {
+	void traceValue(Device device) throws SmartHomeException {
 		log.info "Trace value for device ${device.mac}"
+		device.attach()
 		
 		def value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
 		
@@ -195,10 +201,12 @@ class DeviceService extends AbstractService {
 		
 		// enregistrement des valeurs spécifiques
 		device.metavalues?.each {
-			value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
-			
-			if (!value.save()) {
-				throw new SmartHomeException("Erreur trace meta valeur !", value)
+			if (it.value) {
+				value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
+				
+				if (!value.save()) {
+					throw new SmartHomeException("Erreur trace meta valeur !", value)
+				}
 			}
 		}
 	}

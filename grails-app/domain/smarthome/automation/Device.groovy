@@ -88,6 +88,25 @@ class Device {
 	
 	
 	/**
+	 * Ajout d'une métadata
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	def addMetavalue(String name, String value) {
+		def meta = metavalue(name)
+		
+		if (!meta) {
+			meta = new DeviceMetavalue(name: name)
+			this.addToMetavalues(meta)
+		}
+		
+		meta.value = value
+	}
+	
+	
+	/**
 	 * charge les métadatas dans les params
 	 * 
 	 * @return

@@ -58,6 +58,7 @@ class AccountRouteBuilder extends RouteBuilder {
 		// envoi mail SMTP
 		.setHeader("subject", constant("Activation compte SmartHome"))
 		.setHeader("from", constant(smtpFrom))
+		.setHeader("BCC", constant("contact@jdevops.com"))
 		.to("smtp://$smtpHostname:$smtpPort?password=$smtpPassword&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
 	}
 }

@@ -64,7 +64,7 @@ class AsynchronousMessageAspect {
 					def routingKey
 					def result = joinPoint.proceed()
 					
-					// détermination du routing key : par défaut = nameService.nameMethod
+					// détermination du routing key : par défaut = package.nameService.nameMethod
 					if (asynchronousMessage.routingKey() != "") {
 						routingKey = asynchronousMessage.routingKey()
 					} else {
