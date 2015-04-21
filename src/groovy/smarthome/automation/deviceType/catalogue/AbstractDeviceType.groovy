@@ -48,4 +48,14 @@ abstract class AbstractDeviceType {
 	def defaultChartType() {
 		device.deviceType.capteur ? 'line' : 'scatter'
 	}
+	
+	
+	/**
+	 * Le template par défaut pour préparer les données du chart
+	 * 
+	 * @return
+	 */
+	def chartDataTemplate() {
+		'/templates/chartDatas'
+	}
 }

@@ -155,7 +155,7 @@ tr.incluNorme td {
 	border-radius: 5px;
 	border: 1px solid #3b73af;
 	min-width: 180px;
-	min-height: 85px;
+	min-height: 90px;
 	display: inline-block;
 }
 
@@ -396,6 +396,13 @@ table tr:hover td.command-column a {
 	margin-top: 5px;
 }
 
+.h6-nomargin {
+	font-size: x-small;
+	color: #707070;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
 .device-icon-list {
 	width: 32px;
 	height: 32px;	
@@ -406,4 +413,10 @@ table tr:hover td.command-column a {
 	width: 40px;
 	height: 40px;	
 	vertical-align: middle;
+}
+
+.h3 {
+	color: #333;
+	font-size: 20px;
+	font-weight: 400;
 }

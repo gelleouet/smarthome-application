@@ -8,5 +8,6 @@
 			<span class="aui-lozenge" style="font-size: large;">OFF</span>
 		</g:else>
 	</h2>
-	<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>
+	
+	<p style="padding-top:8px" class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>
 </div>

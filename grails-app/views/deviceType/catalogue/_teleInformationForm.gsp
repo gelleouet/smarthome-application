@@ -5,6 +5,8 @@
 <g:set var="hchp" value="${  device?.metavalue('hchp') }"/>
 <g:set var="hchc" value="${  device?.metavalue('hchc') }"/>
 <g:set var="papp" value="${  device?.metavalue('papp') }"/>
+<g:set var="hcinst" value="${  device?.metavalue('hcinst') }"/>
+<g:set var="hpinst" value="${  device?.metavalue('hpinst') }"/>
 
 <!-- ###############################################################" -->
 
@@ -64,6 +66,7 @@
 		Instansité maximale (A)
 	</label>
 	<g:field type="string" name="metavalues[3].value" disabled="true" value="${ imax?.value }" class="text medium-field"/>
+	<div class="description">(Maximum depuis la mise en route du compteur)</div>
 </div>
 
 <!-- ###############################################################" -->
@@ -76,9 +79,10 @@
 
 <div class="field-group">
 	<label>
-		Index heures creuses (Wh)
+		Total heures creuses (Wh)
 	</label>
 	<g:field type="string" name="metavalues[4].value" disabled="true" value="${ hchc?.value }" class="text long-field"/>
+	<div class="description">(Total depuis la mise en route du compteur)</div>
 </div>
 
 <!-- ###############################################################" -->
@@ -91,9 +95,10 @@
 
 <div class="field-group">
 	<label>
-		Index heures pleines (Wh)
+		Total heures pleines (Wh)
 	</label>
 	<g:field type="string" name="metavalues[5].value" disabled="true" value="${ hchp?.value }" class="text long-field"/>
+	<div class="description">(Total depuis la mise en route du compteur)</div>
 </div>
 
 <!-- ###############################################################" -->
@@ -109,4 +114,36 @@
 		Puissance apparente (VA)
 	</label>
 	<g:field type="string" name="metavalues[6].value" disabled="true" value="${ papp?.value }" class="text medium-field"/>
+</div>
+
+<!-- ###############################################################" -->
+
+<g:if test="${ hcinst?.id }">
+	<g:hiddenField name="metavalues[7].id" value="${ hcinst.id }"/>
+</g:if>
+
+<g:hiddenField name="metavalues[7].name" value="hcinst"/>
+
+<div class="field-group">
+	<label>
+		Heures creuses (Wh)
+	</label>
+	<g:field type="string" name="metavalues[7].value" disabled="true" value="${ hcinst?.value }" class="text medium-field"/>
+	<div class="description">(Valeur entre 2 lectures téléinfo)</div>
+</div>
+
+<!-- ###############################################################" -->
+
+<g:if test="${ hpinst?.id }">
+	<g:hiddenField name="metavalues[8].id" value="${ hpinst.id }"/>
+</g:if>
+
+<g:hiddenField name="metavalues[8].name" value="hpinst"/>
+
+<div class="field-group">
+	<label>
+		Heures pleines (Wh)
+	</label>
+	<g:field type="string" name="metavalues[8].value" disabled="true" value="${ hpinst?.value }" class="text medium-field"/>
+	<div class="description">(Valeur entre 2 lectures téléinfo)</div>
 </div>

@@ -51,4 +51,11 @@ class DeviceType {
 		deviceType.device = device
 		deviceType.defaultChartType()
 	}
+	
+	
+	String chartDataTemplate(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.chartDataTemplate()
+	}
 }

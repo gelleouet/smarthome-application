@@ -7,5 +7,12 @@ package smarthome.automation.deviceType.catalogue
  *
  */
 class TeleInformation extends AbstractDeviceType {
-	
+	/**
+	 * Le template par défaut pour préparer les données du chart
+	 *
+	 * @return
+	 */
+	def chartDataTemplate() {
+		'/deviceType/catalogue/teleInformationChartDatas'
+	}
 }

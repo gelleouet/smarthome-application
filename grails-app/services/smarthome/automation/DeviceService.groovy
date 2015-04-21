@@ -233,7 +233,7 @@ class DeviceService extends AbstractService {
 		DeviceValue.createCriteria().list {
 			eq 'device', device
 			ge 'dateValue', now
-			order 'dateValue'
+			order 'dateValue', 'name'
 		}
 	}
 }

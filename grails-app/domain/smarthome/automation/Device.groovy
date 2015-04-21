@@ -73,6 +73,10 @@ class Device {
 		deviceType.defaultChartType(this)
 	}
 	
+	String chartDataTemplate() {
+		deviceType.chartDataTemplate(this)
+	}
+	
 	
 	def metadata(String name) {
 		metadatas?.find {

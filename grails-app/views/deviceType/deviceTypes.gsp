@@ -45,7 +45,13 @@
 		    <tbody>
 		    	<g:each var="bean" in="${ deviceTypeInstanceList }">
 			        <tr>
-			            <td><g:link action="deviceType" id="${bean.id }">${ bean.libelle }</g:link></td>
+			            <td><g:link action="deviceType" id="${bean.id }">
+			            	<g:set var="icon" value="${ bean.icon(null) }"/>
+							<g:if test="${icon }">
+		            			<asset:image src="${ bean.icon() }" class="device-icon-list"/>
+		            		</g:if>
+			            	${ bean.libelle }
+			            </g:link></td>
 			            <td>${ bean.implClass }</td>
 			            <td>${ bean.capteur ? 'X' : '' }</td>
 			        </tr>

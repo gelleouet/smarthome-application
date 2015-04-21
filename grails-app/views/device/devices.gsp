@@ -42,6 +42,7 @@
 		            <th>Mac</th>
 		            <th>Type</th>
 		            <th>Agent</th>
+		            <th>Dernière MAJ</th>
 		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
@@ -61,6 +62,7 @@
 			            <td>${ bean.mac }</td>
 			            <td>${ bean.deviceType.libelle }</td>
 			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
+			            <td>${ app.formatTimeAgo(date: bean.dateValue) }</td>
 			            <td class="column-1-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
