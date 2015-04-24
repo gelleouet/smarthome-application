@@ -116,7 +116,7 @@ class DeviceController extends AbstractController {
 		def model = [:]
 		
 		// Compléter le model
-		model.agents = Agent.findByUser(authenticatedUser)
+		model.agents = Agent.findAllByUser(authenticatedUser)
 		model.deviceTypes = DeviceType.list()
 		
 		// on remplit avec les infos du user
@@ -150,7 +150,7 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "create", modelName = DeviceController.COMMAND_NAME)
 	def saveCreate(Device device) {
 		device.user = authenticatedUser
-		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sorrt en erreur
+		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
 		deviceService.saveAndSendMessage(device, null)
 		redirect(action: COMMAND_NAME + 's')
@@ -162,13 +162,13 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def chart(Device device, Long sinceHour, String chartType) {
+	def chartView(Device device, Long sinceHour) {
 		sinceHour = sinceHour ?: 1
 		this.preAuthorize(device)
-		def datas = deviceService.values(device, sinceHour)
-		chartType = chartType ?: device.defaultChartType()
+		def datas = deviceService.values(device, sinceHour, null)
+		def chartType = device.defaultChartType()
 		def timesAgo = [1: '1 heure', 6: '6 heures', 12: '12 heures', 24: '24 heures']
-		render(view: 'chart', model: [device: device, sinceHour: sinceHour, chartType: chartType, datas: datas, timesAgo: timesAgo])
+		render(view: 'chartView', model: [device: device, sinceHour: sinceHour, chartType: chartType, datas: datas, timesAgo: timesAgo])
 	}
 	
 	

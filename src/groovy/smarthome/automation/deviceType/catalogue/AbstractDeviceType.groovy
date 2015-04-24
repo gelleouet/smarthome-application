@@ -1,11 +1,13 @@
 package smarthome.automation.deviceType.catalogue
 
 import org.apache.commons.lang.StringUtils;
-
+import java.util.Map;
+import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.Device;
 
 abstract class AbstractDeviceType {
 	Device device
+	String folder =  StringUtils.uncapitalize(this.getClass().simpleName)
 	
 	
 	/**
@@ -14,7 +16,7 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	def viewGrid() {
-		'/deviceType/catalogue/' + StringUtils.uncapitalize(this.getClass().simpleName)
+		"/deviceType/$folder/$folder"
 	}
 	
 	
@@ -25,7 +27,7 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	def viewForm() {
-		'/deviceType/catalogue/' + StringUtils.uncapitalize(this.getClass().simpleName) + 'Form'
+		"/deviceType/${folder}/${folder}Form"
 	}
 	
 	
@@ -36,7 +38,7 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	def icon() {
-		'/deviceType/catalogue/' + StringUtils.uncapitalize(this.getClass().simpleName) + '.png'
+		"/deviceType/catalogue/${folder}.png"
 	}
 	
 	
@@ -45,8 +47,18 @@ abstract class AbstractDeviceType {
 	 * 
 	 * @return
 	 */
-	def defaultChartType() {
-		device.deviceType.capteur ? 'line' : 'scatter'
+	ChartTypeEnum defaultChartType() {
+		device.deviceType.capteur ? ChartTypeEnum.Line : ChartTypeEnum.Scatter
+	}
+	
+	
+	/**
+	 * La liste des metavalues du device
+	 * 
+	 * @return Map. key = metavalue name, value = metavalue label
+	 */
+	Map metaValuesName() {
+		[:]
 	}
 	
 	
@@ -56,6 +68,6 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	def chartDataTemplate() {
-		'/templates/chartDatas'
+		
 	}
 }

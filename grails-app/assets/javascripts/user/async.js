@@ -65,11 +65,15 @@ $(window).on('load', function() {
 		// récupère l'url dans le composant
 		var div = $(this);
 		var url = div.attr('async-url');
+		var asyncComplete = div.attr('on-async-complete');
 		
 		jQuery.ajax({
 			url: url,
 			success: function(data, textStatus){
 				div.html(data);
+				if (asyncComplete) {
+					eval(asyncComplete);
+				}
 			}
 		});
 	});

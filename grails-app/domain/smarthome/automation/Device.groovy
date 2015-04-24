@@ -1,7 +1,7 @@
 package smarthome.automation
 
 import org.apache.commons.lang.StringUtils;
-
+import java.util.Map;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -69,12 +69,16 @@ class Device {
 		deviceType.icon(this)
 	}
 
-	String defaultChartType() {
+	ChartTypeEnum defaultChartType() {
 		deviceType.defaultChartType(this)
 	}
 	
 	String chartDataTemplate() {
 		deviceType.chartDataTemplate(this)
+	}
+	
+	Map metaValuesName() {
+		deviceType.metaValuesName(this)
 	}
 	
 	

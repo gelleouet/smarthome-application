@@ -8,21 +8,20 @@
 	<g:applyLayout name="applicationContent">
 	
 		<h2>
-			<asset:image src="${ device.icon() }" class="device-icon-grid"/>
-			Graphique : ${ device.label }
+			<asset:image src="/chart/${ chart.chartType }.png" class="device-icon-grid"/>
+			Graphique : ${ chart.label }
 		</h2>
 	
 		<form class="aui">
 		
 			<g:hiddenField id="sinceHour" name="sinceHour" value="${ sinceHour }"/>
-			<g:hiddenField name="chartType" value="${ chartType }"/>
 		
 			<div class="aui-toolbar2">
 			    <div class="aui-toolbar2-inner">
 			        <div class="aui-toolbar2-primary">
 			        	<div class="aui-buttons">
 			        		<g:each var="timeAgo" in="${ timesAgo }">
-			        			<g:actionSubmit value="${ timeAgo.value }" class="aui-button ${ sinceHour == timeAgo.key ? 'aui-button-primary' : '' }" action="chart" onclick="jQuery('#sinceHour').val('${ timeAgo.key }')"/>
+			        			<g:actionSubmit value="${ timeAgo.value }" class="aui-button ${ sinceHour == timeAgo.key ? 'aui-button-primary' : '' }" action="chartView" onclick="jQuery('#sinceHour').val('${ timeAgo.key }')"/>
 			        		</g:each>
 			            	
 			            </div>
@@ -37,17 +36,21 @@
 			</div>
 			
 			
-			<div id="chartDiv">
+			<div id="chartDiv" data-chart-type="${ chartType.factory }">
 				<br/>
 				<h6>Loading chart...</h6>
 				<div class="aui-progress-indicator">
 				    <span class="aui-progress-indicator-value"></span>
 				</div>
+				<g:render template="/chart/chartDatasMap" model="[label: chart.label, datas: datas]"/>
 			</div>
 		</form>
 	</g:applyLayout>
 	
-	<g:render template="/templates/chart" model="[label: device.label, datasTemplate: device.chartDataTemplate(), datas: datas, chartType: chartType, chartDiv: 'chartDiv']"/>
+	<asset:script type="text/javascript">
+		google.load("visualization", "1.0", {packages:["corechart"]});
+		google.setOnLoadCallback(buildGoogleCharts);
+	</asset:script>
 	
 </body>
 </html>

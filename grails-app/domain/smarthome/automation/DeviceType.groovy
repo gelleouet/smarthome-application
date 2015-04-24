@@ -13,7 +13,9 @@ import grails.validation.Validateable;
 class DeviceType {
 	String libelle
 	boolean capteur
+	boolean autoScan
 	String implClass
+	String typeCapteur
 	
 	
     static constraints = {
@@ -46,7 +48,7 @@ class DeviceType {
 	}
 	
 	
-	String defaultChartType(Device device) {
+	ChartTypeEnum defaultChartType(Device device) {
 		def deviceType = Class.forName(implClass).newInstance()
 		deviceType.device = device
 		deviceType.defaultChartType()
@@ -57,5 +59,11 @@ class DeviceType {
 		def deviceType = Class.forName(implClass).newInstance()
 		deviceType.device = device
 		deviceType.chartDataTemplate()
+	}
+	
+	Map metaValuesName(Device device) {
+		def deviceType = Class.forName(implClass).newInstance()
+		deviceType.device = device
+		deviceType.metaValuesName()
 	}
 }

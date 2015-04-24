@@ -160,6 +160,29 @@ tr.incluNorme td {
 }
 
 
+.chart-grid {
+	margin: 15px;
+	border-radius: 5px;
+	border: 1px solid #3b73af;
+	width: 600px;
+	height: 400px;
+	display: inline-block;
+}
+
+.chart-grid-header-title {
+	float: left;
+	display: block;
+}
+
+
+.chart-grid-header {
+	background-color: #3b73af;
+	color: white;
+	font-weight: bold;
+	padding: 2px;
+	min-height: 20px;
+}
+
 .device-grid-header {
 	background-color: #3b73af;
 	color: white;
@@ -168,6 +191,11 @@ tr.incluNorme td {
 	min-height: 20px;
 }
 
+
+.chart-grid-body {
+	padding: 5px;
+	min-height: 50px;
+}
 
 .device-grid-body {
 	padding: 5px;
@@ -183,6 +211,12 @@ tr.incluNorme td {
 
 .device-grid-header-menu {
 	float: right;
+	display: block;
+}
+
+
+.chart-grid-body-content {
+	float: left;
 	display: block;
 }
 
@@ -205,11 +239,22 @@ tr.incluNorme td {
 	width: 40px;
 }
 
+.chart-grid-body-user {
+	float: right;	
+	display: inline-block;
+	width: 500px;
+} 
+
 .device-grid-body-user {
 	float: right;	
 	padding-left: 10px;
 	display: block;
 } 
+
+.chart-grid-body-menu {
+	float: right;
+	display: block;
+}
 
 .device-grid-body-menu {
 	float: right;

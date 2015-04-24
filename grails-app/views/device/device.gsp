@@ -12,7 +12,7 @@
 	
 			<g:render template="form"/>
 			
-			<h4>Informations spécifiques au périphérique</h4>
+			<h4>Configuration</h4>
 			
 			<div id="deviceMetadatas">
 				<g:if test="${ device.id }">

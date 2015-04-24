@@ -128,4 +128,5 @@ class DeviceTypeController extends AbstractController {
 		def device = params.deviceId ? Device.get(params.deviceId) : null
 		render(template: deviceType.viewForm(), model: [device: device])
 	}
+	
 }

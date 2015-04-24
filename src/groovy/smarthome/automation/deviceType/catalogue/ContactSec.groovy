@@ -1,5 +1,7 @@
 package smarthome.automation.deviceType.catalogue
 
+import smarthome.automation.ChartTypeEnum;
+
 /**
  * Un contact sec de type on / off
  * 0 = off, 1 = on
@@ -14,7 +16,7 @@ class ContactSec extends AbstractDeviceType {
 	 *
 	 * @return
 	 */
-	def defaultChartType() {
-		'scatter'
+	ChartTypeEnum defaultChartType() {
+		ChartTypeEnum.Scatter
 	}
 }

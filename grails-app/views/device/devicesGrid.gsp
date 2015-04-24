@@ -6,6 +6,17 @@
 <body>
 	<g:applyLayout name="applicationContent">
 	
+		<g:if test="${ !deviceInstanceList?.size() }">
+			<div class="aui-message">
+				<h6>Vous n'avez pas encore de périphériques enregistrés sur votre compte. Vous pouvez :
+					<ul>
+						<li>Connecter un périphérique sur un agent pour qu'il soit détecté automatiquement</li>
+						<li>Créer manuellement un périphérique <g:link action="create">en cliquant ici</g:link></li>
+					</ul> 
+				</h6>
+			</div>
+		</g:if>
+	
 		<g:each var="groupe" in="${ deviceInstanceList?.groupBy({ it.groupe })?.sort{ it.key } }">
 			
 			<h3 class="separator">${ groupe.key ?: 'Autres' }</h3>
@@ -37,7 +48,7 @@
 						</div>
 						<div class="device-grid-body-menu">
 							<g:link action="edit" id="${ device.id }" class="aui-button aui-button-subtle" title="Modifier"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span></g:link>
-							<g:link action="chart" id="${ device.id }" class="aui-button aui-button-subtle" title="Graphique"><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span></g:link>
+							<g:link action="chartView" id="${ device.id }" class="aui-button aui-button-subtle" title="Graphique"><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span></g:link>
 						</div>
 					</div>
 				</div>

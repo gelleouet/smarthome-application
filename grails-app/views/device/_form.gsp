@@ -1,6 +1,8 @@
 <%@ page import="smarthome.automation.Device" %>
 
 
+<h4>Modèle</h4>
+
 <div class="field-group">
 	<label for="type">
 		Type
@@ -9,6 +11,8 @@
 	<g:select id="deviceType.id" name="deviceType.id" from="${deviceTypes}" optionKey="id" optionValue="libelle" required="true" 
 		value="${device?.deviceType?.id}" class="select" metadata-url="${g.createLink(action: 'templateMetadataForm', controller: 'deviceType', params: [deviceId: device?.id]) }"/>
 </div>
+
+<h4>Identification</h4>
 
 <div class="field-group">
 	<label for="label">

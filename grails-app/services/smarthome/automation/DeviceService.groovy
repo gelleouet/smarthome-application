@@ -217,10 +217,11 @@ class DeviceService extends AbstractService {
 	 * 
 	 * @param device
 	 * @param sinceHour
+	 * @param name
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	List<DeviceValue> values(Device device, Long sinceHour)	throws SmartHomeException {
+	List<DeviceValue> values(Device device, Long sinceHour, String name) throws SmartHomeException {
 		log.info "Load trace values for ${device.mac} since ${sinceHour} hours"
 		
 		Date now = new Date()
@@ -233,6 +234,15 @@ class DeviceService extends AbstractService {
 		DeviceValue.createCriteria().list {
 			eq 'device', device
 			ge 'dateValue', now
+			
+			if (name) {
+				if (name == '') {
+					isNull 'name'
+				} else {
+					eq 'name', name
+				}
+			}
+			
 			order 'dateValue', 'name'
 		}
 	}
