@@ -5,7 +5,7 @@ class UrlMappings {
 				// apply constraints here
 			} }
 
-		"/"(controller:'tableauBord')
+		"/"(controller:'device', action: 'devicesGrid')
 		"500"(view:'/error')
 		"404"(view:'/error')
 	}

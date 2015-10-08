@@ -18,7 +18,7 @@
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <input class="text" type="mail" id="username" name="j_username" placeholder="yourmail@example.com" autofocus="true">
+	            <input class="text" type="email" id="username" name="j_username" placeholder="yourmail@example.com" autofocus="true">
 	        </div>
 	        <div class="field-group">
 	            <label for="password1" accesskey="p">Mot de passe<span class="aui-icon icon-required"> required</span></label>

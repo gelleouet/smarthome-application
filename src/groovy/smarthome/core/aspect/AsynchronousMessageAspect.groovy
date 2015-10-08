@@ -50,53 +50,45 @@ class AsynchronousMessageAspect {
 		log.debug "Around asynchronousMessagePointcut service:$joinPoint.target method:$joinPoint.signature.name"
 		
 		if (joinPoint.this instanceof AbstractService) {
-			def serviceLims = joinPoint.target
+			// on récupère les infos de la transaction sur la méthode du service
+			def transactionAttribute = transactionAttributeSource.getTransactionAttribute(joinPoint.signature.method, joinPoint.target.class)
 			
-			// recherche simple de la méthode par son nom
-			Method[] methods = ClassUtils.findMethods(serviceLims.class, joinPoint.signature.name)
-			
-			if (methods?.length == 1) {
-				// on récupère les infos de la transaction sur la méthode du service
-				def transactionAttribute = transactionAttributeSource.getTransactionAttribute(methods[0], serviceLims.class)
+			// on construit une closure à exécuter soit en mode transaction soit sans transaction
+			def closure = {
+				def routingKey
+				def result = joinPoint.proceed()
 				
-				// on construit une closure à exécuter soit en mode transaction soit sans transaction
-				def closure = {
-					def routingKey
-					def result = joinPoint.proceed()
-					
-					// détermination du routing key : par défaut = package.nameService.nameMethod
-					if (asynchronousMessage.routingKey() != "") {
-						routingKey = asynchronousMessage.routingKey()
-					} else {
-						routingKey = ClassUtils.prefixAMQ(serviceLims) + '.' + joinPoint.signature.name
-					}
-					
-					// construction d'une map contenant les paramètres d'entrée et le résultat de la méthode
-					def payload =[:]
-					payload.result = result
-					
-					if (joinPoint.args) {
-						joinPoint.args.eachWithIndex { arg, index ->
-							payload."arg$index" = arg
-						}
-					}
-					
-					log.debug "Publish message to ${asynchronousMessage.exchange()} -> ${routingKey}  : $payload"
-					
-					serviceLims.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload, asynchronousMessage.exchangeType())
-					
-					return result
-				}
-				
-				// mode transaction
-				if (transactionAttribute) {
-					new GrailsTransactionTemplate(transactionManager, transactionAttribute).execute(closure)
+				// détermination du routing key : par défaut = package.nameService.nameMethod
+				if (asynchronousMessage.routingKey() != "") {
+					routingKey = asynchronousMessage.routingKey()
 				} else {
-				// mode normal
-					closure.call()
+					routingKey = ClassUtils.prefixAMQ(joinPoint.target) + '.' + joinPoint.signature.name
 				}
+				
+				// construction d'une map contenant les paramètres d'entrée et le résultat de la méthode
+				def payload =[:]
+				payload.result = result
+				payload.serviceMethodName = StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name
+				
+				if (joinPoint.args) {
+					joinPoint.args.eachWithIndex { arg, index ->
+						payload."arg$index" = arg
+					}
+				}
+				
+				log.debug "Publish message to ${asynchronousMessage.exchange()}"
+				
+				joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload, asynchronousMessage.exchangeType())
+				
+				return result
+			}
+			
+			// mode transaction
+			if (transactionAttribute) {
+				new GrailsTransactionTemplate(transactionManager, transactionAttribute).execute(closure)
 			} else {
-			throw new RuntimeException("Can't run AsynchronousMessageAspect on overloaded or not found mehod !")
+				// mode normal
+				closure.call()
 			}
 		} else {
 			throw new RuntimeException("Apply AsynchronousMessageAspect only on AbstractLimsService method !")

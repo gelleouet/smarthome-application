@@ -299,29 +299,4 @@ class AgentService extends AbstractService {
 		AgentEndPoint.sendMessage(token, websocketKey, message)
 	}
 	
-	
-	
-	/**
-	 * Envoi la configuration des capteurs à l'agent. 
-	 * Comme les actionneurs sont créés à la volée, pas besoin de s'embeter avec eux
-	 * 
-	 * @param agentToken
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	def sendConfiguration(AgentToken agentToken) throws SmartHomeException {
-		log.info "send configuration to agent ${agentToken.agent.mac}"
-		def token = AgentToken.get(agentToken.id)
-		
-		def devices = Device.createCriteria().list {
-			eq 'user', token.agent.user
-			eq 'agent', token.agent
-		}
-		
-		devices?.each {
-			sendMessage(token.agent, [header: 'config', device: it])
-		}
-	}
-	
-	
 }

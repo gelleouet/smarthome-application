@@ -12,10 +12,7 @@ import grails.validation.Validateable;
 @Validateable
 class DeviceType {
 	String libelle
-	boolean capteur
-	boolean autoScan
 	String implClass
-	String typeCapteur
 	
 	
     static constraints = {
@@ -23,47 +20,16 @@ class DeviceType {
     }
 	
 	static mapping = {
-		capteur defaultValue: false
 		sort 'libelle'
 	}
 	
 	
-	String viewGrid(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.viewGrid()
-	}
-	
-	
-	String viewForm(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.viewForm()
-	}
-	
-	String icon(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.icon()
-	}
-	
-	
-	ChartTypeEnum defaultChartType(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.defaultChartType()
-	}
-	
-	
-	String chartDataTemplate(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.chartDataTemplate()
-	}
-	
-	Map metaValuesName(Device device) {
-		def deviceType = Class.forName(implClass).newInstance()
-		deviceType.device = device
-		deviceType.metaValuesName()
+	/**
+	 * Instance l'implémentation du device
+	 * 
+	 * @return
+	 */
+	def newDeviceType() {
+		Class.forName(implClass).newInstance()
 	}
 }

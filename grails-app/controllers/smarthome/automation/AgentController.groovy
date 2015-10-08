@@ -102,4 +102,29 @@ class AgentController extends AbstractController {
 		flash.device = new Device(agent: agent)
 		redirect(action: 'create', controller: 'device')
 	}
+	
+	
+	/**
+	 * Edition d'un agent
+	 * 
+	 * @param agent
+	 * @return
+	 */
+	def edit(Agent agent) {
+		this.preAuthorize(agent)
+		render(view: 'agent', model: [agent: agent])
+	}
+	
+	
+	/**
+	 * Enregistrement d'un agent
+	 * 
+	 * @param agent
+	 * @return
+	 */
+	def save(Agent agent) {
+		this.preAuthorize(agent)
+		agentService.save(agent)
+		redirect(action: 'agents')
+	}
 }

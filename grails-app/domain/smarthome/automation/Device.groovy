@@ -14,7 +14,8 @@ import grails.validation.Validateable;
 @Validateable
 class Device {
 	static belongsTo = [agent: Agent, user: User]
-	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue]
+	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
+		events: DeviceEvent]
 	static transients = ['params']
 	
 	String label
@@ -23,7 +24,7 @@ class Device {
 	String value
 	Date dateValue
 	DeviceType deviceType
-	
+	boolean show
 	Map params = [:]
 	
 	
@@ -43,6 +44,7 @@ class Device {
 		values cascade: 'all-delete-orphan'
 		metadatas cascade: 'all-delete-orphan'
 		metavalues cascade: 'all-delete-orphan'
+		events cascade: 'all-delete-orphan'
 		sort 'label'
 	}
 	
@@ -54,32 +56,6 @@ class Device {
 		}
 	}
 	
-	
-	String viewGrid() {
-		deviceType.viewGrid(this)
-	}
-	
-	
-	String viewForm() {
-		deviceType.viewForm(this)
-	}
-	
-	
-	String icon() {
-		deviceType.icon(this)
-	}
-
-	ChartTypeEnum defaultChartType() {
-		deviceType.defaultChartType(this)
-	}
-	
-	String chartDataTemplate() {
-		deviceType.chartDataTemplate(this)
-	}
-	
-	Map metaValuesName() {
-		deviceType.metaValuesName(this)
-	}
 	
 	
 	def metadata(String name) {
@@ -125,4 +101,11 @@ class Device {
 			params[(it.name)] = it.value
 		}
 	}
+
+	
+	def clearNotPersistEvents() {
+		events?.removeAll {
+			!it.persist
+		}
+	}	
 }

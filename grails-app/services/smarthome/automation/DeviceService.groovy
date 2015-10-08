@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ExchangeType;
+import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
 
 class DeviceService extends AbstractService {
 
-	AgentService agentService
 	
 	/**
 	 * Enregistrement d"un device
@@ -37,6 +37,20 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Enregistrement d"un device
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def saveWithEvents(Device device) throws SmartHomeException {
+		device.clearNotPersistEvents()
+		return this.save(device)
+	}
+
+	
+	/**
 	 * Suppression d'un device avec ses associations
 	 * 
 	 * @param device
@@ -45,49 +59,7 @@ class DeviceService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def delete(Device device) throws SmartHomeException {
-		// si le device est attaché à un agent, on lui envoit un message (si demandé)
-		if (device.agent) {
-			def data = [header: 'delete', device: device]
-			
-			try {
-				agentService.sendMessage(device.agent, data)
-			} catch (Exception e) {
-				log.error("Can't send delete change to agent : ${e.message}")
-			}
-			
-		}
-		
 		device.delete();
-		return device
-	}
-	
-	
-	/**
-	 * Enregistrement d"un device avec envoi message à l'agent
-	 *
-	 * @param device
-	 * @param datas
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def saveAndSendMessage(Device device, Map datas) throws SmartHomeException {
-		log.info "save and send message for device ${device.mac}"
-		
-		this.save(device)
-		
-		// si le device est attaché à un agent, on lui envoit un message (si demandé)
-		if (device.agent) {
-			def data = datas ?: [header: 'config', device: device]
-			
-			try {
-				agentService.sendMessage(device.agent, data)
-			} catch (Exception e) {
-				log.error("Can't send configuration change to agent : ${e.message}")
-			}
-			
-		}
-		
 		return device
 	}
 	
@@ -162,22 +134,22 @@ class DeviceService extends AbstractService {
 		log.info "Invoke action ${actionName} on device ${device.mac}"
 		
 		// instancie le type device pour exécuter l'action
-		def deviceImpl
-		
+		def deviceImpl = device.deviceType.newDeviceType()
+		deviceImpl.device = device
 		device.fetchParams()
+		def context = new WorkflowContext()
 		
 		try {
-			deviceImpl = Class.forName(device.deviceType.implClass).newInstance()
-			deviceImpl.device = device
-			deviceImpl."${actionName}"()
+			deviceImpl."${actionName}"(context)
 		} catch (Exception e) {
 			throw new SmartHomeException("Can't invoke ${actionName} on device ${device.label}")
 		}
 	
 		// traca de l'action
 		device.dateValue = new Date()
+		//agentService.sendMessage(device.agent, [header: 'invokeAction', action: actionName, device: device])
 		
-		return this.saveAndSendMessage(device, [header: 'invokeAction', action: actionName, device: device])
+		return this.save(device)
 	}
 	
 	
@@ -246,4 +218,35 @@ class DeviceService extends AbstractService {
 			order 'dateValue', 'name'
 		}
 	}
+	
+	
+	/**
+	 * Liste les devices d'un user
+	 * 
+	 * @param pagination
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def listByUser(Map pagination, String deviceSearch, boolean filterShow) throws SmartHomeException {
+		def userId = springSecurityService.principal.id
+		def search = QueryUtils.decorateMatchAll(deviceSearch)
+		
+		return Device.createCriteria().list(pagination) {
+			user {
+				idEq(userId)
+			}
+			
+			if (deviceSearch) {
+				or {
+					ilike 'label', search
+					ilike 'groupe', search
+				}
+			}
+			
+			if (filterShow) {
+				eq "show", true
+			}
+		}
+	}
+	
 }

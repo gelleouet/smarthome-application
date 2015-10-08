@@ -28,6 +28,7 @@
 			<g:form class="aui" action="agents">
 				<fieldset>
 					<input autofocus="true" class="text long-field" type="text" placeholder="Modèle ..." name="agentSearch" value="${ agentSearch }"/>
+					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
 		</h4>
@@ -39,6 +40,7 @@
 		        <tr>
 		            <th>Modèle</th>
 		            <th>Mac</th>
+		            <th>Nom</th>
 		            <th>IP privée</th>
 		            <th>IP publique</th>
 		            <th>Dernière connexion</th>
@@ -49,8 +51,9 @@
 		    <tbody>
 		    	<g:each var="bean" in="${ agentInstanceList }">
 			        <tr>
-			            <td>${ bean.agentModel }</td>
+			            <td><g:link action="edit" id="${ bean.id }">${ bean.agentModel }</g:link></td>
 			            <td>${ bean.mac }</td>
+			            <td>${ bean.libelle }</td>
 			            <td>${ bean.privateIp }</td>
 			            <td>${ bean.publicIp }</td>
 			            <td>${ app.formatTimeAgo(date: bean.lastConnexion) }</td>

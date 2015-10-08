@@ -1,15 +1,15 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>
 
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import lims.core.AbstractLimsController;
+import lims.core.ExceptionNavigationHandler;
+import lims.core.QueryUtils;
+import lims.plugin.NavigableAction;
+import lims.plugin.NavigationEnum;
 
 import org.springframework.security.access.annotation.Secured;
 
 @Secured("hasRole('ROLE_ADMIN')")
-class ${className}Controller extends AbstractController {
+class ${className}Controller extends AbstractLimsController {
 
     private static final String COMMAND_NAME = '${propertyName}'
 	
@@ -25,34 +25,17 @@ class ${className}Controller extends AbstractController {
 		"${className}s"
 	])
 	def ${propertyName}s(String ${propertyName}Search) {
-		def ${propertyName}s
-		int recordsTotal
-		def pagination = this.getPagination([:])
-
-		if (${propertyName}Search) {
-			def search = QueryUtils.decorateMatchAll(${propertyName}Search)
-			
-			def query = ${className}.where {
-				// TODO : property1 =~ search || property2 =~ search
-			}
-			${propertyName}s = query.list(pagination)
-			recordsTotal = query.count()
-			
-			/**
-			 * Query by criteria
-			 * 
-			${propertyName}s = ${className}.createCriteria().list(pagination) {
+		def search = QueryUtils.decorateMatchAll(${propertyName}Search)
+		
+		def ${propertyName}s = ${className}.createCriteria().list(this.getPagination([:])) {
+			if (${propertyName}Search) {
 				or {
 					ilike('property1', search)
 					ilike('property2', search)
 				}
-			}			
-			recordsTotal = ${propertyName}s.totalCount
-			*/
-		} else {
-			recordsTotal = ${className}.count()
-			${propertyName}s = ${className}.list(pagination)
-		}
+			}
+		}			
+		def recordsTotal = ${propertyName}s.totalCount
 
 		// ${propertyName}s est accessible depuis le model avec la variable ${propertyName}[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -91,8 +74,8 @@ class ${className}Controller extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		
-		// Compléter le model
-		// TODO
+		// TODO Compléter le model
+		// model.toto = 'toto'
 		
 		// on remplit avec les infos du user
 		model << userModel
@@ -118,12 +101,25 @@ class ${className}Controller extends AbstractController {
 	/**
 	 * Enregistrement d'un nouveau
 	 *
-	 * @param user
+	 * @param ${propertyName}
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "create", modelName = ${className}Controller.COMMAND_NAME)
 	def saveCreate(${className} ${propertyName}) {
 		checkErrors(this, ${propertyName})
+		${propertyName}Service.save(${propertyName})
+		redirect(action: COMMAND_NAME + 's')
+	}
+	
+	
+	/**
+	 * Suppression
+	 *
+	 * @param ${propertyName}
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "${propertyName}s")
+	def delete(${className} ${propertyName}) {
 		${propertyName}Service.save(${propertyName})
 		redirect(action: COMMAND_NAME + 's')
 	}

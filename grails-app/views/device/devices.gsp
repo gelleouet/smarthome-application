@@ -28,6 +28,7 @@
 			<g:form class="aui" action="devices">
 				<fieldset>
 					<input autofocus="true" class="text long-field" type="text" placeholder="Nom, groupe ..." name="deviceSearch" value="${ deviceSearch }"/>
+					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
 		</h4>
@@ -43,6 +44,7 @@
 		            <th>Type</th>
 		            <th>Agent</th>
 		            <th>Dernière MAJ</th>
+		            <th>Visible</th>
 		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
@@ -51,10 +53,7 @@
 			        <tr>
 			            <td>
 			            	<g:link action="edit" id="${bean.id }">
-			            		<g:set var="icon" value="${ bean.icon() }"/>
-								<g:if test="${icon }">
-			            			<asset:image src="${ bean.icon() }" class="device-icon-list"/>
-			            		</g:if>
+			            		<asset:image src="${ bean.deviceType.newDeviceType().icon() }" class="device-icon-list"/>
 			            		${ bean.label }
 			            	</g:link>
 			            </td>
@@ -63,6 +62,7 @@
 			            <td>${ bean.deviceType.libelle }</td>
 			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
 			            <td>${ app.formatTimeAgo(date: bean.dateValue) }</td>
+			            <td>${ bean.show ? 'X' : '' }</td>
 			            <td class="column-1-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">

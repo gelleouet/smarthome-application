@@ -28,6 +28,7 @@
 			<g:form class="aui" action="deviceTypes">
 				<fieldset>
 					<input autofocus="true" class="text long-field" type="text" placeholder="Libellé ..." name="deviceTypeSearch" value="${ deviceTypeSearch }"/>
+					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
 		</h4>
@@ -39,21 +40,16 @@
 		        <tr>
 		            <th>Libellé</th>
 		            <th>Classe</th>
-		            <th>Capteur</th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ deviceTypeInstanceList }">
 			        <tr>
 			            <td><g:link action="deviceType" id="${bean.id }">
-			            	<g:set var="icon" value="${ bean.icon(null) }"/>
-							<g:if test="${icon }">
-		            			<asset:image src="${ bean.icon() }" class="device-icon-list"/>
-		            		</g:if>
+		            		<asset:image src="${ bean.newDeviceType().icon() }" class="device-icon-list"/>
 			            	${ bean.libelle }
 			            </g:link></td>
 			            <td>${ bean.implClass }</td>
-			            <td>${ bean.capteur ? 'X' : '' }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

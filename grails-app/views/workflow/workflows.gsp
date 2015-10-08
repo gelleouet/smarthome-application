@@ -10,13 +10,13 @@
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Permissions</h3>
+		                <h3>Workflows</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
-		        	<g:form>
+		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter une permission" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter un workflow" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -25,9 +25,9 @@
 
 		
 		<h4>
-			<g:form class="aui" action="roles">
+			<g:form class="aui" action="workflowInstances">
 				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher permission" name="roleSearch" value="${ roleSearch }"/>
+					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="workflowSearch" value="${ workflowSearch }"/>
 					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
@@ -38,21 +38,15 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th id="id-nom">Nom</th>
-		            <th id="id-acl">ACL</th>
-		            <th id="id-workflow">Workflow</th>
+		            <th>Nom</th>
+		            <th>Description</th>
 		        </tr>
 		    </thead>
 		    <tbody>
-		    	<g:each var="role" in="${ roleInstanceList }">
+		    	<g:each var="bean" in="${ workflowInstanceInstanceList }">
 			        <tr>
-			            <td headers="id-nom"><g:link action="edit" id="${role.id }">${ role.authority }</g:link></td>
-			            <td headers="id-acl"><g:if test="${ role.acl }">X</g:if></td>
-			            <td headers="id-workflow">
-			            	<g:if test="${ role.workflowAcl }">
-			            		<span class="aui-lozenge aui-lozenge-complete">${role.workflowAcl}</span>
-			            	</g:if>
-			            </td>
+			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
+			            <td>${ bean.description }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

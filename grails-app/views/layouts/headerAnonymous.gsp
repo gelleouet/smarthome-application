@@ -16,9 +16,6 @@
               	<g:link controller="site" action="decouvrir" class="aui-button aui-button-primary">Découvrir</g:link>
               </li>
               <li>
-              	<g:link controller="login" action="index" class="aui-button aui-button-primary">Se connecter</g:link>
-              </li>
-              <li class="desktop-only">
               	<g:form controller="register" action="account">
               		<button class="aui-button aui-button-primary">Créer un compte</button>
               	</g:form>

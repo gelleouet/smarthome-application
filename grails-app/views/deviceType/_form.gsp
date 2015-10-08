@@ -18,12 +18,5 @@
 		<g:textField name="implClass" required="true" value="${deviceType?.implClass}" class="text long-field"/>
 	</div>
 	
-	<div class="field-group">
-		<label for="libelle">
-			Capteur
-			<span class="aui-icon icon-required">*</span>
-		</label>
-		<g:checkBox name="capteur" value="${deviceType?.capteur}"/>
-	</div>
 </fieldset>
 

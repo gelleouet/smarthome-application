@@ -113,8 +113,6 @@ class AgentEndPoint extends Endpoint {
 							def token = agentService.bindWebsocket(session.getId(), message)
 							session.userProperties.token = token
 							sessions.put(token.token, session)
-							// bien faire APRES l'enregistrement de la session dans la queue car sinon le message ne partira pas
-							agentService.sendConfiguration(token)
 							log.info "Bind ${sessions.size()} websockets"
 						} else {
 							// tout est ok pour traiter le message. 

@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.transaction.annotation.Transactional;
 
 import grails.converters.JSON;
+import grails.plugin.springsecurity.SpringSecurityService;
 import grails.transaction.NotTransactional;
 
 /**
@@ -30,6 +31,8 @@ abstract class AbstractService {
 	
 	// auto injecté
 	def rabbitTemplate
+	
+	SpringSecurityService springSecurityService
 	
 	/**
 	 * Envoi d'un message asynchrone AMQP.
@@ -89,6 +92,40 @@ abstract class AbstractService {
 			return new FanoutExchange(name, true, false)
 		} else {
 			return new DirectExchange(name, true, false)
+		}
+	}
+	
+	
+	/**
+	 * Enregistrement d'un domain
+	 *
+	 * @param domain
+	 *
+	 * @return domain
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def save(domain) throws SmartHomeException {
+		if (!domain.save()) {
+			throw new SmartHomeException("Erreur enregistrement domain object", domain);
+		}
+		
+		return domain
+	}
+	
+	
+	/**
+	 * Suppression d'une instance en gérant l'archivage si l'objet hérite de ValidableDomain
+	 * @param domain
+	 * @return
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def delete(domain) {
+		try {
+			// flush direct pour catcher une erreur SQL (ex : clé étrangère) et la renvoyer en SmartHomeException
+			// sinon l'erreur est déclenchée hors méthode
+			domain.delete(flush: true)
+		} catch (Exception ex) {
+			throw new SmartHomeException(ex, domain)
 		}
 	}
 }

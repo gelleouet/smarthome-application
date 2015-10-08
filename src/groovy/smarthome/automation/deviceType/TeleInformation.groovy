@@ -1,4 +1,4 @@
-package smarthome.automation.deviceType.catalogue
+package smarthome.automation.deviceType
 
 import java.util.Map;
 
@@ -26,8 +26,6 @@ class TeleInformation extends AbstractDeviceType {
 			'hchp': 'Total heures pleines (Wh)',
 			'hchc': 'Total heures creuses (Wh)',
 			'papp': 'Puissance apparente (VA)',
-			'hcinst': 'Heures creuses (Wh)',
-			'hpinst': 'Heures pleines (Wh)'
 		]
 	}
 

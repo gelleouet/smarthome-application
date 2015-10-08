@@ -14,6 +14,7 @@ class DeviceController extends AbstractController {
     private static final String COMMAND_NAME = 'device'
 	
 	DeviceService deviceService
+	WorkflowService workflowService
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -25,24 +26,8 @@ class DeviceController extends AbstractController {
 		"Domotique"
 	])
 	def devices(String deviceSearch) {
-		int recordsTotal
-		def search = QueryUtils.decorateMatchAll(deviceSearch)
-		def userId = principal.id
-
-		
-		def devices = Device.createCriteria().list(this.getPagination([:])) {
-			user {
-				idEq(userId)
-			}
-			
-			if (deviceSearch) {
-				or {
-					ilike 'label', search
-					ilike 'groupe', search		
-				}
-			}
-		}
-		recordsTotal = devices.totalCount
+		def devices = deviceService.listByUser(this.getPagination([:]), deviceSearch, false)
+		def recordsTotal = devices.totalCount
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -58,28 +43,11 @@ class DeviceController extends AbstractController {
 	 */
 	@NavigableAction(label = "Périphériques", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(String deviceSearch) {
-		int recordsTotal
-		def userId = principal.id
-		def search = QueryUtils.decorateMatchAll(deviceSearch)
-		
-		def devices = Device.createCriteria().list(this.getPagination([:])) {
-			user {
-				idEq(userId)
-			}
-			
-			if (deviceSearch) {
-				or {
-					ilike 'label', search
-					ilike 'groupe', search
-				}
-			}
-		}
-		
-		recordsTotal = devices.totalCount
+		def devices = deviceService.listByUser([:], deviceSearch, true)
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond devices, model: [recordsTotal: recordsTotal, deviceSearch: deviceSearch]
+		respond devices, model: [deviceSearch: deviceSearch]
 	}
 	
 	
@@ -122,6 +90,13 @@ class DeviceController extends AbstractController {
 		// on remplit avec les infos du user
 		model << userModel
 		
+		return fetchModelEvent(model)
+	}
+	
+	
+	def fetchModelEvent(model) {
+		model.workflows = workflowService.listByUser([:], null)
+		model.devices = deviceService.listByUser([:], null, false)
 		return model
 	}
 	
@@ -136,7 +111,7 @@ class DeviceController extends AbstractController {
 	def saveEdit(Device device) {
 		this.preAuthorize(device)
 		checkErrors(this, device)
-		deviceService.saveAndSendMessage(device, null)
+		deviceService.saveWithEvents(device)
 		redirect(action: COMMAND_NAME + 's')
 	}
 
@@ -152,7 +127,7 @@ class DeviceController extends AbstractController {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
-		deviceService.saveAndSendMessage(device, null)
+		deviceService.saveWithEvents(device)
 		redirect(action: COMMAND_NAME + 's')
 	}
 	
@@ -198,4 +173,30 @@ class DeviceController extends AbstractController {
 	}
 	
 	
+	/**
+	 * Supprime un event en fonction de sa position
+	 * 
+	 * @param device
+	 * @param status
+	 * @return
+	 */
+	def deleteEvent(Device device, Integer status) {
+		device.clearNotPersistEvents()
+		device.events?.removeAll {
+			it.status == status
+		}
+		render(template: 'events', model: fetchModelEvent([device: device]))
+	}
+
+		def addEvent(Device device) {
+		device.clearNotPersistEvents()
+		device.events << new DeviceEvent()
+		render(template: 'events', model: fetchModelEvent([device: device]))
+	}
+	
+	
+	def templateEvents(Device device) {
+		device.clearNotPersistEvents()
+		render(template: 'events', model: fetchModelEvent([device: device]))
+	}
 }

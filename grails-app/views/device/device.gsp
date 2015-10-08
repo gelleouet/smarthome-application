@@ -7,7 +7,7 @@
 	<g:applyLayout name="applicationConfigure">
 		<h3>${ device.id ? 'Périphérique : ' + device.label : 'Nouveau périphérique' } <span id="ajaxSpinner" class="spinner"/></h3>
 		
-		<g:form controller="device" method="post" class="aui">
+		<g:form controller="device" method="post" class="aui" name="device-form">
 			<g:hiddenField name="id" value="${device.id}" />
 	
 			<g:render template="form"/>
@@ -16,8 +16,19 @@
 			
 			<div id="deviceMetadatas">
 				<g:if test="${ device.id }">
-					<g:render template="${ device.viewForm() }" model="[device: device]"/>
+					<g:render template="${ device.deviceType.newDeviceType().viewForm() }" model="[device: device]"/>
 				</g:if>			
+			</div>
+			
+			<h4>Evénements</h4>
+			
+			<br/>
+			<g:submitToRemote class="aui-button" value="Ajouter un événement" url="[action: 'addEvent']" update="deviceEvents"></g:submitToRemote>
+			
+			<div id="deviceEvents" style="margin-top: 10px">
+				<g:if test="${ device.id }">
+					<g:render template="events"/>
+				</g:if>		
 			</div>
 			
 			<br/>

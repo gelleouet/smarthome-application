@@ -18,6 +18,7 @@ class Agent {
 	String privateIp
 	String publicIp
 	String agentModel
+	String libelle
 	Date lastConnexion
 	boolean locked
 	boolean online
@@ -26,6 +27,7 @@ class Agent {
 		mac unique: ['user']
 		privateIp nullable: true
 		publicIp nullable: true
+		libelle nullable: true
     }
 	
 	static mapping = {
@@ -36,7 +38,7 @@ class Agent {
 	
 	static {
 		grails.converters.JSON.registerObjectMarshaller(Agent) {
-			[id: it.id, mac: it.mac, agentModel: it.agentModel, locked: it.locked, online: it.online]
+			[id: it.id, mac: it.mac, agentModel: it.agentModel, locked: it.locked, online: it.online, libelle: it.libelle]
 		}
 	}
 }

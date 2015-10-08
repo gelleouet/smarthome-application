@@ -36,13 +36,10 @@
 						<div class="device-grid-body-content">
 							<div>
 								<div class="device-grid-body-icon">
-									<g:set var="icon" value="${ device.icon() }"/>
-									<g:if test="${ icon }">
-										<asset:image src="${ icon }" class="device-icon-grid"/>
-									</g:if>
+									<asset:image src="${ device.deviceType.newDeviceType().icon() }" class="device-icon-grid"/>
 								</div>
 								<div class="device-grid-body-user">
-									<g:render template="${ device.viewGrid() }" model="[device: device]"></g:render>
+									<g:render template="${ device.deviceType.newDeviceType().viewGrid() }" model="[device: device]"></g:render>
 								</div>
 							</div>
 						</div>

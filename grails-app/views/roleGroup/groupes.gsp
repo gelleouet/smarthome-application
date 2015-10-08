@@ -28,6 +28,7 @@
 			<g:form class="aui" action="groupes">
 				<fieldset>
 					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher groupe" name="groupeSearch" value="${ groupeSearch }"/>
+					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
 		</h4>

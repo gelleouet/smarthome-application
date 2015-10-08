@@ -35,7 +35,7 @@
 	<label for="agent">
 		Agent
 	</label>
-	<g:select name="agent.id" from="${agents}" optionKey="id" optionValue="mac" required="true" value="${device?.agent?.id}" class="select" noSelection="[null: '']"/>
+	<g:select name="agent.id" from="${agents}" optionKey="id" optionValue="${{ it.mac + (it.libelle ? (' (' + it.libelle + ')') : '') }}" required="true" value="${device?.agent?.id}" class="select" noSelection="[null: '']"/>
 </div>
 
 <div class="field-group">
@@ -43,6 +43,13 @@
 		Groupe
 	</label>
 	<g:textField name="groupe" value="${device?.groupe}" class="text long-field"/>
+</div>
+
+<div class="field-group">
+	<label for="show">
+		Visible sur tableau de bord
+	</label>
+	<g:checkBox name="show" value="${device?.show}"/>
 </div>
 
 
