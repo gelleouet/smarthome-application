@@ -13,18 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Ecoute le exchange "smarthome.automation.deviceService.changeValue" pour tout changement de valeur
- * au niveau d'un device et déclenche alors une historisation des valeurs du device
+ * Ecoute le exchange "smarthome.automation.deviceService.changeValue" et filtre les messages
+ * venant uniquement de la méhode "device.invokeAction" pour envoyer un message si nécessaire
+ * à l'agent associé via le websocket
  * 
  * @author gregory
  *
  */
-class DeviceTraceValueRouteBuilder extends RouteBuilder {
+class DeviceInvokeActionRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
 	final String IN_EXCHANGE = "smarthome.automation.deviceService.changeValue"
-	final String IN_QUEUE = "smarthome.automation.deviceService.traceValue"
+	final String IN_QUEUE = "smarthome.automation.deviceService.invokeAction"
 	
 	
 	@Autowired
@@ -47,9 +48,17 @@ class DeviceTraceValueRouteBuilder extends RouteBuilder {
 		from("rabbitmq://$rabbitHostname/$IN_EXCHANGE?queue=$IN_QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true&exchangeType=fanout")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
+		// filtre uniquement les appels du service deviceService.invokeAction
+		.filter().groovy("body.serviceMethodName == 'deviceService.invokeAction'")
 		// recupère le device
 		.setProperty("deviceId").groovy('body.result.id')
 		.setProperty("device").method("deviceService", "findById(property.deviceId)")
-		.to("bean:deviceService?method=traceValue(property.device)")
+		// récupère l'agent associé
+		.setProperty("agent").method("agentService", "findByDevice(property.device)")
+		// filtre les devices sans agent
+		.filter().simple('${property.agent} != null')
+		// construit le message à envoyer
+		.setProperty("data").groovy("[header: 'invokeAction', action: body.arg1, device: exchange.getProperty('device')]")
+		.to("bean:agentService?method=sendMessage(property.agent, property.data)")
 	}
 }

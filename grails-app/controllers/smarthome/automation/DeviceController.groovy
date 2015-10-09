@@ -26,7 +26,8 @@ class DeviceController extends AbstractController {
 		"Domotique"
 	])
 	def devices(String deviceSearch) {
-		def devices = deviceService.listByUser(this.getPagination([:]), deviceSearch, false)
+		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]), 
+			search: deviceSearch, userId: principal.id))
 		def recordsTotal = devices.totalCount
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
@@ -43,7 +44,8 @@ class DeviceController extends AbstractController {
 	 */
 	@NavigableAction(label = "Périphériques", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(String deviceSearch) {
-		def devices = deviceService.listByUser([:], deviceSearch, true)
+		def devices = deviceService.listByUser(new DeviceSearchCommand(search: deviceSearch, 
+			filterShow: true, userId: principal.id))
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -96,7 +98,7 @@ class DeviceController extends AbstractController {
 	
 	def fetchModelEvent(model) {
 		model.workflows = workflowService.listByUser([:], null)
-		model.devices = deviceService.listByUser([:], null, false)
+		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: principal.id))
 		return model
 	}
 	
@@ -141,7 +143,7 @@ class DeviceController extends AbstractController {
 		sinceHour = sinceHour ?: 1
 		this.preAuthorize(device)
 		def datas = deviceService.values(device, sinceHour, null)
-		def chartType = device.defaultChartType()
+		def chartType = device.deviceType.newDeviceType().defaultChartType()
 		def timesAgo = [1: '1 heure', 6: '6 heures', 12: '12 heures', 24: '24 heures']
 		render(view: 'chartView', model: [device: device, sinceHour: sinceHour, chartType: chartType, datas: datas, timesAgo: timesAgo])
 	}

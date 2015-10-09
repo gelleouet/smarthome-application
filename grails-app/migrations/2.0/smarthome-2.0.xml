@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1444429356537-1">
+        <createTable tableName="chart">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chart_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="groupe" type="VARCHAR(255)"/>
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-2">
+        <createTable tableName="chart_device">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chart_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chart_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="function" type="VARCHAR(255)"/>
+            <column name="metavalue" type="VARCHAR(255)"/>
+            <column name="position" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-3">
+        <createTable tableName="device_event">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="condition" type="TEXT"/>
+            <column name="device_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)"/>
+            <column name="triggered_action" type="VARCHAR(255)"/>
+            <column name="triggered_device_id" type="BIGINT"/>
+            <column name="triggeredworkflow_id" type="BIGINT"/>
+            <column name="triggered_workflow_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-4">
+        <createTable tableName="workflow">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="script" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-5">
+        <addColumn tableName="agent">
+            <column name="libelle" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-6">
+        <addColumn tableName="device">
+            <column defaultValue="false" defaultValueBoolean="false" name="show" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-7">
+        <addPrimaryKey columnNames="id" constraintName="chart_device_pkey" tableName="chart_device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-8">
+        <addPrimaryKey columnNames="id" constraintName="chart_pkey" tableName="chart"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-9">
+        <addPrimaryKey columnNames="id" constraintName="device_event_pkey" tableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-10">
+        <addPrimaryKey columnNames="id" constraintName="workflow_pkey" tableName="workflow"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-11">
+        <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="device_event" constraintName="fk_32lrqf0ys62gd10k5tge1mp20" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-12">
+        <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="chart_device" constraintName="fk_35pcbj8yre7q5kqyn42sj0gbw" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-13">
+        <addForeignKeyConstraint baseColumnNames="triggered_device_id" baseTableName="device_event" constraintName="fk_a6jn2r00n4vkt1cbddqunaq1i" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-14">
+        <addForeignKeyConstraint baseColumnNames="triggered_workflow_id" baseTableName="device_event" constraintName="fk_hcjhw7k5rwhcioiopt8lw5n0r" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="workflow"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-15">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="chart" constraintName="fk_kqvlhio8hb7653mcwirs2cu9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-16">
+        <addForeignKeyConstraint baseColumnNames="triggeredworkflow_id" baseTableName="device_event" constraintName="fk_miu3xuj158eb5ss2kdhq4dy58" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="workflow"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-17">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="workflow" constraintName="fk_qhkmwhsklsps2wwxr6j1vbwfm" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-18">
+        <addForeignKeyConstraint baseColumnNames="chart_id" baseTableName="chart_device" constraintName="fk_r3xmuaiat9nrpt0o2w11ct560" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="chart"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-19">
+        <createIndex indexName="chart_user_idx" tableName="chart" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-20">
+        <createIndex indexName="chartdevice_chart_idx" tableName="chart_device" unique="false">
+            <column name="chart_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-21">
+        <createIndex indexName="deviceevent_device_idx" tableName="device_event" unique="false">
+            <column name="device_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-22">
+        <createIndex indexName="workflow_user_idx" tableName="workflow" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1444429356537-23">
+        <dropColumn columnName="capteur" tableName="device_type"/>
+    </changeSet>
+</databaseChangeLog>

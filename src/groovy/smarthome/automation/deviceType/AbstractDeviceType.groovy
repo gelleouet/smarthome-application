@@ -1,9 +1,12 @@
 package smarthome.automation.deviceType
 
 import org.apache.commons.lang.StringUtils;
+
 import java.util.Map;
+
 import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.Device;
+import smarthome.automation.WorkflowEvent;
 
 abstract class AbstractDeviceType {
 	Device device
@@ -57,7 +60,8 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	ChartTypeEnum defaultChartType() {
-		device.deviceType.capteur ? ChartTypeEnum.Line : ChartTypeEnum.Scatter
+		ChartTypeEnum.Line
+		//ChartTypeEnum.Scatter
 	}
 	
 	

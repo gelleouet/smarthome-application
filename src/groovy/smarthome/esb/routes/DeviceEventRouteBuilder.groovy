@@ -13,19 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Prend en charge les messages AMQP de la queue registerService.resetPassowrd.
- * Envoit d'un mail à l'utilisateur contenant un lien avec le token d'identification
- * pour le rediriger vers la page lui demandant son nouveau mot de passe
+ * Ecoute le exchange "smarthome.automation.deviceService.changeValue" et 
+ * déclenche les événements associés au devices
  * 
  * @author gregory
  *
  */
-class AgentReceiveMessageRouteBuilder extends RouteBuilder {
+class DeviceEventRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
-	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "smarthome.automation.agentService.receiveMessage"
+	final String IN_EXCHANGE = "smarthome.automation.deviceService.changeValue"
+	final String IN_QUEUE = "smarthome.automation.deviceService.triggerEvents"
 	
 	
 	@Autowired
@@ -39,16 +38,18 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
-
+		
+		
+		// IMPORTANT : utiliser bridgeEndpoint=true sur le endpoint final RabbitMQ sinon, 
+		// ca tourne en boucle sur la route
+		
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
+		from("rabbitmq://$rabbitHostname/$IN_EXCHANGE?queue=$IN_QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true&exchangeType=fanout")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
-		// extrait les options et les datas
-		.setProperty("header").groovy('body.arg0.data.header')
-		.setProperty("datas").groovy('body.arg0.data')
-		.setProperty("agent").groovy('smarthome.automation.Agent.get(body.result.id)')
-		.choice()
-		.when(simple('${property.header} == "deviceValue"')).to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
+		// recupère le device
+		.setProperty("deviceId").groovy('body.result.id')
+		.setProperty("device").method("deviceService", "findById(property.deviceId)")
+		.to("bean:deviceEventService?method=triggerEvents(property.device)")
 	}
 }

@@ -39,7 +39,6 @@ class AccountRouteBuilder extends RouteBuilder {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
-		String messageDirectory = grailsApplication.config.rabbitmq.messageDirectory
 
 		String smtpHostname = grailsApplication.config.smtp.hostname
 		String smtpPort = grailsApplication.config.smtp.port
@@ -49,7 +48,6 @@ class AccountRouteBuilder extends RouteBuilder {
 		
 		// lecture depuis la queue AMQP
 		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
-		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		.setHeader("to").groovy("body.result.username")

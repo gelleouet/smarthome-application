@@ -41,7 +41,6 @@ class AgentSendMessageRouteBuilder extends RouteBuilder {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
-		String messageDirectory = grailsApplication.config.rabbitmq.messageDirectory
 
 		// ATTENTION : l'envoi des messages passent par le websocket mais dans un cluster seul un serveur est connecté
 		// C'est pour cela qu'une queue est créée pour chaque serveur et seul un serveur répondra au message
@@ -58,7 +57,6 @@ class AgentSendMessageRouteBuilder extends RouteBuilder {
 		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=${queueName}&routingKey=${queueName}&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
 		// garde le message original qui sera envoyé tel quel à l'agent
 		.setProperty("message").simple('${bodyAs(String)}')
-		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		// extrait les options et les datas

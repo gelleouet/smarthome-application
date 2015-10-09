@@ -258,6 +258,10 @@ class AgentService extends AbstractService {
 	def sendMessage(Agent agent, Map data) throws SmartHomeException {
 		log.info "send message to agent ${agent.mac}"
 		
+		if (!agent.attached) {
+			agent.attach()
+		}
+		
 		if (!agent.tokens.size()) {
 			throw new SmartHomeException("Agent not subscribe !")
 		}
@@ -299,4 +303,31 @@ class AgentService extends AbstractService {
 		AgentEndPoint.sendMessage(token, websocketKey, message)
 	}
 	
+	
+	/**
+	 * Utile pour les environnements sans session hibernate automatique
+	 * Ex : Camel ESB
+	 * 
+	 * @param id
+	 * @return
+	 */
+	def findById(Serializable id) {
+		Agent.get(id)
+	}
+	
+	
+	/**
+	 * Utile pour les environnements sans session hibernate automatique
+	 * Ex : Camel ESB
+	 *
+	 * @param device
+	 * @return
+	 */
+	def findByDevice(Device device) {
+		if (!device.attached) {
+			device.attach()
+		}
+		
+		return device.agent
+	}
 }

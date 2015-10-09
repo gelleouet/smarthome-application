@@ -4,7 +4,7 @@
             <th>Description</th>
             <th>Condition</th>
             <th>Device à déclencher</th>
-            <th>Scénarion à déclencher</th>
+            <th>Scénario à déclencher</th>
             <th class="column-1-buttons"></th>
         </tr>
     </thead>
@@ -15,12 +15,15 @@
 	            	<g:field name="events[${status}].libelle" type="text" class="text medium-field" value="${ bean.libelle }"/>
 	            	<g:hiddenField name="events[${status}].status" value="${ status }"/>
 	            	<g:hiddenField name="events[${status}].persist" value="true"/>
+	            	<g:if test="${ bean.id }">
+	            		<g:hiddenField name="events[${status}].id" value="${ bean.id }"/>
+	            	</g:if>
 	            </td>
 	            <td><g:field name="events[${status}].condition" type="text" class="text long-field" value="${ bean.condition }"/></td>
 	            <td>
 	            	<g:select id="triggered-device-select" name="events[${status}].triggeredDevice.id" value="${ bean.triggeredDevice?.id }" from="${ devices }" optionKey="id" optionValue="label" class="select"
 	            		data-url="${ g.createLink(action: 'templateEvents') }" noSelection="[null: '']"></g:select>
-	            	<g:select name="events[${status}].triggeredAction" value="${ bean.triggeredAction }" from="${ bean.triggeredDevice?.deviceType?.newDeviceType()?.events() }" optionKey="id" optionValue="label" class="select"></g:select>
+	            	<g:select name="events[${status}].triggeredAction" value="${ bean.triggeredAction }" from="${ bean.triggeredDevice?.deviceType?.newDeviceType()?.events() }" class="select"></g:select>
 	            </td>
 	            <td><g:select name="events[${status}].triggeredWorkflow.id" value="${ bean.triggeredWorkflow?.id }" from="${ workflows }" optionKey="id" optionValue="label" class="select" noSelection="[null: '']"></g:select></td>
 	            <td class="column-1-buttons command-column">

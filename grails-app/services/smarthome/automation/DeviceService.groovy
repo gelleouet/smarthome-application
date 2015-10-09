@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
@@ -147,7 +149,6 @@ class DeviceService extends AbstractService {
 	
 		// traca de l'action
 		device.dateValue = new Date()
-		//agentService.sendMessage(device.agent, [header: 'invokeAction', action: actionName, device: device])
 		
 		return this.save(device)
 	}
@@ -163,7 +164,10 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void traceValue(Device device) throws SmartHomeException {
 		log.info "Trace value for device ${device.mac}"
-		device.attach()
+		
+		if (!device.attached) {
+			device.attach()
+		}
 		
 		def value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
 		
@@ -227,26 +231,42 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def listByUser(Map pagination, String deviceSearch, boolean filterShow) throws SmartHomeException {
-		def userId = springSecurityService.principal.id
-		def search = QueryUtils.decorateMatchAll(deviceSearch)
+	def listByUser(DeviceSearchCommand command) throws SmartHomeException {
+		def search = QueryUtils.decorateMatchAll(command.search)
 		
-		return Device.createCriteria().list(pagination) {
+		if (!command.userId) {
+			throw new SmartHomeException("userId must be fill !", command)
+		}
+		
+		return Device.createCriteria().list(command.pagination) {
 			user {
-				idEq(userId)
+				idEq(command.userId)
 			}
 			
-			if (deviceSearch) {
+			if (command.search) {
 				or {
 					ilike 'label', search
 					ilike 'groupe', search
 				}
 			}
 			
-			if (filterShow) {
+			if (command.filterShow) {
 				eq "show", true
 			}
+			
+			join "deviceType"
 		}
 	}
 	
+	
+	/**
+	 * Utile pour les environnements sans session hibernate automatique
+	 * Ex : Camel ESB
+	 *
+	 * @param id
+	 * @return
+	 */
+	def findById(Serializable id) {
+		Device.get(id)
+	}
 }

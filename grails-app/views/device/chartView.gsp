@@ -8,7 +8,7 @@
 	<g:applyLayout name="applicationContent">
 	
 		<h2>
-			<asset:image src="${ device.icon() }" class="device-icon-grid"/>
+			<asset:image src="${ device.deviceType.newDeviceType().icon() }" class="device-icon-grid"/>
 			Graphique : ${ device.label }
 		</h2>
 	
@@ -42,7 +42,7 @@
 				<div class="aui-progress-indicator">
 				    <span class="aui-progress-indicator-value"></span>
 				</div>
-				<g:render template="${ device.chartDataTemplate() ?: '/chart/chartDatas' }" model="[label: device.label, datas: datas]"/>
+				<g:render template="${ device.deviceType.newDeviceType().chartDataTemplate() ?: '/chart/chartDatas' }" model="[label: device.label, datas: datas]"/>
 			</div>
 		</form>
 	</g:applyLayout>
