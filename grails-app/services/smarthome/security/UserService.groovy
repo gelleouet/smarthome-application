@@ -18,7 +18,6 @@ import smarthome.security.UserRoleGroup;
  */
 class UserService extends AbstractService {
 
-	def springSecurityService
 	def passwordEncoder
 
 
