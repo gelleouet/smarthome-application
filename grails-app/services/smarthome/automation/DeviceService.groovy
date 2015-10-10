@@ -285,7 +285,7 @@ class DeviceService extends AbstractService {
 		
 		// chargement des associations pour eviter erreur à conversion json
 		// @see static Device JSON.registerObjectMarshaller
-		device.fetchParams()
+		device.metadatas = new ArrayList(device.metadatas)
 		
 		return [header: 'invokeAction', action: invokeAction, 
 			device: device]
