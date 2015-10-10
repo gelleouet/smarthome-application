@@ -269,4 +269,25 @@ class DeviceService extends AbstractService {
 	def findById(Serializable id) {
 		Device.get(id)
 	}
+	
+	
+	/**
+	 * Construit le message à envoyer à un agent pour exécuter une action
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Map invokeActionMessage(Device device, String invokeAction) throws SmartHomeException {
+		if (!device.attached) {
+			device.attach()
+		}
+		
+		// chargement des associations pour eviter erreur à conversion json
+		// @see static Device JSON.registerObjectMarshaller
+		device.metadatas
+		
+		return [header: 'invokeAction', action: invokeAction, 
+			device: device]
+	}
 }

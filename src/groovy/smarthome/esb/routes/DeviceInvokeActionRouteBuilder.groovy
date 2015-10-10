@@ -50,6 +50,7 @@ class DeviceInvokeActionRouteBuilder extends RouteBuilder {
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		// filtre uniquement les appels du service deviceService.invokeAction
 		.filter().groovy("body.serviceMethodName == 'deviceService.invokeAction'")
+		.setProperty("invokeAction").groovy('body.arg1')
 		// recupère le device
 		.setProperty("deviceId").groovy('body.result.id')
 		.setProperty("device").method("deviceService", "findById(property.deviceId)")
@@ -58,7 +59,7 @@ class DeviceInvokeActionRouteBuilder extends RouteBuilder {
 		// filtre les devices sans agent
 		.filter().simple('${property.agent} != null')
 		// construit le message à envoyer
-		.setProperty("data").groovy("[header: 'invokeAction', action: body.arg1, device: exchange.getProperty('device')]")
+		.setProperty("data").method("deviceService", "invokeActionMessage(property.device, property.invokeAction)")
 		.to("bean:agentService?method=sendMessage(property.agent, property.data)")
 	}
 }
