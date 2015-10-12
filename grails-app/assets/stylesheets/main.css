@@ -1,3 +1,7 @@
+.mobile-only {
+	display: none;
+}
+
 .aui-page-panel-sidebar > div {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
@@ -23,8 +27,8 @@
 	border-left-style: solid;
 	border-left-width: 1px;
 	border-left-color: lightgrey;
-	padding-left: 10px;
-	margin-left: 10px;
+	padding-left: 5px;
+	margin-left: 5px;
 }
 
 .footer {
@@ -464,4 +468,9 @@ table tr:hover td.command-column a {
 	color: #333;
 	font-size: 20px;
 	font-weight: 400;
+}
+
+h5.device-grid-label {
+	color: white;
+	cursor: pointer;
 }

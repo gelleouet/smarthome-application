@@ -25,7 +25,9 @@
 				<div class="device-grid">
 					<div class="device-grid-header">
 						<div class="device-grid-header-title">
-							<div>${ device.label }</div>
+							<g:link action="edit" id="${ device.id }" title="Modifier">
+								<h5 class="device-grid-label">${ device.label }</h5>
+							</g:link>
 						</div>
 						<div class="device-grid-header-menu">
 							<div>
@@ -36,16 +38,14 @@
 						<div class="device-grid-body-content">
 							<div>
 								<div class="device-grid-body-icon">
-									<asset:image src="${ device.deviceType.newDeviceType().icon() }" class="device-icon-grid"/>
+									<g:link action="chartView" id="${ device.id }" title="Graphique">
+										<asset:image src="${ device.deviceType.newDeviceType().icon() }" class="device-icon-grid"/>
+									</g:link>
 								</div>
 								<div class="device-grid-body-user">
 									<g:render template="${ device.deviceType.newDeviceType().viewGrid() }" model="[device: device]"></g:render>
 								</div>
 							</div>
-						</div>
-						<div class="device-grid-body-menu">
-							<g:link action="edit" id="${ device.id }" class="aui-button aui-button-subtle" title="Modifier"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span></g:link>
-							<g:link action="chartView" id="${ device.id }" class="aui-button aui-button-subtle" title="Graphique"><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span></g:link>
 						</div>
 					</div>
 				</div>

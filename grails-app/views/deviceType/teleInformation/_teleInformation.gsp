@@ -26,7 +26,7 @@
 	
 	<div style="float:right;font-size:8pt;display:block;" class="separator-left">
 		<span class="aui-lozenge aui-lozenge-subtle">${ device?.value ?: '---' }A / ${ isousc?.value ?: '--' }A</span> 
-		<span class="aui-lozenge aui-lozenge-subtle aui-lozenge-error">Max: ${ imax?.value ?: '---' }A</span>
+		<span class="aui-lozenge aui-lozenge-subtle aui-lozenge-error desktop-only">Max: ${ imax?.value ?: '---' }A</span>
 		<p>
 			<strong>HC : </strong> ${ hchc?.value ?: '---------' } Wh
 			<br/>

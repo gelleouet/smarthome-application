@@ -33,7 +33,7 @@
 <div class="aui-page-panel">
 	<div class="aui-page-panel-inner">
 	
-		<div class="aui-page-panel-nav">
+		<div class="aui-page-panel-nav desktop-only">
 		    <nav class="aui-navgroup aui-navgroup-vertical">
 		        <div class="aui-navgroup-inner">
 		        	
