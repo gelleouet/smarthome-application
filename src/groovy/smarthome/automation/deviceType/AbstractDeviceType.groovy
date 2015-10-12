@@ -91,7 +91,7 @@ abstract class AbstractDeviceType {
 	 * 
 	 * @return
 	 */
-	def events() {
+	final def events() {
 		def events = []
 		
 		getClass().getMethods()?.each { method ->
@@ -101,5 +101,18 @@ abstract class AbstractDeviceType {
 		}
 		
 		return events.sort()
+	}
+	
+	
+	/**
+	 * Prépare les méta données avant enregistrement de celles-ci
+	 * Permet à un type device de transformer ou d'ajouter de nouvelles 
+	 * meta données calculées par exemple. Les nouvelles metadonnées doivent quand
+	 * même être définies dans "metaValuesName" pour être utilisées 
+	 * 
+	 * @return
+	 */
+	def prepareMetaValuesForSave() {
+		
 	}
 }

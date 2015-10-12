@@ -108,4 +108,16 @@ class Device {
 			!it.persist
 		}
 	}	
+	
+	
+	/**
+	 * Construit une instance du device type
+	 * 
+	 * @return
+	 */
+	def newDeviceImpl() {
+		def deviceImpl = deviceType.newDeviceType()
+		deviceImpl.device = this
+		return deviceImpl
+	}
 }

@@ -118,6 +118,14 @@ class DeviceService extends AbstractService {
 			device.addMetavalue(key, value)
 		}
 		
+		// on passe les méta données dans l'implémentation pour transformation ou calcul
+		try {
+			device.newDeviceImpl().prepareMetaValuesForSave()
+		} catch (Exception e) {
+			log.error("Prepare metavalues for device ${device.label}", e)
+		}
+		
+		
 		return this.save(device)
 	}
 	
@@ -136,8 +144,7 @@ class DeviceService extends AbstractService {
 		log.info "Invoke action ${actionName} on device ${device.mac}"
 		
 		// instancie le type device pour exécuter l'action
-		def deviceImpl = device.deviceType.newDeviceType()
-		deviceImpl.device = device
+		def deviceImpl = device.newDeviceImpl()
 		device.fetchParams()
 		def context = new WorkflowContext()
 		

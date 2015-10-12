@@ -13,10 +13,10 @@
 			<br/>
 			
 			<g:if test="${ ptec?.value?.startsWith('HC') }">
-				<span style="font-size:12pt; font-weight:bold;" class="aui-lozenge aui-lozenge-subtle aui-lozenge-success">${ device?.value ?: '---' }A ${ ptec?.value }</span>
+				<span style="font-size:12pt; font-weight:bold;" class="aui-lozenge aui-lozenge-subtle aui-lozenge-success">${ hcinst?.value ?: '----' } Wh ${ ptec?.value }</span>
 			</g:if>
 			<g:else>
-				<span style="font-size:12pt; font-weight:bold;" class="aui-lozenge aui-lozenge-subtle aui-lozenge-error">${ device?.value ?: '---' }A ${ ptec?.value ?: '----' }</span>
+				<span style="font-size:12pt; font-weight:bold;" class="aui-lozenge aui-lozenge-subtle aui-lozenge-error">${ hpinst?.value ?: '----' } Wh ${ ptec?.value ?: '----' }</span>
 			</g:else>
 		</p>
 		
@@ -25,7 +25,7 @@
 	
 	
 	<div style="float:right;font-size:8pt;display:block;" class="separator-left">
-		<span class="aui-lozenge aui-lozenge-subtle">${ isousc?.value ?: '--' }A</span> 
+		<span class="aui-lozenge aui-lozenge-subtle">${ device?.value ?: '---' }A / ${ isousc?.value ?: '--' }A</span> 
 		<span class="aui-lozenge aui-lozenge-subtle aui-lozenge-error">Max: ${ imax?.value ?: '---' }A</span>
 		<p>
 			<strong>HC : </strong> ${ hchc?.value ?: '---------' } Wh

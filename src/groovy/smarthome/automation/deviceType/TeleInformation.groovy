@@ -2,6 +2,8 @@ package smarthome.automation.deviceType
 
 import java.util.Map;
 
+import smarthome.automation.DeviceValue;
+
 /**
  * Périphérique Télé-info EDF
  * 
@@ -19,22 +21,64 @@ import java.util.Map;
  *
  */
 class TeleInformation extends AbstractDeviceType {
+	/**
+	 * @see smarthome.automation.deviceType.AbstractDeviceType.metaValuesName()
+	 */
+	@Override
 	Map metaValuesName() {
 		[
+			'opttarif': 'Option tarifaire',
+			'ptec': 'Période tarifaire',
 			'isousc': 'Instansité souscrite (A)',
 			'imax': 'Instansité maximale (A)',
 			'hchp': 'Total heures pleines (Wh)',
 			'hchc': 'Total heures creuses (Wh)',
 			'papp': 'Puissance apparente (VA)',
+			'hcinst': 'Période heures creuses (Wh)',
+			'hpinst': 'Période heures pleines (Wh)',
 		]
 	}
 
+	
 	/**
-	 * Le template par défaut pour préparer les données du chart
-	 *
-	 * @return
+	 * @see smarthome.automation.deviceType.AbstractDeviceType.chartDataTemplate()
 	 */
+	@Override
 	def chartDataTemplate() {
 		'/deviceType/teleInformation/teleInformationChartDatas'
+	}
+	
+	
+	
+	/**
+	 * @see smarthome.automation.deviceType.AbstractDeviceType.prepateMetaValuesForSave()
+	 */
+	@Override
+	def prepareMetaValuesForSave() {
+		// calcul conso heure creuse sur la période
+		def hc = device.metavalue("hchc")
+		
+		if (hc) {
+			// récupère la dernière valeur hchc
+			def lastHC = DeviceValue.findAllByDeviceAndName(device, "hchc", [sort: "dateValue", order: "desc", max: 1])
+			
+			if (lastHC) {
+				def conso = hc.value.toLong() - lastHC[0].value.toLong()
+				device.addMetavalue("hcinst", conso.toString())
+			}
+		}
+
+		// calcul conso heure pleine sur la période
+		def hp = device.metavalue("hchp")
+		
+		if (hp) {
+			// récupère la dernièer valeur hchc
+			def lastHP = DeviceValue.findAllByDeviceAndName(device, "hchp", [sort: "dateValue", order: "desc", max: 1])
+					
+			if (lastHP) {
+				def conso = hp.value.toLong() - lastHP[0].value.toLong()
+				device.addMetavalue("hpinst", conso.toString())
+			}
+		}
 	}
 }
