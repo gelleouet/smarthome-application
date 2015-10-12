@@ -47,7 +47,8 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 		// extrait les options et les datas
 		.setProperty("header").groovy('body.arg0.data.header')
 		.setProperty("datas").groovy('body.arg0.data')
-		.setProperty("agent").groovy('smarthome.automation.Agent.get(body.result.id)')
+		.setProperty("agentId").groovy('body.result.id')
+		.setProperty("agent").method("agentService", "findById(property.agentId)")
 		.choice()
 		.when(simple('${property.header} == "deviceValue"')).to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
 	}

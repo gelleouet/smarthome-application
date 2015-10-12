@@ -285,7 +285,8 @@ class DeviceService extends AbstractService {
 		
 		// chargement des associations pour eviter erreur à conversion json
 		// @see static Device JSON.registerObjectMarshaller
-		device.metadatas.size()
+		def deviceType = device.deviceType
+		device.metadatas = DeviceMetadata.findAllByDevice(device)
 		
 		return [header: 'invokeAction', action: invokeAction, 
 			device: device]
