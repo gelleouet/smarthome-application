@@ -57,6 +57,7 @@ class TeleInformation extends AbstractDeviceType {
 	def prepareMetaValuesForSave() {
 		// calcul conso heure creuse sur la période
 		def hc = device.metavalue("hchc")
+		device.addMetavalue("hcinst", "0")
 		
 		if (hc) {
 			// récupère la dernière valeur hchc
@@ -70,6 +71,7 @@ class TeleInformation extends AbstractDeviceType {
 
 		// calcul conso heure pleine sur la période
 		def hp = device.metavalue("hchp")
+		device.addMetavalue("hpinst", "0")
 		
 		if (hp) {
 			// récupère la dernièer valeur hchc

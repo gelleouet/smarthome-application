@@ -39,11 +39,11 @@
 							<div>
 								<div class="device-grid-body-icon">
 									<g:link action="chartView" id="${ device.id }" title="Graphique">
-										<asset:image src="${ device.deviceType.newDeviceType().icon() }" class="device-icon-grid"/>
+										<asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-grid"/>
 									</g:link>
 								</div>
 								<div class="device-grid-body-user">
-									<g:render template="${ device.deviceType.newDeviceType().viewGrid() }" model="[device: device]"></g:render>
+									<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device]"></g:render>
 								</div>
 							</div>
 						</div>

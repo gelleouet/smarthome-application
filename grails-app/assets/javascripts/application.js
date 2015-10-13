@@ -9,10 +9,6 @@
 //= require jquery-ui.min-1.11.3
 //= require jquery-picklist.min
 //= require datatables-1.10.2
-//= require jquery.fancytree
-//= require jquery.fancytree.dnd
-//= require jquery.fancytree.wide
-//= require jquery.fancytree.edit
 //= require aui-all-5.7.3
 //= require_full_tree ./user
 //= require_self

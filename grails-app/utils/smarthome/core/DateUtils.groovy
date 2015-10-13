@@ -21,7 +21,17 @@ class DateUtils {
 				} else if (duration.months > 0) {
 					return "${ilya} ${duration.months} mois" 
 				} else if (duration.days > 0) {
-					return "${ilya} ${duration.days} jour${duration.days > 1 ? 's' : ''}" 
+					// cas spécial pour les jours car les mois en année ne sont pas pris en charge
+					if (duration.days > 365) {
+						def annee = (int) duration.days / 365
+						return "${ilya} ${annee} an${annee > 1 ? 's' : ''}"
+					} else if (duration.days > 31) {
+						// pour les mois, on arrondit. on ne tient pas compte du nombre de jours par mois
+						def mois = (int) duration.days / 30 
+						return "${ilya} ${mois} mois"
+					} else {
+						return "${ilya} ${duration.days} jour${duration.days > 1 ? 's' : ''}"
+					}
 				} else if (duration.hours > 0) {
 					return "${ilya} ${duration.hours} heure${duration.hours > 1 ? 's' : ''}" 
 				} else if (duration.minutes > 0) {

@@ -8,7 +8,6 @@
 	}).ajaxStop(function() {
 		$('#ajaxSpinner').fadeOut(200);
 		formatDataTable();
-		fancyTree();
 		ajaxPagination();
 	});
 	
@@ -23,7 +22,6 @@ $( document ).ready(function() {
 	$.fn.dataTable.ext.errMode = 'throw';
 	
 	formatDataTable();
-	fancyTree();
 	ajaxPagination();
 })
 
