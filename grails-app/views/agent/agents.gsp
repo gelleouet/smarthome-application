@@ -45,7 +45,7 @@
 		            <th>IP publique</th>
 		            <th>Dernière connexion</th>
 		            <th>Status</th>
-		            <th class="column-2-buttons"></th>
+		            <th class="column-3-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -71,7 +71,7 @@
 			            		<span class="aui-lozenge">offline</span>
 			            	</g:else>
 			            </td>
-			            <td class="column-2-buttons command-column">
+			            <td class="column-3-buttons command-column">
 			            	<g:if test="${ bean.locked }">
 			            		<g:link class="aui-button aui-button-subtle" title="Activer" action="activer" id="${ bean.id }" params="[actif: true]">
 				            		<span class="aui-icon aui-icon-small aui-iconfont-locked">
@@ -85,6 +85,10 @@
 			            	
 			            	<g:link class="aui-button aui-button-subtle" title="Ajouter un périphérique" action="addDevice" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-add">
+			            	</g:link>
+
+			            	<g:link class="aui-button aui-button-subtle" title="Inclusion" action="startInclusion" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll">
 			            	</g:link>
 			            </td>
 			        </tr>

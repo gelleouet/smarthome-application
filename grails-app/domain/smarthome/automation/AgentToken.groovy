@@ -57,7 +57,7 @@ class AgentToken {
 	 */
 	def refreshToken() {
 		use(TimeCategory) {
-			dateExpiration = new Date() + 2.hours
+			dateExpiration = new Date() + 4.hours
 		}
 		
 		token = UUID.randomUUID()

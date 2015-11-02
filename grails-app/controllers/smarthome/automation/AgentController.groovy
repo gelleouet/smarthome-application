@@ -30,7 +30,7 @@ class AgentController extends AbstractController {
 	 */
 	@Secured("permitAll()")
 	def subscribe(String mac, String username, String applicationKey, String privateIp, String agentModel) {
-		def agent = new Agent(mac: mac, privateIp: privateIp, publicId: request.remoteAddr, agentModel: agentModel)
+		def agent = new Agent(mac: mac, privateIp: privateIp, publicIp: request.remoteAddr, agentModel: agentModel)
 		
 		try {
 			def agentToken = agentService.subscribe(agent, username, applicationKey)
@@ -125,6 +125,19 @@ class AgentController extends AbstractController {
 	def save(Agent agent) {
 		this.preAuthorize(agent)
 		agentService.save(agent)
+		redirect(action: 'agents')
+	}
+	
+	
+	/**
+	 * Démarre l'inclusion sur un agent
+	 * 
+	 * @param agent
+	 * @return
+	 */
+	def startInclusion(Agent agent) {
+		this.preAuthorize(agent)
+		agentService.startInclusion(agent)
 		redirect(action: 'agents')
 	}
 }

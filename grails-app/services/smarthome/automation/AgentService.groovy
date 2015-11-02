@@ -45,6 +45,26 @@ class AgentService extends AbstractService {
 	
 	
 	/**
+	 * Démarre l'inclusion automatique de nouveaux devices sur un agent
+	 * 
+	 * @param agent
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def startInclusion(Agent agent) throws SmartHomeException {
+		if (agent.locked) {
+			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas activé !", agent)
+		}
+		
+		if (!agent.online) {
+			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas connecté !", agent)
+		}
+		
+		this.sendMessage(agent, [header: 'startInclusion'])
+	}
+	
+	
+	/**
 	 * Demande connexion au websocket
 	 * 
 	 * @param mac
