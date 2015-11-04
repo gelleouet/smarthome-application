@@ -14,11 +14,15 @@ class DeviceMetavalue {
 	static belongsTo = [device: Device]
 	
 	String name
+	String label
 	String value
+	String type
 	
 	
     static constraints = {
 		value nullable: true;
+		label nullable: true;
+		type nullable: true;
     }
 	
 	static mapping = {

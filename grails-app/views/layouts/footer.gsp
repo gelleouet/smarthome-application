@@ -10,9 +10,6 @@
 		<a href="http://grails.org/" target="blank" style="padding-left:20px; padding-right:20px;">
 			<asset:image src="grails_logo.png" class="logoFooter"/>
 		</a>
-		<a href="http://spring.io/" target="blank">
-			<asset:image src="springsource.png" class="logoFooter"/>
-		</a>
 		
 		<asset:image src="/gandi-ssl.png" />
 	</div>

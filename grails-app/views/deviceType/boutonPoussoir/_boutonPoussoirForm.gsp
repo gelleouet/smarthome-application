@@ -1,3 +1,5 @@
+<h4>Configuration</h4>
+
 <g:set var="timeout" value="${ device?.metadata('timeout') }"/>
 
 <g:if test="${ timeout?.id }">

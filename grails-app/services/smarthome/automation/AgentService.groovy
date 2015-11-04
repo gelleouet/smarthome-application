@@ -274,7 +274,7 @@ class AgentService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(propagation = Propagation.REQUIRES_NEW)
 	def sendMessage(Agent agent, Map data) throws SmartHomeException {
 		log.info "send message to agent ${agent.mac}"
 		

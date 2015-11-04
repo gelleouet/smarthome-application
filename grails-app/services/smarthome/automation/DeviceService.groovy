@@ -20,6 +20,7 @@ import smarthome.security.User;
 
 class DeviceService extends AbstractService {
 
+	AgentService agentService
 	
 	/**
 	 * Enregistrement d"un device
@@ -49,6 +50,32 @@ class DeviceService extends AbstractService {
 	def saveWithEvents(Device device) throws SmartHomeException {
 		device.clearNotPersistEvents()
 		return this.save(device)
+	}
+
+	
+	/**
+	 * Changement d'une métadata et envoit à l'agent
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def changeMetadata(Device device, String metadataName) throws SmartHomeException {
+		this.save(device)
+		
+		if (device.agent) {
+			def data = [header: 'config', deviceMac: device.mac, metadataName: metadataName,
+				metadataValue: device.metadata(metadataName)?.value]
+			
+			try {
+				agentService.sendMessage(device.agent, data)
+			} catch (Exception e) {
+				log.error("Can't send configuration change to agent : ${e.message}")
+			}
+		}
+		
+		return device
 	}
 
 	
@@ -97,7 +124,8 @@ class DeviceService extends AbstractService {
 				throw new SmartHomeException("Type device (implClass) is empty !")
 			}
 			
-			device = new Device(agent: fetchAgent, user: fetchAgent.user, mac: datas.mac, label: datas.mac, deviceType: deviceType)
+			device = new Device(agent: fetchAgent, user: fetchAgent.user, mac: datas.mac, 
+				label: datas.label ?: datas.mac, deviceType: deviceType)
 		}
 		
 		// insère nouvelle valeur
@@ -114,8 +142,8 @@ class DeviceService extends AbstractService {
 		}
 		
 		// gestion des métavalues
-		datas.metavalues?.each { key, value ->
-			device.addMetavalue(key, value)
+		datas.metavalues?.each { key, values ->
+			device.addMetavalue(key, values)
 		}
 		
 		// on passe les méta données dans l'implémentation pour transformation ou calcul
@@ -125,6 +153,45 @@ class DeviceService extends AbstractService {
 			log.error("Prepare metavalues for device ${device.label}", e)
 		}
 		
+		
+		return this.save(device)
+	}
+	
+	
+	/**
+	 *
+	 * @param agent
+	 * @param datas
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Device changeMetadataFromAgent(Agent agent, def datas) throws SmartHomeException {
+		log.info "change metadata ${datas.mac}"
+		
+		if (!datas.mac) {
+			throw new SmartHomeException("Mac is empty !")
+		}
+		
+		def fetchAgent = Agent.get(agent.id)
+		def device = Device.findByMacAndAgent(datas.mac, fetchAgent)
+		
+		// on tente de le créer auto si on a toutes les infos
+		if (!device) {
+			def deviceType = DeviceType.findByImplClass(datas.implClass)
+			
+			if (!deviceType) {
+				throw new SmartHomeException("Type device (implClass) is empty !")
+			}
+			
+			device = new Device(agent: fetchAgent, user: fetchAgent.user, mac: datas.mac,
+				label: datas.label ?: datas.mac, deviceType: deviceType)
+		}
+		
+		// gestion des metadatas
+		datas.metadatas?.each { key, values ->
+			device.addMetadata(key, values)
+		}
 		
 		return this.save(device)
 	}
@@ -151,6 +218,7 @@ class DeviceService extends AbstractService {
 		try {
 			deviceImpl."${actionName}"(context)
 		} catch (Exception e) {
+			log.error("Runtime execution ${actionName} on device : ${e.message}")
 			throw new SmartHomeException("Can't invoke ${actionName} on device ${device.label}")
 		}
 	

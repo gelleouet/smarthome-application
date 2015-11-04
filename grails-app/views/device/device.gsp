@@ -12,8 +12,6 @@
 	
 			<g:render template="form"/>
 			
-			<h4>Configuration</h4>
-			
 			<div id="deviceMetadatas">
 				<g:if test="${ device.id }">
 					<g:render template="${ device.deviceType.newDeviceType().viewForm() }" model="[device: device]"/>

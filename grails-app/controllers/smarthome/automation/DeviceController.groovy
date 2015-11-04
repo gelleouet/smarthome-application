@@ -117,6 +117,21 @@ class DeviceController extends AbstractController {
 		redirect(action: COMMAND_NAME + 's')
 	}
 
+	
+	/**
+	 * Changement d'une métadata sur le device avec envoi à l'agent
+	 *
+	 * @param device
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
+	def changeMetadata(Device device, String metadataName) {
+		this.preAuthorize(device)
+		checkErrors(this, device)
+		deviceService.changeMetadata(device, metadataName)
+		nop()
+	}
+
 
 	/**
 	 * Enregistrement d'un nouveau

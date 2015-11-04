@@ -16,7 +16,6 @@ class Device {
 	static belongsTo = [agent: Agent, user: User]
 	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
 		events: DeviceEvent]
-	static transients = ['params']
 	
 	String label
 	String groupe
@@ -25,7 +24,12 @@ class Device {
 	Date dateValue
 	DeviceType deviceType
 	boolean show
+	String command
+		
+	static transients = ['params']
+	
 	Map params = [:]
+	
 	
 	
     static constraints = {
@@ -35,6 +39,7 @@ class Device {
 		value nullable: true
 		dateValue nullable: true
 		params bindable: true, nullable: true
+		command nullable: true
     }
 	
 	static mapping = {
@@ -52,7 +57,8 @@ class Device {
 	static {
 		grails.converters.JSON.registerObjectMarshaller(Device) {
 			it.fetchParams()
-			[id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, deviceType: it.deviceType, params: it.params]
+			[id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, 
+				deviceType: it.deviceType, params: it.params, command: it.command]
 		}
 	}
 	
@@ -72,13 +78,13 @@ class Device {
 	
 	
 	/**
-	 * Ajout d'une métadata
+	 * Ajout d'une métavalue
 	 * 
 	 * @param name
 	 * @param value
 	 * @return
 	 */
-	def addMetavalue(String name, String value) {
+	def addMetavalue(String name, Map values) {
 		def meta = metavalue(name)
 		
 		if (!meta) {
@@ -86,7 +92,36 @@ class Device {
 			this.addToMetavalues(meta)
 		}
 		
-		meta.value = value
+		meta.value = values.value
+		if (values.type) {
+			meta.type = values.type
+		}
+		if (values.label) {
+			meta.label = values.label
+		}
+	}
+
+	
+		/**
+	 * Ajout d'une métadata
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	def addMetadata(String name, Map values) {
+		def meta = metadata(name)
+				
+		if (!meta) {
+			meta = new DeviceMetadata(name: name)
+			this.addToMetadatas(meta)
+		}
+		
+		meta.value = values.value
+		meta.type = values.type
+		meta.label = values.label
+		meta.help = values.help
+		meta.values = values.values
 	}
 	
 	
