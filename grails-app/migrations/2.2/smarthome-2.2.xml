@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1446756032499-2">
+        <addColumn tableName="device">
+            <column name="command" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-3">
+        <addColumn tableName="device_metadata">
+            <column name="help" type="text"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-4">
+        <addColumn tableName="device_metadata">
+            <column name="label" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-5">
+        <addColumn tableName="device_metavalue">
+            <column name="label" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-6">
+        <addColumn tableName="device_metadata">
+            <column name="type" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-7">
+        <addColumn tableName="device_metavalue">
+            <column name="type" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1446756032499-8">
+        <addColumn tableName="device_metadata">
+            <column name="values" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
