@@ -40,6 +40,19 @@ class VoletRoulant extends AbstractDeviceType {
 		this.device.command = "off"
 		this.device.value = 0
 	}
+	
+	
+	/**
+	 * Arrête la commande en cours
+	 * Il suffit de renvoyer la même command avec la même valeur
+	 *
+	 * @param context
+	 * @return
+	 */
+	@WorkflowEvent
+	def stop(WorkflowContext context) {
+		
+	}
 
 	
 	/**
