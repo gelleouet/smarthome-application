@@ -4,6 +4,7 @@
 </head>
 
 <body>
+
 	<g:applyLayout name="applicationContent">
 	
 		<g:if test="${ !deviceInstanceList?.size() }">
@@ -17,9 +18,21 @@
 			</div>
 		</g:if>
 	
-		<g:each var="groupe" in="${ deviceInstanceList?.groupBy({ it.groupe })?.sort{ it.key } }">
+		<g:each var="groupe" in="${ deviceInstanceList?.groupBy({ it.groupe })?.sort{ it.key } }" status="statusGroupe">
 			
-			<h3 class="separator">${ groupe.key ?: 'Autres' }</h3>
+			<div class="separator" style="display:table; width:100%">
+				<div style="display:table-cell">
+					<h3>${ groupe.key ?: 'Autres' }</h3>
+				</div>
+				<div style="display:table-cell; text-align:right">
+					<a href="#dropdown-groupe${ statusGroupe }" aria-owns="#dropdown-groupe${ statusGroupe }" aria-haspopup="true" class="aui-button aui-button-subtle aui-dropdown2-trigger aui-style-default"><span class="aui-icon aui-icon-small aui-iconfont-more"></span></a>
+					<div id="#dropdown-groupe${ statusGroupe }" class="aui-dropdown2 aui-style-default">
+						<ul>
+							<li><a><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique du groupe</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
 		
 			<g:each var="device" in="${ groupe.value.sort{ it.label } }">
 				<div class="device-grid">
@@ -41,6 +54,14 @@
 									<g:link action="chartView" id="${ device.id }" title="Graphique">
 										<asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-grid"/>
 									</g:link>
+									
+									<a href="#dropdown-${device.id }" aria-owns="#dropdown-${device.id }" aria-haspopup="true" class="aui-button aui-button-subtle aui-dropdown2-trigger aui-style-default"><span class="aui-icon aui-icon-small aui-iconfont-more"></span></a>
+									<div id="#dropdown-${device.id }" class="aui-dropdown2 aui-style-default">
+										<ul>
+											<li><g:link action="edit" id="${ device.id }" ><span class="aui-icon aui-icon-small aui-iconfont-edit"></span> Modifier</g:link></li>
+											<li><g:link action="chartView" id="${ device.id }" ><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique</g:link></li>
+										</ul>
+									</div>
 								</div>
 								<div class="device-grid-body-user">
 									<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device]"></g:render>

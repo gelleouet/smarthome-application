@@ -8,7 +8,7 @@
 		<g:hiddenField name="value" value="${ device.value }"/>
 
 		<div style="display:table; margin-bottom:15px">
-			<div class="slider" style="height:90px; width:10px; display:table-cell" data-min="0" data-max="100" data-step="25" 
+			<div class="slider volet-roulant" style="height:90px; width:50px; display:table-cell" data-min="0" data-max="100" data-step="25" 
 				data-range="max" data-orientation="vertical" data-element-id="slider-value-${device.id }"
 				data-action-name="level" data-form-id="${ formId }" data-url="${ url }" data-value="${ device.value }">
 			</div>

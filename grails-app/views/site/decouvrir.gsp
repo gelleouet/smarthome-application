@@ -50,8 +50,9 @@
 		<ul>
 			<li>Tout périphérique filaire pouvant être branché sur le port GPIO du Raspberry (Ex : contact sec, interrupteur, etc.)</li>
 			<li>Sondes de température Dallas (protocole One-Wire)</li>
-			<li>Périphériques HomeEasy (433Mhz) (à venir...)</li>
-			<li>Périphériques Z-Wave (à venir...)</li>
+			<li>Périphériques Z-Wave (via un dongle USB)</li>
+			<li>Carte Arduino sur port série</li>
+			<li>Télé-information EDF</li>
 		</ul>
 		
 		<asset:image src="/site/devices-grid.png" style="width: 256px;"/>
@@ -60,9 +61,9 @@
 		<p>Résumé des fonctionnalités :</p>
 		
 		<ul>
-			<li>Des programmes (ou scénarios) permettent de piloter plusieurs périphériques en même temps et de répondre à des événements déclenchés depuis les agents. (à venir...)</li>
+			<li>Des programmes (ou scénarios) permettent de piloter plusieurs périphériques en même temps et de répondre à des événements déclenchés depuis les agents.</li>
 			<li>Graphique à partir des historiques des valeurs</li>
-			<li>Construction de graphiques personnalisés pour combiner plusieurs périphériques et comparer des valeurs (à venir...)</li>
+			<li>Construction de graphiques personnalisés pour combiner plusieurs périphériques et comparer des valeurs</li>
 		</ul>	
 		
 		

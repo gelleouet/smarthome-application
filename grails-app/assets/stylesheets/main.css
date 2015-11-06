@@ -474,3 +474,26 @@ h5.device-grid-label {
 	color: white;
 	cursor: pointer;
 }
+
+.ui-slider-range {
+	background-color: #F5F5F5;
+	background-image: linear-gradient(transparent 50%, rgba(255,255,255,1) 50%);
+	background-size: 10px 10px;
+}
+
+.ui-slider .ui-slider-handle {
+	height: 0.7em;
+	width: 100%;
+	left: -0.1em;
+}
+
+.ui-slider-handle.ui-state-focus.ui-state-active {
+	background-color: #f6f6f6;
+}
+
+.ui-slider-vertical {
+	/* background-image: url(../images/ciel.png);
+	background-repeat: no-repeat;
+	background-size: cover; */
+}
+
