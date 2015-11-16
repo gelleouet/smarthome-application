@@ -117,7 +117,7 @@ class DeviceValue {
 	 * @param last
 	 */
 	static def firstValueByDay(Device device, String metaName = null) {
-		DeviceValue.createCriteria().list(max: 1) {
+		def values = DeviceValue.createCriteria().list(max: 1) {
 			eq "device", device
 			
 			if (metaName) {
@@ -130,6 +130,8 @@ class DeviceValue {
 			
 			order "dateValue", "asc"
 		}
+		
+		return values ? values[0] : null
 	}
 
 	
@@ -141,7 +143,7 @@ class DeviceValue {
 	 * @param last
 	 */
 	static def lastValueByDay(Device device, String metaName = null) {
-		DeviceValue.createCriteria().list(max: 1) {
+		def values = DeviceValue.createCriteria().list(max: 1) {
 			eq "device", device
 			
 			if (metaName) {
@@ -154,6 +156,8 @@ class DeviceValue {
 			
 			order "dateValue", "desc"
 		}
+		
+		return values ? values[0] : null
 	}
 	
 }

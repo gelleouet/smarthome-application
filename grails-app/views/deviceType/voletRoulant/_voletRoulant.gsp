@@ -24,7 +24,7 @@
 				</div>
 				
 				<div style="display:table; padding-top:15px">
-					<p style="font-weight:bold; font-size:18pt; display:table-cell; padding-right:10px; vertical-align:top"><span id="slider-value-${device.id }">${device.value ? device.value.toInteger() : '-' }</span>%</p>
+					<p style="font-weight:bold; font-size:18pt; display:table-cell; padding-right:10px; vertical-align:top"><span id="slider-value-${device.id }">${device.value ? device.value.toDouble().intValue() : '-' }</span>%</p>
 					<div style="display:table-cell; padding-left:10px; vertical-align:top;" class="separator-left">
 						<p style="font-size:8pt">
 						<strong>Energy :</strong> ${ device.metavalueByLabel('Energy')?.value }kWh

@@ -1,11 +1,10 @@
 <%@ page import="smarthome.automation.DeviceValue" %>
 
+
 <div class="device-grid-body-content-large">
 	<g:set var="ptec" value="${  device?.metavalue('ptec') }"/>
 	<g:set var="isousc" value="${  device?.metavalue('isousc') }"/>
 	<g:set var="imax" value="${  device?.metavalue('imax') }"/>
-	<g:set var="hchp" value="${  device?.metavalue('hchp') }"/>
-	<g:set var="hchc" value="${  device?.metavalue('hchc') }"/>
 	<g:set var="papp" value="${  device?.metavalue('papp') }"/>
 	<g:set var="hcinst" value="${  device?.metavalue('hcinst') }"/>
 	<g:set var="hpinst" value="${  device?.metavalue('hpinst') }"/>
@@ -30,13 +29,16 @@
 	<g:set var="first_hchc" value="${ DeviceValue.firstValueByDay(device, 'hchc') }"/>
 	<g:set var="last_hchc" value="${ DeviceValue.lastValueByDay(device, 'hchc') }"/>
 	
+	<g:set var="hchp" value="${ first_hchp?.value && last_hchp?.value ? (last_hchp.value.toDouble().longValue() - first_hchp.value.toDouble().longValue()) / 1000 : 0 }"/>
+	<g:set var="hchc" value="${ first_hchc?.value && last_hchc?.value ? (last_hchc.value.toDouble().longValue() - first_hchc.value.toDouble().longValue()) / 1000 : 0 }"/>
+	
 	<div style="float:right;font-size:8pt;display:block;" class="separator-left">
 		<span class="aui-lozenge aui-lozenge-subtle">${ device?.value ?: '-' }A / ${ isousc?.value ?: '--' }A</span> 
 		<span class="aui-lozenge aui-lozenge-subtle aui-lozenge-error desktop-only">Max: ${ imax?.value ?: '---' }A</span>
 		<p>
-			<strong>HC : </strong> ${ first_hchp?.value && last_hchp?.value ? last_hchp.value.toLong() - first_hchp.value.toLong() : '0' } Wh
+			<strong>HC : </strong> ${ hchc.toDouble().round(1) } kWh
 			<br/>
-			<strong>HP : </strong> ${ first_hchc?.value && last_hchc?.value ? last_hchc.value.toLong() - first_hchc.value.toLong() : '0' } Wh
+			<strong>HP : </strong> ${ hchp.toDouble().round(1) } kWh
 			</p>
 	</div>
 	
