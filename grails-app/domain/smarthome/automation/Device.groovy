@@ -75,6 +75,12 @@ class Device {
 			it.name == name
 		}
 	}
+
+	def metavalueByLabel(String label) {
+		metavalues?.find {
+			it.label?.contains(label)
+		}
+	}
 	
 	
 	/**
