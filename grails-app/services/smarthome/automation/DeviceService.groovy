@@ -40,20 +40,6 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
-	 * Enregistrement d"un device
-	 * 
-	 * @param device
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def saveWithEvents(Device device) throws SmartHomeException {
-		device.clearNotPersistEvents()
-		return this.save(device)
-	}
-
-	
-	/**
 	 * Changement d'une métadata et envoit à l'agent
 	 * 
 	 * @param device

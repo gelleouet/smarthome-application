@@ -16,10 +16,12 @@ class Workflow {
 	String label
 	String description
 	String script
+	Date lastExecution
 	
 	
     static constraints = {
 		description nullable: true
+		lastExecution nullable: true
     }
 	
 	static mapping = {

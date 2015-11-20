@@ -12,32 +12,34 @@ import grails.validation.Validateable;
  */
 @Validateable
 class DeviceEvent {
-	static belongsTo = [device: Device]
-	static transients = ['status', 'persist']
+	static belongsTo = [device: Device, user: User]
+	static hasMany = [triggers: DeviceEventTrigger]
+	
+	Set triggers = []
 	
 	String libelle
-	String condition // script conditionnel
-	Workflow triggeredWorkflow
-	Device triggeredDevice
-	String triggeredAction
-	
-	Integer status
-	boolean persist
+	String condition // script groovy conditionnel
+	boolean actif
+	Date lastEvent
+	String cron
 	
 	
     static constraints = {
-		libelle nullable: true
 		condition nullable: true
-		triggeredWorkflow nullable: true
-		triggeredDevice nullable: true
-		triggeredAction nullable: true
-		status bindable: true, nullable: true
-		persist bindable: true
+		lastEvent nullable: true
+		cron nullable: true
     }
 	
 	static mapping = {
 		device index: "DeviceEvent_Device_Idx"
 		condition type: 'text'
+		triggers cascade: 'all-delete-orphan'
 	}
 	
+	
+	def clearNotPersistTriggers() {
+		triggers?.removeAll {
+			! it.persist
+		}
+	}
 }

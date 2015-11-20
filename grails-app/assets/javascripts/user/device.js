@@ -11,15 +11,6 @@ $(window).on('load', function() {
 
 
 $(window).on('load', function() {
-	$(document).on('click', '#delete-event-button', function() {
-		if (confirm('Voulez-vous continuer ?')) {
-			ajaxSubmitForm($(this), 'data-url', '#device-form', '#deviceEvents');
-		}
-	});
-});
-
-
-$(window).on('load', function() {
 	$(document).on('click', '#commit-metadata-button', function() {
 		if (confirm('Voulez-vous changer la configuration sur le périphérique ?')) {
 			ajaxSubmitForm($(this), 'data-url', '#device-form');
@@ -40,13 +31,6 @@ $(window).on('load', function() {
 	});
 });
 
-
-
-$(window).on('load', function() {
-	$(document).on('change', '#triggered-device-select', function() {
-		ajaxSubmitForm($(this), 'data-url', '#device-form', '#deviceEvents');
-	});
-});
 
 
 $(window).on('load', function() {

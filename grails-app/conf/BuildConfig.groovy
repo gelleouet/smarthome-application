@@ -24,6 +24,8 @@ grails.project.fork = [
 
 camel.version = "2.14.0"
 camel.groupId = "org.apache.camel"
+quartz.version = "2.2.2"
+quartz.groupId = "org.quartz-scheduler"
 
 
 grails.project.dependency.resolver = "maven" // or ivy
@@ -74,6 +76,9 @@ grails.project.dependency.resolution = {
 		compile "$camel.groupId:camel-rabbitmq:$camel.version"
 		compile "$camel.groupId:camel-gson:$camel.version"
 		compile "$camel.groupId:camel-script:$camel.version"
+
+		compile "$quartz.groupId:quartz:$quartz.version"
+		compile "$quartz.groupId:quartz-jobs:$quartz.version"
 	}
 
 	plugins {

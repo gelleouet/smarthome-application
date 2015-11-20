@@ -144,13 +144,6 @@ class Device {
 	}
 
 	
-	def clearNotPersistEvents() {
-		events?.removeAll {
-			!it.persist
-		}
-	}	
-	
-	
 	/**
 	 * Construit une instance du device type
 	 * 

@@ -14,7 +14,6 @@ class DeviceController extends AbstractController {
     private static final String COMMAND_NAME = 'device'
 	
 	DeviceService deviceService
-	WorkflowService workflowService
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -92,13 +91,6 @@ class DeviceController extends AbstractController {
 		// on remplit avec les infos du user
 		model << userModel
 		
-		return fetchModelEvent(model)
-	}
-	
-	
-	def fetchModelEvent(model) {
-		model.workflows = workflowService.listByUser([:], null)
-		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: principal.id))
 		return model
 	}
 	
@@ -113,7 +105,7 @@ class DeviceController extends AbstractController {
 	def saveEdit(Device device) {
 		this.preAuthorize(device)
 		checkErrors(this, device)
-		deviceService.saveWithEvents(device)
+		deviceService.save(device)
 		redirect(action: COMMAND_NAME + 's')
 	}
 
@@ -144,7 +136,7 @@ class DeviceController extends AbstractController {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
-		deviceService.saveWithEvents(device)
+		deviceService.save(device)
 		redirect(action: COMMAND_NAME + 's')
 	}
 	
@@ -187,33 +179,5 @@ class DeviceController extends AbstractController {
 		this.preAuthorize(device)
 		deviceService.delete(device)
 		redirect(action: 'devices')
-	}
-	
-	
-	/**
-	 * Supprime un event en fonction de sa position
-	 * 
-	 * @param device
-	 * @param status
-	 * @return
-	 */
-	def deleteEvent(Device device, Integer status) {
-		device.clearNotPersistEvents()
-		device.events?.removeAll {
-			it.status == status
-		}
-		render(template: 'events', model: fetchModelEvent([device: device]))
-	}
-
-		def addEvent(Device device) {
-		device.clearNotPersistEvents()
-		device.events << new DeviceEvent()
-		render(template: 'events', model: fetchModelEvent([device: device]))
-	}
-	
-	
-	def templateEvents(Device device) {
-		device.clearNotPersistEvents()
-		render(template: 'events', model: fetchModelEvent([device: device]))
 	}
 }

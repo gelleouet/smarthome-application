@@ -10,13 +10,13 @@
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Périphériques</h3>
+		                <h3>Evénements</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un périphérique" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter un événement" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -25,9 +25,9 @@
 
 		
 		<h4>
-			<g:form class="aui" action="devices">
+			<g:form class="aui" action="deviceEvents">
 				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Nom, groupe ..." name="deviceSearch" value="${ deviceSearch }"/>
+					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="deviceEventSearch" value="${ deviceEventSearch }"/>
 					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
@@ -38,30 +38,22 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th>Nom</th>
-		            <th>Groupe</th>
-		            <th>Mac</th>
-		            <th>Type</th>
-		            <th>Agent</th>
-		            <th>Visible</th>
+		            <th>Périphérique</th>
+		            <th>Description</th>
+		            <th>Planification</th>
+		            <th>Dernière exécution</th>
+		            <th>Actif ?</th>
 		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
-		    	<g:each var="bean" in="${ deviceInstanceList }">
+		    	<g:each var="bean" in="${ deviceEventInstanceList }">
 			        <tr>
-			            <td>
-			            	<g:link action="edit" id="${bean.id }">
-			            		<asset:image src="${ bean.deviceType.newDeviceType().icon() }" class="device-icon-list"/>
-			            		${ bean.label }
-			            		<p class="h6">${ app.formatTimeAgo(date: bean.dateValue) }</p>
-			            	</g:link>
-			            </td>
-			            <td>${ bean.groupe }</td>
-			            <td>${ bean.mac }</td>
-			            <td>${ bean.deviceType.libelle }</td>
-			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
-			            <td>${ bean.show ? 'X' : '' }</td>
+			            <td><g:link action="edit" id="${bean.id }">${ bean.device.label }</g:link></td>
+			            <td>${ bean.libelle }</td>
+			            <td>${ bean.cron }</td>
+			            <td>${ app.formatTimeAgo(date: bean.lastEvent) }</td>
+			            <td>${ bean.actif ? 'X' : '' }</td>
 			            <td class="column-1-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">

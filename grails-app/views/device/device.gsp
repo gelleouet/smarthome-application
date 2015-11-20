@@ -18,19 +18,6 @@
 				</g:if>			
 			</div>
 			
-			<h4>Evénements</h4>
-			
-			<br/>
-			<g:submitToRemote class="aui-button" value="Ajouter un événement" url="[action: 'addEvent']" update="deviceEvents"></g:submitToRemote>
-			
-			<h6>Pour chaque événement, il est possible de déclencher un autre device et/ou un scénario en même temps.</h6>
-			
-			<div id="deviceEvents" style="margin-top: 10px">
-				<g:if test="${ device.id }">
-					<g:render template="events"/>
-				</g:if>		
-			</div>
-			
 			<br/>
 	
 			<div class="buttons-container">

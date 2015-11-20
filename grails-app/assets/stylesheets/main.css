@@ -124,6 +124,14 @@ form.aui textarea.script {
 	height: 600px;
 }
 
+
+form.aui textarea.short-script {
+	font-size: 8pt; 
+	width:100%; 
+	max-width: 800px;
+	height: 100px;
+}
+
 form.aui textarea.textarea {
 	width:100%; 
 	max-width: 800px;

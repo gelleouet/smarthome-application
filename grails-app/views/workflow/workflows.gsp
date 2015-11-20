@@ -10,13 +10,13 @@
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Workflows</h3>
+		                <h3>Scénarios</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un workflow" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter un scénario" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -40,13 +40,21 @@
 		        <tr>
 		            <th>Nom</th>
 		            <th>Description</th>
+		            <th>Dernière exécution</th>
+		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
-		    	<g:each var="bean" in="${ workflowInstanceInstanceList }">
+		    	<g:each var="bean" in="${ workflowInstanceList }">
 			        <tr>
 			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
 			            <td>${ bean.description }</td>
+			            <td>${ app.formatTimeAgo(date: bean.lastExecution) }</td>
+			            <td class="column-1-buttons command-column">
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            	</g:link>
+			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>
