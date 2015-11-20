@@ -27,6 +27,8 @@ import smarthome.security.User;
 
 class WorkflowService extends AbstractService {
 
+	DeviceService deviceService
+	
 	/**
 	 * Liste les workflows d'un user
 	 *
@@ -58,7 +60,16 @@ class WorkflowService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def execute(Workflow workflow) throws SmartHomeException {
-		ScriptUtils.runScript(workflow.script, [:])
+	def execute(Workflow workflow, Map context) throws SmartHomeException {
+		// ajoute le service deviceService pour le déclenchement des actions
+		context.deviceService = deviceService
+		
+		def result = ScriptUtils.runScript(workflow.script, context)
+		
+		// trace l'exécution
+		workflow.lastExecution = new Date()
+		workflow.save()
+		
+		return result
 	}
 }

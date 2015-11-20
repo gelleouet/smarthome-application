@@ -85,7 +85,7 @@ class DeviceEventService extends AbstractService {
 		
 		device.events?.each { event ->
 			// n'actionne que les events actifs
-			if (!event.actif) {
+			if (!event.actif || !event.triggers) {
 				return	
 			}
 			
@@ -93,7 +93,7 @@ class DeviceEventService extends AbstractService {
 			
 			// charge une seule fois le contexte
 			if (context == null) {
-				context = this.contextForTrigger(device)
+				context = this.buildContext(device)
 			}
 			
 			// exécute la condition si présente
@@ -115,6 +115,7 @@ class DeviceEventService extends AbstractService {
 					// déclenchement d'un workflow
 					if (trigger.workflow) {
 						log.info "Trigger workflow ${workflow.label} from device ${device.label}"
+						workflowService.execute(trigger.workflow, context)
 					}
 					
 					// déclenchement d'un autre device via une action
@@ -124,8 +125,10 @@ class DeviceEventService extends AbstractService {
 						// exécute le pre-script dans une transaction en lecture seule
 						if (trigger.preScript) {
 							// modifie le contexte pour y rajouter la variable "deviceTrigger"
+							context.triggerDevice = trigger.device
+							
 							DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
-								ScriptUtils.runScript(event.condition, trigger.preScript)
+								ScriptUtils.runScript(trigger.preScript, context)
 							}
 						}
 						
@@ -147,7 +150,7 @@ class DeviceEventService extends AbstractService {
 	 * @param device
 	 * @return
 	 */
-	Map contextForTrigger(Device device) {
+	Map buildContext(Device device) {
 		def context = [:]
 		
 		context.device = device
