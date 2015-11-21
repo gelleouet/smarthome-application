@@ -83,12 +83,12 @@ class DeviceEventService extends AbstractService {
 		
 		def context = null
 		
-		device.events?.each { event ->
-			// n'actionne que les events actifs
-			if (!event.actif || !event.triggers) {
-				return	
-			}
-			
+		// ne prend que les events actifs, non planifiés et avec trigger
+		def events = device.events?.findAll {
+			it.actif && !it.cron && it.triggers
+		}
+		
+		events?.each { event ->
 			def hasTrigger
 			
 			// charge une seule fois le contexte

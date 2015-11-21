@@ -181,3 +181,27 @@ grails.databinding.dateFormats = [
 	'yyyy-MM-dd HH:mm:ss.S',
 	"yyyy-MM-dd'T'hh:mm:ss'Z'"
 ]
+
+quartz.scheduler.instanceName = "SmarthomeQuartzScheduler"
+quartz.scheduler.instanceId = "AUTO"
+quartz.threadPool.class = "org.quartz.simpl.SimpleThreadPool"
+quartz.threadPool.threadCount = 2
+
+quartz.jobStore.isClustered = true
+quartz.jobStore.tablePrefix = "QRTZ _"
+quartz.jobStore.class = "org.quartz.impl.jdbcjobstore.JobStoreTX"
+quartz.jobStore.driverDelegateClass = "org.quartz.impl.jdbcjobstore.PostgreSQLDelegate"
+quartz.jobStore.dataSource = "smarthomeDataSource"
+
+environments {
+	development {
+		quartz.dataSource.smarthomeDataSource.driver = "org.postgresql.Driver"
+		quartz.dataSource.smarthomeDataSource.URL = "jdbc:postgresql://localhost:5432/smarthome"
+		quartz.dataSource.smarthomeDataSource.user = "postgres"
+		quartz.dataSource.smarthomeDataSource.password = "18fhk6vf4d"
+		quartz.dataSource.smarthomeDataSource.maxConnections = 2
+	}
+	production {
+		quartz.dataSource.smarthomeDataSource.jndiURL = "java:comp/env/smartHomeDataSource"
+	}
+}

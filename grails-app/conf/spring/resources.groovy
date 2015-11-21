@@ -1,3 +1,5 @@
+import smarthome.automation.scheduler.DeviceEventCronJob;
+import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.plugin.NavigationItemUtils;
 
 
@@ -20,4 +22,14 @@ beans = {
 	transactionAttributeSource(org.springframework.transaction.annotation.AnnotationTransactionAttributeSource)
 	
 	"defaultGrailsjava.lang.DoubleConverter"(smarthome.core.DoubleValueConverter)
+	
+	// gestionnaire de crons
+	smarthomeScheduler(SmarthomeScheduler) {
+		jobs = [
+			deviceEventCronJob(DeviceEventCronJob) {
+				// toutes les minutes
+				cron = "0 * * * * *"
+			}
+		]
+	}
 }
