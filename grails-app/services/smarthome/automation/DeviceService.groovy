@@ -225,24 +225,35 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void traceValue(Device device) throws SmartHomeException {
 		log.info "Trace value for device ${device.mac}"
+		def value
 		
 		if (!device.attached) {
 			device.attach()
 		}
 		
-		def value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
+		def deviceType = device.newDeviceImpl()
 		
-		if (!value.save()) {
-			throw new SmartHomeException("Erreur trace valeur !", value)
+		// ne trace que si activé sur le device
+		if (deviceType.isTraceValue()) {
+			value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
+			
+			if (!value.save()) {
+				throw new SmartHomeException("Erreur trace valeur !", value)
+			}
 		}
 		
 		// enregistrement des valeurs spécifiques
 		device.metavalues?.each {
 			if (it.value) {
-				value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
+				def metaValuesInfo = deviceType.metaValuesInfo()
 				
-				if (!value.save()) {
-					throw new SmartHomeException("Erreur trace meta valeur !", value)
+				// verifie si le trace est activé pour la metavalue
+				if (metaValuesInfo && metaValuesInfo[it.name] && metaValuesInfo[it.name].trace) {
+					value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
+					
+					if (!value.save()) {
+						throw new SmartHomeException("Erreur trace meta valeur !", value)
+					}
 				}
 			}
 		}

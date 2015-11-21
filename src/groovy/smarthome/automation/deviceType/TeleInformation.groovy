@@ -7,16 +7,6 @@ import smarthome.automation.DeviceValue;
 /**
  * Périphérique Télé-info EDF
  * 
- * <g:set var="opttarif" value="${  device?.metavalue('opttarif') }"/>
-<g:set var="ptec" value="${  device?.metavalue('ptec') }"/>
-<g:set var="isousc" value="${  device?.metavalue('isousc') }"/>
-<g:set var="imax" value="${  device?.metavalue('imax') }"/>
-<g:set var="hchp" value="${  device?.metavalue('hchp') }"/>
-<g:set var="hchc" value="${  device?.metavalue('hchc') }"/>
-<g:set var="papp" value="${  device?.metavalue('papp') }"/>
-<g:set var="hcinst" value="${  device?.metavalue('hcinst') }"/>
-<g:set var="hpinst" value="${  device?.metavalue('hpinst') }"/>
- * 
  * @author gregory
  *
  */
@@ -25,17 +15,18 @@ class TeleInformation extends AbstractDeviceType {
 	 * @see smarthome.automation.deviceType.AbstractDeviceType.metaValuesName()
 	 */
 	@Override
-	Map metaValuesName() {
+	Map metaValuesInfo() {
 		[
-			'opttarif': 'Option tarifaire',
-			'ptec': 'Période tarifaire',
-			'isousc': 'Instansité souscrite (A)',
-			'imax': 'Instansité maximale (A)',
-			'hchp': 'Total heures pleines (Wh)',
-			'hchc': 'Total heures creuses (Wh)',
-			'papp': 'Puissance apparente (VA)',
-			'hcinst': 'Période heures creuses (Wh)',
-			'hpinst': 'Période heures pleines (Wh)',
+			'opttarif': [label: 'Option tarifaire', trace: false],
+			'ptec': [label: 'Période tarifaire', trace: false],
+			'isousc': [label: 'Instansité souscrite (A)', trace: false],
+			'imax': [label: 'Instansité maximale (A)', trace: false],
+			'hchp': [label: 'Total heures pleines (Wh)', trace: true],
+			'hchc': [label: 'Total heures creuses (Wh)', trace: true],
+			'papp': [label: 'Puissance apparente (VA)', trace: false],
+			'hcinst': [label: 'Période heures creuses (Wh)', trace: true],
+			'hpinst': [label: 'Période heures pleines (Wh)', trace: true],
+			'adps' : [label: 'Avertissement Dépassement Puissance Souscrite (A)', trace: false]
 		]
 	}
 

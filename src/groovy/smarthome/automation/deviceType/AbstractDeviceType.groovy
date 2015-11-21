@@ -70,7 +70,7 @@ abstract class AbstractDeviceType {
 	 * 
 	 * @return Map. key = metavalue name, value = metavalue label
 	 */
-	Map metaValuesName() {
+	Map metaValuesInfo() {
 		[:]
 	}
 	
@@ -114,5 +114,16 @@ abstract class AbstractDeviceType {
 	 */
 	def prepareMetaValuesForSave() {
 		
+	}
+	
+	
+	/**
+	 * Indique si le device doit tracer sa valeur principale
+	 * Par défaut true. C'est à chaque device qui ne le veut pas de retourner faux
+	 * 
+	 * @return
+	 */
+	boolean isTraceValue() {
+		return true
 	}
 }

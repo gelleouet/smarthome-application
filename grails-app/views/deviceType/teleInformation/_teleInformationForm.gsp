@@ -7,7 +7,6 @@
 <g:set var="papp" value="${  device?.metavalue('papp') }"/>
 <g:set var="hcinst" value="${  device?.metavalue('hcinst') }"/>
 <g:set var="hpinst" value="${  device?.metavalue('hpinst') }"/>
-<g:set var="hpinst" value="${  device?.metavalue('hpinst') }"/>
 <g:set var="adps" value="${  device?.metavalue('adps') }"/>
 
 <h4>Valeurs</h4>
