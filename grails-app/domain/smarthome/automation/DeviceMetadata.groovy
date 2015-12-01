@@ -32,5 +32,6 @@ class DeviceMetadata {
 	static mapping = {
 		device index: "DeviceMetadata_Device_Idx"
 		help type: 'text'
+		values type: 'text'
 	}
 }

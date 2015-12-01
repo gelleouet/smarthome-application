@@ -46,6 +46,14 @@
 </div>
 
 <div class="field-group">
+	<label for="groupe" title="API : device.value">
+		Valeur principale
+	</label>
+	<g:textField name="value" value="${device?.value}" class="text medium-field" disabled="true"/>
+	<div class="description">${ app.formatTimeAgo(date: device.dateValue) }</div>
+</div>
+
+<div class="field-group">
 	<label for="show">
 		Visible sur tableau de bord
 	</label>

@@ -9,7 +9,7 @@
 <g:hiddenField name="metadatas[0].name" value="timeout"/>
 
 <div class="field-group">
-	<label>
+	<label title="API : device.metadata('timeout')?.value">
 		Timeout (en millisecondes)
 		<span class="aui-icon icon-required">*</span>
 	</label>

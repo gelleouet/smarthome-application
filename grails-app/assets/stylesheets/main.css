@@ -188,7 +188,7 @@ tr.incluNorme td {
 
 
 .chart-grid-header {
-	background-color: #3b73af;
+	background-color: #205081;
 	color: white;
 	font-weight: bold;
 	padding: 2px;
@@ -196,7 +196,7 @@ tr.incluNorme td {
 }
 
 .device-grid-header {
-	background-color: #3b73af;
+	background-color: #205081;
 	color: white;
 	font-weight: bold;
 	padding: 2px;
@@ -294,7 +294,7 @@ tr.incluNorme td {
 .widget-header {
 	border-top-right-radius: 5px;
 	padding: 6px;
-	background-color: #3b73af;
+	background-color: #205081;
 	cursor: move;
 }
 

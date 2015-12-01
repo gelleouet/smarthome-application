@@ -5,7 +5,7 @@
 	</g:if>
 	
 	<div class="field-group">
-		<label title="ID : ${ metadata.name }">
+		<label title="API : device.metavalue('${ metadata.name }')?.value">
 			${ metadata.label}
 		</label>
 		<g:textField name="metavalues[${ status }].value" value="${ metadata.value }" class="text long-field" disabled="true"/>

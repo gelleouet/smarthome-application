@@ -9,7 +9,7 @@
 <g:hiddenField name="metadatas[0].name" value="orientation"/>
 
 <div class="field-group">
-	<label title="ID : orientation">
+	<label title="API : device.metadata('orientation')?.value">
 		Orientation
 	</label>
 	<g:select name="metadatas[0].value" value="${ orientation?.value }" class="select" from="${smarthome.automation.PointCardinalEnum.values()}"

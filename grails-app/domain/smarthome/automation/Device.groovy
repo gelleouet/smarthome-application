@@ -78,7 +78,7 @@ class Device {
 
 	def metavalueByLabel(String label) {
 		metavalues?.find {
-			it.label?.contains(label)
+			it.label?.toLowerCase()?.contains(label.toLowerCase())
 		}
 	}
 	
