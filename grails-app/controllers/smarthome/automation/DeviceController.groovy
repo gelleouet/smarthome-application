@@ -3,6 +3,7 @@ package smarthome.automation
 import org.springframework.security.access.annotation.Secured;
 
 import smarthome.core.AbstractController;
+import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction;
@@ -14,6 +15,7 @@ class DeviceController extends AbstractController {
     private static final String COMMAND_NAME = 'device'
 	
 	DeviceService deviceService
+	ChartService chartService
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -146,13 +148,26 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def chartView(Device device, Long sinceHour) {
-		sinceHour = sinceHour ?: 1
+	def chartView(Device device, Long sinceHour, Long offsetHour) {
 		this.preAuthorize(device)
-		def datas = deviceService.values(device, sinceHour, null)
+		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
+		offsetHour = offsetHour ?: 0
+		
+		if (params.offsetStep == 'prev') {
+			offsetHour++
+		} else if (params.offsetStep == 'next' && offsetHour > 0) {
+			offsetHour--
+		}
+		
+		// calcul plage date
+		def period = DateUtils.durationToDates(sinceHour, offsetHour)
+		def datas = deviceService.values(device, period.start, period.end, null)
+		
 		def chartType = device.deviceType.newDeviceType().defaultChartType()
-		def timesAgo = [1: '1 heure', 6: '6 heures', 12: '12 heures', 24: '24 heures']
-		render(view: 'chartView', model: [device: device, sinceHour: sinceHour, chartType: chartType, datas: datas, timesAgo: timesAgo])
+		def timesAgo = chartService.timesAgo()
+		render(view: 'chartView', model: [device: device, sinceHour: sinceHour, 
+			chartType: chartType, datas: datas, timesAgo: timesAgo,
+			offsetHour: offsetHour, startDate: period.start, endDate: period.end])
 	}
 	
 	

@@ -12,18 +12,26 @@
 			Graphique : ${ device.label }
 		</h2>
 	
+		<h5>Du ${ startDate.format('EEEE dd/MM/yyyy HH:mm:ss') } au ${ endDate.format('EEEE dd/MM/yyyy HH:mm:ss') }</h5>
+	
 		<form class="aui">
 		
 			<g:hiddenField id="sinceHour" name="sinceHour" value="${ sinceHour }"/>
+			<g:hiddenField id="offsetHour" name="offsetHour" value="${ offsetHour }"/>
+			<g:hiddenField id="offsetStep" name="offsetStep" value=""/>
 		
 			<div class="aui-toolbar2">
 			    <div class="aui-toolbar2-inner">
 			        <div class="aui-toolbar2-primary">
 			        	<div class="aui-buttons">
+			        		<button class="aui-button" onclick="chartPrev();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-left">View</span></button>
+			        		<button class="aui-button" onclick="chartNext();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right">View</span></button>
+			        	</div>
+			        	
+			        	<div class="aui-buttons">
 			        		<g:each var="timeAgo" in="${ timesAgo }">
-			        			<g:actionSubmit value="${ timeAgo.value }" class="aui-button ${ sinceHour == timeAgo.key ? 'aui-button-primary' : '' }" action="chartView" onclick="jQuery('#sinceHour').val('${ timeAgo.key }')"/>
+			        			<g:actionSubmit value="${ timeAgo.value }" class="aui-button ${ sinceHour == timeAgo.key ? 'aui-button-primary' : '' }" action="chartView" onclick="chartTimeAgo('${ timeAgo.key }')"/>
 			        		</g:each>
-			            	
 			            </div>
 			        </div>
 			        

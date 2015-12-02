@@ -59,6 +59,22 @@ function buildGoogleChart(divChart) {
 }
 
 
+function chartTimeAgo(timeAgo) {
+	$('#sinceHour').val(timeAgo);
+	$('#offsetHour').val('');
+}
+
+
+function chartPrev() {
+	$('#offsetStep').val('prev');
+}
+
+
+function chartNext() {
+	$('#offsetStep').val('next');
+}
+
+
 
 
 

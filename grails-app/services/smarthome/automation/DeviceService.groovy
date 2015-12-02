@@ -269,29 +269,53 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	List<DeviceValue> values(Device device, Long sinceHour, String name) throws SmartHomeException {
-		log.info "Load trace values for ${device.mac} since ${sinceHour} hours"
+	def values(Device device, Date start, Date end, String name, DataModifierEnum projection = null) throws SmartHomeException {
+		log.info "Load trace values for ${device.mac} from ${start} to ${end}"
+		def dayDuration = 0
 		
-		Date now = new Date()
-		TimeDuration duration = new TimeDuration(sinceHour.toInteger(), 0, 0, 0)
-		
-		use(TimeCategory) {
-			now = now - duration	
+		use(groovy.time.TimeCategory) {
+			dayDuration = end - start
 		}
 		
-		DeviceValue.createCriteria().list {
-			eq 'device', device
-			ge 'dateValue', now
-			
-			if (name) {
-				if (name == '') {
-					isNull 'name'
-				} else {
-					eq 'name', name
+		// projections automatiques pour les longues périodes (> 1 jour)
+		// pour éviter trop de volumes de données
+		if (!projection && dayDuration.days > 1) {
+			return DeviceValue.createCriteria().list {
+				eq 'device', device
+				between 'dateValue', start, end
+				
+				if (name) {
+					if (name == '') {
+						isNull 'name'
+					} else {
+						eq 'name', name
+					}
 				}
+				
+				projections {
+					max(value)
+					min(value)
+					avg(value)
+					count(value)
+				}
+				
+				order 'dateValue', 'name'
 			}
-			
-			order 'dateValue', 'name'
+		} else {
+			return DeviceValue.createCriteria().list {
+				eq 'device', device
+				between 'dateValue', start, end
+				
+				if (name) {
+					if (name == '') {
+						isNull 'name'
+					} else {
+						eq 'name', name
+					}
+				}
+				
+				order 'dateValue', 'name'
+			}
 		}
 	}
 	

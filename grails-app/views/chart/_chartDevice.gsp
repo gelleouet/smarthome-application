@@ -22,8 +22,8 @@
 	            </td>
 	            
 	            <td><g:select name="devices[${ status }].chartType" from="${ chartTypes }" required="true" value="${ device.chartType }" class="select"/></td>
-	            <td><g:select name="devices[${ status }].metavalue" from="${ device.device?.metaValuesName() }" value="${ device.metavalue }" 
-	            	optionKey="key" optionValue="value" class="select" noSelection="[null: 'Valeur par défaut']"/></td>
+	            <td><g:select name="devices[${ status }].metavalue" from="${ device.device?.newDeviceImpl()?.metaValuesInfo()?.findAll{ it.value.trace } }" value="${ device.metavalue }" 
+	            	optionKey="key" optionValue="${ {it.value.label} }" class="select" noSelection="[null: 'Valeur par défaut']"/></td>
 	            <td><g:select name="devices[${ status }].function" from="${ functions }" value="${ device.function }" class="select" noSelection="[null: '']"/></td>
 	            <td class="column-1-buttons command-column">
 	            	<a id="delete-chart-device" class="aui-button aui-button-subtle" title="Supprimer"

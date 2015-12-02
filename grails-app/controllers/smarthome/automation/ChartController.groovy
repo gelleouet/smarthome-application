@@ -3,6 +3,7 @@ package smarthome.automation
 
 
 import smarthome.core.AbstractController;
+import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction;
@@ -96,13 +97,19 @@ class ChartController extends AbstractController {
 	 * @return
 	 */
 	
-	def chartView(Chart chart, Long sinceHour) {
+	def chartView(Chart chart, Long sinceHour, Long offsetHour) {
 		this.preAuthorize(chart)
-		def timesAgo = [1: '1 heure', 6: '6 heures', 12: '12 heures', 24: '24 heures']
-		sinceHour = sinceHour ?: 1
-		def datas = chartService.values(chart, sinceHour = sinceHour ?: 1)
+		def timesAgo = chartService.timesAgo()
+		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
+		offsetHour = offsetHour ?: 0
+		
+		// calcul plage date
+		def period = DateUtils.durationToDates(sinceHour, offsetHour)
+		def datas = chartService.values(chart, period.start, period.end)
+		
 		render(view: 'chartView', model: [chart: chart, timesAgo: timesAgo, sinceHour: sinceHour, datas: datas,
-			chartType: ChartTypeEnum.valueOf(chart.chartType)])
+			chartType: ChartTypeEnum.valueOf(chart.chartType), offsetHour: offsetHour,
+			startDate: period.start, endDate: period.end])
 	}
 	
 	
@@ -113,10 +120,18 @@ class ChartController extends AbstractController {
 	 * @param sinceHour
 	 * @return
 	 */
-	def chartPreview(Chart chart, Long sinceHour) {
+	def chartPreview(Chart chart, Long sinceHour, Long offsetHour) {
 		this.preAuthorize(chart)
-		def datas = chartService.values(chart, sinceHour = sinceHour ?: 1) 
-		render(template: '/chart/chartDatasMap', model: [label: chart.label, datas: datas])
+		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
+		offsetHour = offsetHour ?: 0
+		
+		// calcul plage date
+		def period = DateUtils.durationToDates(sinceHour, offsetHour)
+		def datas = chartService.values(chart, period.start, period.end)
+		
+		render(template: '/chart/chartDatasMap', model: [label: chart.label, datas: datas,
+			offsetHour: offsetHour, sinceHour: sinceHour, 
+			startDate: period.start, endDate: period.end])
 	}
 
 	/**

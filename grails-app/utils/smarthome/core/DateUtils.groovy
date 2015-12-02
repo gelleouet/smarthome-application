@@ -1,5 +1,8 @@
 package smarthome.core
 
+import groovy.time.TimeCategory;
+import groovy.time.TimeDuration;
+
 class DateUtils {
 	/**
 	 * Formatte une date avec le format "Il y a ...."
@@ -43,5 +46,32 @@ class DateUtils {
 		} else {
 			return null
 		}
+	}
+	
+	
+	/**
+	 * Renvoit dans la map la date debut (start) et la date fin (end)
+	 * 
+	 * @param sinceHour
+	 * @param offsetHour
+	 * @return
+	 */
+	static Map durationToDates(Long sinceHour, Long offsetHour) {
+		Date end = new Date()
+		Date start
+		Map map = [:]
+		
+		TimeDuration endDuration = new TimeDuration(sinceHour.toInteger() * offsetHour.toInteger(), 0, 0, 0)
+		TimeDuration duration = new TimeDuration(sinceHour.toInteger(), 0, 0, 0)
+		
+		use(TimeCategory) {
+			end = end - endDuration
+			start = end - duration
+		}
+		
+		map.end = end
+		map.start = start
+		
+		return map
 	}
 }

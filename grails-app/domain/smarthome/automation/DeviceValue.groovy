@@ -20,6 +20,12 @@ class DeviceValue {
 	// si un seul type, ne rien mettre
 	String name 
 	
+	// Infos sur la date pour effectuer des regroupempents en base
+	Integer dayOfYear
+	Integer weekOfYear
+	Integer monthOfYear
+	Integer hourOfDay
+	
 	
     static constraints = {
 		name nullable: true
@@ -29,6 +35,11 @@ class DeviceValue {
 		name index: "DeviceValue_DeviceName_Idx"
 		device index: "DeviceValue_DeviceName_Idx"
 		dateValue index: "DeviceValue_DeviceName_Idx"
+		
+		hourOfDay formula: 'extract(hour from date_value)'
+		dayOfYear formula: 'extract(doy from date_value)'
+		weekOfYear formula: 'extract(week from date_value)'
+		monthOfYear formula: 'extract(month from date_value)'
 	}
 	
 	
