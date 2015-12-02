@@ -169,6 +169,8 @@ tr.incluNorme td {
 	min-width: 180px;
 	min-height: 90px;
 	display: inline-block;
+	box-shadow: 2px 2px 12px #555;
+	vertical-align: top;
 }
 
 
@@ -179,6 +181,7 @@ tr.incluNorme td {
 	width: 600px;
 	height: 400px;
 	display: inline-block;
+	box-shadow: 2px 2px 12px #555;
 }
 
 .chart-grid-header-title {

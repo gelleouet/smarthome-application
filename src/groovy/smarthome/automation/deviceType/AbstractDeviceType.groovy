@@ -49,7 +49,7 @@ abstract class AbstractDeviceType {
 	 * 
 	 * @return
 	 */
-	final def icon() {
+	def icon() {
 		"/deviceType/${name}.png"
 	}
 	

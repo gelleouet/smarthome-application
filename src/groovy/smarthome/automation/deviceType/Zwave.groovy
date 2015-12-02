@@ -21,4 +21,9 @@ class Zwave extends AbstractDeviceType {
 	def send(WorkflowContext context) {
 		
 	}
+
+	@Override
+	public Object icon() {
+		"/deviceType/signal.png"
+	}
 }

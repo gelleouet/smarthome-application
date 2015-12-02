@@ -16,6 +16,11 @@ import smarthome.automation.WorkflowEvent;
  */
 class BoutonPoussoir extends AbstractDeviceType {
 	
+	@Override
+	public Object icon() {
+		"/deviceType/boutonOnOff.png"
+	}
+
 	/**
 	 * Envoit une valeur ON juste pendant 1 seconde avant de renvoyer une valeur OFF
 	 * 

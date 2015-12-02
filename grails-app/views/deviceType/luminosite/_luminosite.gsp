@@ -9,7 +9,7 @@
 	
 	<div style="display:table-cell; padding-left:10px;; vertical-align:top" class="separator-left">
 		<p style="font-size:8pt">
-		<span style="color:#815b3a"><strong>Min :</strong> ${ values?.min ?: '-' }Lux</span>
+		<span style="color:black"><strong>Min :</strong> ${ values?.min ?: '-' }Lux</span>
 		<br/>
 		<span style="color:#f6c342"><strong>Max :</strong> ${ values?.max ?: '-' }Lux</span>
 		</p>
