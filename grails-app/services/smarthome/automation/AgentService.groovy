@@ -130,6 +130,8 @@ class AgentService extends AbstractService {
 			if (!agent.save()) {
 				throw new SmartHomeException("Auto-created agent not activated !")
 			}
+			
+			return null
 		}
 		
 		// on y glisse l'url du websocket en gérant le SSL ou pas
