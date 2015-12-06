@@ -16,10 +16,10 @@
 	            		<g:hiddenField name="triggers[${status}].id" value="${ bean.id }"/>
 	            	</g:if>
 	            	
+	            	<g:textField name="triggers[${status}].preScript" value="${ bean.preScript }" class="text long-field" placeholder="Script Groovy conditionnel"/>
 	            	<g:select id="triggered-device-select" name="triggers[${status}].device.id" value="${ bean.device?.id }" from="${ devices }" optionKey="id" optionValue="label" class="select"
 	            		data-url="${ g.createLink(action: 'templateTriggers') }" noSelection="[null: '']"></g:select>
 	            	<g:select name="triggers[${status}].actionName" value="${ bean.actionName }" from="${ bean.device?.deviceType?.newDeviceType()?.events() }" class="select"></g:select>
-	            	<g:textField name="triggers[${status}].preScript" value="${ bean.preScript }" class="text long-field" placeholder="Pré-script Groovy sur périphérique actionné"/>
 	            </td>
 	            <td><g:select name="triggers[${status}].workflow.id" value="${ bean.workflow?.id }" from="${ workflows }" optionKey="id" optionValue="label" class="select" noSelection="[null: '']"></g:select></td>
 	            <td class="column-1-buttons command-column">

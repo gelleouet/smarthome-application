@@ -121,6 +121,7 @@ class DeviceEventService extends AbstractService {
 					// déclenchement d'un autre device via une action
 					if (trigger.device && trigger.actionName) {
 						log.info "Trigger device ${trigger.device.label}->${trigger.actionName} from device ${device.label}"
+						def runScript = true
 						
 						// exécute le pre-script dans une transaction en lecture seule
 						if (trigger.preScript) {
@@ -128,11 +129,15 @@ class DeviceEventService extends AbstractService {
 							context.triggerDevice = trigger.device
 							
 							DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
-								ScriptUtils.runScript(trigger.preScript, context)
+								runScript = ScriptUtils.runScript(trigger.preScript, context)
 							}
 						}
 						
-						deviceService.invokeAction(trigger.device, trigger.actionName)
+						// si le script ne renvoit pas boolean, on l'exécute 
+						// sinon on tient compte de la valeur du boolean
+						if (!(runScript instanceof Boolean) || runScript) {
+							deviceService.invokeAction(trigger.device, trigger.actionName)
+						}
 					}
 				}
 				

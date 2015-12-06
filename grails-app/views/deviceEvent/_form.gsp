@@ -56,7 +56,7 @@
 	<div class="description">Expression Groovy renvoyant en dernière instruction un boolean. Variables pré-définies :
 	<ul>
 	<li>device : objet smarthome.automation.Device. Représente le device associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
-	<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4']</li>
+	<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4'].value</li>
 	</ul>
 	</div>
 </div>
