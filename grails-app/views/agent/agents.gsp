@@ -38,27 +38,15 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th>Modèle</th>
-		            <th>Mac</th>
-		            <th>Nom</th>
-		            <th>IP privée</th>
-		            <th>IP publique</th>
-		            <th>Dernière connexion</th>
-		            <th>Status</th>
-		            <th class="column-3-buttons"></th>
+		            <th>Agents</th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ agentInstanceList }">
 			        <tr>
-			            <td><g:link action="edit" id="${ bean.id }">${ bean.agentModel }</g:link></td>
-			            <td>${ bean.mac }</td>
-			            <td>${ bean.libelle }</td>
-			            <td>${ bean.privateIp }</td>
-			            <td>${ bean.publicIp }</td>
-			            <td>${ app.formatTimeAgo(date: bean.lastConnexion) }</td>
 			            <td>
-			            	<g:if test="${ bean.locked }">
+			            	<h5><g:link action="edit" id="${ bean.id }">${ bean.agentModel } / ${ bean.mac } </g:link> [${ bean.libelle }]
+			            		<g:if test="${ bean.locked }">
 			            		<span class="aui-lozenge">verrouillé</span>
 			            	</g:if>
 			            	<g:else>
@@ -70,26 +58,33 @@
 			            	<g:else>
 			            		<span class="aui-lozenge">offline</span>
 			            	</g:else>
-			            </td>
-			            <td class="column-3-buttons command-column">
-			            	<g:if test="${ bean.locked }">
-			            		<g:link class="aui-button aui-button-subtle" title="Activer" action="activer" id="${ bean.id }" params="[actif: true]">
-				            		<span class="aui-icon aui-icon-small aui-iconfont-locked">
-				            	</g:link>
-			            	</g:if>
-			            	<g:else>
-			            		<g:link class="aui-button aui-button-subtle" title="Vérrouiller" action="activer" id="${ bean.id }" params="[actif: false]">
-				            		<span class="aui-icon aui-icon-small aui-iconfont-locked">
-				            	</g:link>
-			            	</g:else>
+			            	</h5>
+			            	<p style="font-size:small"><label><strong>IP privée :</strong> ${ bean.privateIp }
+			            	<strong>IP publique :</strong> ${ bean.publicIp }
+			            	<strong>Dernière connexion :</strong> ${ app.formatTimeAgo(date: bean.lastConnexion) }</label></p>
 			            	
-			            	<g:link class="aui-button aui-button-subtle" title="Ajouter un périphérique" action="addDevice" id="${ bean.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-add">
-			            	</g:link>
+			            	<div class="buttons-container" style="padding-top:10px">
+								<div class="buttons">
+									<g:if test="${ bean.locked }">
+					            		<g:link class="aui-button " title="Activer" action="activer" id="${ bean.id }" params="[actif: true]">
+						            		<span class="aui-icon aui-icon-small aui-iconfont-locked"></span> Activer
+						            	</g:link>
+					            	</g:if>
+					            	<g:else>
+					            		<g:link class="aui-button " title="Vérrouiller" action="activer" id="${ bean.id }" params="[actif: false]">
+						            		<span class="aui-icon aui-icon-small aui-iconfont-locked"></span> Verrouiller
+						            	</g:link>
+					            	</g:else>
+					            	
+					            	<g:link class="aui-button" title="Inclusion" action="startInclusion" id="${ bean.id }">
+					            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll"></span> Inclusion
+					            	</g:link>
 
-			            	<g:link class="aui-button aui-button-subtle" title="Inclusion" action="startInclusion" id="${ bean.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll">
-			            	</g:link>
+					            	<g:link class="aui-button" title="Exclusion" action="startExclusion" id="${ bean.id }">
+					            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll"></span> Exclusion
+					            	</g:link>
+								</div>
+							</div>
 			            </td>
 			        </tr>
 		        </g:each>

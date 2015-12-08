@@ -84,6 +84,7 @@ class AgentController extends AbstractController {
 	 * @param actif
 	 * @return
 	 */
+	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
 	def activer(Agent agent, boolean actif) {
 		this.preAuthorize(agent)
 		agentService.activer(agent, actif)
@@ -135,9 +136,23 @@ class AgentController extends AbstractController {
 	 * @param agent
 	 * @return
 	 */
+	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
 	def startInclusion(Agent agent) {
 		this.preAuthorize(agent)
-		agentService.startInclusion(agent)
+		agentService.startAssociation(agent, true)
+		redirect(action: 'agents')
+	}
+	
+	/**
+	 * Démarre l'exclusion sur un agent
+	 *
+	 * @param agent
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
+	def startExclusion(Agent agent) {
+		this.preAuthorize(agent)
+		agentService.startAssociation(agent, false)
 		redirect(action: 'agents')
 	}
 }

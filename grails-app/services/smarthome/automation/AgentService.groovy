@@ -45,13 +45,15 @@ class AgentService extends AbstractService {
 	
 	
 	/**
-	 * Démarre l'inclusion automatique de nouveaux devices sur un agent
+	 * Démarre l'association automatique (inclusion ou exclusion) de nouveaux devices sur un agent
 	 * 
 	 * @param agent
+	 * @param inclusion
+	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def startInclusion(Agent agent) throws SmartHomeException {
+	def startAssociation(Agent agent, boolean inclusion) throws SmartHomeException {
 		if (agent.locked) {
 			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas activé !", agent)
 		}
@@ -60,7 +62,7 @@ class AgentService extends AbstractService {
 			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas connecté !", agent)
 		}
 		
-		this.sendMessage(agent, [header: 'startInclusion'])
+		this.sendMessage(agent, [header: inclusion ? 'startInclusion' : 'startExclusion'])
 	}
 	
 	
