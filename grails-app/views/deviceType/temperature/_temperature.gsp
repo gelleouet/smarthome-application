@@ -9,9 +9,9 @@
 	
 	<div style="display:table-cell; padding-left:10px;; vertical-align:top" class="separator-left">
 		<p style="font-size:8pt">
-		<span style="color:#3b73af"><strong>Min :</strong> ${ values?.min ?: '-' }°C</span>
+		<span style="color:#3b73af"><strong>Min :</strong> ${ values?.min != null ? values.min : '-' }°C</span>
 		<br/>
-		<span style="color:#d04437"><strong>Max :</strong> ${ values?.max ?: '-' }°C</span>
+		<span style="color:#d04437"><strong>Max :</strong> ${ values?.max != null ? values.max : '-' }°C</span>
 		</p>
 	</div>
 </div>

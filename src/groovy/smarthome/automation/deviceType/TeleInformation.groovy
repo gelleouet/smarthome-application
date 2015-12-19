@@ -1,7 +1,9 @@
 package smarthome.automation.deviceType
 
+import java.util.Date;
 import java.util.Map;
 
+import smarthome.automation.DataModifierEnum;
 import smarthome.automation.DeviceValue;
 
 /**

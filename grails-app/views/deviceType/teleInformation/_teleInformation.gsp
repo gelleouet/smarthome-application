@@ -29,8 +29,8 @@
 	<g:set var="first_hchc" value="${ DeviceValue.firstValueByDay(device, 'hchc') }"/>
 	<g:set var="last_hchc" value="${ DeviceValue.lastValueByDay(device, 'hchc') }"/>
 	
-	<g:set var="hchp" value="${ first_hchp?.value && last_hchp?.value ? (last_hchp.value.toDouble().longValue() - first_hchp.value.toDouble().longValue()) / 1000 : 0 }"/>
-	<g:set var="hchc" value="${ first_hchc?.value && last_hchc?.value ? (last_hchc.value.toDouble().longValue() - first_hchc.value.toDouble().longValue()) / 1000 : 0 }"/>
+	<g:set var="hchp" value="${ first_hchp?.value && last_hchp?.value ? (last_hchp.value.longValue() - first_hchp.value.longValue()) / 1000 : 0 }"/>
+	<g:set var="hchc" value="${ first_hchc?.value && last_hchc?.value ? (last_hchc.value.longValue() - first_hchc.value.longValue()) / 1000 : 0 }"/>
 	
 	<div style="float:right;font-size:8pt;display:block;" class="separator-left">
 		<span class="aui-lozenge aui-lozenge-subtle">${ device?.value ?: '-' }A / ${ isousc?.value ?: '--' }A</span> 

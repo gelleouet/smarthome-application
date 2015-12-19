@@ -1,5 +1,6 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
 
@@ -48,4 +49,9 @@ class BoutonOnOff extends AbstractDeviceType {
 	def onOff(WorkflowContext context) {
 		device.value = device.value as Double == 1 ? "0" : "1"
 	}
+	
+	
+	def isQualitatif() {
+		return false
+	} 
 }

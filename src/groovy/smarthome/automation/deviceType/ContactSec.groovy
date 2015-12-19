@@ -11,12 +11,8 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class ContactSec extends AbstractDeviceType {
-	/**
-	 * Retourne le type de graphique par défaut
-	 *
-	 * @return
-	 */
-	ChartTypeEnum defaultChartType() {
-		ChartTypeEnum.Scatter
-	}
+	
+	def isQualitatif() {
+		return false
+	} 
 }

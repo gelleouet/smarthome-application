@@ -10,6 +10,7 @@ import groovy.time.TimeDuration;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ExchangeType;
@@ -226,16 +227,18 @@ class DeviceService extends AbstractService {
 	void traceValue(Device device) throws SmartHomeException {
 		log.info "Trace value for device ${device.mac}"
 		def value
+		def doubleValue
 		
 		if (!device.attached) {
 			device.attach()
 		}
 		
 		def deviceType = device.newDeviceImpl()
+		doubleValue = DeviceValue.parseDoubleValue(device.value)
 		
 		// ne trace que si activé sur le device
-		if (deviceType.isTraceValue()) {
-			value = new DeviceValue(device: device, value: device.value, dateValue: device.dateValue)
+		if (doubleValue != null && deviceType.isTraceValue() ) {
+			value = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
 			
 			if (!value.save()) {
 				throw new SmartHomeException("Erreur trace valeur !", value)
@@ -249,10 +252,14 @@ class DeviceService extends AbstractService {
 				
 				// verifie si le trace est activé pour la metavalue
 				if (metaValuesInfo && metaValuesInfo[it.name] && metaValuesInfo[it.name].trace) {
-					value = new DeviceValue(device: device, name: it.name, value: it.value, dateValue: device.dateValue)
+					doubleValue = DeviceValue.parseDoubleValue(it.value)
 					
-					if (!value.save()) {
-						throw new SmartHomeException("Erreur trace meta valeur !", value)
+					if (doubleValue != null) {
+						value = new DeviceValue(device: device, name: it.name, value: doubleValue, dateValue: device.dateValue)
+						
+						if (!value.save()) {
+							throw new SmartHomeException("Erreur trace meta valeur !", value)
+						}
 					}
 				}
 			}
@@ -270,8 +277,9 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	def values(Device device, Date start, Date end, String name, DataModifierEnum projection = null) throws SmartHomeException {
-		log.info "Load trace values for ${device.mac} from ${start} to ${end}"
 		def dayDuration = 0
+		def values
+		AbstractDeviceType deviceImpl = device.newDeviceImpl()
 		
 		use(groovy.time.TimeCategory) {
 			dayDuration = end - start
@@ -279,44 +287,15 @@ class DeviceService extends AbstractService {
 		
 		// projections automatiques pour les longues périodes (> 1 jour)
 		// pour éviter trop de volumes de données
-		if (!projection && dayDuration.days > 1) {
-			return DeviceValue.createCriteria().list {
-				eq 'device', device
-				between 'dateValue', start, end
-				
-				if (name) {
-					if (name == '') {
-						isNull 'name'
-					} else {
-						eq 'name', name
-					}
-				}
-				
-				projections {
-					max(value)
-					min(value)
-					avg(value)
-					count(value)
-				}
-				
-				order 'dateValue', 'name'
-			}
+		if (projection || dayDuration.days > AbstractDeviceType.MAX_DAY_WITHOUT_PROJECTION) {
+			values = deviceImpl.projectionValues(start, end, name, dayDuration.days, projection)
 		} else {
-			return DeviceValue.createCriteria().list {
-				eq 'device', device
-				between 'dateValue', start, end
-				
-				if (name) {
-					if (name == '') {
-						isNull 'name'
-					} else {
-						eq 'name', name
-					}
-				}
-				
-				order 'dateValue', 'name'
-			}
+			values = deviceImpl.values(start, end, name, dayDuration.days)
 		}
+		
+		log.info "Load trace values for ${device.mac} from ${start} to ${end} : ${values?.size()} values"
+		
+		return values
 	}
 	
 	

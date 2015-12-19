@@ -2,6 +2,7 @@ package smarthome.automation
 
 import smarthome.security.User;
 import grails.validation.Validateable;
+import groovy.time.TimeCategory;
 
 /**
  * Toutes les valeurs historisées d'un device
@@ -13,7 +14,7 @@ import grails.validation.Validateable;
 class DeviceValue {
 	static belongsTo = [device: Device]
 	
-	String value
+	Double value
 	Date dateValue
 	
 	// permet d'avoir plusieurs types de valeur pour un device
@@ -21,10 +22,10 @@ class DeviceValue {
 	String name 
 	
 	// Infos sur la date pour effectuer des regroupempents en base
-	Integer dayOfYear
-	Integer weekOfYear
 	Integer monthOfYear
 	Integer hourOfDay
+	Integer year
+	Date day
 	
 	
     static constraints = {
@@ -37,9 +38,9 @@ class DeviceValue {
 		dateValue index: "DeviceValue_DeviceName_Idx"
 		
 		hourOfDay formula: 'extract(hour from date_value)'
-		dayOfYear formula: 'extract(doy from date_value)'
-		weekOfYear formula: 'extract(week from date_value)'
 		monthOfYear formula: 'extract(month from date_value)'
+		year formula: 'extract(year from date_value)'
+		day formula: "date_trunc('day', date_value)"
 	}
 	
 	
@@ -52,9 +53,7 @@ class DeviceValue {
 	static def doubleValueMinByDay(Device device, String metaName = null) {
 		def values = DeviceValue.valuesByDay(device, metaName)
 		
-		values?.min {
-			it?.toDouble()
-		}
+		values?.min()
 	}
 	
 	
@@ -67,9 +66,7 @@ class DeviceValue {
 	static def doubleValueMaxByDay(Device device, String metaName = null) {
 		def values = DeviceValue.valuesByDay(device, metaName)
 		
-		values?.max {
-			it?.toDouble()
-		}
+		values?.max()
 	}
 
 	
@@ -83,12 +80,8 @@ class DeviceValue {
 		def values = DeviceValue.valuesByDay(device, metaName)
 		def result = [:]
 			
-		result.min = values?.min {
-			it?.toDouble()
-		}
-		result.max = values?.max {
-			it?.toDouble()
-		}
+		result.min = values?.min()
+		result.max = values?.max()
 		result.count = values?.size()
 		
 		return result
@@ -102,6 +95,13 @@ class DeviceValue {
 	 * @param metaName
 	 */
 	static def valuesByDay(Device device, String metaName = null) {
+		def dateDebut = new Date().clearTime()
+		def dateFin
+		
+		use(TimeCategory) {
+			dateFin = dateDebut + 23.hours + 59.minutes + 59.seconds
+		}
+		
 		DeviceValue.createCriteria().list {
 			eq "device", device
 			
@@ -111,7 +111,7 @@ class DeviceValue {
 				isNull "name"
 			}
 			
-			ge "dateValue", new Date().clearTime()
+			between "dateValue", dateDebut, dateFin 
 			
 			projections {
 				property "value"
@@ -169,6 +169,31 @@ class DeviceValue {
 		}
 		
 		return values ? values[0] : null
+	}
+	
+	
+	/**
+	 * convertit une valeur texte en numérique
+	 * 
+	 * @param value
+	 * @return
+	 */
+	static parseDoubleValue(String value) {
+		def doubleValue = null
+		
+		if (value != null) {
+			if (value == 'true') {
+				doubleValue = 1
+			} else if (value == 'false') {
+				doubleValue = 0
+			} else {
+				try {
+					doubleValue = value.toDouble()
+				} catch (Exception ex) {}
+			}
+		}
+		
+		return doubleValue
 	}
 	
 }

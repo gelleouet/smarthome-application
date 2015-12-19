@@ -26,4 +26,9 @@ class Zwave extends AbstractDeviceType {
 	public Object icon() {
 		"/deviceType/signal.png"
 	}
+	
+	
+	def isQualitatif() {
+		return false
+	} 
 }

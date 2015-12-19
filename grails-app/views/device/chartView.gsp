@@ -50,7 +50,7 @@
 				<div class="aui-progress-indicator">
 				    <span class="aui-progress-indicator-value"></span>
 				</div>
-				<g:render template="${ device.deviceType.newDeviceType().chartDataTemplate() ?: '/chart/chartDatas' }" model="[label: device.label, datas: datas]"/>
+				<g:render template="${ device.deviceType.newDeviceType().chartDataTemplate() }" model="[label: device.label, datas: datas]"/>
 			</div>
 		</form>
 	</g:applyLayout>

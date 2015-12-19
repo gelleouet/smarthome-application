@@ -35,16 +35,21 @@ function buildGoogleCharts() {
  */
 function buildGoogleChart(divChart) {
 	// récupère le type de chart
-	var chartType = $(divChart).attr('data-chart-type');
 	var divData = $(divChart).find('div[data-chart-datas]');
+	var divId = $(divChart).attr('id');
 	
 	if ($(divData)) {
 		var chartData = $(divData).html();
 		
 		if (chartData) {
-			var chartDatas, chartOptions;
+			var chartDatas, chartOptions, chartType;
 			eval(chartData);
-	      	var chart = eval("new google.visualization." + chartType + "(document.getElementById('" + $(divChart).attr('id') + "'))");
+			
+			if (!chartType) {
+				chartType = $(divChart).attr('data-chart-type');
+			}
+	      	
+			var chart = eval("new google.visualization." + chartType + "(document.getElementById('" + divId + "'))");
 	      	chart.draw(chartDatas, chartOptions);
 	      	
 	      	// nettoie les éléments de contruction du chart

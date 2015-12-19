@@ -1,5 +1,6 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
 
@@ -66,4 +67,9 @@ class VoletRoulant extends AbstractDeviceType {
 		this.device.command = "level"
 		// la valeur doit déjà être injectée sur le device
 	}
+	
+	
+	def isQualitatif() {
+		return false
+	} 
 }

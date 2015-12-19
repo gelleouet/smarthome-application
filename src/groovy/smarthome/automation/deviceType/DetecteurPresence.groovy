@@ -1,5 +1,7 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.ChartTypeEnum;
+
 /**
  * Périphérique Détecteur présence
  * Aucune action particulière car capteur
@@ -8,5 +10,7 @@ package smarthome.automation.deviceType
  *
  */
 class DetecteurPresence extends AbstractDeviceType {
-
+	def isQualitatif() {
+		return false
+	} 
 }

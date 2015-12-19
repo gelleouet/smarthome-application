@@ -1,5 +1,6 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
 
@@ -30,4 +31,8 @@ class BoutonPoussoir extends AbstractDeviceType {
 	def push(WorkflowContext context) {
 		device.value = "1"
 	}
+	
+	def isQualitatif() {
+		return false
+	} 
 }

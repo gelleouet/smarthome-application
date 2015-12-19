@@ -9,9 +9,9 @@
 	
 	<div style="display:table-cell; padding-left:10px;; vertical-align:top" class="separator-left">
 		<p style="font-size:8pt">
-		<span style="color:black"><strong>Min :</strong> ${ values?.min ?: '-' }lux</span>
+		<span style="color:black"><strong>Min :</strong> ${ values?.min != null ? values.min.round() : '-' }lux</span>
 		<br/>
-		<span style="color:#f6c342"><strong>Max :</strong> ${ values?.max ?: '-' }lux</span>
+		<span style="color:#f6c342"><strong>Max :</strong> ${ values?.max != null ? values.max.round() : '-' }lux</span>
 		</p>
 	</div>
 </div>
