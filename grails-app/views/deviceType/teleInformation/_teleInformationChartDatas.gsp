@@ -44,9 +44,12 @@
 	   		 {label: 'Intensité max (A)', type: 'number'},
 	   		],
 	   		<g:each var="data" in="${ datas?.groupBy{ it.day } }">
+	   			<g:set var="hc" value="${ data.value.find({ it.name == 'hchc' }) }"/>
+	   			<g:set var="hp" value="${ data.value.find({ it.name == 'hchp' }) }"/>
+	   			
 	   			[new Date(<g:formatDate date="${ data.key}" format="yyyy,${data.key.getAt(Calendar.MONTH)},d"/>),  
-	   				${ ((data.value.find({ it.name == 'hcinst' })?.sum ?: 0) / 1000 as Double).round(1) },
-	   				${ ((data.value.find({ it.name == 'hpinst' })?.sum ?: 0) / 1000 as Double).round(1) },
+	   				${ (((hc?.max ?: 0) - (hc?.min ?: 0))  / 1000 as Double).round(1) },
+	   				${ (((hp?.max ?: 0) - (hp?.min ?: 0))  / 1000 as Double).round(1) },
 	   				${ data.value.find({ !it.name })?.max ?: 0 },
 	   			],
 	   		</g:each>
@@ -95,9 +98,12 @@
 	   		 {label: 'Intensité max (A)', type: 'number'},
 	   		],
    			<g:each var="data" in="${ datas?.groupBy{ (it.year * 100) + it.month } }">
+   				<g:set var="hc" value="${ data.value.find({ it.name == 'hchc' }) }"/>
+	   			<g:set var="hp" value="${ data.value.find({ it.name == 'hchp' }) }"/>
+	   			
 	   			[new Date(${ data.value[0].year }, ${ data.value[0].month-1 }, 1),  
-	   				${ ((data.value.find({ it.name == 'hcinst' })?.sum ?: 0) / 1000 as Double).round(1) },
-	   				${ ((data.value.find({ it.name == 'hpinst' })?.sum ?: 0) / 1000 as Double).round(1) },
+	   				${ (((hc?.max ?: 0) - (hc?.min ?: 0))  / 1000 as Double).round(1) },
+	   				${ (((hp?.max ?: 0) - (hp?.min ?: 0))  / 1000 as Double).round(1) },
 	   				${ data.value.find({ !it.name })?.max ?: 0 },
 	   			],
 	   		</g:each>
