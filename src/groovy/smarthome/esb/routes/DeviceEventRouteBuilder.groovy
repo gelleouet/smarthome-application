@@ -48,8 +48,9 @@ class DeviceEventRouteBuilder extends RouteBuilder {
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		// recupère le device
+		.setProperty("actionName").groovy('body.result.actionName')
 		.setProperty("deviceId").groovy('body.result.id')
 		.setProperty("device").method("deviceService", "findById(property.deviceId)")
-		.to("bean:deviceEventService?method=triggerEvents(property.device)")
+		.to("bean:deviceEventService?method=triggerEvents(property.device, property.actionName)")
 	}
 }

@@ -76,7 +76,7 @@ class DeviceEventService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def triggerEvents(Device device) throws SmartHomeException {
+	def triggerEvents(Device device, String syncActionName) throws SmartHomeException {
 		if (!device.attached) {
 			device.attach()
 		}
@@ -118,9 +118,10 @@ class DeviceEventService extends AbstractService {
 						workflowService.execute(trigger.workflow, context)
 					}
 					
-					// déclenchement d'un autre device via une action
-					if (trigger.device && trigger.actionName) {
-						log.info "Trigger device ${trigger.device.label}->${trigger.actionName} from device ${device.label}"
+					// déclenchement d'un autre device via une action choisie
+					// ou l'action du device source
+					if (trigger.device && (trigger.actionName || syncActionName)) {
+						log.info "Trigger device ${trigger.device.label} from device ${device.label}"
 						def runScript = true
 						
 						// exécute le pre-script dans une transaction en lecture seule
@@ -136,7 +137,15 @@ class DeviceEventService extends AbstractService {
 						// si le script ne renvoit pas boolean, on l'exécute 
 						// sinon on tient compte de la valeur du boolean
 						if (!(runScript instanceof Boolean) || runScript) {
-							deviceService.invokeAction(trigger.device, trigger.actionName)
+							if (trigger.actionName) {
+								deviceService.invokeAction(trigger.device, trigger.actionName)
+							} else {
+								// si on doit exzcuter l'actyion du device source
+								// on doit également recoipié son état
+								trigger.device.value = device.value
+								trigger.device.command = device.command
+								deviceService.invokeAction(trigger.device, syncActionName)
+							}
 						}
 					}
 				}

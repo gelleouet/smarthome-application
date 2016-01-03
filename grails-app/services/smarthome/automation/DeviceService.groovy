@@ -211,6 +211,7 @@ class DeviceService extends AbstractService {
 	
 		// traca de l'action
 		device.dateValue = new Date()
+		device.actionName = actionName
 		
 		return this.save(device)
 	}

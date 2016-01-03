@@ -26,10 +26,10 @@ class Device {
 	boolean show
 	String command
 		
-	static transients = ['params']
+	static transients = ['params', 'actionName']
 	
 	Map params = [:]
-	
+	String actionName
 	
 	
     static constraints = {
@@ -39,6 +39,7 @@ class Device {
 		value nullable: true
 		dateValue nullable: true
 		params bindable: true, nullable: true
+		actionName bindable: true, nullable: true
 		command nullable: true
     }
 	
@@ -58,7 +59,8 @@ class Device {
 		grails.converters.JSON.registerObjectMarshaller(Device) {
 			it.fetchParams()
 			[id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, 
-				deviceType: it.deviceType, params: it.params, command: it.command]
+				deviceType: it.deviceType, params: it.params, command: it.command,
+				actionName: it.actionName]
 		}
 	}
 	
