@@ -66,6 +66,11 @@ class VoletRoulant extends AbstractDeviceType {
 	def level(WorkflowContext context) {
 		this.device.command = "level"
 		// la valeur doit déjà être injectée sur le device
+		
+		// vérifie la valeur max
+		if (this.device.value?.toDouble() >= 100) {
+			this.device.value = 99
+		}
 	}
 	
 	

@@ -123,7 +123,7 @@ class DeviceEventController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "deviceEvents")
 	def delete(DeviceEvent deviceEvent) {
-		deviceEventService.save(deviceEvent)
+		deviceEventService.delete(deviceEvent)
 		redirect(action: COMMAND_NAME + 's')
 	}
 	

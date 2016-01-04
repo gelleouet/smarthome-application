@@ -118,7 +118,7 @@ class WorkflowController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "workflows")
 	def delete(Workflow workflow) {
 		this.preAuthorize(workflow)
-		workflowService.save(workflow)
+		workflowService.delete(workflow)
 		redirect(action: COMMAND_NAME + 's')
 	}
 }
