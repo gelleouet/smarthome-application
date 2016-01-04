@@ -37,6 +37,13 @@ class DeviceEvent {
 	}
 	
 	
+	static {
+		grails.converters.JSON.registerObjectMarshaller(DeviceEvent) {
+			[id: it.id, libelle: it.libelle, actif: it.actif, cron: it.cron]
+		}
+	}
+	
+	
 	def clearNotPersistTriggers() {
 		triggers?.removeAll {
 			! it.persist

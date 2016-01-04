@@ -71,7 +71,7 @@ abstract class AbstractController {
 	 * @return
 	 */
 	def preAuthorize(domainObject) {
-		if (domainObject['user']?.id) {
+		if (domainObject && domainObject['user']?.id) {
 			if (domainObject['user'].id != principal.id) {
 				throw new SmartHomeException("Objet introuvable !")
 			}

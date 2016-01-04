@@ -188,10 +188,11 @@ quartz.threadPool.class = "org.quartz.simpl.SimpleThreadPool"
 quartz.threadPool.threadCount = 2
 
 quartz.jobStore.isClustered = true
-quartz.jobStore.tablePrefix = "QRTZ _"
+quartz.jobStore.tablePrefix = "quartz.QRTZ_"
 quartz.jobStore.class = "org.quartz.impl.jdbcjobstore.JobStoreTX"
 quartz.jobStore.driverDelegateClass = "org.quartz.impl.jdbcjobstore.PostgreSQLDelegate"
 quartz.jobStore.dataSource = "smarthomeDataSource"
+quartz.jobStore.clusterCheckinInterval = 20000
 
 environments {
 	development {
@@ -203,5 +204,6 @@ environments {
 	}
 	production {
 		quartz.dataSource.smarthomeDataSource.jndiURL = "java:comp/env/smartHomeDataSource"
+		quartz.scheduler.skipUpdateCheck = true
 	}
 }

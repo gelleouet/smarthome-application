@@ -49,7 +49,7 @@
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
         'explorer': {},
-        legend: { position: "none" },
+        legend: {position: 'top'},
 	}
 </div>
 

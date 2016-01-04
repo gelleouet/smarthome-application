@@ -26,10 +26,7 @@ beans = {
 	// gestionnaire de crons
 	smarthomeScheduler(SmarthomeScheduler) {
 		jobs = [
-			deviceEventCronJob(DeviceEventCronJob) {
-				// toutes les minutes
-				cron = "0 * * * * *"
-			}
+			'smarthome.automation.scheduler.DeviceEventCronJob' : "0 * * * * ?"
 		]
 	}
 }

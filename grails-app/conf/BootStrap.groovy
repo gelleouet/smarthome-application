@@ -11,11 +11,11 @@ class BootStrap {
 		AgentEndPoint.register(grailsApplication, servletContext)
 		
 		// démarre le gestionnaire de cron
-		//smarthomeScheduler.start()
+		smarthomeScheduler.start()
 	}
 
 	
 	def destroy = {
-		
+		smarthomeScheduler.shutdown()
 	}
 }

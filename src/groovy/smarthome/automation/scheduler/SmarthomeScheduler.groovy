@@ -1,15 +1,27 @@
 package smarthome.automation.scheduler
 
+import static org.quartz.TriggerBuilder.*;
+import static org.quartz.CronScheduleBuilder.*;
+import static org.quartz.JobBuilder.*;
+
 import java.util.Properties;
 
 import groovy.util.ConfigObject;
 
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.quartz.Job;
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.listeners.JobListenerSupport;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,14 +30,28 @@ import org.springframework.stereotype.Component;
  * @author Gregory
  *
  */
-class SmarthomeScheduler implements InitializingBean {
+class SmarthomeScheduler implements InitializingBean, ApplicationContextAware {
 
+	private static final log = LogFactory.getLog(this)
+	
+	AutowireCapableBeanFactory beanFactory;
+	
 	Scheduler scheduler
 	
 	@Autowired
 	GrailsApplication grailsApplication
 	
-	def jobs = []
+	Map<String, String> jobs
+
+	public void setJobs(Map<String, String> jobs) {
+		this.jobs = jobs;
+	}
+	
+	@Override
+	public void setApplicationContext(final ApplicationContext context) {
+		beanFactory = context.getAutowireCapableBeanFactory();
+	}
+
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -40,13 +66,7 @@ class SmarthomeScheduler implements InitializingBean {
 		
 		SchedulerFactory factory = new StdSchedulerFactory()
 		factory.initialize(quartzProperties)
-		
 		scheduler = factory.getScheduler()
-		
-		// ajout des jobs injectés
-		jobs?.each {
-			scheduler.scheduleJob(it.getJobDetail(), it.getTrigger())
-		}
 	}
 	
 	
@@ -56,6 +76,42 @@ class SmarthomeScheduler implements InitializingBean {
 	 * @return
 	 */
 	def start() {
+		log.info "Starting jobs scheduling..."
+		
+		scheduler.getListenerManager().addJobListener(new SmarthomeJobListener(beanFactory))
 		scheduler.start()
+		
+		// ajout des jobs injectés
+		jobs?.each { className, cron ->
+			Class jobClass = Class.forName(className)
+			Set triggers = [getTrigger(jobClass, cron)]
+			scheduler.scheduleJob(getJobDetail(jobClass), triggers, true)
+		}
+	}
+	
+	
+	/**
+	 * Arrete le gestionnaire
+	 */
+	def shutdown() {
+		log.info "Stopping jobs scheduling..."
+		
+		scheduler.shutdown()
+	}
+	
+	
+	JobDetail getJobDetail(Class<Job> jobClass) {
+		return newJob(jobClass)
+			 .withIdentity(jobClass.getSimpleName())
+			 .storeDurably()
+			 .build();
+	}
+	
+	
+	Trigger getTrigger(Class<Job> jobClass, String cron) {
+		return newTrigger()
+			.withIdentity(jobClass.getSimpleName() + "Trigger")
+			.withSchedule(cronSchedule(cron))
+			.build()
 	}
 }

@@ -49,7 +49,6 @@ class ResetPasswordRouteBuilder extends RouteBuilder {
 		
 		// lecture depuis la queue AMQP
 		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
-		.to("file://${messageDirectory}/${QUEUE}")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		.setHeader("to").groovy("body.result.username")
