@@ -101,7 +101,10 @@ class DeviceService extends AbstractService {
 		}
 		
 		def fetchAgent = Agent.get(agent.id)
-		def device = Device.findByMacAndAgent(datas.mac, fetchAgent)
+		
+		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
+		// entre changeMetadataFromAgent et changeValueFromAgent
+		def device = Device.findByMacAndAgent(datas.mac, fetchAgent, [lock: true])
 		
 		// on tente de le créer auto si on a toutes les infos
 		if (!device) {
@@ -161,7 +164,10 @@ class DeviceService extends AbstractService {
 		}
 		
 		def fetchAgent = Agent.get(agent.id)
-		def device = Device.findByMacAndAgent(datas.mac, fetchAgent)
+		
+		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
+		// entre changeMetadataFromAgent et changeValueFromAgent
+		def device = Device.findByMacAndAgent(datas.mac, fetchAgent, [lock: true])
 		
 		// on tente de le créer auto si on a toutes les infos
 		if (!device) {
