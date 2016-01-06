@@ -25,6 +25,7 @@ class Device {
 	DeviceType deviceType
 	boolean show
 	String command
+	String formula
 		
 	static transients = ['params', 'actionName']
 	
@@ -41,6 +42,7 @@ class Device {
 		params bindable: true, nullable: true
 		actionName bindable: true, nullable: true
 		command nullable: true
+		formula nullable: true
     }
 	
 	static mapping = {
@@ -51,6 +53,7 @@ class Device {
 		metadatas cascade: 'all-delete-orphan'
 		metavalues cascade: 'all-delete-orphan'
 		events cascade: 'all-delete-orphan'
+		formula type: 'text'
 		sort 'label'
 	}
 	

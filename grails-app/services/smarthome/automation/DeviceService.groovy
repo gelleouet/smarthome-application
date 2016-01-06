@@ -119,6 +119,10 @@ class DeviceService extends AbstractService {
 		}
 		
 		// insère nouvelle valeur
+		// transforme les datas si formule présente sur le device
+		if (device.formula) {
+			ScriptUtils.runScript(device.formula, [device: datas])
+		}
 		device.value = datas.value
 		device.dateValue = datas.dateValue ? Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", datas.dateValue) : new Date()
 		
