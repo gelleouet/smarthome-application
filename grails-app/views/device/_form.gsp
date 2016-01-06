@@ -46,14 +46,6 @@
 </div>
 
 <div class="field-group">
-	<label for="groupe" title="API : device.value">
-		Valeur principale
-	</label>
-	<g:textField name="value" value="${device?.value}" class="text medium-field" disabled="true"/>
-	<div class="description">${ app.formatTimeAgo(date: device.dateValue) }</div>
-</div>
-
-<div class="field-group">
 	<label for="show">
 		Visible sur tableau de bord
 	</label>
@@ -61,6 +53,23 @@
 </div>
 
 
+<h4>Valeur</h4>
+
+<div class="field-group">
+	<label for="formula">
+		Formule
+	</label>
+	<g:textField name="formula" value="${device?.formula}" class="text long-field"/>
+	<div class="description">Applique la formule sur les valeurs envoyées par l'agent</div>
+</div>
+
+<div class="field-group">
+	<label for="groupe" title="API : device.value">
+		Valeur principale
+	</label>
+	<g:textField name="value" value="${device?.value}" class="text medium-field" disabled="true"/>
+	<div class="description">${ app.formatTimeAgo(date: device.dateValue) }</div>
+</div>
 
 
 
