@@ -15,6 +15,7 @@ import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
+import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
