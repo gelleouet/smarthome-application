@@ -40,6 +40,7 @@ class DeviceEventCronJob implements Job {
 		
 		List<DeviceEvent> events = deviceEventService.listScheduledEvent()
 		CronExpression cronExpression
+		int compteur = 0
 		
 		// pour chaque event, vérifie si le cron correspond à la date déclenchée
 		for (DeviceEvent event : events) {
@@ -48,10 +49,11 @@ class DeviceEventCronJob implements Job {
 			// l'événement doit être déclenché car la date correspond au cron
 			if (cronExpression.isSatisfiedBy(jobContext.getScheduledFireTime())) {
 				deviceEventService.executeScheduleDeviceEvent(event)
+				compteur++
 			}	
 		}
 		
-		log.info "Triggered ${events.size()} events."
+		log.info "Scheduling ${compteur} / ${events.size()} events."
 	}
 	
 	
