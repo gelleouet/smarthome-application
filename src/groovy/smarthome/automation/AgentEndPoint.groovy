@@ -169,10 +169,10 @@ class AgentEndPoint extends Endpoint {
 		
 		// supprime la session de la liste et déassocie le token
 		if (entry) {
-			sessions.remove(entry.key, entry.value)
+			def object = sessions.remove(entry.key)
 			agentService.unbindWebsocket(entry.key)
+			
+			log.info "Closing websocket... ${object != null}. Found ${sessions.size()} connected websocket."
 		}
-		
-		log.info "Bind ${sessions.size()} websockets"
 	}
 }
