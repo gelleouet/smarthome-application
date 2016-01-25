@@ -3,6 +3,7 @@ package smarthome.automation.scheduler
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
 import static org.quartz.JobBuilder.*;
+import static org.quartz.SimpleScheduleBuilder.*;
 
 import java.util.Properties;
 
@@ -11,6 +12,7 @@ import groovy.util.ConfigObject;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
@@ -113,5 +115,23 @@ class SmarthomeScheduler implements InitializingBean, ApplicationContextAware {
 			.withIdentity(jobClass.getSimpleName() + "Trigger")
 			.withSchedule(cronSchedule(cron))
 			.build()
+	}
+	
+	
+	/**
+	 * Planifie un job en one-shot
+	 */
+	void scheduleOneShotJob(Class<Job> jobClass, Date scheduledDate, Map data) {
+		def jobName = jobClass.getSimpleName() + UUID.randomUUID().toString()
+		
+		def jobDetail = newJob(jobClass)
+			.withIdentity(jobName)
+			.storeDurably(false)
+			.usingJobData(new JobDataMap(data))
+			.build()
+			
+		def trigger = newTrigger().forJob(jobName).startAt(scheduledDate).build()
+		
+		scheduler.scheduleJob(jobDetail, trigger)
 	}
 }

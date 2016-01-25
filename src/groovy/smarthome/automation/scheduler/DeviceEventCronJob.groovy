@@ -48,8 +48,8 @@ class DeviceEventCronJob implements Job {
 			
 			// l'événement doit être déclenché car la date correspond au cron
 			if (cronExpression.isSatisfiedBy(jobContext.getScheduledFireTime())) {
-				deviceEventService.executeScheduleDeviceEvent(event)
 				compteur++
+				deviceEventService.executeScheduleDeviceEvent(event, jobContext.getScheduledFireTime())
 			}	
 		}
 		

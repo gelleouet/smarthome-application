@@ -26,8 +26,24 @@
 </div>
 
 <div class="field-group">
-	<label for="cron">
-		Planification
+	<label for="condition">
+		Condition
+	</label>
+	<g:textArea name="condition" value="${deviceEvent?.condition}" class="short-script textarea text long-field"/>
+	<div class="description">Expression Groovy renvoyant en dernière instruction un boolean. Variables pré-définies :
+	<ul>
+	<li>device : objet smarthome.automation.Device. Représente le device associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
+	<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4'].value</li>
+	</ul>
+	</div>
+</div>
+
+
+<h4>Planification</h4>
+
+<div class="field-group">
+	<label>
+		Cron
 	</label>
 	<g:textField name="cron" value="${deviceEvent?.cron}" class="text long-field"/>
 	<div class="description">Expression cron. Exemples :
@@ -48,19 +64,13 @@
 	</div>
 </div>
 
-<div class="field-group">
-	<label for="condition">
-		Condition
-	</label>
-	<g:textArea name="condition" value="${deviceEvent?.condition}" class="short-script textarea text long-field"/>
-	<div class="description">Expression Groovy renvoyant en dernière instruction un boolean. Variables pré-définies :
-	<ul>
-	<li>device : objet smarthome.automation.Device. Représente le device associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
-	<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4'].value</li>
-	</ul>
+<fieldset class="group">	
+	<legend><span>Options</span></legend>
+	<div class="checkbox">
+		<g:checkBox name="synchroSoleil" value="${deviceEvent?.synchroSoleil}" class="checkbox"/>
+		<label>Suivre les solstices avec un décalage total de <g:textField name="decalageMinute" value="${ deviceEvent?.decalageMinute }" class="text short-field"/> minutes entre l'hiver et l'été. Le cron doit être programmé en fonction du solstice d'hiver : les minutes augmenteront jusqu'au 21 juin puis reviendront à la normale jusqu'au 21 décembre.</label>
 	</div>
-</div>
-
+</fieldset>
 
 
 

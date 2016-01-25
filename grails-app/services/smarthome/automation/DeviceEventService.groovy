@@ -1,5 +1,9 @@
 package smarthome.automation
 
+import static java.util.Calendar.DAY_OF_MONTH
+import static java.util.Calendar.MONTH
+import static java.util.Calendar.YEAR
+
 import java.io.Serializable;
 
 import grails.converters.JSON;
@@ -12,6 +16,8 @@ import org.quartz.CronExpression;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 
+import smarthome.automation.scheduler.DeviceEventTimerJob;
+import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ExchangeType;
@@ -25,6 +31,7 @@ class DeviceEventService extends AbstractService {
 
 	DeviceService deviceService
 	WorkflowService workflowService
+	SmarthomeScheduler smarthomeScheduler
 	
 	
 	/**
@@ -191,15 +198,81 @@ class DeviceEventService extends AbstractService {
 	
 	
 	/**
-	 * Exécution en mode asycnhrone d'un évenement
+	 * Exécution en mode asycnhrone d'un évenement programmé à une certaine date
+	 * Gestion de la synchro soleil
 	 * 
+	 * @param event
+	 * @param scheduledDate
+	 * 
+	 * @return null pour ne pas exécuter l'event par le système asynchrone
+	 * @throws SmartHomeException
+	 */
+	@AsynchronousMessage()
+	DeviceEvent executeScheduleDeviceEvent(DeviceEvent event, Date scheduledDate) throws SmartHomeException {
+		int decalageMinute = 0
+		
+		if (event.synchroSoleil) {
+			decalageMinute = this.getDecalageMinute(event)
+			
+			// un décalage est calculé, dans ce cas on créé un job "one-shot" qui sera exécuté 
+			// ultérieurement à la date voulue + décalage
+			if (decalageMinute) {
+				def newDate
+				
+				use(TimeCategory) {
+					newDate = scheduledDate + decalageMinute.minutes
+				}
+				
+				log.info "Re-schedule event ${event.libelle} at ${newDate} (${decalageMinute}min)"
+				smarthomeScheduler.scheduleOneShotJob(DeviceEventTimerJob, newDate, [deviceEventId: event.id])
+				
+				return null
+			}
+		}
+		
+		return event
+	}
+	
+	
+	/**
+	 * Calcule le décalage en minute du jour si la synchro horaire est activée
+	 *  
 	 * @param event
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	@AsynchronousMessage()
-	DeviceEvent executeScheduleDeviceEvent(DeviceEvent event) throws SmartHomeException {
-		return event
+	int getDecalageMinute(DeviceEvent event) throws SmartHomeException {
+		if (!event.decalageMinute) {
+			return 0
+		}
+		
+		Date now = new Date().clearTime()
+		Date solsticeEte = now.copyWith([date: 21, month: 5])
+		Date solsticeHiver = now.copyWith([date: 21, month: 11])
+		Date solsticeHiverPrec = now.copyWith([date: 21, month: 11, year: now[YEAR]-1])
+		
+		def decalage
+		def totalJour
+		
+		// calcul de la durée entre le jour J et le solstice de référence
+		use(TimeCategory) {
+			if (now <= solsticeEte) {
+				decalage = now - solsticeHiverPrec
+			} else if (now > solsticeEte && now <= solsticeHiver) {
+				decalage = solsticeHiver - now
+			} else {
+				decalage = now - solsticeHiver
+			}
+			
+			totalJour = (now <= solsticeEte ? solsticeEte - solsticeHiverPrec : solsticeHiver - solsticeEte)
+		}
+		
+		// produit en X pour calculer le décalage journalier en fonction du total
+		if (totalJour.days) {
+			return (decalage.days * event.decalageMinute) / totalJour.days
+		} else {
+			return 0
+		}
 	}
 	
 	

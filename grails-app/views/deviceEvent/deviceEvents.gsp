@@ -51,7 +51,7 @@
 			        <tr>
 			            <td><g:link action="edit" id="${bean.id }">${ bean.device.label }</g:link></td>
 			            <td>${ bean.libelle }</td>
-			            <td>${ bean.cron }</td>
+			            <td>${ bean.cron } <g:if test="${ bean.synchroSoleil }"><span class="aui-lozenge aui-lozenge-complete">SOLSTICE</span></g:if></td>
 			            <td>${ app.formatTimeAgo(date: bean.lastEvent) }</td>
 			            <td>${ bean.actif ? 'X' : '' }</td>
 			            <td class="column-1-buttons command-column">

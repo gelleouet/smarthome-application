@@ -185,7 +185,7 @@ grails.databinding.dateFormats = [
 quartz.scheduler.instanceName = "SmarthomeQuartzScheduler"
 quartz.scheduler.instanceId = "AUTO"
 quartz.threadPool.class = "org.quartz.simpl.SimpleThreadPool"
-quartz.threadPool.threadCount = 2
+quartz.threadPool.threadCount = 5
 
 quartz.jobStore.isClustered = true
 quartz.jobStore.tablePrefix = "quartz.QRTZ_"

@@ -21,13 +21,17 @@ class DeviceEvent {
 	String condition // script groovy conditionnel
 	boolean actif
 	Date lastEvent
+	
 	String cron
+	boolean synchroSoleil
+	Integer decalageMinute
 	
 	
     static constraints = {
 		condition nullable: true
 		lastEvent nullable: true
 		cron nullable: true
+		decalageMinute nullable: true
     }
 	
 	static mapping = {

@@ -47,6 +47,9 @@ class DeviceScheduleEventRouteBuilder extends RouteBuilder {
 		from("rabbitmq://$rabbitHostname/${EXCHANGE}?queue=${QUEUE}&routingKey=${QUEUE}&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
+		// filtre les messages sans result
+		.setProperty("result").groovy('body.result')
+		.filter().simple('${property.result} != null')
 		// recupère le device event
 		.setProperty("deviceEventId").groovy('body.result.id')
 		.setProperty("deviceEvent").method("deviceEventService", "findById(property.deviceEventId)")
