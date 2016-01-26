@@ -208,6 +208,7 @@ class DeviceEventService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@AsynchronousMessage()
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	DeviceEvent executeScheduleDeviceEvent(DeviceEvent event, Date scheduledDate) throws SmartHomeException {
 		int decalageMinute = 0
 		
@@ -216,7 +217,7 @@ class DeviceEventService extends AbstractService {
 			
 			// un décalage est calculé, dans ce cas on créé un job "one-shot" qui sera exécuté 
 			// ultérieurement à la date voulue + décalage
-			if (decalageMinute) {
+			if (decalageMinute != 0) {
 				def newDate
 				
 				use(TimeCategory) {
@@ -225,6 +226,10 @@ class DeviceEventService extends AbstractService {
 				
 				log.info "Re-schedule event ${event.libelle} at ${newDate} (${decalageMinute}min)"
 				smarthomeScheduler.scheduleOneShotJob(DeviceEventTimerJob, newDate, [deviceEventId: event.id])
+				
+				// enregistrement du dernier décalage
+				event.lastDecalage = decalageMinute
+				event.save()
 				
 				return null
 			}
@@ -248,27 +253,38 @@ class DeviceEventService extends AbstractService {
 		
 		Date now = new Date().clearTime()
 		Date solsticeEte = now.copyWith([date: 21, month: 5])
+		Date solsticeEteSuiv = now.copyWith([date: 21, month: 5, year: now[YEAR]+1])
 		Date solsticeHiver = now.copyWith([date: 21, month: 11])
 		Date solsticeHiverPrec = now.copyWith([date: 21, month: 11, year: now[YEAR]-1])
 		
-		def decalage
+		def decalage = null
 		def totalJour
 		
 		// calcul de la durée entre le jour J et le solstice de référence
 		use(TimeCategory) {
-			if (now <= solsticeEte) {
-				decalage = now - solsticeHiverPrec
-			} else if (now > solsticeEte && now <= solsticeHiver) {
-				decalage = solsticeHiver - now
-			} else {
-				decalage = now - solsticeHiver
+			if (event.solstice == "hiver") {
+				if (now <= solsticeEte) {
+					decalage = now - solsticeHiverPrec
+				} else if (now > solsticeEte && now <= solsticeHiver) {
+					decalage = solsticeHiver - now
+				} else {
+					decalage = now - solsticeHiver
+				}
+			} else if (event.solstice == "été") {
+				if (now <= solsticeEte) {
+					decalage = solsticeEte - now 
+				} else if (now > solsticeEte && now <= solsticeHiver) {
+					decalage = now - solsticeEte 
+				} else {
+					decalage = solsticeEteSuiv - now 
+				}
 			}
 			
 			totalJour = (now <= solsticeEte ? solsticeEte - solsticeHiverPrec : solsticeHiver - solsticeEte)
 		}
 		
 		// produit en X pour calculer le décalage journalier en fonction du total
-		if (totalJour.days) {
+		if (totalJour.days && decalage != null) {
 			return (decalage.days * event.decalageMinute) / totalJour.days
 		} else {
 			return 0

@@ -23,8 +23,10 @@ class DeviceEvent {
 	Date lastEvent
 	
 	String cron
+	String solstice
 	boolean synchroSoleil
 	Integer decalageMinute
+	Integer lastDecalage
 	
 	
     static constraints = {
@@ -32,6 +34,8 @@ class DeviceEvent {
 		lastEvent nullable: true
 		cron nullable: true
 		decalageMinute nullable: true
+		lastDecalage nullable: true
+		solstice nullable: true
     }
 	
 	static mapping = {

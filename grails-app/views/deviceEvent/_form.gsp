@@ -68,7 +68,8 @@
 	<legend><span>Options</span></legend>
 	<div class="checkbox">
 		<g:checkBox name="synchroSoleil" value="${deviceEvent?.synchroSoleil}" class="checkbox"/>
-		<label>Suivre les solstices avec un décalage total de <g:textField name="decalageMinute" value="${ deviceEvent?.decalageMinute }" class="text short-field"/> minutes entre l'hiver et l'été. Le cron doit être programmé en fonction du solstice d'hiver : les minutes augmenteront jusqu'au 21 juin puis reviendront à la normale jusqu'au 21 décembre.</label>
+		<label>Suivre les solstices avec un décalage total de <g:textField name="decalageMinute" value="${ deviceEvent?.decalageMinute }" class="text short-field"/> minutes à partir du solstice d'<g:select name="solstice" value="${ deviceEvent?.solstice }" from="['été', 'hiver']" class="select"/>.</label>
+		<div class="description">Le cron doit toujours être programmé sur l'heure la plus tôt.</div>
 	</div>
 </fieldset>
 
