@@ -8,6 +8,7 @@ import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
+import smarthome.security.User;
 
 @Secured("isAuthenticated()")
 class DeviceController extends AbstractController {
@@ -50,7 +51,7 @@ class DeviceController extends AbstractController {
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond devices, model: [deviceSearch: deviceSearch]
+		respond devices, model: [deviceSearch: deviceSearch, user: authenticatedUser]
 	}
 	
 	
@@ -181,6 +182,25 @@ class DeviceController extends AbstractController {
 		this.preAuthorize(device)
 		deviceService.invokeAction(device, actionName)
 		redirect(action: 'devicesGrid')
+	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 * 
+	 * @return
+	 */
+	@Secured("permitAll()")
+	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
+	def publicInvokeAction(Device device, String actionName, String applicationKey) {
+		User user = User.findByApplicationKey(applicationKey)
+		
+		if (user?.id == device?.user?.id) {
+			deviceService.invokeAction(device, actionName)
+			redirect(action: 'devicesGrid')
+		} else {
+			render (status: 400, text: 'Unauthorized !')
+		}
 	}
 	
 	

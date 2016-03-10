@@ -64,7 +64,7 @@
 									</div>
 								</div>
 								<div class="device-grid-body-user">
-									<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device]"></g:render>
+									<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device, applicationKey: user.applicationKey]"></g:render>
 								</div>
 							</div>
 						</div>
