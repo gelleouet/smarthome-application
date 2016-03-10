@@ -1,3 +1,5 @@
+<%@ page import="smarthome.automation.notification.NotificationAccountEnum" %>
+
 <html>
 <head>
 <meta name='layout' content='authenticated' />
@@ -57,6 +59,36 @@
 						required="true" />
 				</div>
 			</fieldset>
+			
+			
+			<h4>Notifications SMS</h4>
+			
+			<fieldset>
+				<div class="field-group">
+					<label >N° téléphone mobile</label>
+					<g:textField name="telephoneMobile" value="${user.telephoneMobile}" class="text medium-field" />
+					<div class="description">Ne sert exclusiment qu'aux notifications SMS</div>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<div class="field-group">
+					<label >Compte</label>
+					<div>
+						<g:if test="${ smsAccount }">
+							${ smsAccount.senderInstance.description } 
+							<g:remoteLink url="[controller: 'notificationAccount', action: 'dialogNotificationAccount', id: smsAccount.id]"
+								update="ajaxDialog" onComplete="showNotificationAccountDialog()" class="aui-button aui-button-link">Modifier le compte</g:remoteLink>
+						</g:if>
+						<g:else>
+							Vous n'avez pas encore configuré de compte pour l'envoi des SMS. Veuillez cliquer sur le bouton suivant pour en créer un.
+							<g:remoteLink url="[controller: 'notificationAccount', action: 'dialogNotificationAccount', params: [typeNotification: NotificationAccountEnum.sms]]"
+								update="ajaxDialog" onComplete="showNotificationAccountDialog()" class="aui-button aui-button-link">Créer un compte</g:remoteLink> 
+						</g:else>
+					</div>
+				</div>
+			</fieldset>
+			
 			
 			
 			<h4>Applications</h4>

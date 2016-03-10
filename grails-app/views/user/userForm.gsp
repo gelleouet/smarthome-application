@@ -82,8 +82,8 @@
     
     <fieldset>
 		<div class="field-group">
-			<label for="groups">Groupes</label>
-			<app:picklist options="${ allGroup }" idField="id" labelField="name" selectId="groups" selectedOptions="${ userGroup }"/>
+			<label for="roles">Groupes</label>
+			<app:picklist options="${ roles }" idField="id" labelField="authority" selectId="roles" selectedOptions="${ userRoles }"/>
 		</div>
 	</fieldset>
     

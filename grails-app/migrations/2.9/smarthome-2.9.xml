@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1457640366165-1">
+        <createTable tableName="device_event_notification">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="TEXT"/>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="script" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-2">
+        <createTable tableName="notification_account">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="config" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-3">
+        <createTable tableName="user_role">
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-4">
+        <addColumn tableName="utilisateur">
+            <column name="telephone_mobile" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-5">
+        <addPrimaryKey columnNames="id" constraintName="device_event_notification_pkey" tableName="device_event_notification"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-6">
+        <addPrimaryKey columnNames="id" constraintName="notification_account_pkey" tableName="notification_account"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-7">
+        <addPrimaryKey columnNames="role_id, user_id" constraintName="user_role_pkey" tableName="user_role"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-8">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role" constraintName="fk_apcc8lxk2xnug8377fatvbn04" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-9">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role" constraintName="fk_it77eq964jhfqtu54081ebtio" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-10">
+        <addForeignKeyConstraint baseColumnNames="device_event_id" baseTableName="device_event_notification" constraintName="fk_nyhco2e0l1bkkup17dt795ja3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-11">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="notification_account" constraintName="fk_r1adfviyy0kbx8c3j3ymq57gc" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-12">
+        <createIndex indexName="deviceeventnotification_deviceevent_idx" tableName="device_event_notification" unique="false">
+            <column name="device_event_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-13">
+        <createIndex indexName="notificationaccount_user_idx" tableName="notification_account" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-14">
+        <dropForeignKeyConstraint baseTableName="user_role_group" constraintName="fk_9se04wabb1vif6yjcfged3s2p"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-15">
+        <dropForeignKeyConstraint baseTableName="role_group_role" constraintName="fk_cqr9g8iosupkylg4fw10paumq"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-16">
+        <dropForeignKeyConstraint baseTableName="user_role_group" constraintName="fk_d9ttuc99ggo3nld2pd96x6pe7"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-17">
+        <dropForeignKeyConstraint baseTableName="role_group_role" constraintName="fk_dxc3snhixkg9qn3c46p6hyjli"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-18">
+        <dropUniqueConstraint constraintName="uk_35hmlucbb2ndj6w0qxrocer9k" tableName="role_group"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-19">
+        <dropTable tableName="role_group"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-20">
+        <dropTable tableName="role_group_role"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-21">
+        <dropTable tableName="user_role_group"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-22">
+        <dropColumn columnName="acl" tableName="role"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1457640366165-23">
+        <dropColumn columnName="workflow_acl" tableName="role"/>
+    </changeSet>
+</databaseChangeLog>

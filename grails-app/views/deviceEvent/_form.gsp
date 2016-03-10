@@ -1,4 +1,5 @@
 <%@ page import="smarthome.automation.DeviceEvent" %>
+<%@ page import="smarthome.automation.notification.NotificationAccountEnum" %>
 
 <div class="field-group">
 	<label for="device">
@@ -37,6 +38,21 @@
 	</ul>
 	</div>
 </div>
+
+<g:if test="${ deviceEvent?.id }">
+	<fieldset class="group">
+	    <legend><span>Notifications</span></legend>
+	    <div class="checkbox">
+	    	<g:checkBox name="notificationSms" class="checkbox" value="${ deviceEvent.notificationSms }"/>
+	        <label for="notificationSms">SMS</label>
+	        <g:remoteLink class="aui-button-link" url="[action: 'dialogNotification', id: deviceEvent.id]" params="[typeNotification: NotificationAccountEnum.sms]" onComplete="showNotificationDialog()" update="ajaxDialog">Modifier le message</g:remoteLink>
+	    </div>                                
+	    <div class="checkbox">
+	    	<g:checkBox name="notificationEmail" class="checkbox" disabled="true"/>
+	        <label for="notificationEmail">Email</label>
+	    </div>                                
+	</fieldset>
+</g:if>
 
 
 <h4>Planification</h4>

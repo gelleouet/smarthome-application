@@ -13,9 +13,10 @@ import grails.validation.Validateable;
 @Validateable
 class DeviceEvent {
 	static belongsTo = [device: Device, user: User]
-	static hasMany = [triggers: DeviceEventTrigger]
+	static hasMany = [triggers: DeviceEventTrigger, notifications: DeviceEventNotification]
 	
 	Set triggers = []
+	Set notifications = []
 	
 	String libelle
 	String condition // script groovy conditionnel
@@ -29,6 +30,14 @@ class DeviceEvent {
 	Integer lastDecalage
 	
 	
+	// propriétés utilisateur
+	boolean notificationSms
+	boolean notificationMail
+	
+	
+	static transients = ['notificationSms', 'notificationMail']
+	
+	
     static constraints = {
 		condition nullable: true
 		lastEvent nullable: true
@@ -36,12 +45,15 @@ class DeviceEvent {
 		decalageMinute nullable: true
 		lastDecalage nullable: true
 		solstice nullable: true
+		notificationSms bindable: true
+		notificationMail bindable: true
     }
 	
 	static mapping = {
 		device index: "DeviceEvent_Device_Idx"
 		condition type: 'text'
 		triggers cascade: 'all-delete-orphan'
+		notifications cascade: 'all-delete-orphan'
 	}
 	
 	

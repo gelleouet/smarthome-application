@@ -26,6 +26,8 @@ camel.version = "2.14.0"
 camel.groupId = "org.apache.camel"
 quartz.version = "2.2.2"
 quartz.groupId = "org.quartz-scheduler"
+httpclient.groupId = "org.apache.httpcomponents"
+httpclient.version = "4.5.2"
 
 
 grails.project.dependency.resolver = "maven" // or ivy
@@ -79,6 +81,9 @@ grails.project.dependency.resolution = {
 
 		compile "$quartz.groupId:quartz:$quartz.version"
 		compile "$quartz.groupId:quartz-jobs:$quartz.version"
+		
+		compile "$httpclient.groupId:httpclient:$httpclient.version"
+		compile "$httpclient.groupId:fluent-hc:$httpclient.version"
 	}
 
 	plugins {

@@ -42,6 +42,7 @@
 		            <th id="id-email">Email</th>
 		            <th id="id-activation">Dernière activation</th>
 		            <th id="id-statut">Statuts</th>
+		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -51,6 +52,11 @@
 			            <td headers="id-email">${user.username }</td>
 			            <td headers="id-activation"><app:formatUser date="${user.lastActivation }"/></td>
 			            <td headers="id-statut"><g:render template="/user/userStatut" model="[user: user]"/></td>
+			            <td class="column-1-buttons command-column">
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Basculer vers l'utilisateur" action="switchUser" id="${ user.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-group"></span>
+			            	</g:link>
+			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>

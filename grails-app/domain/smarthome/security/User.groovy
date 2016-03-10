@@ -1,5 +1,7 @@
 package smarthome.security
 
+import java.util.Set;
+
 import grails.validation.Validateable
 
 
@@ -18,31 +20,34 @@ class User {
 	String password
 	String nom
 	String prenom
+	String applicationKey
+	String telephoneMobile
+	
 	Date lastActivation
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
-	String applicationKey
 	
-	// la liste des id groups (utilisé pour le binding mais n'est pas mappé en base)
-	def groups = []
+	
+	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)
+	def roles = []
 
-	static transients = ['springSecurityService', 'groups']
+	static transients = ['springSecurityService', 'roles']
 
 	static constraints = {
 		username blank: false, unique: true, email: true
 		password blank: false, validator: SmartHomeSecurityUtils.passwordValidator
 		nom blank: false
 		prenom blank: false
-		groups bindable: true
+		roles bindable: true
+		telephoneMobile nullable: true
 	}
 
 	static mapping = {
 		table name: 'utilisateur' // conflit sur certaines bases avec "user"
 		password column: '`password`'
 		sort 'nom'
-		cache: true
 	}
 	
 	
@@ -55,8 +60,14 @@ class User {
 	}
 	
 
-	Set<RoleGroup> getAuthorities() {
-		UserRoleGroup.findAllByUser(this).collect { it.roleGroup }
+	Set<Role> getAuthorities() {
+		def roles = UserRole.createCriteria().list {
+			eq 'user', this
+			join 'role'
+		}
+		
+		return roles.collect { it.role }
+		//UserRole.findAllByPersonne(this).collect { it.role }
 	}
 
 	def beforeInsert() {
@@ -71,5 +82,13 @@ class User {
 
 	protected void encodePassword() {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+	}
+	
+	String getPrenomNom() {
+		return "$prenom $nom"
+	}
+	
+	String getNomPrenom() {
+		return "$nom $prenom"
 	}
 }

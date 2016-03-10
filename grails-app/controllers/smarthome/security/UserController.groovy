@@ -3,6 +3,8 @@ package smarthome.security
 import smarthome.security.RegisterService;
 import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured;
+import smarthome.automation.NotificationAccount;
+import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.core.QueryUtils;
@@ -10,7 +12,6 @@ import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
 import smarthome.security.ChangePasswordCommand;
 import smarthome.security.RegistrationCode;
-import smarthome.security.RoleGroup;
 import smarthome.security.User;
 /**
  * Controller gestion utilisateur
@@ -34,7 +35,8 @@ class UserController extends AbstractController {
 	def profil() {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
-		render(view: 'profil', model: [user: user])
+		def smsAccount = NotificationAccount.findByUserAndType(user, NotificationAccountEnum.sms)
+		render(view: 'profil', model: [user: user, smsAccount: smsAccount])
 	}
 
 
@@ -126,12 +128,12 @@ class UserController extends AbstractController {
 	@Secured("hasRole('ROLE_ADMIN')")
 	def edit(User user) {
 		def editUser = parseFlashCommand("user", user)
-		def userGroup = editUser.getAuthorities()
+		def userRoles = editUser.getAuthorities()
 		def registrations = RegistrationCode.where({
 			username == editUser.username
 		}).list(sort: 'dateCreated', order: 'desc')
 		
-		def model = [user: editUser, allGroup: RoleGroup.list(), userGroup: userGroup, 
+		def model = [user: editUser, roles: Role.list(), userRoles: userRoles, 
 			registration: registrations ? registrations[0] : null]
 		
 		render(view: 'user', model: model)
@@ -147,7 +149,7 @@ class UserController extends AbstractController {
 	@Secured("hasRole('ROLE_ADMIN')")
 	def create() {
 		def editUser = parseFlashCommand("user", new User(lastActivation: new Date(), enabled: false))
-		render(view: 'user', model: [user: editUser, allGroup: RoleGroup.list(), userGroup: []])
+		render(view: 'user', model: [user: editUser, roles: Role.list(), userRoles: []])
 	}
 
 
@@ -192,6 +194,33 @@ class UserController extends AbstractController {
 		registerService.forgotPassword(username)
 		flash.info = "Un email pour réinitialiser le mot de passe a été envoyé à l'adresse suivante : ${username} !"
 		redirect(action: 'users')
+	}
+	
+	
+	/**
+	 * Authentification rapide vers un autre utilisateur
+	 *
+	 * @param user
+	 * @return
+	 */
+	@Secured("hasRole('ROLE_ADMIN')")
+	@ExceptionNavigationHandler(actionName = "users")
+	def switchUser(User user) {
+		// nettoie la session
+		// TODO 
+		redirect(uri: "/j_spring_security_switch_user", params: [j_username: user.username])
+	}
+	
+	
+	/**
+	 * Revenir à la session normale
+	 *
+	 * @return
+	 */
+	def exitSwitchUser() {
+		// nettoie la session
+		// TODO 
+		redirect(uri: "/j_spring_security_exit_user")
 	}
 	
 }

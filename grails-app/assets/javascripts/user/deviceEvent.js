@@ -14,3 +14,12 @@ $(window).on('load', function() {
 	});
 });
 
+
+function closeNotificationDialog() {
+	AJS.dialog2('#notification-dialog').hide();
+}
+
+function showNotificationDialog() {
+	AJS.dialog2('#notification-dialog').show();
+}
+

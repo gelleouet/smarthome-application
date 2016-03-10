@@ -92,6 +92,14 @@
                     
                     <g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'user')?.subitems ]"/>
                     
+                    <sec:ifSwitched>
+                    	<div class="aui-dropdown2-section">
+	                        <ul>
+	                            <li><g:link action="exitSwitchUser" controller="user">Revenir à votre session</g:link></li>
+	                        </ul>
+	                    </div>
+					</sec:ifSwitched>
+                    
                     <div class="aui-dropdown2-section">
                         <ul>
                             <li><g:link controller="logout">Déconnexion</g:link></li>

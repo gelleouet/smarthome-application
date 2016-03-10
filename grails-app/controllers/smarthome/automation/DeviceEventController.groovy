@@ -4,6 +4,7 @@ package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured;
 
+import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.AbstractController;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
@@ -49,6 +50,10 @@ class DeviceEventController extends AbstractController {
 	def edit(DeviceEvent deviceEvent) {
 		def editDeviceEvent = parseFlashCommand(COMMAND_NAME, deviceEvent)
 		this.preAuthorize(deviceEvent)
+		
+		editDeviceEvent.notificationSms = editDeviceEvent.notifications.find({it.type == NotificationAccountEnum.sms}) != null
+		editDeviceEvent.notificationMail = editDeviceEvent.notifications.find({it.type == NotificationAccountEnum.mail}) != null
+
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDeviceEvent]))
 	}
 
@@ -153,5 +158,19 @@ class DeviceEventController extends AbstractController {
 	def templateTriggers(DeviceEvent deviceEvent) {
 		deviceEvent.clearNotPersistTriggers()
 		render(template: 'triggers', model: fetchModelEdit([deviceEvent: deviceEvent]))
+	}
+	
+	
+	def dialogNotification(DeviceEvent deviceEvent, String typeNotification) {
+		this.preAuthorize(deviceEvent)
+		def notification = DeviceEventNotification.findByDeviceEventAndType(deviceEvent, NotificationAccountEnum.valueOf(typeNotification))
+		render (view: 'dialogNotification', model: [notification: notification, typeNotification: typeNotification,
+			deviceEvent: deviceEvent])	
+	}
+	
+	
+	def saveNotification(DeviceEventNotification notification) {
+		deviceEventService.saveNotification(notification)
+		nop()
 	}
 }

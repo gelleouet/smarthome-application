@@ -6,9 +6,7 @@ import smarthome.core.AbstractService
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.SmartHomeException
 import smarthome.security.ChangePasswordCommand;
-import smarthome.security.RoleGroup;
 import smarthome.security.User;
-import smarthome.security.UserRoleGroup;
 
 
 /**
@@ -50,18 +48,13 @@ class UserService extends AbstractService {
 		
 		// enregistrement des groupes : on efface tout et on remet les nouveaux
 		if (saveRole) {
-			UserRoleGroup.removeAll(user)
+			UserRole.removeAll(user)
 			
-			if (user.groups) {
-				user.groups.each {
-					def roleGroup = new RoleGroup()
-					roleGroup.id = it.toInteger()
-					UserRoleGroup.create(user, roleGroup)
+			if (user.roles) {
+				user.roles.each {
+					UserRole.create(user, Role.read(it.toLong()))
 				}
 			}
-			
-			// si modification des roles, il faut rafraichir ses nouvelles permissions
-			springSecurityService.reauthenticate(user.username)
 		}
 		
 		return user

@@ -6,6 +6,7 @@ import static java.util.Calendar.YEAR
 
 import java.io.Serializable;
 
+import grails.async.Promises;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
@@ -14,8 +15,11 @@ import groovy.time.TimeDuration;
 
 import org.quartz.CronExpression;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import smarthome.automation.notification.Notification;
+import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.automation.scheduler.DeviceEventTimerJob;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.core.AbstractService;
@@ -32,6 +36,7 @@ class DeviceEventService extends AbstractService {
 	DeviceService deviceService
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
+	NotificationAccountService notificationAccountService
 	
 	
 	/**
@@ -53,7 +58,33 @@ class DeviceEventService extends AbstractService {
 			throw new SmartHomeException("Erreur enregistrement device event", deviceEvent);
 		}
 		
+		// suppression ou ajout des notifications
+		def notificationSms = DeviceEventNotification.findByDeviceEventAndType(deviceEvent, NotificationAccountEnum.sms)
+		def notificationMail = DeviceEventNotification.findByDeviceEventAndType(deviceEvent, NotificationAccountEnum.mail)
+		
+		if (!deviceEvent.notificationSms) {
+			notificationSms?.delete()
+		} else if (!notificationSms) {
+			new DeviceEventNotification(deviceEvent: deviceEvent, type: NotificationAccountEnum.sms).save()
+		}
+		
+		if (!deviceEvent.notificationMail) {
+			notificationMail?.delete()
+		} else if (!notificationMail) {
+			new DeviceEventNotification(deviceEvent: deviceEvent, type: NotificationAccountEnum.mail).save()
+		}
+		
 		return deviceEvent
+	}
+	
+	
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def saveNotification(DeviceEventNotification notification) throws SmartHomeException {
+		if (!notification.save()) {
+			throw new SmartHomeException("Erreur enregistrement notification", notification);
+		}
+		
+		return notification
 	}
 	
 	
@@ -97,9 +128,9 @@ class DeviceEventService extends AbstractService {
 			device.attach()
 		}
 		
-		// ne prend que les events actifs, non planifiés et avec trigger
+		// ne prend que les events actifs, non planifiés
 		def events = device.events?.findAll {
-			it.actif && !it.cron && it.triggers
+			it.actif && !it.cron
 		}
 		
 		if (events) {
@@ -137,7 +168,7 @@ class DeviceEventService extends AbstractService {
 		}
 		
 		// exécute la condition si présente
-		// IMPORTANT : la condition est exécutée dans une transaction à part et surtout en lecgure seule
+		// IMPORTANT : la condition est exécutée dans une transaction à part et surtout en lecture seule
 		// pour éviter toute erreur de manip ou mauvaise intention
 		if (event.condition) {
 			DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
@@ -193,6 +224,8 @@ class DeviceEventService extends AbstractService {
 			// trace l'exécution de l'event
 			event.lastEvent = new Date()
 			event.save()
+			
+			this.sendNotifications(event, context)
 		}
 	}
 	
@@ -335,5 +368,53 @@ class DeviceEventService extends AbstractService {
 	 */
 	def findById(Serializable id) {
 		DeviceEvent.get(id)
+	}
+	
+	
+	/**
+	 * Envoi des notifications lors du déchenchement d'un event
+	 * Les notifications sont envoyées en asynchrone
+	 * 
+	 * @param deviceEvent
+	 * @param context
+	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	void sendNotifications(DeviceEvent deviceEvent, Map context) throws SmartHomeException {
+		def notifications = DeviceEventNotification.createCriteria().list {
+			eq 'deviceEvent', deviceEvent
+			join 'deviceEvent'
+			join 'deviceEvent.device'
+		}
+		
+		def user = deviceEvent.user
+		def tasks = []
+		
+		notifications.each { notification ->
+			tasks << Promises.task {
+				def message
+				
+				// construction du message
+				if (notification.message) {
+					if (notification.script) {
+						// Utiliser une transaction séparée en lecture seule pour éviter des abus
+						DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
+							message = ScriptUtils.runScript(notification.message, context)?.toString()
+						}
+					} else {
+						message = notification.message
+					}
+				}
+				
+				if (!message) {
+					message = "SmartHome Notification. Device: ${notification.deviceEvent.device.label}. Valeur: ${notification.deviceEvent.device.value}"
+				}
+				
+				notificationAccountService.sendNotification(new Notification(message: message, type: notification.type, user: deviceEvent.user))
+			}
+		}
+		
+		Promises.onError(tasks) {
+			log.error "Send notifications error", it
+		}
 	}
 }

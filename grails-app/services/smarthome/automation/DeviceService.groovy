@@ -325,7 +325,7 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("userId must be fill !", command)
 		}
 		
-		return Device.createCriteria().list(command.pagination) {
+		def commonCriteria = {
 			user {
 				idEq(command.userId)
 			}
@@ -342,6 +342,22 @@ class DeviceService extends AbstractService {
 			}
 			
 			join "deviceType"
+		}
+		
+		// si on doit tout charger, on en profite pour charger les meta datas et values
+		if (!command.pagination) {
+			return Device.createCriteria().listDistinct() {
+				commonCriteria.delegate = delegate
+				commonCriteria()
+				
+				join 'metadatas'
+				join 'metavalues'
+			}
+		} else {
+			return Device.createCriteria().list(command.pagination) {
+				commonCriteria.delegate = delegate
+				commonCriteria()
+			}
 		}
 	}
 	

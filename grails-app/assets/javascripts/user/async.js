@@ -78,6 +78,25 @@ $(window).on('load', function() {
 });
 
 
+function ajaxGet(eltSrcId, urlAttr, datas, divDstId, onSuccess) {
+	var urlAction = $(eltSrcId).attr(urlAttr);
+	var global = !($(eltSrcId).attr('data-immediate') == 'true');
+	
+	jQuery.ajax({
+		type: 'POST',
+		data: datas,
+		url: urlAction,
+		global: global,
+		success: function(data, textStatus) {
+			$(divDstId).html(data);
+			if (onSuccess) {
+				onSuccess(data);
+			}
+		},
+		error: errorAjaxFunction
+	});
+}
+
 
 /**
  * Chargement des formulaires asynchrone.

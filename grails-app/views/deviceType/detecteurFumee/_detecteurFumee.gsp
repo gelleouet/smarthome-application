@@ -1,5 +1,8 @@
 <%@ page import="smarthome.automation.DeviceValue" %>
 
+<g:set var="alarme" value="${ device.metavalueByLabel('alarm type')?.value }"/>
+<g:set var="batterie" value="${ device.metavalueByLabel('battery')?.value }"/>
+
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
 		<g:if test="${ device.value?.toDouble() > 0 }">
@@ -13,11 +16,9 @@
 		</g:else>
 	</div>
 	<div style="display:table-cell; padding-left:10px;; vertical-align:middle" class="separator-left">
-		<p style="font-size:8pt">
-		<strong>Battery :</strong> ${ device.metavalueByLabel('battery')?.value }%
+		<span style="font-size:8pt" class="${ batterie?.isDouble() && ((batterie as Double) < 25) ? 'aui-lozenge aui-lozenge-error' : '' }"><strong>Batterie :</strong> ${ batterie }%</span>
 		<br/>
-		<strong>Alarm :</strong> ${ device.metavalueByLabel('alarm type')?.value }
-		</p>
+		<span style="font-size:8pt" class="${ alarme?.isDouble() && ((alarme as Double) > 0) ? 'aui-lozenge aui-lozenge-current' : '' }"><strong>Alarme :</strong> ${ alarme }</span>
 	</div>
 </div>
 

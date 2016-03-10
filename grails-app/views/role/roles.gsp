@@ -39,20 +39,12 @@
 		    <thead>
 		        <tr>
 		            <th id="id-nom">Nom</th>
-		            <th id="id-acl">ACL</th>
-		            <th id="id-workflow">Workflow</th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="role" in="${ roleInstanceList }">
 			        <tr>
 			            <td headers="id-nom"><g:link action="edit" id="${role.id }">${ role.authority }</g:link></td>
-			            <td headers="id-acl"><g:if test="${ role.acl }">X</g:if></td>
-			            <td headers="id-workflow">
-			            	<g:if test="${ role.workflowAcl }">
-			            		<span class="aui-lozenge aui-lozenge-complete">${role.workflowAcl}</span>
-			            	</g:if>
-			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>

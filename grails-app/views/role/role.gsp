@@ -18,21 +18,6 @@
 				</div>
 			</fieldset>
 			
-			
-			<fieldset class="group">
-		        <div class="checkbox">
-		        	<g:checkBox name="acl" value="${role.acl }" class="checkbox"/>
-		            <label for="acl">Participe à la gestion ACL</label>
-		        </div>                                
-		    </fieldset>
-		    
-		    <fieldset>
-				<div class="field-group">
-					<label for="workflowAcl">Workflow ACL</label>
-					<g:select name="workflowAcl" from="${ workflowAcl }" class="select" value="${role.workflowAcl}" noSelection="${['': ''] }"/>
-				</div>
-			</fieldset>
-	
 			<br/>
 	
 			<div class="buttons-container">
