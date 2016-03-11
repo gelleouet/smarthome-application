@@ -85,6 +85,10 @@ class DateUtils {
 	 * @return
 	 */
 	static boolean isBlindTime(Date date, int dateField) {
+		if (date == null) {
+			return false
+		}
+		
 		Date currentDate = new Date()
 		Date endDate = date.copyWith([:])
 		endDate[dateField] = endDate[dateField] + 1
