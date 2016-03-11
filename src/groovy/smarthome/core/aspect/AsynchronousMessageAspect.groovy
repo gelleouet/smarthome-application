@@ -1,5 +1,6 @@
 package smarthome.core.aspect
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import smarthome.core.AsynchronousMessage;
@@ -7,10 +8,13 @@ import smarthome.core.SmartHomeException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.codehaus.groovy.grails.orm.support.GrailsTransactionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,53 +44,48 @@ import smarthome.core.ClassUtils;
 class AsynchronousMessageAspect {
 	
 	@Autowired
-	PlatformTransactionManager transactionManager
-	
-	@Autowired
 	TransactionAttributeSource transactionAttributeSource
 	
 	private static final log = LogFactory.getLog(this)
 	
-	@Around("@annotation(asynchronousMessage)")
-	Object aroundAsynchronousMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage) {
-		// on récupère les infos de la transaction sur la méthode du service
-		def transactionAttribute = transactionAttributeSource.getTransactionAttribute(joinPoint.signature.method, joinPoint.target.class)
-		
-		// mode transaction : exécution de la méthode et préparation des envois de message amqp
-		// les messages sont envoyées après le commit de la transaction
-		if (transactionAttribute) {
-			new GrailsTransactionTemplate(transactionManager, transactionAttribute).execute({
-				def result = executeJoinPoint(joinPoint)
-				
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						sendAsyncMessage(joinPoint, asynchronousMessage, result)
-					}
-				});
-			
-				return result
-			})
-		}
-		// exécution sans transaction
-		else {
-			def result = executeJoinPoint(joinPoint)
-			sendAsyncMessage(joinPoint, asynchronousMessage, result)
-			return result
-		}
-	}
 	
 	
 	/**
-	 * Exécute le joinpoint et renvoit le retour la méthode
-	 * 
-	 * @param joinPoint
-	 * @return
+	 * FIXME : Le pointcut "@annotation(AsynchronousMessage)" ne fonctionne plus quand un service
+	 * contient une annotation Spring ACL (Postfilter, Preauthorise, etc.).
+	 *
+	 * Il fonctionne correctement si <aop:aspectj-autoproxy> est activé mais du coup c'est les annotations
+	 * Spring ACL qui ne fonctionnent plus
+	 *
+	 * Du coup on prend plus large et le code filtre les appels de méthode en vérifiant la présence
+	 * des annotations
 	 */
-	private def executeJoinPoint(ProceedingJoinPoint joinPoint) {
-		return joinPoint.proceed()
-	}
+	@Pointcut("execution(* smarthome..*Service.*(..))")
+	void smarthomeServiceMethod() {}
 	
+	
+	
+	@AfterReturning(value = "smarthomeServiceMethod()", returning = "result")
+	void afterAsynchronousMessage(JoinPoint joinPoint, Object result) {
+		MethodSignature signature = (MethodSignature) joinPoint.signature
+		Method method = signature.method
+		Annotation asyncMessage = method.getAnnotation(AsynchronousMessage)
+		
+		if (asyncMessage) {
+			def transactionAttribute = transactionAttributeSource.getTransactionAttribute(joinPoint.signature.method, joinPoint.target.class)
+
+			if (transactionAttribute) {
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						sendAsyncMessage(joinPoint, asyncMessage, result)
+					}
+				});
+			} else {
+				sendAsyncMessage(joinPoint, asyncMessage, result)
+			}
+		}
+	}
 	
 	
 	/**

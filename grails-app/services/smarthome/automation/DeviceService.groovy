@@ -8,6 +8,7 @@ import grails.plugin.cache.Cacheable;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.automation.deviceType.AbstractDeviceType;
@@ -31,12 +32,25 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def save(Device device) throws SmartHomeException {
 		if (!device.save()) {
 			throw new SmartHomeException("Erreur enregistrement device !", device)
 		}
 		
+		return device
+	}
+	
+	
+	/**
+	 * Edition d'un device
+	 * 
+	 * @param device
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	Device edit(Device device) {
 		return device
 	}
 	
@@ -74,6 +88,7 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def delete(Device device) throws SmartHomeException {
 		device.delete();

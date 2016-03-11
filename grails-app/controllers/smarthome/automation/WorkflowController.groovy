@@ -27,7 +27,7 @@ class WorkflowController extends AbstractController {
 		"Domotique"
 	])
 	def workflows(String workflowSearch) {
-		def workflows = workflowService.listByUser(this.getPagination([:]), workflowSearch)
+		def workflows = workflowService.listByUser(workflowSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = workflows.totalCount
 
 		// workflows est accessible depuis le model avec la variable workflow[Instance]List
@@ -44,7 +44,7 @@ class WorkflowController extends AbstractController {
 	 */
 	def edit(Workflow workflow) {
 		def editWorkflow = parseFlashCommand(COMMAND_NAME, workflow)
-		this.preAuthorize(workflow)
+		editWorkflow = workflowService.edit(editWorkflow)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editWorkflow]))
 	}
 
@@ -87,7 +87,6 @@ class WorkflowController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "edit", modelName = WorkflowController.COMMAND_NAME)
 	def saveEdit(Workflow workflow) {
 		checkErrors(this, workflow)
-		this.preAuthorize(workflow)
 		workflowService.save(workflow)
 		redirect(action: COMMAND_NAME + 's')
 	}
@@ -117,7 +116,6 @@ class WorkflowController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "workflows")
 	def delete(Workflow workflow) {
-		this.preAuthorize(workflow)
 		workflowService.delete(workflow)
 		redirect(action: COMMAND_NAME + 's')
 	}

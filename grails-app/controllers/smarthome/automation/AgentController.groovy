@@ -56,20 +56,8 @@ class AgentController extends AbstractController {
 		"Domotique"
 	])
 	def agents(String agentSearch) {
-		int recordsTotal
-		def search = QueryUtils.decorateMatchAll(agentSearch)
-		def userId = principal.id
-			
-		def agents = Agent.createCriteria().list(this.getPagination([:])) {
-			user {
-				idEq(userId)
-			}
-			
-			if (agentSearch) {
-				ilike 'agentModel', agentSearch
-			}
-		}
-		recordsTotal = agents.totalCount
+		def agents = agentService.listByUser(agentSearch, principal.id, this.getPagination([:]))
+		def recordsTotal = agents.totalCount
 
 		// agents est accessible depuis le model avec la variable agent[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -86,7 +74,6 @@ class AgentController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
 	def activer(Agent agent, boolean actif) {
-		this.preAuthorize(agent)
 		agentService.activer(agent, actif)
 		redirect(action: 'agents')
 	}
@@ -99,7 +86,6 @@ class AgentController extends AbstractController {
 	 * @return
 	 */
 	def addDevice(Agent agent) {
-		this.preAuthorize(agent)
 		flash.device = new Device(agent: agent)
 		redirect(action: 'create', controller: 'device')
 	}
@@ -112,7 +98,7 @@ class AgentController extends AbstractController {
 	 * @return
 	 */
 	def edit(Agent agent) {
-		this.preAuthorize(agent)
+		agent = agentService.edit(agent)
 		render(view: 'agent', model: [agent: agent])
 	}
 	
@@ -124,7 +110,6 @@ class AgentController extends AbstractController {
 	 * @return
 	 */
 	def save(Agent agent) {
-		this.preAuthorize(agent)
 		agentService.save(agent)
 		redirect(action: 'agents')
 	}
@@ -138,7 +123,6 @@ class AgentController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
 	def startInclusion(Agent agent) {
-		this.preAuthorize(agent)
 		agentService.startAssociation(agent, true)
 		redirect(action: 'agents')
 	}
@@ -151,7 +135,6 @@ class AgentController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
 	def startExclusion(Agent agent) {
-		this.preAuthorize(agent)
 		agentService.startAssociation(agent, false)
 		redirect(action: 'agents')
 	}

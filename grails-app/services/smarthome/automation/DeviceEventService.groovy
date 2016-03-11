@@ -14,6 +14,7 @@ import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 
 import org.quartz.CronExpression;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +41,44 @@ class DeviceEventService extends AbstractService {
 	
 	
 	/**
+	 * Edition ACL
+	 * 
+	 * @param deviceEvent
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#deviceEvent, 'OWNER')")
+	DeviceEvent edit(DeviceEvent deviceEvent) {
+		return deviceEvent
+	}
+	
+	
+	/**
+	 * Suppression d'une instance
+	 * 
+	 * @param domain
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#deviceEvent, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void delete(DeviceEvent deviceEvent) {
+		try {
+			// flush direct pour catcher une erreur SQL (ex : clé étrangère) et la renvoyer en SmartHomeException
+			// sinon l'erreur est déclenchée hors méthode
+			deviceEvent.delete(flush: true)
+		} catch (Exception ex) {
+			throw new SmartHomeException(ex, deviceEvent)
+		}
+	}
+	
+	
+	/**
 	 * Enregistrement d'un domain
 	 *
 	 * @param domain
 	 *
 	 * @return domain
 	 */
+	@PreAuthorize("hasPermission(#deviceEvent, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def save(deviceEvent) throws SmartHomeException {
 		if (deviceEvent.cron) {
@@ -78,6 +111,7 @@ class DeviceEventService extends AbstractService {
 	}
 	
 	
+	@PreAuthorize("hasPermission(#notification.deviceEvent, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def saveNotification(DeviceEventNotification notification) throws SmartHomeException {
 		if (!notification.save()) {
