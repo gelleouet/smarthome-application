@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import smarthome.core.DateUtils;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -68,5 +69,16 @@ class DeviceEvent {
 		triggers?.removeAll {
 			! it.persist
 		}
+	}
+	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 *
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField) {
+		return DateUtils.isBlindTime(lastEvent, dateField)
 	}
 }

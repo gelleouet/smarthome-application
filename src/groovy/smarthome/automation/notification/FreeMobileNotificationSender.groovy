@@ -13,6 +13,8 @@ import smarthome.core.SmartHomeException
 
 class FreeMobileNotificationSender extends AbstractNotificationSender {
 
+	private static final String CHARSET_ISO8859 = "iso-8859-1"
+	
 	private static final String FREE_SMS_URL = "https://smsapi.free-mobile.fr/sendmsg"
 	
 	private static final Map ERRORS = [400: "Un des paramètres obligatoires est manquant",
@@ -27,10 +29,13 @@ class FreeMobileNotificationSender extends AbstractNotificationSender {
 			throw new SmartHomeException("Free mobile configuration incomplète ! (user, pass obligatoires)")
 		}
 
+		// encodage du message en iso sinon caractères spéciaux ne passent pas
+		String encodMessage = new String((["user": config.user, "pass": config.pass, "msg": notification.message] as JSON).toString().bytes, CHARSET_ISO8859)
+		
 		try {
 			HttpResponse response = Request.Post(FREE_SMS_URL)
-				//.bodyForm(Form.form().add("user", config.user).add("pass", config.pass).add("msg", notification.message).build())
-				.bodyString((["user": config.user, "pass": config.pass, "msg": notification.message] as JSON).toString(), ContentType.APPLICATION_JSON)
+				.addHeader("Content-type", "${ContentType.APPLICATION_JSON.mimeType}; charset=$CHARSET_ISO8859")
+				.bodyString(encodMessage, ContentType.APPLICATION_JSON)
 				.execute()
 				.returnResponse()
 			 

@@ -35,6 +35,7 @@
 	<ul>
 	<li>device : objet smarthome.automation.Device. Représente le device associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
 	<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4'].value</li>
+	<li>deviceEvent : l'événement courant. Ex : deviceEvent.lastEvent, deviceEvent.isBlindTime()</li>
 	</ul>
 	</div>
 </div>

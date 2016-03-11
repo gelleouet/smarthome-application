@@ -1,7 +1,10 @@
 package smarthome.automation
 
 import org.apache.commons.lang.StringUtils;
+
 import java.util.Map;
+
+import smarthome.core.DateUtils;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -158,5 +161,16 @@ class Device {
 		def deviceImpl = deviceType.newDeviceType()
 		deviceImpl.device = this
 		return deviceImpl
+	}
+	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 * 
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField) {
+		return DateUtils.isBlindTime(dateValue, dateField)
 	}
 }

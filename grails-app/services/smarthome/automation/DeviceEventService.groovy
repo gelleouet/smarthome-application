@@ -167,6 +167,10 @@ class DeviceEventService extends AbstractService {
 			context = this.buildContext(device)
 		}
 		
+		// ajout de l'event courant dans le context
+		// (permet d'accéder par exemple à la dernière exécution de l'event)
+		context.deviceEvent = event
+		
 		// exécute la condition si présente
 		// IMPORTANT : la condition est exécutée dans une transaction à part et surtout en lecture seule
 		// pour éviter toute erreur de manip ou mauvaise intention
@@ -406,7 +410,7 @@ class DeviceEventService extends AbstractService {
 				}
 				
 				if (!message) {
-					message = "SmartHome Notification. Device: ${notification.deviceEvent.device.label}. Valeur: ${notification.deviceEvent.device.value}"
+					message = "NOTIFICATION SMARTHOME\rDevice : ${notification.deviceEvent.device.label}\rValeur : ${notification.deviceEvent.device.value}"
 				}
 				
 				notificationAccountService.sendNotification(new Notification(message: message, type: notification.type, user: deviceEvent.user))

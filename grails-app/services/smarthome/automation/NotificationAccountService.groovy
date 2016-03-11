@@ -44,7 +44,7 @@ class NotificationAccountService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	void sendNotification(Notification notification) throws SmartHomeException {
-		log.info "Send notification $notification.type to $notification.user.username..."
+		log.info "Send notification $notification.type to $notification.user.username : $notification.message"
 		
 		// recherche compte sur
 		def account = NotificationAccount.findByUserAndType(notification.user, notification.type)
