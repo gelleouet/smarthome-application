@@ -1,5 +1,6 @@
 package smarthome.rule
 
+import smarthome.core.ScriptRule;
 import smarthome.core.SmartHomeException;
 import smarthome.rule.Rule;
 import grails.plugin.springsecurity.SpringSecurityService;
