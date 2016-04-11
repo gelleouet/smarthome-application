@@ -13,6 +13,9 @@ import grails.validation.Validateable;
  */
 @Validateable
 class DeviceEvent {
+	public static final String FORMAT_HEURE_DECALAGE = "HH:mm"
+	
+	
 	static belongsTo = [device: Device, user: User]
 	static hasMany = [triggers: DeviceEventTrigger, notifications: DeviceEventNotification]
 	
@@ -25,10 +28,12 @@ class DeviceEvent {
 	Date lastEvent
 	
 	String cron
+	// planif solticialle
 	String solstice
 	boolean synchroSoleil
-	Integer decalageMinute
-	Integer lastDecalage
+	boolean heureEte
+	String heureDecalage // heure du décalage max au format HH:mm
+	String lastHeureDecalage // heure du dernier décalage au format HH:mm
 	
 	
 	// propriétés utilisateur
@@ -43,8 +48,8 @@ class DeviceEvent {
 		condition nullable: true
 		lastEvent nullable: true
 		cron nullable: true
-		decalageMinute nullable: true
-		lastDecalage nullable: true
+		heureDecalage nullable: true
+		lastHeureDecalage nullable: true
 		solstice nullable: true
 		notificationSms bindable: true
 		notificationMail bindable: true

@@ -1,15 +1,12 @@
 package smarthome.automation
 
-import static java.util.Calendar.DAY_OF_MONTH
-import static java.util.Calendar.MONTH
-import static java.util.Calendar.YEAR
-
 import java.io.Serializable;
 
 import grails.async.Promises;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
+import groovy.time.BaseDuration;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 
@@ -29,6 +26,7 @@ import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
+import smarthome.rule.DeviceEventDecalageRuleService;
 import smarthome.security.User;
 
 
@@ -38,6 +36,7 @@ class DeviceEventService extends AbstractService {
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
 	NotificationAccountService notificationAccountService
+	DeviceEventDecalageRuleService deviceEventDecalageRuleService
 	
 	
 	/**
@@ -281,85 +280,24 @@ class DeviceEventService extends AbstractService {
 	@AsynchronousMessage()
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	DeviceEvent executeScheduleDeviceEvent(DeviceEvent event, Date scheduledDate) throws SmartHomeException {
-		int decalageMinute = 0
+		Date newDate = deviceEventDecalageRuleService.execute(event, true, [scheduledDate: scheduledDate])
 		
-		if (event.synchroSoleil) {
-			decalageMinute = this.getDecalageMinute(event)
+		// un décalage est calculé, dans ce cas on créé un job "one-shot" qui sera exécuté 
+		// ultérieurement à la date voulue + décalage
+		if (newDate) {
+			smarthomeScheduler.scheduleOneShotJob(DeviceEventTimerJob, newDate, [deviceEventId: event.id])
 			
-			// un décalage est calculé, dans ce cas on créé un job "one-shot" qui sera exécuté 
-			// ultérieurement à la date voulue + décalage
-			if (decalageMinute != 0) {
-				def newDate
-				
-				use(TimeCategory) {
-					newDate = scheduledDate + decalageMinute.minutes
-				}
-				
-				log.info "Re-schedule event ${event.libelle} at ${newDate} (${decalageMinute}min)"
-				smarthomeScheduler.scheduleOneShotJob(DeviceEventTimerJob, newDate, [deviceEventId: event.id])
-				
-				// enregistrement du dernier décalage
-				event.lastDecalage = decalageMinute
-				event.save()
-				
-				return null
-			}
+			// enregistrement du dernier décalage
+			event.lastHeureDecalage = newDate.format(DeviceEvent.FORMAT_HEURE_DECALAGE)
+			event.save()
+			
+			log.info "Re-schedule event ${event.libelle} at ${newDate}"
+			
+			// IMPORTANT : pour annuler l'exécution en asynchrone à la fin de la méthode
+			return null
 		}
 		
 		return event
-	}
-	
-	
-	/**
-	 * Calcule le décalage en minute du jour si la synchro horaire est activée
-	 *  
-	 * @param event
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	int getDecalageMinute(DeviceEvent event) throws SmartHomeException {
-		if (!event.decalageMinute) {
-			return 0
-		}
-		
-		Date now = new Date().clearTime()
-		Date solsticeEte = now.copyWith([date: 21, month: 5])
-		Date solsticeEteSuiv = now.copyWith([date: 21, month: 5, year: now[YEAR]+1])
-		Date solsticeHiver = now.copyWith([date: 21, month: 11])
-		Date solsticeHiverPrec = now.copyWith([date: 21, month: 11, year: now[YEAR]-1])
-		
-		def decalage = null
-		def totalJour
-		
-		// calcul de la durée entre le jour J et le solstice de référence
-		use(TimeCategory) {
-			if (event.solstice == "hiver") {
-				if (now <= solsticeEte) {
-					decalage = now - solsticeHiverPrec
-				} else if (now > solsticeEte && now <= solsticeHiver) {
-					decalage = solsticeHiver - now
-				} else {
-					decalage = now - solsticeHiver
-				}
-			} else if (event.solstice == "été") {
-				if (now <= solsticeEte) {
-					decalage = solsticeEte - now 
-				} else if (now > solsticeEte && now <= solsticeHiver) {
-					decalage = now - solsticeEte 
-				} else {
-					decalage = solsticeEteSuiv - now 
-				}
-			}
-			
-			totalJour = (now <= solsticeEte ? solsticeEte - solsticeHiverPrec : solsticeHiver - solsticeEte)
-		}
-		
-		// produit en X pour calculer le décalage journalier en fonction du total
-		if (totalJour.days && decalage != null) {
-			return (decalage.days * event.decalageMinute) / totalJour.days
-		} else {
-			return 0
-		}
 	}
 	
 	

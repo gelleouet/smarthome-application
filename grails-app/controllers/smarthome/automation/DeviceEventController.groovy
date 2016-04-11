@@ -77,7 +77,7 @@ class DeviceEventController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		
-		model.workflows = workflowService.listByUser([:], null)
+		model.workflows = workflowService.listByUser(null, principal.id, [:])
 		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: principal.id))
 		
 		// on remplit avec les infos du user
