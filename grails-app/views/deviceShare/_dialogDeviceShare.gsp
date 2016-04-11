@@ -14,7 +14,7 @@
 	    <div class="aui-dialog2-content">
 	    
 	    	<div id="ajaxDeviceShare">
-		    	
+		    	<g:render template="datatable"/>
 	    	</div>
 	    	
 	    	

@@ -15,8 +15,6 @@ class DeviceShare {
 	static belongsTo = [device: Device]
 	
 	User sharedUser
-	boolean modification
-	boolean execution
 	
 	
     static constraints = {

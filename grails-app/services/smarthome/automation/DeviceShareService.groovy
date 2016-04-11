@@ -12,7 +12,23 @@ import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
 
-class DeviceTypeService extends AbstractService {
+class DeviceShareService extends AbstractService {
 
+	/**
+	 * Les partages associés à un device avec les bonnes jointures fetchées
+	 * 
+	 * @param device
+	 * @return
+	 */
+	List<DeviceShare> listByDevice(Device device) {
+		return DeviceShare.createCriteria().list {
+			eq 'device', device
+			
+			sharedUser {
+				order 'nom'
+				order 'prenom'
+			}
+		}
+	}
 	
 }

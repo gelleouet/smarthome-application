@@ -9,10 +9,13 @@ import smarthome.core.AbstractController;
 class DeviceShareController extends AbstractController {
 
 	DeviceService deviceService
+	DeviceShareService deviceShareService
 	
 	
-	def dialogDeviceShare(Device device) {
+	def _dialogDeviceShare(Device device) {
 		deviceService.edit(device)
-		render (view: 'dialogDeviceShare', model: [device: device])
+		def shares = deviceShareService.listByDevice(device)
+		render (template: 'dialogDeviceShare', model: 
+			[device: device, shares: shares])
 	}
 }
