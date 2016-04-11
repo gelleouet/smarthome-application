@@ -63,7 +63,7 @@ class DeviceController extends AbstractController {
 	 */
 	def edit(Device device) {
 		def editDevice = parseFlashCommand(COMMAND_NAME, device)
-		this.preAuthorize(device)
+		editDevice = deviceService.edit(editDevice)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDevice]))
 	}
 
@@ -106,7 +106,6 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
 	def saveEdit(Device device) {
-		this.preAuthorize(device)
 		checkErrors(this, device)
 		deviceService.save(device)
 		redirect(action: COMMAND_NAME + 's')
@@ -121,7 +120,6 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
 	def changeMetadata(Device device, String metadataName) {
-		this.preAuthorize(device)
 		checkErrors(this, device)
 		deviceService.changeMetadata(device, metadataName)
 		nop()
@@ -150,7 +148,7 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def chartView(Device device, Long sinceHour, Long offsetHour) {
-		this.preAuthorize(device)
+		deviceService.edit(device)
 		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
 		offsetHour = offsetHour ?: 0
 		
@@ -179,7 +177,7 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def invokeAction(Device device, String actionName) {
-		this.preAuthorize(device)
+		deviceService.edit(device)
 		deviceService.invokeAction(device, actionName)
 		redirect(action: 'devicesGrid')
 	}
@@ -211,7 +209,6 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "devices", modelName = "")
 	def delete(Device device) {
-		this.preAuthorize(device)
 		deviceService.delete(device)
 		redirect(action: 'devices')
 	}

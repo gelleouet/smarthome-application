@@ -44,7 +44,7 @@
 		            <th>Type</th>
 		            <th>Agent</th>
 		            <th>Visible</th>
-		            <th class="column-1-buttons"></th>
+		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -62,10 +62,14 @@
 			            <td>${ bean.deviceType.libelle }</td>
 			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
 			            <td>${ bean.show ? 'X' : '' }</td>
-			            <td class="column-1-buttons command-column">
+			            <td class="column-2-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-delete"></span>
 			            	</g:link>
+			            	
+			            	<g:remoteLink class="aui-button aui-button-subtle" title="Partages" url="[action: 'dialogDeviceShare', controller: 'deviceShare', id: bean.id]" update="ajaxDialog" onComplete="showDeviceShareDialog()">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-share"></span>
+			            	</g:remoteLink>
 			            </td>
 			        </tr>
 		        </g:each>

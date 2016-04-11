@@ -49,7 +49,7 @@ class DeviceEventController extends AbstractController {
 	 */
 	def edit(DeviceEvent deviceEvent) {
 		def editDeviceEvent = parseFlashCommand(COMMAND_NAME, deviceEvent)
-		this.preAuthorize(deviceEvent)
+		editDeviceEvent = deviceEventService.edit(editDeviceEvent)
 		
 		editDeviceEvent.notificationSms = editDeviceEvent.notifications.find({it.type == NotificationAccountEnum.sms}) != null
 		editDeviceEvent.notificationMail = editDeviceEvent.notifications.find({it.type == NotificationAccountEnum.mail}) != null
@@ -77,7 +77,7 @@ class DeviceEventController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		
-		model.workflows = workflowService.listByUser([:], null)
+		model.workflows = workflowService.listByUser(null, principal.id, [:])
 		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: principal.id))
 		
 		// on remplit avec les infos du user
@@ -95,7 +95,6 @@ class DeviceEventController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceEventController.COMMAND_NAME)
 	def saveEdit(DeviceEvent deviceEvent) {
-		this.preAuthorize(deviceEvent)
 		checkErrors(this, deviceEvent)
 		deviceEvent.clearNotPersistTriggers()
 		deviceEventService.save(deviceEvent)
@@ -162,7 +161,7 @@ class DeviceEventController extends AbstractController {
 	
 	
 	def dialogNotification(DeviceEvent deviceEvent, String typeNotification) {
-		this.preAuthorize(deviceEvent)
+		deviceEventService.edit(deviceEvent)
 		def notification = DeviceEventNotification.findByDeviceEventAndType(deviceEvent, NotificationAccountEnum.valueOf(typeNotification))
 		render (view: 'dialogNotification', model: [notification: notification, typeNotification: typeNotification,
 			deviceEvent: deviceEvent])	

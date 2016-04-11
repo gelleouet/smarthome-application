@@ -5,6 +5,8 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import java.lang.reflect.Method
 
+import org.springframework.security.access.AccessDeniedException;
+
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
@@ -65,21 +67,6 @@ abstract class AbstractController {
 	
 	
 	/**
-	 * Test si un objet a une propriété 'user' et qu'il appartient à la personne connectée
-	 * 
-	 * @param domainObject
-	 * @return
-	 */
-	def preAuthorize(domainObject) {
-		if (domainObject && domainObject['user']?.id) {
-			if (domainObject['user'].id != principal.id) {
-				throw new SmartHomeException("Objet introuvable !")
-			}
-		}
-	}
-
-
-	/**
 	 * Scanne les infos de la request et construit un objet pagination avec les valeurs par défaut
 	 * si tout n'est pas renseigné
 	 * 
@@ -120,6 +107,18 @@ abstract class AbstractController {
 	}
 
 
+	/**
+	 * Gestionnaire d'erreur pour les accès non autorisés
+	 *
+	 * @param exception
+	 * @return
+	 */
+	def handleAccessDeniedException(AccessDeniedException exception) {
+		// on insère l'exception dans la request
+		flash.error = exception.message
+	}
+	
+	
 	/**
 	 * Gestionnaire d'erreur pour les exceptions métier LIMS.
 	 * Redirection vers la page indiquée avec l'objet command en flash paramètre
