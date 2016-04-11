@@ -8,12 +8,14 @@ import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ClassUtils;
+import smarthome.core.QueryUtils;
 import smarthome.automation.Chart;
 import smarthome.core.ExchangeType;
 import smarthome.core.SmartHomeException;
@@ -24,6 +26,40 @@ class ChartService extends AbstractService {
 
 	DeviceService deviceService
 	
+	
+	/**
+	 * Charts user
+	 * 
+	 * @param chartSearch
+	 * @param userId
+	 * @param pagination
+	 * @return
+	 */
+	List<Chart> listByUser(String chartSearch, Long userId, Map pagination) {
+		Chart.createCriteria().list(pagination) {
+			user {
+				idEq(userId)
+			}
+			
+			if (chartSearch) {
+				ilike 'label', QueryUtils.decorateMatchAll(chartSearch)
+			}
+		}
+	}
+	
+	
+	/**
+	 * Edition ACL
+	 * 
+	 * @param chart
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#chart, 'OWNER')")
+	Chart edit(Chart chart) {
+		return chart	
+	}
+	
+	
 	/**
 	 * Enregistrement d'un Chart
 	 *
@@ -31,6 +67,7 @@ class ChartService extends AbstractService {
 	 *
 	 * @return Chart
 	 */
+	@PreAuthorize("hasPermission(#chart, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Chart save(Chart chart) throws SmartHomeException {
 		// suppression des résultats non bindés
@@ -53,6 +90,7 @@ class ChartService extends AbstractService {
 	 *
 	 * @return Chart
 	 */
+	@PreAuthorize("hasPermission(#chart, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void delete(Chart chart) throws SmartHomeException {
 		try {

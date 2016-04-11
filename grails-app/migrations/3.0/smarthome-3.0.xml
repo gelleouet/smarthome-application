@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1460387965067-1">
+        <createTable tableName="acl_class">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-2">
+        <createTable tableName="acl_entry">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ace_order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acl_object_identity" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="audit_failure" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="audit_success" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="granting" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mask" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sid" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-3">
+        <createTable tableName="acl_object_identity">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_id_class" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entries_inheriting" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_id_identity" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_sid" type="BIGINT"/>
+            <column name="parent_object" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-4">
+        <createTable tableName="acl_sid">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="principal" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-5">
+        <createTable tableName="device_share">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="execution" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modification" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shared_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-6">
+        <createTable tableName="script_rule">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="rule_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="script" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-7">
+        <addColumn tableName="device_event">
+            <column name="heure_decalage" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-8">
+        <addColumn tableName="device_event">
+            <column defaultValue="false" defaultValueBoolean="false" name="heure_ete" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-9">
+        <addColumn tableName="device_event">
+            <column name="last_heure_decalage" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-10">
+        <addPrimaryKey columnNames="id" constraintName="acl_class_pkey" tableName="acl_class"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-11">
+        <addPrimaryKey columnNames="id" constraintName="acl_entry_pkey" tableName="acl_entry"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-12">
+        <addPrimaryKey columnNames="id" constraintName="acl_object_identity_pkey" tableName="acl_object_identity"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-13">
+        <addPrimaryKey columnNames="id" constraintName="acl_sid_pkey" tableName="acl_sid"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-14">
+        <addPrimaryKey columnNames="id" constraintName="device_share_pkey" tableName="device_share"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-15">
+        <addPrimaryKey columnNames="id" constraintName="script_rule_pkey" tableName="script_rule"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-16">
+        <addUniqueConstraint columnNames="class" constraintName="uk_iy7ua5fso3il3u3ymoc4uf35w" deferrable="false" disabled="false" initiallyDeferred="false" tableName="acl_class"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-17">
+        <addUniqueConstraint columnNames="rule_name" constraintName="uk_n6jyf5k7smf9y6h97q38vtbdp" deferrable="false" disabled="false" initiallyDeferred="false" tableName="script_rule"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-18">
+        <addUniqueConstraint columnNames="acl_object_identity, ace_order" constraintName="unique_ace_order" deferrable="false" disabled="false" initiallyDeferred="false" tableName="acl_entry"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-19">
+        <addUniqueConstraint columnNames="object_id_class, object_id_identity" constraintName="unique_object_id_identity" deferrable="false" disabled="false" initiallyDeferred="false" tableName="acl_object_identity"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-20">
+        <addUniqueConstraint columnNames="sid, principal" constraintName="unique_principal" deferrable="false" disabled="false" initiallyDeferred="false" tableName="acl_sid"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-21">
+        <addForeignKeyConstraint baseColumnNames="object_id_class" baseTableName="acl_object_identity" constraintName="fk_6c3ugmk053uy27bk2sred31lf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="acl_class"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-22">
+        <addForeignKeyConstraint baseColumnNames="parent_object" baseTableName="acl_object_identity" constraintName="fk_6oap2k8q5bl33yq3yffrwedhf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="acl_object_identity"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-23">
+        <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="device_share" constraintName="fk_a003di1utpawx4g1sm2cxclsh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-24">
+        <addForeignKeyConstraint baseColumnNames="acl_object_identity" baseTableName="acl_entry" constraintName="fk_fhuoesmjef3mrv0gpja4shvcr" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="acl_object_identity"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-25">
+        <addForeignKeyConstraint baseColumnNames="sid" baseTableName="acl_entry" constraintName="fk_i6xyfccd4y3wlwhgwpo4a9rm1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="acl_sid"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-26">
+        <addForeignKeyConstraint baseColumnNames="owner_sid" baseTableName="acl_object_identity" constraintName="fk_nxv5we2ion9fwedbkge7syoc3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="acl_sid"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-27">
+        <addForeignKeyConstraint baseColumnNames="shared_user_id" baseTableName="device_share" constraintName="fk_rng1qa0gnt7j28twkjv4bfcii" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-28">
+        <createIndex indexName="deviceshare_device_idx" tableName="device_share" unique="false">
+            <column name="device_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-29">
+        <dropColumn columnName="decalage_minute" tableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460387965067-30">
+        <dropColumn columnName="last_decalage" tableName="device_event"/>
+    </changeSet>
+</databaseChangeLog>

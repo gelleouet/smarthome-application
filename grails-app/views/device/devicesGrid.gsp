@@ -58,8 +58,15 @@
 									<a href="#dropdown-${device.id }" aria-owns="#dropdown-${device.id }" aria-haspopup="true" class="aui-button aui-button-subtle aui-dropdown2-trigger aui-style-default"><span class="aui-icon aui-icon-small aui-iconfont-more"></span></a>
 									<div id="#dropdown-${device.id }" class="aui-dropdown2 aui-style-default">
 										<ul>
-											<li><g:link action="edit" id="${ device.id }" ><span class="aui-icon aui-icon-small aui-iconfont-edit"></span> Modifier</g:link></li>
-											<li><g:link action="chartView" id="${ device.id }" ><span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique</g:link></li>
+											<li><g:link action="edit" id="${ device.id }" >
+												<span class="aui-icon aui-icon-small aui-iconfont-edit"></span> Modifier
+											</g:link></li>
+											<li><g:link action="chartView" id="${ device.id }" >
+												<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique
+											</g:link></li>
+											<li><g:remoteLink class="aui-button aui-button-subtle" url="[action: 'dialogDeviceShare', controller: 'deviceShare', id: device.id]" update="ajaxDialog" onComplete="showDeviceShareDialog()">
+			            						<span class="aui-icon aui-icon-small aui-iconfont-share"></span> Partages
+			            					</g:remoteLink></li>
 										</ul>
 									</div>
 								</div>

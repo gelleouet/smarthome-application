@@ -10,13 +10,13 @@
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Scénarios</h3>
+		                <h3>Règles métier</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un scénario" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter une règle métier" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -25,9 +25,9 @@
 
 		
 		<h4>
-			<g:form class="aui" action="workflows">
+			<g:form class="aui" action="scriptRules">
 				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="workflowSearch" value="${ workflowSearch }"/>
+					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher classe" name="scriptRuleSearch" value="${ scriptRuleSearch }"/>
 					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
 				</fieldset>
 			</g:form>
@@ -38,23 +38,15 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th>Nom</th>
+		            <th>Classe</th>
 		            <th>Description</th>
-		            <th>Dernière exécution</th>
-		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
-		    	<g:each var="bean" in="${ workflowInstanceList }">
+		    	<g:each var="bean" in="${ scriptRuleInstanceList }">
 			        <tr>
-			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
+			            <td><g:link action="edit" id="${bean.id }">${ bean.ruleName }</g:link></td>
 			            <td>${ bean.description }</td>
-			            <td>${ app.formatTimeAgo(date: bean.lastExecution) }</td>
-			            <td class="column-1-buttons command-column">
-			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
-			            	</g:link>
-			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>

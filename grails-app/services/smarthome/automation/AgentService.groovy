@@ -5,6 +5,7 @@ import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ClassUtils;
 import smarthome.core.ExchangeType;
+import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
@@ -24,6 +26,42 @@ class AgentService extends AbstractService {
 	// auto inject
 	def grailsApplication
 	
+	
+	/**
+	 * Enregistrement d'un domain
+	 *
+	 * @param domain
+	 *
+	 * @return domain
+	 */
+	@PreAuthorize("hasPermission(#agent, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Agent save(Agent agent) throws SmartHomeException {
+		return super.save(agent)
+	}
+	
+	
+	/**
+	 * Les agents d'un user
+	 * 
+	 * @param agentSearch
+	 * @param userId
+	 * @param pagination
+	 * @return
+	 */
+	List<Agent> listByUser(String agentSearch, Long userId, Map pagination) {
+		return Agent.createCriteria().list(pagination) {
+			user {
+				idEq(userId)
+			}
+			
+			if (agentSearch) {
+				ilike 'agentModel', QueryUtils.decorateMatchAll(agentSearch)
+			}
+		}
+	}
+	
+	
 	/**
 	 * Activation d'un agent pour qu'il se puisse se connecter au websocket
 	 * 
@@ -33,6 +71,7 @@ class AgentService extends AbstractService {
 	 * 
 	 * @throws SmartHomeException
 	 */
+	@PreAuthorize("hasPermission(#agent, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def activer(Agent agent, boolean actif) throws SmartHomeException {
 		log.info("agent ${agent.mac} activation : ${actif}")
@@ -45,6 +84,18 @@ class AgentService extends AbstractService {
 	
 	
 	/**
+	 * Edition d'un agent
+	 * 
+	 * @param agent
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#agent, 'OWNER')")
+	Agent edit(Agent agent) {
+		return agent
+	}
+	
+	
+	/**
 	 * Démarre l'association automatique (inclusion ou exclusion) de nouveaux devices sur un agent
 	 * 
 	 * @param agent
@@ -53,6 +104,7 @@ class AgentService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
+	@PreAuthorize("hasPermission(#agent, 'OWNER')")
 	def startAssociation(Agent agent, boolean inclusion) throws SmartHomeException {
 		if (agent.locked) {
 			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas activé !", agent)

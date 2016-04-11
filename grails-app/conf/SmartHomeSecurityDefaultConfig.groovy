@@ -30,3 +30,7 @@ grails.plugin.springsecurity.logout.postOnly = false // permet de faire des GET 
 grails.plugin.springsecurity.useSwitchUserFilter  = true // permet de basculer sur un autre utilisateur
 
 
+// Spring ACL
+grails.plugin.springsecurity.acl.permissionClass = smarthome.security.SmartHomePermission
+
+

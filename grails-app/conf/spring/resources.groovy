@@ -1,3 +1,5 @@
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+
 import smarthome.automation.scheduler.DeviceEventCronJob;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.plugin.NavigationItemUtils;
@@ -28,5 +30,19 @@ beans = {
 		jobs = [
 			'smarthome.automation.scheduler.DeviceEventCronJob' : "0 * * * * ?"
 		]
+	}
+	
+	permissionEvaluator(smarthome.security.SmartHomePermissionEvaluator) {
+		permissionFactory = ref('aclPermissionFactory')
+	}
+	
+	
+	// surchage pour supprimer le cache optimizer
+	expressionHandler(DefaultMethodSecurityExpressionHandler) {
+		parameterNameDiscoverer = ref('parameterNameDiscoverer')
+		expressionParser = ref('expressionParser')
+		//permissionCacheOptimizer = ref('aclPermissionCacheOptimizer')
+		roleHierarchy = ref('roleHierarchy')
+		permissionEvaluator = ref('permissionEvaluator')
 	}
 }

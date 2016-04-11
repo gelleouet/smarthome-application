@@ -11,6 +11,7 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,37 @@ class WorkflowService extends AbstractService {
 
 	DeviceService deviceService
 	
+	
+	/**
+	 * Edition ACL
+	 * 
+	 * @param workflow
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
+	Workflow edit(Workflow workflow) {
+		return workflow
+	}
+	
+	
+	/**
+	 * Enregistrement d'un domain
+	 *
+	 * @param domain
+	 *
+	 * @return domain
+	 */
+	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Workflow save(Workflow workflow) throws SmartHomeException {
+		if (!workflow.save()) {
+			throw new SmartHomeException("Erreur enregistrement workflow", workflow);
+		}
+		
+		return workflow
+	}
+	
+	
 	/**
 	 * Liste les workflows d'un user
 	 *
@@ -36,17 +68,14 @@ class WorkflowService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def listByUser(Map pagination, String workflowSearch) throws SmartHomeException {
-		def userId = springSecurityService.principal.id
-		def search = QueryUtils.decorateMatchAll(workflowSearch)
-		
+	def listByUser(String workflowSearch, Long userId, Map pagination) throws SmartHomeException {
 		return Workflow.createCriteria().list(pagination) {
 			user {
 				idEq(userId)
 			}
 			
 			if (workflowSearch) {
-				ilike 'label', search
+				ilike 'label', QueryUtils.decorateMatchAll(workflowSearch)
 			}
 		}
 	}
@@ -71,5 +100,24 @@ class WorkflowService extends AbstractService {
 		workflow.save()
 		
 		return result
+	}
+	
+	
+	/**
+	 * Suppression d'une instance
+	 *
+	 * @param domain
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void delete(Workflow workflow) {
+		try {
+			// flush direct pour catcher une erreur SQL (ex : clé étrangère) et la renvoyer en SmartHomeException
+			// sinon l'erreur est déclenchée hors méthode
+			workflow.delete(flush: true)
+		} catch (Exception ex) {
+			throw new SmartHomeException(ex, workflow)
+		}
 	}
 }

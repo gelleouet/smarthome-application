@@ -96,6 +96,7 @@ grails.project.dependency.resolution = {
 		compile ":asset-pipeline:1.9.9"
 		compile ":platform-core:1.0.0"
 		compile ':spring-security-core:2.0-RC4'
+		compile "org.grails.plugins:spring-security-acl:2.0.1"
 		compile ":rabbitmq:1.0.0"
 
 		// plugins needed at runtime but not for compilation

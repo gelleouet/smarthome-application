@@ -81,8 +81,7 @@ class DeviceTypeController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		
-		// Compléter le model
-		// TODO
+		// TODO : Compléter le model
 		
 		// on remplit avec les infos du user
 		model << userModel

@@ -28,20 +28,8 @@ class ChartController extends AbstractController {
 		"Domotique"
 	])
 	def charts(String chartSearch) {
-		int recordsTotal
-		def search = QueryUtils.decorateMatchAll(chartSearch)
-		def userId = principal.id
-
-		def charts = Chart.createCriteria().list(this.getPagination([:])) {
-			user {
-				idEq(userId)
-			}
-			
-			if (chartSearch) {
-				ilike 'label', search
-			}
-		}
-		recordsTotal = charts.totalCount
+		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))
+		def recordsTotal = charts.totalCount
 
 		// charts est accessible depuis le model avec la variable chart[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -56,20 +44,8 @@ class ChartController extends AbstractController {
 	 */
 	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.navbarPrimary)
 	def chartsGrid(String chartSearch) {
-		int recordsTotal
-		def search = QueryUtils.decorateMatchAll(chartSearch)
-		def userId = principal.id
-
-		def charts = Chart.createCriteria().list(this.getPagination([:])) {
-			user {
-				idEq(userId)
-			}
-			
-			if (chartSearch) {
-				ilike 'label', search
-			}
-		}
-		recordsTotal = charts.totalCount
+		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))
+		def recordsTotal = charts.totalCount
 
 		// charts est accessible depuis le model avec la variable chart[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
@@ -85,7 +61,7 @@ class ChartController extends AbstractController {
 	 */
 	def edit(Chart chart) {
 		def editChart = parseFlashCommand(COMMAND_NAME, chart)
-		this.preAuthorize(chart)
+		editChart = chartService.edit(editChart)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editChart]))
 	}
 	
@@ -98,7 +74,7 @@ class ChartController extends AbstractController {
 	 */
 	
 	def chartView(Chart chart, Long sinceHour, Long offsetHour) {
-		this.preAuthorize(chart)
+		chartService.edit(chart)
 		def timesAgo = chartService.timesAgo()
 		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
 		offsetHour = offsetHour ?: 0
@@ -121,7 +97,7 @@ class ChartController extends AbstractController {
 	 * @return
 	 */
 	def chartPreview(Chart chart, Long sinceHour, Long offsetHour) {
-		this.preAuthorize(chart)
+		chartService.edit(chart)
 		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
 		offsetHour = offsetHour ?: 0
 		
@@ -173,7 +149,6 @@ class ChartController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = ChartController.COMMAND_NAME)
 	def saveEdit(Chart chart) {
-		this.preAuthorize(chart)
 		checkErrors(this, chart)
 		chartService.save(chart)
 		redirect(action: COMMAND_NAME + 's')
@@ -203,7 +178,6 @@ class ChartController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "charts", modelName = "")
 	def delete(Chart chart) {
-		this.preAuthorize(chart)
 		chartService.delete(chart)
 		redirect(action: 'charts')
 	}

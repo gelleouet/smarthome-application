@@ -18,7 +18,7 @@ import grails.validation.Validateable;
 class Device {
 	static belongsTo = [agent: Agent, user: User]
 	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
-		events: DeviceEvent]
+		events: DeviceEvent, shares: DeviceShare]
 	
 	String label
 	String groupe
@@ -56,6 +56,7 @@ class Device {
 		metadatas cascade: 'all-delete-orphan'
 		metavalues cascade: 'all-delete-orphan'
 		events cascade: 'all-delete-orphan'
+		shares cascade: 'all-delete-orphan'
 		formula type: 'text'
 		sort 'label'
 	}
