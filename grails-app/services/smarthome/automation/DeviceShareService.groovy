@@ -23,12 +23,40 @@ class DeviceShareService extends AbstractService {
 	List<DeviceShare> listByDevice(Device device) {
 		return DeviceShare.createCriteria().list {
 			eq 'device', device
+			join 'sharedUser'
+		}
+	}
+	
+	
+	/**
+	 * Ajout nouveau partage sur un device
+	 * 
+	 * @param device
+	 * @param sharedUser
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceShare addShare(Device device, Long sharedUserId) throws SmartHomeException {
+		// vérifie d'abord si le partage n'existe pas
+		def share = DeviceShare.createCriteria().get {
+			eq 'device', device
 			
-			sharedUser {
-				order 'nom'
-				order 'prenom'
+			if (sharedUserId) {
+				sharedUser {
+					idEq sharedUserId
+				}
+			} else {
+				isNull 'sharedUser'
 			}
 		}
+		
+		if (!share) {
+			share = new DeviceShare(device: device, sharedUser: sharedUserId ? User.read(sharedUserId) : null)
+			this.save(share)	
+		}
+		
+		return share
 	}
 	
 }

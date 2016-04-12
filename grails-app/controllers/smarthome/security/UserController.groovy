@@ -117,6 +117,18 @@ class UserController extends AbstractController {
 		// @see grails.scaffolding.templates.domainSuffix
 		respond users, model: [recordsTotal: recordsTotal, userSearch: userSearch]
 	}
+	
+	
+	/**
+	 * Recherche utilisateur publique
+	 * 
+	 * @param userSearch
+	 * @return
+	 */
+	@Secured("isAuthenticated()")
+	def userList(String userSearch) {
+		users(userSearch)
+	}
 
 
 	/**

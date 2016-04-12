@@ -14,11 +14,11 @@ import grails.validation.Validateable;
 class DeviceShare {
 	static belongsTo = [device: Device]
 	
-	User sharedUser
+	User sharedUser // si null, le device sera partagé à tous les amis
 	
 	
     static constraints = {
-		
+		sharedUser nullable: true
     }
 	
 	static mapping = {

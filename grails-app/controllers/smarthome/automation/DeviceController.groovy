@@ -47,7 +47,7 @@ class DeviceController extends AbstractController {
 	@NavigableAction(label = "Périphériques", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(String deviceSearch) {
 		def devices = deviceService.listByUser(new DeviceSearchCommand(search: deviceSearch, 
-			filterShow: true, userId: principal.id))
+			filterShow: true, userId: principal.id, sharedDevice: true))
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix

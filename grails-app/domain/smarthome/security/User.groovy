@@ -16,6 +16,8 @@ class User {
 
 	transient springSecurityService
 
+	static hasMany = [friends: UserFriend]
+	
 	String username	// sert aussi d'email qui sera la clé unique
 	String password
 	String nom
@@ -47,15 +49,17 @@ class User {
 	static mapping = {
 		table name: 'utilisateur' // conflit sur certaines bases avec "user"
 		password column: '`password`'
+		friends cascade: 'all-delete-orphan'
 		sort 'nom'
 	}
 	
 	
 	static {
 		grails.converters.JSON.registerObjectMarshaller(User) {
-			it.properties.findAll {k,v -> 
-				k != 'password'
-			}
+//			it.properties.findAll {k,v -> 
+//				!(k in ['password', 'friends'])
+//			}
+			[id: it.id, username: it.username, nom: it.nom, prenom: it.prenom]
 		}
 	}
 	

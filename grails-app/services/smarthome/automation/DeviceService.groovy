@@ -340,23 +340,41 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("userId must be fill !", command)
 		}
 		
-		def commonCriteria = {
-			user {
-				idEq(command.userId)
+		// calcul des devices partagés à l'utilisateur
+		def sharedDeviceIds = []
+		
+		if (command.sharedDevice) {
+			sharedDeviceIds = DeviceShare.createCriteria().list {
+				sharedUser {
+					idEq command.userId
+				}
+				projections {
+					property 'device.id'
+				}
 			}
-			
-			if (command.search) {
-				or {
-					ilike 'label', search
-					ilike 'groupe', search
+		}
+		
+		def commonCriteria = {
+			or {
+				and {
+					user {
+						idEq(command.userId)
+					}
+					if (command.filterShow) {
+						eq "show", true
+					}
+				}
+				if (command.sharedDevice && sharedDeviceIds) {
+					'in' 'id', sharedDeviceIds	
 				}
 			}
 			
-			if (command.filterShow) {
-				eq "show", true
+			if (command.search) {
+				ilike 'label', search
 			}
 			
 			join "deviceType"
+			join "user"
 		}
 		
 		// si on doit tout charger, on en profite pour charger les meta datas et values
@@ -367,6 +385,7 @@ class DeviceService extends AbstractService {
 				
 				join 'metadatas'
 				join 'metavalues'
+				join 'shares'
 			}
 		} else {
 			return Device.createCriteria().list(command.pagination) {

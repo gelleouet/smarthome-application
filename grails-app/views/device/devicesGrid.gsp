@@ -4,6 +4,22 @@
 </head>
 
 <body>
+	<g:set var="myDevices" value="${ deviceInstanceList.findAll{ it.user.id == user.id } }"></g:set>
+	<g:set var="sharedDevices" value="${ deviceInstanceList.findAll{ it.user.id != user.id } }"></g:set>
+	
+	<g:set var="allDevices" value="${ params.shared ? sharedDevices : myDevices }"></g:set>
+	
+	
+	<nav class="aui-navgroup aui-navgroup-horizontal">
+	    <div class="aui-navgroup-inner">
+	        <div class="aui-navgroup-primary">
+	            <ul class="aui-nav">
+	                <li class="${ !params.shared ? 'aui-nav-selected': '' }"><g:link action="devicesGrid">Mes périphériques <span class="aui-badge">${ myDevices.size() }</span></g:link></li>
+	                <li class="${ params.shared ? 'aui-nav-selected': '' }"><g:link action="devicesGrid" params="[shared: true]">Les périphériques de mes amis <span class="aui-badge">${ sharedDevices.size() }</span></g:link></li>
+	            </ul>
+	        </div><!-- .aui-navgroup-primary -->
+	    </div><!-- .aui-navgroup-inner -->
+	</nav>
 
 	<g:applyLayout name="applicationContent">
 	
@@ -17,8 +33,9 @@
 				</h6>
 			</div>
 		</g:if>
+			
 	
-		<g:each var="groupe" in="${ deviceInstanceList?.groupBy({ it.groupe })?.sort{ it.key } }" status="statusGroupe">
+		<g:each var="groupe" in="${ allDevices?.groupBy({ it.groupe })?.sort{ it.key } }" status="statusGroupe">
 			
 			<div class="separator" style="display:table; width:100%">
 				<div style="display:table-cell">
@@ -38,12 +55,27 @@
 				<div class="device-grid">
 					<div class="device-grid-header">
 						<div class="device-grid-header-title">
-							<g:link action="edit" id="${ device.id }" title="Modifier">
-								<h5 class="device-grid-label">${ device.label }</h5>
-							</g:link>
+							<h5 class="device-grid-label">
+								<g:if test="${ device.user.id == user.id }">
+									<g:link style="color:white" action="edit" id="${ device.id }" title="Modifier">${ device.label }</g:link>								
+								</g:if>
+								<g:else>
+									${ device.user.prenomNom } > ${ device.label }
+								</g:else>
+							</h5>
 						</div>
 						<div class="device-grid-header-menu">
 							<div>
+								<g:if test="${ device.user.id == user.id }">
+									<g:remoteLink style="color:white" url="[action: 'dialogDeviceShare', controller: 'deviceShare', id: device.id]" update="ajaxDialog" onComplete="showDeviceShareDialog()" title="Partager">
+										<g:if test="${ device.shares.size() }">
+											<span class="aui-icon aui-icon-small aui-iconfont-admin-roles"></span>
+										</g:if>
+										<g:else>
+											<span class="aui-icon aui-icon-small aui-iconfont-share"></span>
+										</g:else>
+									</g:remoteLink>
+								</g:if>
 							</div>
 						</div>
 					</div>
@@ -54,21 +86,6 @@
 									<g:link action="chartView" id="${ device.id }" title="Graphique">
 										<asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-grid"/>
 									</g:link>
-									
-									<a href="#dropdown-${device.id }" aria-owns="#dropdown-${device.id }" aria-haspopup="true" class="aui-button aui-button-subtle aui-dropdown2-trigger aui-style-default"><span class="aui-icon aui-icon-small aui-iconfont-more"></span></a>
-									<div id="#dropdown-${device.id }" class="aui-dropdown2 aui-style-default">
-										<ul>
-											<li><g:link action="edit" id="${ device.id }" >
-												<span class="aui-icon aui-icon-small aui-iconfont-edit"></span> Modifier
-											</g:link></li>
-											<li><g:link action="chartView" id="${ device.id }" >
-												<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique
-											</g:link></li>
-											<li><g:remoteLink class="aui-button aui-button-subtle" url="[action: 'dialogDeviceShare', controller: 'deviceShare', id: device.id]" update="ajaxDialog" onComplete="showDeviceShareDialog()">
-			            						<span class="aui-icon aui-icon-small aui-iconfont-share"></span> Partages
-			            					</g:remoteLink></li>
-										</ul>
-									</div>
 								</div>
 								<div class="device-grid-body-user">
 									<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device, applicationKey: user.applicationKey]"></g:render>

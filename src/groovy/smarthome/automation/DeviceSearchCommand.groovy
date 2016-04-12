@@ -10,8 +10,11 @@ class DeviceSearchCommand {
 	String search
 	boolean filterShow
 	long userId
+	String searchGroupe
+	boolean sharedDevice
 	
 	static constraints = {
 		search nullable: true
+		searchGroupe nullable: true
 	}
 }

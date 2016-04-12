@@ -12,7 +12,7 @@
 			</div>
 			
 			<div class="aui-item" style="width:500px">
-				<g:render template="filActualite"></g:render>
+				<!-- fil actualité -->
 			</div>
 			
 			<div class="aui-item">

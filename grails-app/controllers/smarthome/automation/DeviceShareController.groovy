@@ -12,10 +12,39 @@ class DeviceShareController extends AbstractController {
 	DeviceShareService deviceShareService
 	
 	
-	def _dialogDeviceShare(Device device) {
+	/**
+	 * 
+	 * @param device
+	 * @return
+	 */
+	def dialogDeviceShare(Device device) {
 		deviceService.edit(device)
 		def shares = deviceShareService.listByDevice(device)
-		render (template: 'dialogDeviceShare', model: 
-			[device: device, shares: shares])
+		render (template: 'dialogDeviceShare', model: [device: device, shares: shares])
+	}
+	
+	
+	/**
+	 * 
+	 * @param deviceShare
+	 * @return
+	 */
+	def delete(DeviceShare deviceShare) {
+		def device = deviceShare.device
+		deviceShareService.delete(deviceShare)
+		def shares = deviceShareService.listByDevice(device)
+		render (template: 'datatable', model: [device: device, shares: shares])
+	}
+	
+	
+	/**
+	 * 
+	 * @param device
+	 * @return
+	 */
+	def addShare(Device device, Long sharedUserId) {
+		deviceShareService.addShare(device, sharedUserId)
+		def shares = deviceShareService.listByDevice(device)
+		render (template: 'datatable', model: [device: device, shares: shares])
 	}
 }

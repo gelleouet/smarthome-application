@@ -8,11 +8,18 @@
     <tbody>
     	<g:each var="bean" in="${ shares }">
 	        <tr>
-	            <td>${ bean.libelle }</td>
+	            <td>
+	            	<g:if test="${ !bean.sharedUser }">
+	            		Tous mes amis
+	            	</g:if>
+	            	<g:else>
+						${ bean.sharedUser.prenomNom }	            	
+	            	</g:else>
+	            </td>
 	            <td class="column-1-buttons command-column">
-	            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
+	            	<a onclick="deleteDeviceShare(this)" data-url="${ g.createLink(controller: 'deviceShare', action: 'delete', id: bean.id) }" class="aui-button aui-button-subtle" title="Supprimer">
 	            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
-	            	</g:link>
+	            	</a>
 	            </td>
 	        </tr>
         </g:each>
