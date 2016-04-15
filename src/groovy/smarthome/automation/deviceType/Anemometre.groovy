@@ -34,8 +34,18 @@ class Anemometre extends AbstractDeviceType {
 	 * @return
 	 */
 	def convertToNoeud() {
-		if (device.value != null) {
-			return (device.value.toDouble() * NOEUD).toLong()
+		return this.convertToNoeud(device.value?.toDouble())
+	}
+	
+	
+	/**
+	 * Convertit la valeur initiale en kmm/h en noeud
+	 * 
+	 * @return
+	 */
+	def convertToNoeud(Double value) {
+		if (value != null) {
+			return (value * NOEUD).toLong()
 		} else {
 			return null
 		}
@@ -48,9 +58,17 @@ class Anemometre extends AbstractDeviceType {
 	 * @return
 	 */
 	def convertToBeaufort() {
-		if (device.value != null) {
-			def value = device.value.toDouble()
-			
+		return this.convertToBeaufort(device.value?.toDouble())
+	}
+	
+	
+	/**
+	 * Convertit la valeur initiale en km/h en échelle de beaufort
+	 * 
+	 * @return
+	 */
+	def convertToBeaufort(Double value) {
+		if (value != null) {
 			for (def beaufort : BEAUFORT) {
 				if (value <= beaufort.key) {
 					return beaufort.value

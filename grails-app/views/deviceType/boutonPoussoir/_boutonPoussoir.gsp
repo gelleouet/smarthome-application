@@ -4,10 +4,9 @@
 
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
-		<g:formRemote name="form-device-${ device.id }" url="[controller: 'device', action: 'publicInvokeAction']" update="[failure: 'ajaxError']">
+		<g:formRemote name="form-device-${ device.id }" url="[controller: 'device', action: 'invokeAction']" update="[failure: 'ajaxError']">
 			<g:hiddenField name="actionName" value="push"/>
 			<g:hiddenField name="id" value="${ device.id }"/>
-			<g:hiddenField name="applicationKey" value="${ applicationKey }"/>
 			<g:actionSubmit value="Actionner" class="aui-button confirm-button" />
 		</g:formRemote>
 	</div>
@@ -15,5 +14,3 @@
 		<span class="aui-badge">${ values?.count ?: 0 }</span>
 	</div>
 </div>
-
-<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>

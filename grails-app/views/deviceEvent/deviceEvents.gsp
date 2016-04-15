@@ -38,7 +38,7 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th>Périphérique</th>
+		            <th>Objet</th>
 		            <th>Description</th>
 		            <th>Planification</th>
 		            <th>Dernière exécution</th>

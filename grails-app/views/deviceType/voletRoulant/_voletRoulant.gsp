@@ -35,7 +35,5 @@
 				</div>
 			</div>
 		</div>
-		
-		<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>
 	</g:form>
 </div>

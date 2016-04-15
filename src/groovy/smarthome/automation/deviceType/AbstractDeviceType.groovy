@@ -46,6 +46,16 @@ abstract class AbstractDeviceType {
 	final def viewForm() {
 		"/deviceType/${name}/${name}Form"
 	}
+
+	
+	/**
+	 * Nom de la vue pour saisie des options
+	 * 
+	 * @return
+	 */
+	final def viewFilActualite() {
+		"/deviceType/${name}/${name}Fil"
+	}
 	
 	
 	

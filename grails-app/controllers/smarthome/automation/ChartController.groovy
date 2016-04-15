@@ -23,9 +23,9 @@ class ChartController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.configuration, header = "Graphiques", breadcrumb = [
+	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.configuration, header = "Statistiques", breadcrumb = [
 		NavigableAction.CONFIG_APPLICATION,
-		"Domotique"
+		"Général"
 	])
 	def charts(String chartSearch) {
 		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))

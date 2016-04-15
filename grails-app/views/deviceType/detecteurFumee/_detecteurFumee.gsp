@@ -21,5 +21,3 @@
 		<span style="font-size:8pt" class="${ alarme?.isDouble() && ((alarme as Double) > 0) ? 'aui-lozenge aui-lozenge-current' : '' }"><strong>Alarme :</strong> ${ alarme }</span>
 	</div>
 </div>
-
-<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>

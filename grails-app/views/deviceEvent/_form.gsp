@@ -3,7 +3,7 @@
 
 <div class="field-group">
 	<label for="device">
-		Périphérique
+		Objet
 		<span class="aui-icon icon-required">*</span>
 	</label>
 	<g:select id="device" name="device.id" required="true" from="${devices}" optionKey="id" optionValue="label"

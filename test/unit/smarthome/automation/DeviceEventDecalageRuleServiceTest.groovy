@@ -1,9 +1,7 @@
-
-
-
 package smarthome.automation
 
 import smarthome.rule.DeviceEventDecalageRuleService;
+import spock.lang.Specification;
 
 @TestFor(DeviceEventDecalageRuleService)
 class DeviceEventDecalageRuleServiceTest {

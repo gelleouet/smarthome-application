@@ -1,0 +1,1 @@
+<span class="label">Déclenchement bouton poussoir</span>

@@ -24,7 +24,7 @@ class WorkflowController extends AbstractController {
 	 */
 	@NavigableAction(label = "Scénarios", navigation = NavigationEnum.configuration, header = "Options avancées", breadcrumb = [
 		NavigableAction.CONFIG_APPLICATION,
-		"Domotique"
+		"Général"
 	])
 	def workflows(String workflowSearch) {
 		def workflows = workflowService.listByUser(workflowSearch, principal.id, this.getPagination([:]))

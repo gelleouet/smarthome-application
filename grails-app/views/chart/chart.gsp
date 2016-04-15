@@ -17,7 +17,7 @@
 			        </div>
 			        <div class="aui-toolbar2-secondary">
 			            <div class="aui-buttons">
-			            	<g:submitToRemote class="aui-button" value="Ajouter un périphérique" update="ajaxPeripherique" url="[action: 'addDevice']" id="${ chart.id }"></g:submitToRemote>
+			            	<g:submitToRemote class="aui-button" value="Ajouter un objet" update="ajaxPeripherique" url="[action: 'addDevice']" id="${ chart.id }"></g:submitToRemote>
 			            </div>
 			        </div>
 			    </div><!-- .aui-toolbar-inner -->
@@ -28,7 +28,7 @@
 	
 			<g:render template="form"/>
 			
-			<h4>Périphériques associés</h4>
+			<h4>Objets associés</h4>
 			<br/>
 			<div id="ajaxPeripherique">
 				<g:render template="chartDevice"></g:render>

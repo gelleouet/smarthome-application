@@ -1,7 +1,7 @@
 <app:datatable datatableId="datatableDevice" recordsTotal="${ chart?.devices?.size() ?: 0 }">
     <thead>
         <tr>
-            <th>Périphérique</th>
+            <th>Objet</th>
             <th>Graphique</th>
             <th>Donnée</th>
             <th>Fonctions</th>

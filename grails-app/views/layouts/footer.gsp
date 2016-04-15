@@ -7,10 +7,6 @@
 	</h6>
 	
 	<div class="desktop-only">
-		<a href="http://grails.org/" target="blank" style="padding-left:20px; padding-right:20px;">
-			<asset:image src="grails_logo.png" class="logoFooter"/>
-		</a>
-		
 		<asset:image src="/gandi-ssl.png" />
 	</div>
 </div>

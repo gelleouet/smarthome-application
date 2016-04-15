@@ -10,13 +10,13 @@
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Périphériques</h3>
+		                <h3>Objets</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un périphérique" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter un objet" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>

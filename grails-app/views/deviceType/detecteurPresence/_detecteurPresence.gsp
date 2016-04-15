@@ -18,5 +18,3 @@
 		<span style="font-size:8pt" class="${ tamper?.isDouble() && ((tamper as Double) > 0) ? 'aui-lozenge aui-lozenge-current' : '' }"><strong>Secousse :</strong> ${ tamper }</span>
 	</div>
 </div>
-
-<p class="h6">${ app.formatTimeAgo(date: device.dateValue) }</p>

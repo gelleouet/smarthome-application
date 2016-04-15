@@ -60,6 +60,10 @@ class DeviceEvent {
 		condition type: 'text'
 		triggers cascade: 'all-delete-orphan'
 		notifications cascade: 'all-delete-orphan'
+		heureDecalage length: 8
+		lastHeureDecalage length: 8
+		solstice length: 8
+		cron length: 128
 	}
 	
 	

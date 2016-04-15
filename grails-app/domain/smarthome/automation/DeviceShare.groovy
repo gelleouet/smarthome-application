@@ -23,6 +23,7 @@ class DeviceShare {
 	
 	static mapping = {
 		device index: "DeviceShare_Device_Idx"
+		sharedUser index: "DeviceShare_SharedUser_Idx"
 	}
 	
 }

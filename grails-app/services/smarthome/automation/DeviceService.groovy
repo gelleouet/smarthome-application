@@ -56,6 +56,18 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Vérifie si l'utilisateur peut exécuter le device
+	 * 
+	 * @param device
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	Device assertInvokeAction(Device device, User user, String actionName) throws SmartHomeException {
+		return device
+	}
+	
+	
+	/**
 	 * Changement d'une métadata et envoit à l'agent
 	 * 
 	 * @param device
@@ -341,18 +353,7 @@ class DeviceService extends AbstractService {
 		}
 		
 		// calcul des devices partagés à l'utilisateur
-		def sharedDeviceIds = []
-		
-		if (command.sharedDevice) {
-			sharedDeviceIds = DeviceShare.createCriteria().list {
-				sharedUser {
-					idEq command.userId
-				}
-				projections {
-					property 'device.id'
-				}
-			}
-		}
+		def sharedDevices = command.sharedDevice ? this.listSharedDeviceId(command.userId) : []
 		
 		def commonCriteria = {
 			or {
@@ -364,8 +365,8 @@ class DeviceService extends AbstractService {
 						eq "show", true
 					}
 				}
-				if (command.sharedDevice && sharedDeviceIds) {
-					'in' 'id', sharedDeviceIds	
+				if (command.sharedDevice && sharedDevices) {
+					'in' 'id', sharedDevices	
 				}
 			}
 			
@@ -427,5 +428,23 @@ class DeviceService extends AbstractService {
 		
 		return [header: 'invokeAction', action: invokeAction, 
 			device: device]
+	}
+	
+	
+	/**
+	 * Les objets partagés d'un utilisateur
+	 * 
+	 * @param user
+	 * @return
+	 */
+	List<Long> listSharedDeviceId(Long userId) {
+		return DeviceShare.createCriteria().list {
+			sharedUser {
+				idEq userId
+			}
+			projections {
+				property 'device.id'
+			}
+		}
 	}
 }

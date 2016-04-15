@@ -5,7 +5,7 @@
 
 <body>
 	<g:applyLayout name="applicationConfigure">
-		<h3>${ device.id ? 'Périphérique : ' + device.label : 'Nouveau périphérique' } <span id="ajaxSpinner" class="spinner"/></h3>
+		<h3>${ device.id ? 'Objet : ' + device.label : 'Nouvel objet' } <span id="ajaxSpinner" class="spinner"/></h3>
 		
 		<g:form controller="device" method="post" class="aui" name="device-form">
 			<g:hiddenField name="id" value="${device.id}" />

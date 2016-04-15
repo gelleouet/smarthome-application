@@ -36,11 +36,11 @@
 	    	</fieldset>
 
 
-			<p class="h6">L'application enverra un message par défaut avec le nom du périphérique ayant déclenché l'événement si aucun message n'est renseigné</p>
+			<p class="h6">L'application enverra un message par défaut avec le nom de l'objet ayant déclenché l'événement si aucun message n'est renseigné</p>
 			<p class="h6">Un script Groovy peut être utilisée en tant que message avec les variables prédéfinies :</p>
 			<ul class="h6">
-				<li>device : objet smarthome.automation.Device. Représente le device associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
-				<li>devices : objet Map. Contient tous les devices indexés par leur mac. Ex : devices['gpio4'].value</li>
+				<li>device : objet smarthome.automation.Device. Représente l'objet associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
+				<li>devices : objet Map. Contient tous les objets indexés par leur mac. Ex : devices['gpio4'].value</li>
 			</ul>
 			
 	    </div>

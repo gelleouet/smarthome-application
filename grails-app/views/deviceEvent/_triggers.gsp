@@ -1,7 +1,7 @@
 <app:datatable datatableId="events-datatable" recordsTotal="${ deviceEvent.triggers?.size() ?: 0 }">
     <thead>
         <tr>
-            <th>Périphérique</th>
+            <th>Objet</th>
             <th>Scénario</th>
             <th class="column-1-buttons"></th>
         </tr>

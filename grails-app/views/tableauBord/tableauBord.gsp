@@ -4,20 +4,27 @@
 </head>
 
 <body>
-	<g:applyLayout name="applicationContent">
-	
+	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 		<div class="aui-group">
-			<div class="aui-item">
-				<!-- amis / profil -->
-			</div>
+			<g:if test="${ !mobileAgent }">
+				<div class="aui-item">
+					<g:render template="profilUser"></g:render>
+				</div>
+				<div class="aui-item" style="width:500px">
+					<g:render template="filActualite"></g:render>
+				</div>
+				<div class="aui-item">
+					<!-- notification / invitation -->
+				</div>
+			</g:if>
 			
-			<div class="aui-item" style="width:500px">
-				<g:render template="filActualite"></g:render>
-			</div>
-			
-			<div class="aui-item">
-				<!-- notification / invitation -->
-			</div>
+			<g:else>
+				<div class="aui-item">
+					<g:render template="profilUser"></g:render>
+					<br/>
+					<g:render template="filActualite"></g:render>
+				</div>
+			</g:else>
 		</div>
 	
 	</g:applyLayout>

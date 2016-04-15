@@ -15,14 +15,15 @@ class SmartHomeCoreFilters {
 		 * Est utilisée notamment en cas d'erreur pour rediriger vers la page précédente
 		 * ou pour le bouton cancel
 		 */
-//		lastURI(controller: '*', action: '*', uriExclude: '/assets/**') {
-//			afterView = { Exception ex ->
-//				if (!request.xhr) {
-//					String lastUrl = request.forwardURI.replace(request.contextPath, "")
-//					log.debug 'Save last URI...' + lastUrl
-//					session[(SmartHomeCoreConstantes.SESSION_LAST_URI)] = lastUrl
-//				}
-//			}
-//		}
+		userAgent(controller: '*', action: '*', uriExclude: '/assets/**') {
+			after = { model ->
+				String agentHeader = request.getHeader('User-Agent')
+				if (agentHeader) {
+					model['mobileAgent'] = agentHeader.contains('iPhone') || 
+						agentHeader.contains('Android') || agentHeader.contains('Windows Phone')
+				} 
+				return true
+			}
+		}
 	}
 }

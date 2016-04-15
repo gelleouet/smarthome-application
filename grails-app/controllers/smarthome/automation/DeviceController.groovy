@@ -23,9 +23,9 @@ class DeviceController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Périphériques", defaultGroup = true, navigation = NavigationEnum.configuration, header = "Installation", breadcrumb = [
+	@NavigableAction(label = "Objets", defaultGroup = true, navigation = NavigationEnum.configuration, header = "Configuration", breadcrumb = [
 		NavigableAction.CONFIG_APPLICATION,
-		"Domotique"
+		"Général"
 	])
 	def devices(String deviceSearch) {
 		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]), 
@@ -44,7 +44,7 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Périphériques", navigation = NavigationEnum.navbarPrimary)
+	@NavigableAction(label = "Objets", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(String deviceSearch) {
 		def devices = deviceService.listByUser(new DeviceSearchCommand(search: deviceSearch, 
 			filterShow: true, userId: principal.id, sharedDevice: true))
@@ -177,9 +177,9 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def invokeAction(Device device, String actionName) {
-		deviceService.edit(device)
+		deviceService.assertInvokeAction(device, authenticatedUser, actionName)
 		deviceService.invokeAction(device, actionName)
-		redirect(action: 'devicesGrid')
+		redirect(action: 'devicesGrid1')
 	}
 	
 	
@@ -192,13 +192,9 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def publicInvokeAction(Device device, String actionName, String applicationKey) {
 		User user = User.findByApplicationKey(applicationKey)
-		
-		if (user?.id == device?.user?.id) {
-			deviceService.invokeAction(device, actionName)
-			redirect(action: 'devicesGrid')
-		} else {
-			render (status: 400, text: 'Unauthorized !')
-		}
+		deviceService.assertInvokeAction(device, user, actionName)
+		deviceService.invokeAction(device, actionName)
+		redirect(action: 'devicesGrid1')
 	}
 	
 	
@@ -211,5 +207,10 @@ class DeviceController extends AbstractController {
 	def delete(Device device) {
 		deviceService.delete(device)
 		redirect(action: 'devices')
+	}
+	
+	
+	def deviceView(Device device) {
+		render(view: 'deviceView', model: [device: device, user: device.user])
 	}
 }
