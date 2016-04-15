@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1460740114175-1">
+        <createTable tableName="user_friend">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="friend_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-2">
+        <addPrimaryKey columnNames="id" constraintName="user_friend_pkey" tableName="user_friend"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-3">
+        <addUniqueConstraint columnNames="user_id, friend_id" constraintName="unique_friend_id" deferrable="false" disabled="false" initiallyDeferred="false" tableName="user_friend"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-4">
+        <addForeignKeyConstraint baseColumnNames="friend_id" baseTableName="user_friend" constraintName="fk_7y4q4hntapssdn8ea963uko0g" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-5">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_friend" constraintName="fk_yqo5tjhs5j9v500vx9dsciks" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-6">
+        <createIndex indexName="deviceshare_shareduser_idx" tableName="device_share" unique="false">
+            <column name="shared_user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-7">
+        <createIndex indexName="userfriend_user_idx" tableName="user_friend" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-8">
+        <dropColumn columnName="execution" tableName="device_share"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-9">
+        <dropColumn columnName="modification" tableName="device_share"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-10">
+        <modifyDataType columnName="cron" newDataType="varchar(128)" tableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-11">
+        <modifyDataType columnName="heure_decalage" newDataType="varchar(8)" tableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-12">
+        <modifyDataType columnName="last_heure_decalage" newDataType="varchar(8)" tableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-13">
+        <dropNotNullConstraint columnDataType="bigint" columnName="shared_user_id" tableName="device_share"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1460740114175-14">
+        <modifyDataType columnName="solstice" newDataType="varchar(8)" tableName="device_event"/>
+    </changeSet>
+</databaseChangeLog>

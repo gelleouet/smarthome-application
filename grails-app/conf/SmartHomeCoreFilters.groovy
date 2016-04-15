@@ -17,11 +17,13 @@ class SmartHomeCoreFilters {
 		 */
 		userAgent(controller: '*', action: '*', uriExclude: '/assets/**') {
 			after = { model ->
-				String agentHeader = request.getHeader('User-Agent')
-				if (agentHeader) {
-					model['mobileAgent'] = agentHeader.contains('iPhone') || 
-						agentHeader.contains('Android') || agentHeader.contains('Windows Phone')
-				} 
+				if (model) {
+					String agentHeader = request.getHeader('User-Agent')
+					if (agentHeader) {
+						model['mobileAgent'] = agentHeader.contains('iPhone') || 
+							agentHeader.contains('Android') || agentHeader.contains('Windows Phone')
+					} 
+				}
 				return true
 			}
 		}
