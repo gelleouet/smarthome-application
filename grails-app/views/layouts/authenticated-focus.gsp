@@ -19,6 +19,9 @@
 		<section id="content" role="main" <%= app.stateInsertAttr() %>>
 			<g:layoutBody/>
 		</section>
+		
+		<div id="ajaxDialog"></div>
+		
 		<g:include view="/layouts/footer.gsp"/>
 		
 		<asset:deferredScripts/>
