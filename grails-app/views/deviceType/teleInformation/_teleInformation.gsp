@@ -20,8 +20,6 @@
 				<span style="font-size:12pt; font-weight:bold;" class="aui-lozenge aui-lozenge-subtle aui-lozenge-error">${ hpinst?.value ?: '-' } Wh ${ ptec?.value ?: '-' }</span>
 			</g:else>
 		</p>
-		
-		<span class="h6">${ app.formatTimeAgo(date: device.dateValue) }</span>
 	</div>
 	
 	<g:set var="first_hchp" value="${ DeviceValue.firstValueByDay(device, 'hchp') }"/>
