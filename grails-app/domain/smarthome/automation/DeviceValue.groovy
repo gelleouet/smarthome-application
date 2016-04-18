@@ -33,7 +33,7 @@ class DeviceValue {
     }
 	
 	static mapping = {
-		name index: "DeviceValue_DeviceName_Idx"
+		name index: "DeviceValue_DeviceName_Idx", length: 64
 		device index: "DeviceValue_DeviceName_Idx"
 		dateValue index: "DeviceValue_DeviceName_Idx"
 		
