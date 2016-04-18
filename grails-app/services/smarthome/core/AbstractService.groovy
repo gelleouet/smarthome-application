@@ -34,6 +34,7 @@ abstract class AbstractService {
 	
 	SpringSecurityService springSecurityService
 	
+	
 	/**
 	 * Envoi d'un message asynchrone AMQP.
 	 * Avant d'envoyer le message, on déclare la queue avec les options par défaut :

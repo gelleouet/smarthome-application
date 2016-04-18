@@ -8,12 +8,9 @@ class SmartHomeCoreFilters {
 	
 	def filters = {
 		/**
-		 * LastURIFilter
+		 * userAgent
 		 *
-		 * Rajoute dans la session, l'URI de la dernière requête, hors appel Ajax
-		 * 
-		 * Est utilisée notamment en cas d'erreur pour rediriger vers la page précédente
-		 * ou pour le bouton cancel
+		 * Détermine pour chaque requête si le client est un mobile
 		 */
 		userAgent(controller: '*', action: '*', uriExclude: '/assets/**') {
 			after = { model ->
@@ -26,6 +23,27 @@ class SmartHomeCoreFilters {
 				}
 				return true
 			}
+		}
+		
+		
+		/**
+		 * Trace le temps d'exécution de certaines actions
+		 * Les plus demandées et les plus importantes
+		 */
+		traceTimeRequest(controller: 'device|tableauBord', action: '*') {
+			
+			before = {
+				long start = System.currentTimeMillis()
+				request['request-time-ellpase'] = start
+				return true
+			}
+			
+			afterView = { Exception ex ->
+				long start = request['request-time-ellpase']
+				long timeEllapse = System.currentTimeMillis() - start
+				println "${new Date().format('yyyy-MM-dd HH:mm:ss,S')} Render view ${controllerName}.${actionName} : ${timeEllapse}ms"
+			}
+			
 		}
 	}
 }

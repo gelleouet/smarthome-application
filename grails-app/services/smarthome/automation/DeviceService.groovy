@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.Chronometre;
 import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
@@ -346,6 +347,8 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	def listByUser(DeviceSearchCommand command) throws SmartHomeException {
+		Chronometre chrono = new Chronometre()
+		
 		def search = QueryUtils.decorateMatchAll(command.search)
 		
 		if (!command.userId) {
@@ -378,22 +381,26 @@ class DeviceService extends AbstractService {
 			join "user"
 		}
 		
+		def devices
+		
 		// si on doit tout charger, on en profite pour charger les meta datas et values
 		if (!command.pagination) {
-			return Device.createCriteria().listDistinct() {
+			devices = Device.createCriteria().listDistinct() {
 				commonCriteria.delegate = delegate
 				commonCriteria()
 				
-				join 'metadatas'
-				join 'metavalues'
 				join 'shares'
 			}
 		} else {
-			return Device.createCriteria().list(command.pagination) {
+			devices = Device.createCriteria().list(command.pagination) {
 				commonCriteria.delegate = delegate
 				commonCriteria()
 			}
 		}
+		
+		log.info "List devices : ${chrono.stop()}ms"
+		
+		return devices
 	}
 	
 	

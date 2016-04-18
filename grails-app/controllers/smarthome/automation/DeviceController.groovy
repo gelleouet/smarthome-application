@@ -179,7 +179,7 @@ class DeviceController extends AbstractController {
 	def invokeAction(Device device, String actionName) {
 		deviceService.assertInvokeAction(device, authenticatedUser, actionName)
 		deviceService.invokeAction(device, actionName)
-		redirect(action: 'devicesGrid1')
+		redirect(action: 'devicesGrid')
 	}
 	
 	
@@ -194,7 +194,7 @@ class DeviceController extends AbstractController {
 		User user = User.findByApplicationKey(applicationKey)
 		deviceService.assertInvokeAction(device, user, actionName)
 		deviceService.invokeAction(device, actionName)
-		redirect(action: 'devicesGrid1')
+		redirect(action: 'devicesGrid')
 	}
 	
 	

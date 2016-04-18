@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.Chronometre;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
@@ -22,10 +23,13 @@ class DeviceValueService extends AbstractService {
 	 * @return
 	 */
 	List<DeviceValue> lastValuesByDevices(List<Device> devices, Map pagination) {
+		def values
+		Chronometre chrono = new Chronometre()
+		
 		if (devices) {
 			def deviceIds = devices.collect { it.id }
 			
-			return DeviceValue.createCriteria().list(pagination) {
+			values = DeviceValue.createCriteria().list(pagination) {
 				device {
 					'in' 'id', deviceIds
 				}
@@ -34,5 +38,9 @@ class DeviceValueService extends AbstractService {
 				order 'dateValue', 'desc'	
 			}
 		}
+		
+		log.info "List ${devices?.size()} devices values : ${chrono.stop()}ms"
+		
+		return values
 	}	
 }

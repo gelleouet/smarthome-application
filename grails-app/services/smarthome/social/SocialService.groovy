@@ -5,6 +5,7 @@ import smarthome.automation.DeviceService;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.DeviceValueService;
 import smarthome.core.AbstractService;
+import smarthome.core.Chronometre;
 import smarthome.security.User;
 
 class SocialService extends AbstractService {
@@ -21,6 +22,8 @@ class SocialService extends AbstractService {
 	 * @return
 	 */
 	List<DeviceValue> filActualite(User user, Map pagination) {
+		Chronometre chrono = new Chronometre()
+		
 		List<Device> devices = Device.findAllByUser(user)
 		//on rajoute les objets partagés par amis
 		def deviceIds = deviceService.listSharedDeviceId(user.id)
@@ -28,6 +31,10 @@ class SocialService extends AbstractService {
 			devices.addAll(Device.getAll(deviceIds))
 		}
 		
-		return deviceValueService.lastValuesByDevices(devices, pagination)
+		def values = deviceValueService.lastValuesByDevices(devices, pagination)
+		
+		log.info("Fil actualite ${user.username} : ${chrono.stop()}ms")
+		
+		return values
 	}
 }
