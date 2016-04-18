@@ -16,7 +16,7 @@
 	        <div class="aui-navgroup-primary">
 	            <ul class="aui-nav">
 	                <li class="${ !params.shared ? 'aui-nav-selected': '' }"><g:link action="devicesGrid">Personnels <span class="aui-badge">${ myDevices.size() }</span></g:link></li>
-	                <li class="${ params.shared ? 'aui-nav-selected': '' }"><g:link action="devicesGrid" params="[shared: true]">Mes amis <span class="aui-badge">${ sharedDevices.size() }</span></g:link></li>
+	                <li class="${ params.shared ? 'aui-nav-selected': '' }"><g:link action="devicesGrid" params="[shared: true]">Partagés <span class="aui-badge">${ sharedDevices.size() }</span></g:link></li>
 	            </ul>
 	        </div><!-- .aui-navgroup-primary -->
 	    </div><!-- .aui-navgroup-inner -->
@@ -38,25 +38,14 @@
 	
 		<div class="${ mobileAgent ? '' : 'grid-3column' }">
 			<g:each var="groupe" in="${ groupeDevices?.sort{ it.key } }" status="statusGroupe">
-					<h3 class="titreFilActualite">${ groupe.key ?: 'Autres' }</h3>
+					<div class="filActualiteTitre">
+						<h3>${ groupe.key ?: 'Autres' }</h3>
+					</div>
 					
 					<div class="filActualite">
 						<g:each var="device" in="${ groupe.value.sort{ it.label } }">
 							<div class="filActualiteItem">
-								<h4>${ device.label } <span class="h6-normal">${ app.formatTimeAgo(date: device.dateValue) }</span></h4>
-								
-								<div class="aui-group">
-									<div class="aui-item filActualiteIcon">
-										<asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-grid"/>
-									</div>
-									<div class="aui-item">
-										<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device, applicationKey: user.applicationKey]"></g:render>
-									</div>
-								</div>
-								
-								<div style="padding-top:4px;">
-									<g:render template="deviceToolbar" model="[device: device]"></g:render>
-								</div>
+								<g:render template="deviceView" model="[device: device]"></g:render>
 							</div>
 						</g:each>
 					</div>

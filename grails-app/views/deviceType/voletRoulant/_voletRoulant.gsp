@@ -16,11 +16,11 @@
 			<div style="display:table-cell; padding-left:15px">
 				<div class="aui-buttons" >
 					<a class="aui-button ajax-invoke-action-button" title="Fermer" data-action-name="close" data-url="${ url }" data-form-id="${ formId }">
-						<span class="aui-icon aui-icon-small aui-iconfont-arrows-down"></span></a>
+						<span class="aui-icon aui-icon-small aui-iconfont-arrows-down aui-icon-column-patch"></span></a>
 					<a class="aui-button ajax-invoke-action-button" title="Ouvrir" data-action-name="open" data-url="${ url }" data-form-id="${ formId }">
-						<span class="aui-icon aui-icon-small aui-iconfont-arrows-up"></span></a>
+						<span class="aui-icon aui-icon-small aui-iconfont-arrows-up aui-icon-column-patch"></span></a>
 					<a class="aui-button ajax-invoke-action-button" title="Stop" data-action-name="stop" data-url="${ url }" data-form-id="${ formId }">
-						<span class="aui-icon aui-icon-small aui-iconfont-pause"></span></a>
+						<span class="aui-icon aui-icon-small aui-iconfont-pause aui-icon-column-patch"></span></a>
 				</div>
 				
 				<div style="display:table; padding-top:15px">

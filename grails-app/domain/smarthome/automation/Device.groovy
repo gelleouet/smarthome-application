@@ -53,10 +53,10 @@ class Device {
 		agent index: "Device_MacAgent_Idx"
 		user index: "Device_User_Idx"
 		values cascade: 'all-delete-orphan'
-		metadatas cascade: 'all-delete-orphan'
-		metavalues cascade: 'all-delete-orphan'
+		metadatas cascade: 'all-delete-orphan', batchSize: 25
+		metavalues cascade: 'all-delete-orphan', batchSize: 25
 		events cascade: 'all-delete-orphan'
-		shares cascade: 'all-delete-orphan'
+		shares cascade: 'all-delete-orphan', batchSize: 25
 		formula type: 'text'
 		sort 'label'
 	}

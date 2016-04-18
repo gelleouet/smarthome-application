@@ -57,14 +57,28 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
-	 * Vérifie si l'utilisateur peut exécuter le device
+	 * Vérifie si l'utilisateur a un accès public sur le device
 	 * 
 	 * @param device
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#device, 'OWNER')")
-	Device assertInvokeAction(Device device, User user, String actionName) throws SmartHomeException {
-		return device
+	Device assertSharedAccess(Device device, User user) throws SmartHomeException {
+		// si l'utilisateur est le proprio => ok
+		if (device.user.id == user.id) {
+			return device
+		} 
+		
+		// si l'utilisateur a un accès partagé
+		def share = DeviceShare.createCriteria().get {
+			eq 'device', device
+			eq 'sharedUser', user
+		}
+		
+		if (share) {
+			return device
+		}
+		
+		throw new SmartHomeException("Accès refusé !")
 	}
 	
 	
@@ -453,5 +467,16 @@ class DeviceService extends AbstractService {
 				property 'device.id'
 			}
 		}
+	}
+	
+	
+	/**
+	 * Nombre de devices d'un user
+	 * 
+	 * @param user
+	 * @return
+	 */
+	long countDevice(User user) {
+		return Device.where({ user == user}).count()
 	}
 }

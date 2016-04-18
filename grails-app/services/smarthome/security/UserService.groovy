@@ -93,4 +93,15 @@ class UserService extends AbstractService {
 		
 		return user
 	}
+	
+	
+	/**
+	 * Nombre d'amis d'un user
+	 * 
+	 * @param user
+	 * @return
+	 */
+	long countUserFriend(User user) {
+		return UserFriend.where({ user == user}).count()	
+	}
 }

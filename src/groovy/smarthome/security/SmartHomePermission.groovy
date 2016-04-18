@@ -8,7 +8,7 @@ class SmartHomePermission extends AbstractPermission {
 	public static final Permission WRITE = new SmartHomePermission(1 << 1, 'W' as char); // 2
 	public static final Permission EXEC = new SmartHomePermission(1 << 2, 'X' as char); // 4
 	public static final Permission OWNER = new SmartHomePermission(1 << 3, 'O' as char); // 8
-	public static final Permission FRIEND = new SmartHomePermission(1 << 4, 'F' as char); // 16
+	public static final Permission SHARED = new SmartHomePermission(1 << 4, 'S' as char); // 16
 
 	protected SmartHomePermission(int mask) {
 		super(mask)

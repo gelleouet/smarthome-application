@@ -16,6 +16,7 @@ class DeviceController extends AbstractController {
     private static final String COMMAND_NAME = 'device'
 	
 	DeviceService deviceService
+	DeviceValueService deviceValueService
 	ChartService chartService
 	
 	/**
@@ -148,7 +149,9 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def chartView(Device device, Long sinceHour, Long offsetHour) {
-		deviceService.edit(device)
+		def user = authenticatedUser
+		deviceService.assertSharedAccess(device, user)
+		
 		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
 		offsetHour = offsetHour ?: 0
 		
@@ -177,7 +180,7 @@ class DeviceController extends AbstractController {
 	 */
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def invokeAction(Device device, String actionName) {
-		deviceService.assertInvokeAction(device, authenticatedUser, actionName)
+		deviceService.assertSharedAccess(device, authenticatedUser)
 		deviceService.invokeAction(device, actionName)
 		redirect(action: 'devicesGrid')
 	}
@@ -192,7 +195,7 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def publicInvokeAction(Device device, String actionName, String applicationKey) {
 		User user = User.findByApplicationKey(applicationKey)
-		deviceService.assertInvokeAction(device, user, actionName)
+		deviceService.assertSharedAccess(device, user)
 		deviceService.invokeAction(device, actionName)
 		redirect(action: 'devicesGrid')
 	}
@@ -210,7 +213,14 @@ class DeviceController extends AbstractController {
 	}
 	
 	
+	/**
+	 * Vue détaillée d'un device
+	 * 
+	 * @param device
+	 * @return
+	 */
 	def deviceView(Device device) {
-		render(view: 'deviceView', model: [device: device, user: device.user])
+		def filActualite = deviceValueService.lastValuesByDevices([device], this.getPagination([:]))
+		render(view: 'deviceView', model: [device: device, user: device.user, filActualite: filActualite])
 	}
 }

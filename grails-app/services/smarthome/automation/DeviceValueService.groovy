@@ -34,6 +34,7 @@ class DeviceValueService extends AbstractService {
 					'in' 'id', deviceIds
 				}
 				join 'device'
+				join 'device.deviceType'
 				join 'device.user'
 				order 'dateValue', 'desc'	
 			}

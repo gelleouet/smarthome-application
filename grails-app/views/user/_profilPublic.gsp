@@ -9,9 +9,6 @@
 			<div class="aui-item">
 				<p class="label">Objets partagés</p>
 			</div>
-			<div class="aui-item">
-				<p class="label">Amis</p>
-			</div>
 		</div>
 		<div class="aui-group">
 			<div class="aui-item">
@@ -19,9 +16,6 @@
 			</div>
 			<div class="aui-item">
 				<g:link action="devicesGrid" controller="device" params="[shared: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
-			</div>
-			<div class="aui-item">
-				<g:link action="friends" controller="user" style="font-size:16pt">${ friendCount }</g:link>
 			</div>
 		</div>
 		

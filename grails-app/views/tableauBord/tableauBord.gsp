@@ -8,10 +8,10 @@
 		<div class="aui-group">
 			<g:if test="${ !mobileAgent }">
 				<div class="aui-item">
-					<g:render template="profilUser"></g:render>
+					<g:render template="/user/profilPublic"></g:render>
 				</div>
-				<div class="aui-item" style="width:500px">
-					<g:render template="filActualite"></g:render>
+				<div class="aui-item filActualiteColumn">
+					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite]"></g:render>
 				</div>
 				<div class="aui-item">
 					<!-- notification / invitation -->
@@ -22,7 +22,7 @@
 				<div class="aui-item">
 					<g:render template="profilUser"></g:render>
 					<br/>
-					<g:render template="filActualite"></g:render>
+					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite]"></g:render>
 				</div>
 			</g:else>
 		</div>
