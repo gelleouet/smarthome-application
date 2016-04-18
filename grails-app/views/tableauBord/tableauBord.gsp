@@ -20,7 +20,7 @@
 			
 			<g:else>
 				<div class="aui-item">
-					<g:render template="profilUser"></g:render>
+					<g:render template="/user/profilPublic"></g:render>
 					<br/>
 					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite]"></g:render>
 				</div>
