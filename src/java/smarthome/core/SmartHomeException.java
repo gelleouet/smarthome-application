@@ -5,7 +5,6 @@ package smarthome.core;
 
 import grails.validation.ValidationErrors;
 
-import org.springframework.validation.Errors;
 
 /**
  * @author gregory
