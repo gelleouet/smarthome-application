@@ -29,7 +29,7 @@ class NotificationAccountController extends AbstractController {
 	 * @return
 	 */
 	def dialogNotificationAccount(NotificationAccount notificationAccount, String typeNotification) {
-		preAuthorize(notificationAccount)
+		notificationAccountService.edit(notificationAccount)
 		render(view: 'dialogNotificationAccount', model: [notificationAccount: notificationAccount,
 			notificationSenders: notificationAccountService.listNotificationSender(),
 			typeNotification: typeNotification])

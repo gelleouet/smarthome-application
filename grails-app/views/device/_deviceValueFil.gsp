@@ -7,5 +7,5 @@
 </div>
 
 <div class="pagination">
-	<g:paginate total="${ filActualite?.totalCount ?: 0 }" maxsteps="1" omitLast="true" omitFirst="true" id="${ device?.id }"/>
+	<g:paginate total="${ params.offset.toLong()  + params.max.toLong() + 1 }" maxsteps="1" omitLast="true" omitFirst="true" id="${ device?.id }"/>
 </div>

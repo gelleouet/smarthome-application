@@ -21,20 +21,25 @@ class SocialService extends AbstractService {
 	 * @param pagination
 	 * @return
 	 */
-	List<DeviceValue> filActualite(User user, Map pagination) {
+	FilActualiteCommand filActualite(User user, Map pagination) {
 		Chronometre chrono = new Chronometre()
+		FilActualiteCommand command = new FilActualiteCommand()
 		
-		List<Device> devices = Device.findAllByUser(user)
+		command.userDevices = Device.findAllByUser(user)
+		
 		//on rajoute les objets partagés par amis
 		def deviceIds = deviceService.listSharedDeviceId(user.id)
 		if (deviceIds) {
-			devices.addAll(Device.getAll(deviceIds))
+			command.sharedDevices = Device.getAll(deviceIds)
 		}
 		
-		def values = deviceValueService.lastValuesByDevices(devices, pagination)
+		def allDevices = []
+		allDevices.addAll(command.userDevices)
+		allDevices.addAll(command.sharedDevices)
+		command.values = deviceValueService.lastValuesByDevices(allDevices, pagination)
 		
 		log.info("Fil actualite ${user.username} : ${chrono.stop()}ms")
 		
-		return values
+		return command
 	}
 }

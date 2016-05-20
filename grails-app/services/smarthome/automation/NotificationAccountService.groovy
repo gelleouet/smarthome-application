@@ -7,6 +7,7 @@ import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,19 @@ import smarthome.security.User;
 
 class NotificationAccountService extends AbstractService {
 
+	
+	/**
+	 * Edition ACL
+	 *
+	 * @param workflow
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#notificationAccount, 'OWNER')")
+	NotificationAccount edit(NotificationAccount notificationAccount) {
+		return notificationAccount
+	}
+	
+	
 	/**
 	 * Liste des sender de notifications
 	 * 

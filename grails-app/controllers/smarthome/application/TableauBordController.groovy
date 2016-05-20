@@ -29,9 +29,7 @@ class TableauBordController extends AbstractController {
 	def index() {
 		def user = authenticatedUser
 		def filActualite = socialService.filActualite(user, this.getPagination([:]))
-		def deviceCount = deviceService.countDevice(user)
-		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
-		render(view: 'tableauBord', model: [filActualite: filActualite, user: user,
-			deviceCount: deviceCount, sharedDeviceCount: sharedDeviceCount])
+
+		render(view: 'tableauBord', model: [filActualite: filActualite, user: user])
 	}
 }
