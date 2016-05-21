@@ -94,7 +94,7 @@ grails.project.dependency.resolution = {
 		compile ":scaffolding:2.1.2"
 		compile ':cache:1.1.8'
 		compile ":asset-pipeline:1.9.9"
-		compile ":platform-core:1.0.0"
+		//compile ":platform-core:1.0.0"
 		compile ':spring-security-core:2.0-RC4'
 		compile "org.grails.plugins:spring-security-acl:2.0.1"
 		compile ":rabbitmq:1.0.0"
