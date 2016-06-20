@@ -47,6 +47,21 @@ class UserController extends AbstractController {
 			deviceTypeClass: TeleInformation.name, sharedDevice: false]))
 		render(view: 'profil', model: [user: user, smsAccount: smsAccount, house: house, compteurs: compteurs])
 	}
+	
+	
+	/**
+	 * Profil publique d'un user
+	 * 
+	 * @param user
+	 * @return
+	 */
+	def profilPublic(User user) {
+		def house = houseService.findDefaultByUser(user)
+		def userDeviceCount = deviceService.countDevice(user)
+		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
+		render(view: 'profilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount, 
+			sharedDeviceCount: sharedDeviceCount, viewOnly: true])
+	}
 
 
 	/**

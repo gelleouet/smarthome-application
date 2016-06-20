@@ -1,4 +1,4 @@
-<h4>${ device.label } <span class="h6-normal"> ${ device.user.prenomNom } - ${ app.formatTimeAgo(date: device.dateValue) }</span>
+<h4>${ device.label } <span class="h6-normal"> <g:link class="h6-normal" action="profilPublic" controller="user" id="${ device.user.id }">${ device.user.prenomNom }</g:link> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
 </h4>
 								
 <div class="aui-group">

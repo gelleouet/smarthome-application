@@ -1,6 +1,12 @@
 <div class="filActualite" style="padding:15px;">
 		<h4><asset:image src="useravatar.png" width="48px" />
-		<g:link action="profil" controller="user" style="color:black;">${ user.prenomNom }</g:link></h4>
+			<g:if test="${ viewOnly }">
+				${ user.prenomNom }
+			</g:if>
+			<g:else>
+				<g:link action="profil" controller="user" style="color:black;">${ user.prenomNom }</g:link>
+			</g:else>
+		</h4>
 		
 		<div class="aui-group">
 			<div class="aui-item">
@@ -11,12 +17,22 @@
 			</div>
 		</div>
 		<div class="aui-group">
-			<div class="aui-item">
-				<g:link action="devicesGrid" controller="device" style="font-size:16pt">${ userDeviceCount }</g:link>
-			</div>
-			<div class="aui-item">
-				<g:link action="devicesGrid" controller="device" params="[shared: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
-			</div>
+			<g:if test="${ viewOnly }">
+				<div class="aui-item">
+					<span style="font-size:16pt" class="link">${ userDeviceCount }</span>
+				</div>
+				<div class="aui-item">
+					<span style="font-size:16pt" class="link">${ sharedDeviceCount }</span>
+				</div>
+			</g:if>
+			<g:else>
+				<div class="aui-item">
+					<g:link action="devicesGrid" controller="device" style="font-size:16pt">${ userDeviceCount }</g:link>
+				</div>
+				<div class="aui-item">
+					<g:link action="devicesGrid" controller="device" params="[shared: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
+				</div>
+			</g:else>
 		</div>
 		
 		<g:if test="${ house }">
@@ -45,9 +61,9 @@
 				</g:if>
 			</ul>
 		</g:if>
-		<g:else>
+		<g:elseif test="${ !viewOnly }">
 			<h6>
 			Pour calculer votre consommation annuelle et le classement énergétique de votre maison, <g:link action="profil" controller="user">veuillez compléter votre profil</g:link>
 			</h6>
-		</g:else>
+		</g:elseif>
 </div>
