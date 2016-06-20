@@ -128,6 +128,19 @@ class DeviceValue {
 	 * @param last
 	 */
 	static def firstValueByDay(Device device, String metaName = null) {
+		return firstValueByDay(device, metaName, new Date().clearTime())
+	}
+	
+	
+	/**
+	 * La 1ere valeur d'un jour
+	 * 
+	 * @param device
+	 * @param metaName
+	 * @param date
+	 * @return
+	 */
+	static def firstValueByDay(Device device, String metaName, Date date) {
 		def values = DeviceValue.createCriteria().list(max: 1) {
 			eq "device", device
 			
@@ -137,7 +150,7 @@ class DeviceValue {
 				isNull "name"
 			}
 			
-			ge "dateValue", new Date().clearTime()
+			ge "dateValue", date
 			
 			order "dateValue", "asc"
 		}
@@ -154,6 +167,18 @@ class DeviceValue {
 	 * @param last
 	 */
 	static def lastValueByDay(Device device, String metaName = null) {
+		return lastValueByDay(device, metaName, new Date().clearTime())
+	}
+	
+	
+	/**
+	 * La dernière valeur d'un jour
+	 *
+	 * @param device
+	 * @param metaName
+	 * @param last
+	 */
+	static def lastValueByDay(Device device, String metaName, Date date) {
 		def values = DeviceValue.createCriteria().list(max: 1) {
 			eq "device", device
 			
@@ -163,7 +188,7 @@ class DeviceValue {
 				isNull "name"
 			}
 			
-			ge "dateValue", new Date().clearTime()
+			ge "dateValue", date
 			
 			order "dateValue", "desc"
 		}

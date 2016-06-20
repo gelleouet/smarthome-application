@@ -32,31 +32,46 @@
 
 	<g:applyLayout name="applicationContent">
 		<g:form controller="user" method="post" class="aui">
-			<g:hiddenField name="id" value="${user.id}" />
+			<g:hiddenField name="user.id" value="${user.id}" />
 	
 			<h4>Général</h4>
 			
 			<fieldset>
 				<div class="field-group">
-					<label for="username">Email<span
-						class="aui-icon icon-required"> required</span></label>
-					<g:textField name="username" value="${user.username}" type="email"
+					<label>Email<span class="aui-icon icon-required"> required</span></label>
+					<g:textField name="user.username" value="${user.username}" type="email"
 						class="text long-field" required="true" disabled="true" />
-					<div class="description">En cas de changement d'email, un
-						email vous sera envoyé à la nouvelle adresse pour valider votre
-						accès.</div>
 				</div>
 				<div class="field-group">
-					<label for="prenom">Prénom<span
-						class="aui-icon icon-required"> required</span></label>
-					<g:textField name="prenom" value="${user.prenom}" required="true" 
+					<label>Prénom<span class="aui-icon icon-required"> required</span></label>
+					<g:textField name="user.prenom" value="${user.prenom}" required="true" 
 						class="text long-field"  />
 				</div>
 				<div class="field-group">
-					<label for="nom">Nom<span class="aui-icon icon-required">
-							required</span></label>
-					<g:textField name="nom" value="${user.nom}" class="text long-field"
+					<label>Nom<span class="aui-icon icon-required">required</span></label>
+					<g:textField name="user.nom" value="${user.nom}" class="text long-field"
 						required="true" />
+				</div>
+			</fieldset>
+
+			
+			<h4>Description maison</h4>
+			
+			<g:if test="${ house?.id }">
+				<g:hiddenField name="house.id" value="${house.id}" />
+			</g:if>
+			
+			<fieldset>
+				<div class="field-group">
+					<label>Surface (en m²)</label>
+					<g:field name="house.surface" type="number" value="${house?.surface}" class="text medium-field" />
+					<div class="description">Utilisé pour le calcul du classement énergétique</div>
+				</div>
+				<div class="field-group">
+					<label>Compteur principal</label>
+					<g:select name="house.compteur.id" value="${house?.compteur?.id}" from="${ compteurs }" optionKey="id" 
+						optionValue="label" class="select" noSelection="[null: '']"/>
+					<div class="description">Utilisé pour le calcul du classement énergétique</div>
 				</div>
 			</fieldset>
 			
@@ -66,7 +81,7 @@
 			<fieldset>
 				<div class="field-group">
 					<label >N° téléphone mobile</label>
-					<g:textField name="telephoneMobile" value="${user.telephoneMobile}" class="text medium-field" />
+					<g:textField name="user.telephoneMobile" value="${user.telephoneMobile}" class="text medium-field" />
 					<div class="description">Ne sert exclusiment qu'aux notifications SMS</div>
 				</div>
 			</fieldset>
@@ -95,8 +110,7 @@
 			
 			<fieldset>
 				<div class="field-group">
-					<label>Application ID<span
-						class="aui-icon icon-required"> required</span></label>
+					<label>Application ID<span class="aui-icon icon-required"> required</span></label>
 					<h5>${ user.applicationKey }</h5>
 					<div class="description">Utilisez cet ID pour connecter des agents à l'application SmartHome. Il vous sera demandé dans les identifiants de connexion.</div>
 				</div>

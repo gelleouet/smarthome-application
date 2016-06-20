@@ -3,7 +3,11 @@ package smarthome.security
 import smarthome.security.RegisterService;
 import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured;
+import smarthome.automation.DeviceSearchCommand;
+import smarthome.automation.DeviceService;
+import smarthome.automation.HouseService;
 import smarthome.automation.NotificationAccount;
+import smarthome.automation.deviceType.TeleInformation;
 import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -24,6 +28,8 @@ class UserController extends AbstractController {
 
 	UserService userService
 	RegisterService registerService
+	HouseService houseService
+	DeviceService deviceService
 
 
 	/**
@@ -36,7 +42,10 @@ class UserController extends AbstractController {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
 		def smsAccount = NotificationAccount.findByUserAndType(user, NotificationAccountEnum.sms)
-		render(view: 'profil', model: [user: user, smsAccount: smsAccount])
+		def house = houseService.findDefaultByUser(user)
+		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id, 
+			deviceTypeClass: TeleInformation.name, sharedDevice: false]))
+		render(view: 'profil', model: [user: user, smsAccount: smsAccount, house: house, compteurs: compteurs])
 	}
 
 
@@ -60,13 +69,17 @@ class UserController extends AbstractController {
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "index", modelName = "user")
-	def saveProfil(User user) {
-		checkErrors(this, user)
+	def saveProfil(ProfilCommand command) {
+		checkErrors(this, command.user)
 
 		// on ne mappe que les infos "non sensibles" (ie pas le mot de passe)
 		// @see constraint bindable User
-		userService.save(user, false)
-		redirect(uri: '/')
+		userService.save(command.user, false)
+		
+		command.house.user = command.user
+		houseService.save(command.house)
+		
+		profil()
 	}
 
 

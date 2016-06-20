@@ -391,6 +391,12 @@ class DeviceService extends AbstractService {
 				ilike 'label', search
 			}
 			
+			if (command.deviceTypeClass) {
+				deviceType {
+					eq 'implClass', command.deviceTypeClass
+				}
+			}
+			
 			join "deviceType"
 			join "user"
 		}

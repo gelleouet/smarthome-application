@@ -8,6 +8,7 @@ import grails.validation.Validateable;
 class DeviceSearchCommand {
 	Map pagination = [:]
 	String search
+	String deviceTypeClass
 	boolean filterShow
 	long userId
 	String searchGroupe
@@ -16,5 +17,6 @@ class DeviceSearchCommand {
 	static constraints = {
 		search nullable: true
 		searchGroupe nullable: true
+		deviceTypeName nullable: true
 	}
 }
