@@ -119,6 +119,29 @@ class AgentService extends AbstractService {
 	
 	
 	/**
+	 * Reset complet de la config de l'agent
+	 * 
+	 * @param agent
+	 * @param inclusion
+	 * 
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#agent, 'OWNER')")
+	def resetConfig(Agent agent) throws SmartHomeException {
+		if (agent.locked) {
+			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas activé !", agent)
+		}
+		
+		if (!agent.online) {
+			throw new SmartHomeException("L'agent ${agent.libelle} n'est pas connecté !", agent)
+		}
+		
+		this.sendMessage(agent, [header: 'resetConfig'])
+	}
+	
+	
+	/**
 	 * Demande connexion au websocket
 	 * 
 	 * @param mac

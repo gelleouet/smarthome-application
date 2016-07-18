@@ -138,4 +138,17 @@ class AgentController extends AbstractController {
 		agentService.startAssociation(agent, false)
 		redirect(action: 'agents')
 	}
+	
+	
+	/**
+	 * Reset config
+	 *
+	 * @param agent
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "agents", modelName = AgentController.COMMAND_NAME)
+	def resetConfig(Agent agent) {
+		agentService.resetConfig(agent)
+		redirect(action: 'agents')
+	}
 }

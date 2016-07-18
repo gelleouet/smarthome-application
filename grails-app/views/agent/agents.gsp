@@ -83,6 +83,10 @@
 					            	<g:link class="aui-button" title="Exclusion" action="startExclusion" id="${ bean.id }">
 					            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll"></span> Exclusion
 					            	</g:link>
+					            	
+					            	<g:link class="aui-button confirm-button" title="Reset" action="resetConfig" id="${ bean.id }">
+					            		<span class="aui-icon aui-icon-small aui-iconfont-bp-troubleshooting"></span> Reset
+					            	</g:link>
 								</div>
 							</div>
 			            </td>
