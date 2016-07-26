@@ -28,7 +28,7 @@
 			<div class="aui-message">
 				<h6>Vous n'avez pas encore d'objet enregistré sur votre compte. Vous pouvez :
 					<ul>
-						<li>Connecter un objet sur un agent pour qu'il soit détecté automatiquement</li>
+						<li>Connecter un objet sur un agent pour qu'il soit détecté automatiquement. <a href="https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome">Notice d'installation d'un agent Raspberry Smarthome</a></li>
 						<li>Créer manuellement un objet <g:link action="create">en cliquant ici</g:link></li>
 					</ul> 
 				</h6>
