@@ -222,7 +222,7 @@ class DeviceEventService extends AbstractService {
 			event.triggers?.each { trigger ->
 				// déclenchement d'un workflow
 				if (trigger.workflow) {
-					log.info "Trigger workflow ${workflow.label} from device ${device.label}"
+					log.info "Trigger workflow ${trigger.workflow.label} from device ${device.label}"
 					workflowService.execute(trigger.workflow, context)
 				}
 				
