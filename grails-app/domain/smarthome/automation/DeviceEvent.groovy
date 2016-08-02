@@ -90,4 +90,15 @@ class DeviceEvent {
 	boolean isBlindTime(int dateField) {
 		return DateUtils.isBlindTime(lastEvent, dateField)
 	}
+	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 *
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField, int delta) {
+		return DateUtils.isBlindTime(lastEvent, dateField, delta)
+	}
 }

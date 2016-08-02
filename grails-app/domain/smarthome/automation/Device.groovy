@@ -174,4 +174,15 @@ class Device {
 	boolean isBlindTime(int dateField) {
 		return DateUtils.isBlindTime(dateValue, dateField)
 	}
+	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 * 
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField, int delta) {
+		return DateUtils.isBlindTime(dateValue, dateField, delta)
+	}
 }

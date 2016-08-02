@@ -84,13 +84,26 @@ class DateUtils {
 	 * @return
 	 */
 	static boolean isBlindTime(Date date, int dateField) {
+		return isBlindTime(date, dateField, 1)
+	}
+	
+	 
+	/**
+	 * Vrai si la date courante est en "temps mort" par rapport à la date indiquée et le référentiel (heure, minute, etc.)
+	 * "Temps mort" = si la date courante est comprise dans l'intervalle [date, date + (dateField + delta)]
+	 *
+	 * @param date
+	 * @param dateField
+	 * @return
+	 */
+	static boolean isBlindTime(Date date, int dateField, int delta) {
 		if (date == null) {
 			return false
 		}
 		
 		Date currentDate = new Date()
 		Date endDate = date.copyWith([:])
-		endDate[dateField] = endDate[dateField] + 1
+		endDate[dateField] = endDate[dateField] + delta
 		
 		return currentDate >= date && currentDate <= endDate
 	} 
