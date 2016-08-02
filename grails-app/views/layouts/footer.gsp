@@ -1,5 +1,5 @@
 <div class="footer">
-	<h6>ELLEOUET GREGORY - EURL au capital de 5000€ - SIREN 809075583
+	<h6>ELLEOUET GREGORY
 	<br/>
 	Java Development Operations - Mail <a href="mailto:contact@jdevops.com">contact@jdevops.com</a> - Twitter <a href="https://twitter.com/gelleouet">@gelleouet</a>
 	<br/>

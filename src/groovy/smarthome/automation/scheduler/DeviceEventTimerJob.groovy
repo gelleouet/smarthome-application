@@ -37,7 +37,7 @@ class DeviceEventTimerJob implements Job {
 		
 		log.info "Execute job ${this.class.name} with deviceEvent ${ deviceEvent.libelle}..."
 		
-		deviceEventService.triggerDeviceEvent(deviceEvent, '', null)
+		deviceEventService.triggerEvent(deviceEvent, '', null)
 	}
 	
 	

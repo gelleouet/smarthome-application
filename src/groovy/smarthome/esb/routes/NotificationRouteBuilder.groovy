@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
  * @author gregory
  *
  */
-class DeviceScheduleEventRouteBuilder extends RouteBuilder {
+class NotificationRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
-	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "smarthome.automation.deviceEventService.executeScheduleDeviceEvent"
+	final String IN_EXCHANGE = "smarthome.automation.deviceEventService.triggerEvent"
+	final String IN_QUEUE = "smarthome.automation.notificationService.sendDeviceEventNotifications"
 	
 	
 	@Autowired
@@ -44,15 +44,12 @@ class DeviceScheduleEventRouteBuilder extends RouteBuilder {
 		// ca tourne en boucle sur la route
 		
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/${EXCHANGE}?queue=${QUEUE}&routingKey=${QUEUE}&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true")
+		from("rabbitmq://$rabbitHostname/$IN_EXCHANGE?queue=$IN_QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true&exchangeType=fanout")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
-		// filtre les messages sans result
-		.setProperty("result").groovy('body.result')
-		.filter().simple('${property.result} != null')
-		// recupère le device event
-		.setProperty("deviceEventId").groovy('body.result.id')
+		// recupère l'event
+		.setProperty("deviceEventId").groovy('body.event.id')
 		.setProperty("deviceEvent").method("deviceEventService", "findById(property.deviceEventId)")
-		.to("bean:deviceEventService?method=triggerEvent(property.deviceEvent, '', null)")
+		.to("bean:notificationAccountService?method=sendDeviceEventNotifications(property.deviceEvent)")
 	}
 }

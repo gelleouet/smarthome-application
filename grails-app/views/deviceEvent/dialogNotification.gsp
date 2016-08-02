@@ -40,7 +40,7 @@
 			<p class="h6">Un script Groovy peut être utilisée en tant que message avec les variables prédéfinies :</p>
 			<ul class="h6">
 				<li>device : objet smarthome.automation.Device. Représente l'objet associé à l'événement. Ex : device.command == "on", device.value == "1"</li>
-				<li>devices : objet Map. Contient tous les objets indexés par leur mac. Ex : devices['gpio4'].value</li>
+				<li>deviceEvent : objet smarthome.automation.DeviceEvent. L'événement en cours. Ex : deviceEvent.lastEvent</li>
 			</ul>
 			
 	    </div>

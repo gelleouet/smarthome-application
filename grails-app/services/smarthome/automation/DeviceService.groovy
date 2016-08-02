@@ -399,6 +399,7 @@ class DeviceService extends AbstractService {
 			
 			join "deviceType"
 			join "user"
+			order "label"
 		}
 		
 		def devices

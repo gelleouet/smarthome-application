@@ -35,7 +35,6 @@ class DeviceEventService extends AbstractService {
 	DeviceService deviceService
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
-	NotificationAccountService notificationAccountService
 	DeviceEventDecalageRuleService deviceEventDecalageRuleService
 	
 	
@@ -156,7 +155,7 @@ class DeviceEventService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def triggerEvents(Device device, String syncActionName) throws SmartHomeException {
+	Device triggerEvents(Device device, String syncActionName) throws SmartHomeException {
 		if (!device.attached) {
 			device.attach()
 		}
@@ -170,9 +169,11 @@ class DeviceEventService extends AbstractService {
 			def context = this.buildContext(device)
 			
 			events.each { event ->
-				triggerDeviceEvent(event, syncActionName, context)
+				triggerEvent(event, syncActionName, context)
 			}
 		}
+		
+		return device
 	}
 	
 	
@@ -187,7 +188,7 @@ class DeviceEventService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def triggerDeviceEvent(DeviceEvent event, String syncActionName, Map context) throws SmartHomeException {
+	DeviceEvent triggerEvent(DeviceEvent event, String syncActionName, Map context) throws SmartHomeException {
 		def hasTrigger
 		
 		if (!event.attached) {
@@ -262,8 +263,12 @@ class DeviceEventService extends AbstractService {
 			event.lastEvent = new Date()
 			event.save()
 			
-			this.sendNotifications(event, context)
+			// envoi d'un message amqp pour prévenir d'un événement
+			this.sendAsynchronousMessage("smarthome.automation.deviceEventService.triggerEvent", "",
+				[event: event], ExchangeType.FANOUT)
 		}
+		
+		return event
 	}
 	
 	
@@ -344,53 +349,5 @@ class DeviceEventService extends AbstractService {
 	 */
 	def findById(Serializable id) {
 		DeviceEvent.get(id)
-	}
-	
-	
-	/**
-	 * Envoi des notifications lors du déchenchement d'un event
-	 * Les notifications sont envoyées en asynchrone
-	 * 
-	 * @param deviceEvent
-	 * @param context
-	 */
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	void sendNotifications(DeviceEvent deviceEvent, Map context) throws SmartHomeException {
-		def notifications = DeviceEventNotification.createCriteria().list {
-			eq 'deviceEvent', deviceEvent
-			join 'deviceEvent'
-			join 'deviceEvent.device'
-		}
-		
-		def user = deviceEvent.user
-		def tasks = []
-		
-		notifications.each { notification ->
-			tasks << Promises.task {
-				def message
-				
-				// construction du message
-				if (notification.message) {
-					if (notification.script) {
-						// Utiliser une transaction séparée en lecture seule pour éviter des abus
-						DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
-							message = ScriptUtils.runScript(notification.message, context)?.toString()
-						}
-					} else {
-						message = notification.message
-					}
-				}
-				
-				if (!message) {
-					message = "NOTIFICATION SMARTHOME\rDevice : ${notification.deviceEvent.device.label}\rValeur : ${notification.deviceEvent.device.value}"
-				}
-				
-				notificationAccountService.sendNotification(new Notification(message: message, type: notification.type, user: deviceEvent.user))
-			}
-		}
-		
-		Promises.onError(tasks) {
-			log.error "Send notifications error", it
-		}
 	}
 }

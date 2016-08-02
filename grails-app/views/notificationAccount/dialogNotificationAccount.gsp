@@ -29,7 +29,7 @@
 
 	    	
 	    	<div id="ajaxNotificationSenderForm">
-		    	<g:if test="${ notificationAccount.id }">
+		    	<g:if test="${ notificationAccount?.id }">
 		    		<g:include action="formTemplateNotificationSender" id="${ notificationAccount.id }"/>
 		    	</g:if>
 	    	</div>

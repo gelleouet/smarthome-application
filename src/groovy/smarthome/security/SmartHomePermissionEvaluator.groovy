@@ -31,7 +31,10 @@ class SmartHomePermissionEvaluator implements PermissionEvaluator {
 	
 	
 	protected boolean hasOwnerPermission(Authentication authentication, Object domainObject) {
-		if (domainObject && domainObject['user']?.id && authentication && authentication['principal']?.id) {
+		// pas d'évaluation sur les nouveaux objets
+		if (domainObject && domainObject.properties['id'] == null) {
+			return true
+		} else if (domainObject && domainObject['user']?.id && authentication && authentication['principal']?.id) {
 			return domainObject['user'].id == authentication.principal.id
 		}
 		

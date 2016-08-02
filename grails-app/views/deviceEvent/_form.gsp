@@ -49,8 +49,9 @@
 	        <g:remoteLink class="aui-button-link" url="[action: 'dialogNotification', id: deviceEvent.id]" params="[typeNotification: NotificationAccountEnum.sms]" onComplete="showNotificationDialog()" update="ajaxDialog">Modifier le message</g:remoteLink>
 	    </div>                                
 	    <div class="checkbox">
-	    	<g:checkBox name="notificationEmail" class="checkbox" disabled="true"/>
-	        <label for="notificationEmail">Email</label>
+	    	<g:checkBox name="notificationMail" class="checkbox" value="${ deviceEvent.notificationMail }"/>
+	        <label for="notificationMail">Email</label>
+	        <g:remoteLink class="aui-button-link" url="[action: 'dialogNotification', id: deviceEvent.id]" params="[typeNotification: NotificationAccountEnum.mail]" onComplete="showNotificationDialog()" update="ajaxDialog">Modifier le message</g:remoteLink>
 	    </div>                                
 	</fieldset>
 </g:if>
