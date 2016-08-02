@@ -92,12 +92,16 @@ class WorkflowService extends AbstractService {
 	def execute(Workflow workflow, Map context) throws SmartHomeException {
 		// ajoute le service deviceService pour le déclenchement des actions
 		context.deviceService = deviceService
+		context.workflow = workflow
+		context.log = log
 		
 		def result = ScriptUtils.runScript(workflow.script, context)
 		
-		// trace l'exécution
-		workflow.lastExecution = new Date()
-		workflow.save()
+		// trace l'exécution seulement si workflow s'est terminé correctement
+		if (result) {
+			workflow.lastExecution = new Date()
+			workflow.save()
+		}
 		
 		return result
 	}

@@ -43,7 +43,7 @@
 		            <th>Planification</th>
 		            <th>Dernière exécution</th>
 		            <th>Actif ?</th>
-		            <th class="column-1-buttons"></th>
+		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -54,9 +54,12 @@
 			            <td>${ bean.cron } <g:if test="${ bean.synchroSoleil }"><span class="aui-lozenge aui-lozenge-complete">${ bean.lastHeureDecalage ?: '-' }</span></g:if></td>
 			            <td>${ app.formatTimeAgo(date: bean.lastEvent) }</td>
 			            <td>${ bean.actif ? 'X' : '' }</td>
-			            <td class="column-1-buttons command-column">
+			            <td class="column-2-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            	</g:link>
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Exécuter" action="execute" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-build"></span>
 			            	</g:link>
 			            </td>
 			        </tr>

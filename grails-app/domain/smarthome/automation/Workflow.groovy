@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import smarthome.core.DateUtils;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -30,4 +31,25 @@ class Workflow {
 		sort 'label'
 	}
 	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 *
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField) {
+		return DateUtils.isBlindTime(lastExecution, dateField)
+	}
+	
+	
+	/**
+	 * Temps mort depuis la dernière mise à jour ?
+	 *
+	 * @param dateField
+	 * @return
+	 */
+	boolean isBlindTime(int dateField, int delta) {
+		return DateUtils.isBlindTime(lastExecution, dateField, delta)
+	}
 }

@@ -125,10 +125,23 @@ class DeviceEventController extends AbstractController {
 	 * @param deviceEvent
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "deviceEvents")
+	@ExceptionNavigationHandler(actionName = "deviceEvents", modelName = "")
 	def delete(DeviceEvent deviceEvent) {
 		deviceEventService.delete(deviceEvent)
 		redirect(action: COMMAND_NAME + 's')
+	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "deviceEvents", modelName = "")
+	def execute(DeviceEvent deviceEvent) {
+		deviceEventService.edit(deviceEvent)
+		deviceEventService.triggerEvent(deviceEvent, null, null)
+		redirect(action: 'deviceEvents')
 	}
 	
 	

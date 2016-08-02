@@ -1,53 +1,69 @@
 package smarthome.automation.workflow
 
+import org.apache.commons.logging.Log;
+
 import smarthome.automation.Device;
 import smarthome.automation.DeviceEvent;
 import smarthome.automation.DeviceService;
+import smarthome.automation.Workflow;
 
 class FermetureVoletEnsoleillement {
 	Device device
 	DeviceEvent deviceEvent
 	Map<String, Device> devices = [:]
 	DeviceService deviceService
+	Workflow workflow
+	Log log
 	
-	void execute() {
+	boolean execute() {
 		Date dateJour = new Date().clearTime()
 		
 		// device = luminosité
 		
-		// limite d'ensoleillement (900lux) et valeur du jour
-		if (device.value?.toDouble() <= 900 || dateJour != device.dateValue?.clearTime()) {
-			return	
+		// moyenne d'ensoleillement > 950lux sur les 3 dernières valeurs 
+		def lastValues = device.lastValues(null, 3).collect{it.value}
+		
+		if (!lastValues) {
+			log.warn("FermetureVoletEnsoleillement : no values")
+			return false
 		}
 		
-		def temperatureDevice = devices.find { value.label == "T° séjour (FGMS)" }
+		def avg = lastValues.sum() / lastValues.size()
 		
-		// limite température (23°C) et valeur du jour
-		if (temperatureDevice?.value?.toDouble() <= 23 || dateJour != temperatureDevice?.dateValue?.clearTime()) {
-			return
+		if (avg < 950) {
+			log.warn("FermetureVoletEnsoleillement : luminosité not matching 950lum ($avg)")
+			return false
 		}
 		
-		// le seuil de luminosité doit être maintenu pendant au moins 15min
-		// cela évite les fermetures sur des pics de valeur brefs
-		def duration
+		log.info("FermetureVoletEnsoleillement : luminosité matching 950lum ($avg)")
 		
-		use(groovy.time.TimeCategory) {
-			duration = new Date() - device.dateValue
+		def temperatureDevice = devices.find({ key, device -> device.label == "T° séjour (FGMS)" })?.value
+		
+		// valeur température du jour
+		if (dateJour != temperatureDevice?.dateValue?.clearTime()) {
+			log.warn("FermetureVoletEnsoleillement : T° too old (${temperatureDevice?.dateValue})")
+			return false
 		}
 		
-		if (duration.minutes < 15) {
-			return
+		// limite température (23°C)
+		if (temperatureDevice?.value?.toDouble() <= 23) {
+			log.warn("FermetureVoletEnsoleillement : T° not matching 23°C (${temperatureDevice?.value?.toDouble()})")
+			return false
 		}
+		
+		log.info("FermetureVoletEnsoleillement : T° matching 23°C (${temperatureDevice?.value?.toDouble()})")
 		
 		// conditions sont réunies pour fermer à moitié les volets
 		// seuls les volets ouverts à plus de 50% sont fermés
-		devices.each {
-			if (value.label in ["Volet panoramique", "Volet salle", "Volet salon", "Volet salon [Gilles]"]) {
-				if (value.value?.toDouble() > 50) {
-					value.value = "50"
-					deviceService.invokeAction(value, "level")
+		devices.each { key, device ->
+			if (device.label in ["Volet panoramique", "Volet salle", "Volet salon", "Volet salon [Gilles]"]) {
+				if (device.value?.toDouble() > 50) {
+					device.value = "50"
+					deviceService.invokeAction(device, "level")
 				}
 			}
 		}
+		
+		return true
 	}
 }
