@@ -185,4 +185,16 @@ class Device {
 	boolean isBlindTime(int dateField, int delta) {
 		return DateUtils.isBlindTime(dateValue, dateField, delta)
 	}
+	
+	
+	/**
+	 * Les dernières valeurs du jour
+	 * 
+	 * @param metaName
+	 * @param nbData
+	 * @return
+	 */
+	List lastValues(String metaName, int nbData) {
+		return DeviceValue.lastValuesByDay(this, metaName, new Date().clearTime(), nbData)
+	}
 }

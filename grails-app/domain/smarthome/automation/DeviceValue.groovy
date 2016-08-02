@@ -198,6 +198,32 @@ class DeviceValue {
 	
 	
 	/**
+	 * Renvoit les dernières valeurs d'un device
+	 * 
+	 * @param device
+	 * @param metaName
+	 * @param date
+	 * @param max
+	 * @return
+	 */
+	static def lastValuesByDay(Device device, String metaName, Date date, int nbData) {
+		return DeviceValue.createCriteria().list(max: nbData) {
+			eq "device", device
+			
+			if (metaName) {
+				eq "name", metaName
+			} else {
+				isNull "name"
+			}
+			
+			ge "dateValue", date
+			
+			order "dateValue", "desc"
+		}
+	}
+	
+	
+	/**
 	 * convertit une valeur texte en numérique
 	 * 
 	 * @param value
