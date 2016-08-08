@@ -40,6 +40,10 @@
 						<p>Vous serez alors redirigés vers l'application SmartHome et vous pourrez vous connecter avec vos identifiants.</p>
 						
 						<br/>
+						
+						<p>Pour installer votre agent Raspberry Smarthome, veuillez suivre la notice d'installation suivante : https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome</p>
+						
+						<br/>
 						<p>Merci</p>
 						<p>L'équipe SmartHome</p>
 					</div>
@@ -50,7 +54,7 @@
 		
 		
 		<div style="font-size: small;text-align: center;width:100%;">
-			<h6 style="color:#707070;font-size:12px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">ELLEOUET GREGORY - EURL au capital de 5000€ - SIREN 809075583
+			<h6 style="color:#707070;font-size:12px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">ELLEOUET GREGORY
 			<br/>
 			Java Development Operations
 			<br/>
