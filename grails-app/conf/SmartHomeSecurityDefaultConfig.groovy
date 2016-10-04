@@ -20,6 +20,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/websocket/**':		  		  ['permitAll'],
 	'/j_spring_security_switch_user': ["hasRole('ROLE_ADMIN')"],
 	'/j_spring_security_exit_user':   ["isAuthenticated()"],
+	'/j_spring_security_logout':   	  ["permitAll"]
 ]
 
 // Configuration supplémentaire de Spring Security
