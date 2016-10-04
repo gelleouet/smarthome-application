@@ -27,10 +27,8 @@
 			<div class="aui-page-panel" style="border-radius:5px;border-width:1px;margin-left:auto;margin-right:auto;width:800px;background:#fff;border:1px solid #ccc;-moz-box-sizing:border-box;box-sizing:border-box;clear:both;display:block;position:relative;"">
 				<div class="aui-page-panel-inner" style="border-spacing:0;display:table;table-layout:fixed;width:100%">
 					<div style="-moz-box-sizing:border-box;box-sizing:border-box;display:table-cell;padding:20px;vertical-align:top">
-						<h1 style="color:#333;font-size:32px;font-weight:400;line-height:1.25;text-transform:none;">Notification SMARTHOME</h1>
+						<h1 style="color:#333;font-size:32px;font-weight:400;line-height:1.25;text-transform:none;">Activation compte</h1>
 					
-						<h3 style="color:#333;font-size:20px;font-weight:400;line-height:1.5;text-transform:none;margin:30px 0 0;border-bottom-style: solid;border-bottom-width: 1px;border-bottom-color: lightgrey;padding-bottom: 10px;">Objet : Activation compte</h3>
-						<br/>
 						<p>Bonjour,</p>
 						<br/>
 						
@@ -38,6 +36,10 @@
 						<p>Veuillez cliquer sur le lien suivant : <a style="text-decoration:none;" href="$body.result.serverUrl">-- activation de votre compte --</a></p>
 						
 						<p>Vous serez alors redirigés vers l'application SmartHome et vous pourrez vous connecter avec vos identifiants.</p>
+						
+						<br/>
+						
+						<p>Pour installer votre agent Raspberry Smarthome, veuillez suivre la notice d'installation suivante : https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome</p>
 						
 						<br/>
 						<p>Merci</p>
@@ -50,7 +52,7 @@
 		
 		
 		<div style="font-size: small;text-align: center;width:100%;">
-			<h6 style="color:#707070;font-size:12px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">ELLEOUET GREGORY - EURL au capital de 5000€ - SIREN 809075583
+			<h6 style="color:#707070;font-size:12px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">ELLEOUET GREGORY
 			<br/>
 			Java Development Operations
 			<br/>
