@@ -9,14 +9,16 @@ class DeviceSearchCommand {
 	Map pagination = [:]
 	String search
 	String deviceTypeClass
-	boolean filterShow
 	long userId
 	String searchGroupe
+	String tableauBord
 	boolean sharedDevice
+	boolean favori
 	
 	static constraints = {
 		search nullable: true
 		searchGroupe nullable: true
-		deviceTypeName nullable: true
+		deviceTypeClass nullable: true
+		tableauBord nullable: true
 	}
 }

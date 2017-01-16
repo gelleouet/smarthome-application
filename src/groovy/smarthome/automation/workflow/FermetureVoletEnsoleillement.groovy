@@ -20,7 +20,7 @@ class FermetureVoletEnsoleillement {
 		
 		// device = luminosité
 		
-		// moyenne d'ensoleillement > 950lux sur les 3 dernières valeurs 
+		// moyenne d'ensoleillement > 1000lux sur les 3 dernières valeurs 
 		def lastValues = device.lastValues(null, 3).collect{it.value}
 		
 		if (!lastValues) {
@@ -30,8 +30,8 @@ class FermetureVoletEnsoleillement {
 		
 		def avg = lastValues.sum() / lastValues.size()
 		
-		if (avg < 950) {
-			log.warn("FermetureVoletEnsoleillement : luminosité not matching 950lum ($avg)")
+		if (avg < 1000) {
+			log.warn("FermetureVoletEnsoleillement : luminosité not matching 1000lum ($avg)")
 			return false
 		}
 		

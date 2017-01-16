@@ -149,5 +149,10 @@ function ajaxRerender(url, datas, divDstId) {
 }
 
 
-
-
+function favoriteStar(starId, star) {
+	if (star) {
+		$(starId).removeClass("aui-iconfont-unstar").addClass("aui-iconfont-star").addClass('star')
+	} else {
+		$(starId).removeClass("aui-iconfont-star").removeClass("star").addClass('aui-iconfont-unstar')
+	}
+}

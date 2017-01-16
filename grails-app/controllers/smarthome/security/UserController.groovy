@@ -62,6 +62,21 @@ class UserController extends AbstractController {
 		render(view: 'profilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount, 
 			sharedDeviceCount: sharedDeviceCount, viewOnly: true])
 	}
+	
+	
+	/**
+	 * Dialog profil publique d'un user
+	 * 
+	 * @param user
+	 * @return
+	 */
+	def dialogProfilPublic(User user) {
+		def house = houseService.findDefaultByUser(user)
+		def userDeviceCount = deviceService.countDevice(user)
+		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
+		render(template: 'dialogProfilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount, 
+				                                     sharedDeviceCount: sharedDeviceCount, viewOnly: true])
+	}
 
 
 	/**

@@ -8,7 +8,9 @@
 		<div class="aui-group">
 			<g:if test="${ !mobileAgent }">
 				<div class="aui-item">
-					<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+					</div>
 				</div>
 				<div class="aui-item filActualiteColumn">
 					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite.values]"></g:render>
@@ -20,7 +22,9 @@
 			
 			<g:else>
 				<div class="aui-item">
-					<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+					</div>
 					<br/>
 					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite.values]"></g:render>
 				</div>

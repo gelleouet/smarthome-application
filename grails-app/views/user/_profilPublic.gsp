@@ -1,4 +1,4 @@
-<div class="filActualite" style="padding:15px;">
+
 		<h4><asset:image src="useravatar.png" width="48px" />
 			<g:if test="${ viewOnly }">
 				${ user.prenomNom }
@@ -66,4 +66,3 @@
 			Pour calculer votre consommation annuelle et le classement énergétique de votre maison, <g:link action="profil" controller="user">veuillez compléter votre profil</g:link>
 			</h6>
 		</g:elseif>
-</div>

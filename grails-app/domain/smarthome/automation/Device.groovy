@@ -26,9 +26,10 @@ class Device {
 	String value
 	Date dateValue
 	DeviceType deviceType
-	boolean show
+	boolean favori
 	String command
 	String formula
+	String tableauBord
 		
 	static transients = ['params', 'actionName']
 	
@@ -46,6 +47,7 @@ class Device {
 		actionName bindable: true, nullable: true
 		command nullable: true
 		formula nullable: true
+		tableauBord nullable: true
     }
 	
 	static mapping = {

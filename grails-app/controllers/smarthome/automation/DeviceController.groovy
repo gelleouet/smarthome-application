@@ -46,13 +46,20 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "Objets", navigation = NavigationEnum.navbarPrimary)
-	def devicesGrid(String deviceSearch) {
-		def devices = deviceService.listByUser(new DeviceSearchCommand(search: deviceSearch, 
-			filterShow: true, userId: principal.id, sharedDevice: true))
+	def devicesGrid(DeviceSearchCommand search) {
+		search.userId = principal.id
+		def tableauBords = deviceService.groupByTableauBord(principal.id)
+		
+		// activation favori si aucun tableau de bord
+		if (!search.tableauBord && !search.sharedDevice) {
+			search.favori = true	
+		}
+		
+		def devices = deviceService.listByUser(search)
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond devices, model: [deviceSearch: deviceSearch, user: authenticatedUser]
+		respond devices, model: [user: authenticatedUser, search: search, tableauBords: tableauBords]
 	}
 	
 	
@@ -222,5 +229,23 @@ class DeviceController extends AbstractController {
 	def deviceView(Device device) {
 		def filActualite = deviceValueService.lastValuesByDevices([device], this.getPagination([:]))
 		render(view: 'deviceView', model: [device: device, user: device.user, filActualite: filActualite])
+	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "devices", modelName = "")
+	def favori(Device device, boolean favori) {
+		deviceService.favori(device, favori)
+		
+		if (request.xhr) {
+			nop()
+		} else {
+			redirect(action: 'devices')
+		}
+		
 	}
 }

@@ -608,3 +608,7 @@ h5.device-grid-label {
 	vertical-align: middle;
 	font-weight:bold;
 }
+
+.star {
+	color: #ffd76e;	
+}

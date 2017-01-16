@@ -373,22 +373,24 @@ class DeviceService extends AbstractService {
 		def sharedDevices = command.sharedDevice ? this.listSharedDeviceId(command.userId) : []
 		
 		def commonCriteria = {
-			or {
-				and {
-					user {
-						idEq(command.userId)
-					}
-					if (command.filterShow) {
-						eq "show", true
-					}
-				}
-				if (command.sharedDevice && sharedDevices) {
-					'in' 'id', sharedDevices	
+			if (command.sharedDevice) {
+				'in' 'id', sharedDevices ?: [0L]
+			} else {
+				user {
+					idEq(command.userId)
 				}
 			}
 			
 			if (command.search) {
 				ilike 'label', search
+			}
+			
+			if (command.tableauBord) {
+				eq 'tableauBord', command.tableauBord
+			}
+			
+			if (command.favori) {
+				eq 'favori', command.favori
 			}
 			
 			if (command.deviceTypeClass) {
@@ -485,5 +487,37 @@ class DeviceService extends AbstractService {
 	 */
 	long countDevice(User user) {
 		return Device.where({ user == user}).count()
+	}
+	
+	
+	/**
+	 * Enregistrement d"un device
+	 *
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def favori(Device device, boolean favori) throws SmartHomeException {
+		device.favori = favori
+		return this.save(device)
+	}
+	
+	
+	/**
+	 * Calcul des tableaux de bord
+	 * 
+	 * @return
+	 */
+	List<String> groupByTableauBord(long userId) {
+		return Device.createCriteria().list {
+			isNotNull 'tableauBord'
+			eq 'user.id', userId
+			projections {
+				groupProperty 'tableauBord'
+			}
+			order 'tableauBord'
+		}
 	}
 }

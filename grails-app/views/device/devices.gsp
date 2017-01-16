@@ -42,8 +42,7 @@
 		            <th>Groupe</th>
 		            <th>Mac</th>
 		            <th>Type</th>
-		            <th>Agent</th>
-		            <th>Visible</th>
+		            <th>Date</th>
 		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
@@ -51,17 +50,24 @@
 		    	<g:each var="bean" in="${ deviceInstanceList }">
 			        <tr>
 			            <td>
+			            	<g:remoteLink action="favori" id="${ bean.id }" params="[favori: !bean.favori]" title="Favori" onSuccess="favoriteStar('#star-device-${ bean.id }', ${ !bean.favori})">
+				            	<g:if test="${ bean.favori }">
+				            		<span id="star-device-${ bean.id }" class="star aui-icon aui-icon-small aui-iconfont-star"></span>
+				            	</g:if>
+				            	<g:else>
+				            		<span id="star-device-${ bean.id }" class="aui-icon aui-icon-small aui-iconfont-unstar"></span>
+				            	</g:else>
+			            	</g:remoteLink>
+			            	
 			            	<g:link action="edit" id="${bean.id }">
 			            		<asset:image src="${ bean.deviceType.newDeviceType().icon() }" class="device-icon-list"/>
 			            		${ bean.label }
-			            		<p class="h6">${ app.formatTimeAgo(date: bean.dateValue) }</p>
 			            	</g:link>
 			            </td>
-			            <td>${ bean.groupe }</td>
+			            <td>${ bean.tableauBord ? bean.tableauBord + ' / ' : '' } ${ bean.groupe }</td>
 			            <td>${ bean.mac }</td>
 			            <td>${ bean.deviceType.libelle }</td>
-			            <td>${ bean.agent?.mac } / ${ bean.agent?.agentModel }</td>
-			            <td>${ bean.show ? 'X' : '' }</td>
+			            <td>${ app.formatTimeAgo(date: bean.dateValue) }</td>
 			            <td class="column-2-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete"></span>

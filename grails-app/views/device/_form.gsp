@@ -46,10 +46,10 @@
 </div>
 
 <div class="field-group">
-	<label for="show">
-		Visible sur tableau de bord
+	<label for="tableauBord">
+		Tableau de bord
 	</label>
-	<g:checkBox name="show" value="${device?.show}"/>
+	<g:textField name="tableauBord" value="${device?.tableauBord}" class="text long-field"/>
 </div>
 
 
