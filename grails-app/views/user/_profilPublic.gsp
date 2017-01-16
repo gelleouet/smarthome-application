@@ -30,7 +30,7 @@
 					<g:link action="devicesGrid" controller="device" style="font-size:16pt">${ userDeviceCount }</g:link>
 				</div>
 				<div class="aui-item">
-					<g:link action="devicesGrid" controller="device" params="[shared: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
+					<g:link action="devicesGrid" controller="device" params="[sharedDevice: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
 				</div>
 			</g:else>
 		</div>
