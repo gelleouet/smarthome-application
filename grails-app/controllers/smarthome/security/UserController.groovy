@@ -37,15 +37,18 @@ class UserController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mon profil", navigation = NavigationEnum.user, defaultGroup = true, header = NavigableAction.SECUSERNAME)
+	@NavigableAction(label = "Mon compte", navigation = NavigationEnum.configuration, defaultGroup = true)
 	def profil() {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
 		def smsAccount = NotificationAccount.findByUserAndType(user, NotificationAccountEnum.sms)
 		def house = houseService.findDefaultByUser(user)
+		def modes = houseService.listModesByUser(user)
 		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id, 
 			deviceTypeClass: TeleInformation.name, sharedDevice: false]))
-		render(view: 'profil', model: [user: user, smsAccount: smsAccount, house: house, compteurs: compteurs])
+		
+		render(view: 'profil', model: [user: user, smsAccount: smsAccount, house: house,
+			compteurs: compteurs, modes: modes])
 	}
 	
 	
@@ -84,6 +87,7 @@ class UserController extends AbstractController {
 	 * 
 	 * @return
 	 */
+	@NavigableAction(label = "Mot de passe", navigation = NavigationEnum.configuration)
 	def password() {
 		// plugin spring security add authenticatedUser property
 		def command = parseFlashCommand("command", new ChangePasswordCommand(username: authenticatedUser.username,
@@ -98,7 +102,7 @@ class UserController extends AbstractController {
 	 * @param profil
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "index", modelName = "user")
+	@ExceptionNavigationHandler(actionName = "profil", modelName = "user")
 	def saveProfil(ProfilCommand command) {
 		checkErrors(this, command.user)
 
@@ -109,7 +113,7 @@ class UserController extends AbstractController {
 		command.house.user = command.user
 		houseService.save(command.house)
 		
-		profil()
+		redirect(action: 'profil')
 	}
 
 
@@ -124,7 +128,7 @@ class UserController extends AbstractController {
 
 		userService.changePassword(command)
 		flash.info = "Changement de votre mot de passe effectué avec succès !"
-		redirect(action: 'profil')
+		redirect(action: 'password')
 	}
 
 	/**
@@ -132,11 +136,7 @@ class UserController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = SmartHomeSecurityConstantes.UTILISATEURS, defaultGroup = true, navigation = NavigationEnum.configuration, header = SmartHomeSecurityConstantes.UTILISATEURS,
-	breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		SmartHomeSecurityConstantes.UTILISATEUR_SECURITE
-	])
+	@NavigableAction(label = "Utilisateurs", navigation = NavigationEnum.configuration, header = "Administrateur")
 	@Secured("hasRole('ROLE_ADMIN')")
 	def users(String userSearch) {
 		def users

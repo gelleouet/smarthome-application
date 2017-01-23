@@ -6,8 +6,8 @@
   		
   	  <div class="aui-header-before">
   	  	<g:if test="${ mobileAgent }">
-	  	  	<ul class="aui-nav mobile-only">
-	  	  		<li class="mobile-only"><a href="#dropdown2-app-switch" aria-owns="dropdown2-app-switch" aria-haspopup="true" class="aui-dropdown2-trigger aui-dropdown2-trigger-arrowless" >
+	  	  	<ul class="aui-nav">
+	  	  		<li><a href="#dropdown2-app-switch" aria-owns="dropdown2-app-switch" aria-haspopup="true" class="aui-dropdown2-trigger aui-dropdown2-trigger-arrowless" >
 	  	  			<span class="aui-icon aui-icon-small aui-iconfont-appswitcher"></span></a>
 	  	  			<div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-app-switch" aria-hidden="true">
 	                    <div class="aui-dropdown2-section">
@@ -17,7 +17,7 @@
 	                    </div>
 	                    <div class="aui-dropdown2-section">
 	                        <ul>
-	                        	<g:render template="/templates/dropDownItemDefaultLevel2" model="[items: app.navigationItems(category: 'configuration')?.subitems ]"/>
+	                        	<g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'configuration')?.subitems, category: 'configuration' ]"/>
 	                        </ul>
 	                    </div>
 	                </div>
@@ -37,12 +37,9 @@
       	 </div>	
       	 
       	 <ul class="aui-nav">
-      	 	<g:if test="${ mobileAgent }">
-	      	 	<g:link class="aui-button aui-button-primary" controller="device" action="devicesGrid">Objets</g:link>
+      	 	<g:if test="${ !mobileAgent }">
+	      	 	<g:render template="/templates/menuDropDownItem" model="[items: app.navigationItems(category: 'navbarPrimary')?.subitems, category: 'navbarPrimary' ]"/>
 	      	 </g:if>
-	      	 <g:else>
-      	 	 	<g:render template="/templates/menuDropDownItem" model="[items: app.navigationItems(category: 'navbarPrimary')?.subitems, category: 'navbarPrimary' ]"/>
-      	 	 </g:else>
       	 </ul>
       	 
       </div>
@@ -77,16 +74,6 @@
               </li>
               
               
-              <!-- Menu configuration (dynamique) -->
-              <li class="desktop-only"><a href="#dropdown2-header8" aria-owns="dropdown2-header8" aria-haspopup="true" class="aui-dropdown2-trigger" ><span class="aui-icon aui-icon-small aui-iconfont-configure">Configuration</span><span class="aui-icon-dropdown"></span></a>
-                <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-header8" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
-                    
-                    <g:render template="/templates/dropDownItemDefaultLevel2" model="[items: app.navigationItems(category: 'configuration')?.subitems ]"/>
-                    
-                </div>
-              </li>
-              
-              
               <!-- Menu user (dynamique) -->
               <li><a href="#dropdown2-header9" aria-owns="dropdown2-header9" aria-haspopup="true" class="aui-dropdown2-trigger" >
                       <div class="aui-avatar aui-avatar-small">
@@ -97,7 +84,16 @@
                   </a>
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-header9" style="display: none; top: 40px; min-width: 160px; left: 1213px;" aria-hidden="true">
                     
-                    <g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'user')?.subitems ]"/>
+                    <div class="aui-dropdown2-section">
+                    	<div class="aui-dropdown2-heading">
+							<sec:username/>
+						</div>
+                    	<ul>
+		                    <li>
+		                    	<g:link controller="user" action="profil">Paramètres</g:link>
+		                    </li>
+                    	</ul>
+                    </div>
                     
                     <sec:ifSwitched>
                     	<div class="aui-dropdown2-section">

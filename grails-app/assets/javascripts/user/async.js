@@ -8,6 +8,7 @@
 	}).ajaxStop(function() {
 		$('#ajaxSpinner').fadeOut(200);
 		formatDataTable();
+		combobox();
 		ajaxPagination();
 	});
 	
@@ -23,6 +24,7 @@ $( document ).ready(function() {
 	
 	formatDataTable();
 	ajaxPagination();
+	combobox();
 })
 
 

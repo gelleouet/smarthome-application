@@ -117,4 +117,34 @@ class HouseService extends AbstractService {
 		
 		return house
 	}
+	
+	
+	/**
+	 * Liste les modes d'un utilisateur
+	 * 
+	 * @param user
+	 * @return
+	 */
+	List<HouseMode> listModesByUser(User user) {
+		return HouseMode.createCriteria().list {
+			eq 'user', user
+			order 'name'
+		}
+	}
+	
+	
+	/**
+	 * Suppression d'un mode sans persistance
+	 * 
+	 * @param command
+	 * @param status
+	 * @return
+	 */
+	HouseCommand deleteMode(HouseCommand command, int status) {
+		command.modes?.removeAll {
+			it.status == status
+		}
+		
+		return command
+	}
 }

@@ -6,31 +6,8 @@
 </head>
 
 <body>
-	<g:applyLayout name="applicationHeader">
-		<div class="aui-page-header-image">
-			<div class="aui-avatar aui-avatar-medium">
-				<div class="aui-avatar-inner">
-					<g:link controller="user" action="profil">
-						<asset:image src="ico_add_avatar.png" />
-					</g:link>
-				</div>
-			</div>
-		</div>
-		<div class="aui-page-header-main">
-			<h3>
-				<g:link controller="user" action="profil">${user.prenom} ${user.nom}</g:link>
-			</h3>
-		</div>
-		<div class="aui-page-header-actions">
-			<g:form controller="user" >
-				<div class="aui-buttons">
-					<g:actionSubmit class="aui-button" value="Changer mon mot de passe" action="password"/>
-				</div>
-			</g:form>
-		</div>
-	</g:applyLayout>
-
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="applicationConfigure">
+	
 		<g:form controller="user" method="post" class="aui">
 			<g:hiddenField name="user.id" value="${user.id}" />
 	
@@ -55,26 +32,15 @@
 			</fieldset>
 
 			
-			<h4>Description maison</h4>
-			
-			<g:if test="${ house?.id }">
-				<g:hiddenField name="house.id" value="${house.id}" />
-			</g:if>
-			
-			<fieldset>
-				<div class="field-group">
-					<label>Surface (en m²)</label>
-					<g:field name="house.surface" type="number" value="${house?.surface}" class="text medium-field" />
-					<div class="description">Utilisé pour le calcul du classement énergétique</div>
-				</div>
-				<div class="field-group">
-					<label>Compteur principal</label>
-					<g:select name="house.compteur.id" value="${house?.compteur?.id}" from="${ compteurs }" optionKey="id" 
-						optionValue="label" class="select" noSelection="[null: '']"/>
-					<div class="description">Utilisé pour le calcul du classement énergétique</div>
-				</div>
-			</fieldset>
-			
+			<h4>Maison principale</h4>
+			<g:render template="/house/form"/>
+
+			<!--  
+			<h4>Modes utilisateur</h4>
+			<div id="ajaxHouseMode">
+				<g:render template="/house/modes"/>
+			</div>
+			-->
 			
 			<h4>Notifications SMS</h4>
 			
@@ -119,7 +85,6 @@
 			<div class="buttons-container">
 				<div class="buttons">
 					<g:actionSubmit value="Enregistrer" action="saveProfil" class="aui-button aui-button-primary" />
-					<g:link uri="/" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 			

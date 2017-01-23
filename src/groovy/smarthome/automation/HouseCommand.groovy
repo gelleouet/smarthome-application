@@ -1,7 +1,7 @@
 /**
  * 
  */
-package smarthome.security
+package smarthome.automation
 
 import smarthome.automation.House;
 import smarthome.automation.HouseMode;
@@ -16,8 +16,7 @@ import grails.validation.Validateable
  *
  */
 @Validateable
-class ProfilCommand {
-	User user
+class HouseCommand {
 	House house
 	List<HouseMode> modes
 }

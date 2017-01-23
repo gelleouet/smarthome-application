@@ -5,30 +5,24 @@
 
 <body>
 
-	<g:applyLayout name="applicationHeader">
-		<div class="aui-page-header-image">
-			<div class="aui-avatar aui-avatar-medium">
-				<div class="aui-avatar-inner">
-					<g:link controller="user" action="profil">
-						<asset:image src="ico_add_avatar.png" />
-					</g:link>
-				</div>
-			</div>
-		</div>
-		<div class="aui-page-header-main">
-			<h3>
-				<g:link controller="user" action="profil">${command.prenom} ${command.nom}</g:link>
-			</h3>
-		</div>
-		<div class="aui-page-header-actions">
-			<div class="aui-buttons"></div>
-		</div>
-	</g:applyLayout>
+	<g:applyLayout name="applicationConfigure">
 
-
-	<g:applyLayout name="applicationContent">
-
-		<h3>Changer de mot de passe</h3>
+		<div class="aui-toolbar2">
+		    <div class="aui-toolbar2-inner">
+		        <div class="aui-toolbar2-primary">
+		            <div>
+		                <h3>Mot de passe</h3>
+		            </div>		            
+		        </div>
+		        <div class="aui-toolbar2-secondary">
+		        	<g:form >
+		            <div class="aui-buttons">
+						
+		            </div>
+		            </g:form>
+		        </div>
+		    </div><!-- .aui-toolbar-inner -->
+		</div>
 
 		<g:form controller="user" method="post" class="aui">
 			<g:hiddenField name="username" value="${command.username}" />
@@ -58,7 +52,6 @@
 				<div class="buttons">
 				<g:actionSubmit value="Enregistrer" action="changePassword"
 					class="aui-button aui-button-primary" />
-				<g:link controller="user" action="profil" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 		</g:form>

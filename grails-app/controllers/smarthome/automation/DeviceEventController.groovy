@@ -25,10 +25,7 @@ class DeviceEventController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration, header = "Options avancées", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration)
 	def deviceEvents(String deviceEventSearch) {
 		def search = QueryUtils.decorateMatchAll(deviceEventSearch)
 		

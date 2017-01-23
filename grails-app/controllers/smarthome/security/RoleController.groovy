@@ -20,10 +20,7 @@ class RoleController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Permissions", navigation = NavigationEnum.configuration, header = SmartHomeSecurityConstantes.UTILISATEURS, breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		SmartHomeSecurityConstantes.UTILISATEUR_SECURITE
-	])
+	@NavigableAction(label = "Permissions", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def roles(String roleSearch) {
 		def roles
 		int recordsTotal

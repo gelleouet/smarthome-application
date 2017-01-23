@@ -23,10 +23,7 @@ class ChartController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.configuration, header = "Statistiques", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.configuration)
 	def charts(String chartSearch) {
 		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = charts.totalCount

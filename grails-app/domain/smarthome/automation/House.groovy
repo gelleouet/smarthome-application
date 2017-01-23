@@ -13,6 +13,8 @@ import grails.validation.Validateable;
 class House {
 	static belongsTo = [user: User]
 	
+	static hasMany = [modes: HouseMode]
+	
 	String name
 	boolean defaut
 	Double surface
@@ -30,6 +32,7 @@ class House {
 	
 	static mapping = {
 		user index: "House_User_Idx"
+		modes cascade: 'all-delete-orphan'
 	}
 	
 	

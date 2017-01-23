@@ -51,10 +51,7 @@ class AgentController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Agents", navigation = NavigationEnum.configuration, header = "Configuration", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Agents", navigation = NavigationEnum.configuration)
 	def agents(String agentSearch) {
 		def agents = agentService.listByUser(agentSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = agents.totalCount

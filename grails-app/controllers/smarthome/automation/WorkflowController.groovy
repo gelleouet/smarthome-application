@@ -22,10 +22,7 @@ class WorkflowController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Scénarios", navigation = NavigationEnum.configuration, header = "Options avancées", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Scénarios", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def workflows(String workflowSearch) {
 		def workflows = workflowService.listByUser(workflowSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = workflows.totalCount

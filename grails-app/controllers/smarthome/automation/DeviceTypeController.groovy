@@ -22,10 +22,7 @@ class DeviceTypeController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Catalogue", navigation = NavigationEnum.configuration, header = "Options avancées", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Catalogue", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def deviceTypes(String deviceTypeSearch) {
 		def deviceTypes
 		int recordsTotal

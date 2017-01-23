@@ -1,4 +1,4 @@
-<header class="aui-page-header desktop-only">
+<header class="aui-page-header">
 	<div class="aui-page-header-inner">
 		<g:layoutBody/>
 	</div>

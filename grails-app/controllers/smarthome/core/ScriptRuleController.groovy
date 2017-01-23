@@ -17,10 +17,7 @@ class ScriptRuleController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Règles métier", navigation = NavigationEnum.configuration, header = "Général", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Système"
-	])
+	@NavigableAction(label = "Règles métier", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def scriptRules(String scriptRuleSearch) {
 		def scriptRules
 		int recordsTotal

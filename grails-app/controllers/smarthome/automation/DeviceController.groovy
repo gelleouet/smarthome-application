@@ -24,10 +24,7 @@ class DeviceController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Objets", defaultGroup = true, navigation = NavigationEnum.configuration, header = "Configuration", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"Général"
-	])
+	@NavigableAction(label = "Objets connectés", navigation = NavigationEnum.configuration)
 	def devices(String deviceSearch) {
 		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]), 
 			search: deviceSearch, userId: principal.id))
