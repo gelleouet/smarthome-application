@@ -10,7 +10,6 @@
 		formatDataTable();
 		combobox();
 		ajaxPagination();
-		initToggle()
 	});
 	
 })(jQuery);
@@ -34,14 +33,15 @@ $( document ).ready(function() {
 function initDragAndDrop() {
 	$(".smart-draggable" ).draggable({
 		addClasses: false,
-		opacity: 0.7,
+		opacity: 0.9,
 		helper: "clone",
 		revert: "invalid",
+		cursor: "move",
 		start: function(event, ui) {
-			$(".smart-droppable").addClass(".smart-droppable-active")
+			$(".smart-droppable").addClass("smart-droppable-active")
 		},
 		stop: function(event, ui) {
-			$(".smart-droppable").removeClass(".smart-droppable-active")
+			$(".smart-droppable").removeClass("smart-droppable-active")
 		}
 	})
 	
@@ -49,6 +49,10 @@ function initDragAndDrop() {
 		addClasses: false,
 		accept: ".smart-draggable",
 		tolerance: "pointer",
+		classes: {
+			"ui-droppable-active": "smart-droppable-active",
+	        "ui-droppable-hover": "smart-droppable-active"
+	    },
 		drop: function(event, ui) {
 			var functionName = $(event.target).attr('data-ondrop')
 			

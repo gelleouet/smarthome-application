@@ -621,16 +621,30 @@ h5.device-grid-label {
 	
 }
 
-.smart-draggable:hover {
-	cursor: move;
+.smart-draggable.ui-draggable-dragging {
+	border: 0.2em dashed #ddd;	
+	background-color: white;
 }
 
-li.smart-droppable {
+.smart-droppable {
 	
 }
 
-li.smart-droppable-active {
-	border: 1px dashed #ddd;
+.smart-droppable.smart-droppable-active {
+	border: 0.2em dashed #ddd;
+	background-color: white;
+	padding: 5px;
+	text-align: center;
+}
+
+.smart-droppable-active h3 {
+	color: grey;
+	font-weight: bold;
+}
+
+.aui-navgroup-horizontal .aui-nav > li.smart-droppable-active a {
+	color: grey;
+	font-weight: bold;
 }
 
 .smart-tabs-content {
