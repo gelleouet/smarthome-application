@@ -61,8 +61,10 @@
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-aide" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
                     <div class="aui-dropdown2-section">
                         <ul>
-                            <li><g:link action="decouvrir" controller="site" target="blank">Découvrir l'application</g:link></li>
+                            <li><a href="https://connectmyhomeblog.wordpress.com/" target="blank">Blog Smarthome</a></li>
+                            <li><a href="https://connectmyhomeblog.wordpress.com/a-propos/" target="blank">Découvrir l'application</a></li>
                             <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank">Installation d'un agent Raspberry</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-application" target="blank">Dépôt Github</a></li>
                         </ul>
                     </div>
                     <div class="aui-dropdown2-section">
@@ -78,7 +80,11 @@
               <li><a href="#dropdown2-header9" aria-owns="dropdown2-header9" aria-haspopup="true" class="aui-dropdown2-trigger" >
                       <div class="aui-avatar aui-avatar-small">
                           <div class="aui-avatar-inner">
-                              <asset:image src="useravatar.png" width="32px"/>
+                              <!-- <asset:image src="useravatar.png" />  -->
+	                           	<div class="vignette-user">
+	                           		<g:set var="loggedInUser" value="${ smarthome.security.User.read(sec.loggedInUserInfo(field: 'id')) }"/>
+	                           		<span>${ loggedInUser.initiale }</span>
+	                           	</div>
                           </div>
                       </div>
                   </a>

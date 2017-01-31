@@ -7,26 +7,43 @@
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 		<div class="aui-group">
 			<g:if test="${ !mobileAgent }">
-				<div class="aui-item">
+				<div class="aui-item" style="width:350px">
 					<div class="filActualite" style="padding:15px;">
-						<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+						<g:render template="/user/profilPublic" model="[userDeviceCount: userDeviceCount, sharedDeviceCount: sharedDeviceCount]"></g:render>
 					</div>
 				</div>
-				<div class="aui-item filActualiteColumn">
-					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite.values]"></g:render>
-				</div>
 				<div class="aui-item">
-					<!-- notification / invitation -->
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/device/deviceActivite"/>
+					</div>
+					<br/>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/deviceEvent/deviceEventActivite"/>
+					</div>
+					<br/>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/house/synthese"/>
+					</div>
 				</div>
 			</g:if>
 			
 			<g:else>
 				<div class="aui-item">
 					<div class="filActualite" style="padding:15px;">
-						<g:render template="/user/profilPublic" model="[userDeviceCount: filActualite.userDevices.size(), sharedDeviceCount: filActualite.sharedDevices.size()]"></g:render>
+						<g:render template="/user/profilPublic" model="[userDeviceCount: userDeviceCount, sharedDeviceCount: sharedDeviceCount]"></g:render>
 					</div>
 					<br/>
-					<g:render template="/device/deviceValueFil" model="[filActualite: filActualite.values]"></g:render>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/device/deviceActivite"/>
+					</div>
+					<br/>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/deviceEvent/deviceEventActivite"/>
+					</div>
+					<br/>
+					<div class="filActualite" style="padding:15px;">
+						<g:render template="/house/synthese"/>
+					</div>
 				</div>
 			</g:else>
 		</div>

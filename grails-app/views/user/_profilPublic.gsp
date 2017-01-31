@@ -1,12 +1,12 @@
 
-		<h4><asset:image src="useravatar.png" width="48px" />
+		<h3><asset:image src="useravatar.png" width="48px" />
 			<g:if test="${ viewOnly }">
 				${ user.prenomNom }
 			</g:if>
 			<g:else>
 				<g:link action="profil" controller="user" style="color:black;">${ user.prenomNom }</g:link>
 			</g:else>
-		</h4>
+		</h3>
 		
 		<div class="aui-group">
 			<div class="aui-item">
@@ -35,34 +35,38 @@
 			</g:else>
 		</div>
 		
-		<g:if test="${ house }">
-			<h5>${ house.name }</h5>
+		<h5>${ house?.name ?: 'Maison principale' }</h5>
+		
+		<ul class="label">
+			<li>Surface : <span class="link">${ house?.surface?.toInteger() ?: '' }m²</span></li>
 			
-			<ul class="label">
-				<g:if test="${ house.surface }">
-					<li>Surface : <span class="link">${ house.surface.toInteger() }m²</span></li>
+			<g:if test="${ house?.consoAnnuelle }">
+				<li>Consommation annuelle : <span class="link">${ (house.consoAnnuelle / 1000) as Integer }kWh</span> 
+			</g:if>
+			<g:else>
+				<li>Consommation annuelle : <span class="link">kWh</span>			
+			</g:else>
+			<span style="font-size:xx-small">(estimation sur une année complète en fonction de votre consommation réelle depuis le 1er janvier)</span></li>
+			
+			<g:if test="${ house?.surface && house?.consoAnnuelle }">
+				<g:set var="dpe" value="${ (house.consoAnnuelle / 1000 / house.surface) as Integer }"></g:set>
+				<g:set var="dpeIndex" value="${ (smarthome.automation.House.classementDPE(dpe) as char) - ('A' as char) }"></g:set>
+			</g:if>
+			<g:else>
+				<g:set var="dpeIndex" value=""></g:set>
+			</g:else>
+			
+			<li>Classement énergétique : </li>
+			<li><div style="position:relative">
+				<asset:image src="dpe.jpg" width="200px"/>
+				<g:if test="${ dpeIndex }">
+					<div class="vignettedpe" style="top:${ 14 + (dpeIndex * 22) }px">${ dpe }</div>
 				</g:if>
-				
-				<g:if test="${ house.consoAnnuelle }">
-					<li>Consommation annuelle : <span class="link">${ (house.consoAnnuelle / 1000) as Integer }kWh</span> 
-					<span style="font-size:xx-small">(estimation sur une année complète en fonction de votre consommation réelle depuis le 1er janvier)</span></li>
-				</g:if>
-				
-				<g:if test="${ house.surface && house.consoAnnuelle }">
-				
-					<g:set var="dpe" value="${ (house.consoAnnuelle / 1000 / house.surface) as Integer }"></g:set>
-					<g:set var="dpeIndex" value="${ (smarthome.automation.House.classementDPE(dpe) as char) - ('A' as char) }"></g:set>
-				
-					<li>Classement énergétique : </li>
-					<li><div style="position:relative">
-						<asset:image src="dpe.jpg" />
-						<div class="vignettedpe" style="top:${ 16 + (dpeIndex * 25) }px">${ dpe }</div>
-					</div></li>
-				</g:if>
-			</ul>
-		</g:if>
-		<g:elseif test="${ !viewOnly }">
-			<h6>
+			</div></li>
+		</ul>
+		
+		<g:if test="${ !house && !viewOnly }">
+			<h6 class="h6">
 			Pour calculer votre consommation annuelle et le classement énergétique de votre maison, <g:link action="profil" controller="user">veuillez compléter votre profil</g:link>
 			</h6>
-		</g:elseif>
+		</g:if>

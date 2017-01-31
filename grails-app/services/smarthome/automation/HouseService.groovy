@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.SmartHomeException;
+import smarthome.rule.HouseSyntheseRuleService;
 import smarthome.security.User;
 
 
 class HouseService extends AbstractService {
 
+	HouseSyntheseRuleService houseSyntheseRuleService
+	
 	
 	/**
 	 * Enregistrement maison
@@ -146,5 +149,17 @@ class HouseService extends AbstractService {
 		}
 		
 		return command
+	}
+	
+	
+	/**
+	 * Calcul des interprétations de la maison
+	 * 
+	 * @param house
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	HouseSynthese calculSynthese(House house) throws SmartHomeException {
+		return houseSyntheseRuleService.execute(house, false)
 	}
 }

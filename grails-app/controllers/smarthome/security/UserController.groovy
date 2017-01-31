@@ -3,11 +3,9 @@ package smarthome.security
 import smarthome.security.RegisterService;
 import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured;
-import smarthome.automation.DeviceSearchCommand;
 import smarthome.automation.DeviceService;
 import smarthome.automation.HouseService;
 import smarthome.automation.NotificationAccount;
-import smarthome.automation.deviceType.TeleInformation;
 import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -42,29 +40,9 @@ class UserController extends AbstractController {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
 		def smsAccount = NotificationAccount.findByUserAndType(user, NotificationAccountEnum.sms)
-		def house = houseService.findDefaultByUser(user)
-		def modes = houseService.listModesByUser(user)
-		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id, 
-			deviceTypeClass: TeleInformation.name, sharedDevice: false]))
-		
-		render(view: 'profil', model: [user: user, smsAccount: smsAccount, house: house,
-			compteurs: compteurs, modes: modes])
+		render(view: 'profil', model: [user: user, smsAccount: smsAccount])
 	}
 	
-	
-	/**
-	 * Profil publique d'un user
-	 * 
-	 * @param user
-	 * @return
-	 */
-	def profilPublic(User user) {
-		def house = houseService.findDefaultByUser(user)
-		def userDeviceCount = deviceService.countDevice(user)
-		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
-		render(view: 'profilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount, 
-			sharedDeviceCount: sharedDeviceCount, viewOnly: true])
-	}
 	
 	
 	/**

@@ -95,4 +95,17 @@ class User {
 	String getNomPrenom() {
 		return "$nom $prenom"
 	}
+	
+	String getInitiale() {
+		String initiale = prenom[0].toUpperCase()
+		String[] tokens = nom.split(" ")
+		
+		if (tokens.length > 1) {
+			initiale += tokens[0][0].toUpperCase() + tokens[1][0].toUpperCase()
+		} else if (tokens) {
+			initiale += tokens[0][0].toUpperCase()
+		}
+		
+		return initiale
+	}
 }

@@ -551,4 +551,30 @@ class DeviceService extends AbstractService {
 			order 'tableauBord'
 		}
 	}
+	
+	
+	/**
+	 * Dernière activité du user
+	 *
+	 * @param userId
+	 * @param maxEvent
+	 * @param maxDay
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def listLastByUser(Long userId, int maxEvent, int maxDay) throws SmartHomeException {
+		if (!userId) {
+			throw new SmartHomeException("userId required !")
+		}
+		
+		return Device.createCriteria().list() {
+			user {
+				idEq(userId)
+			}
+			
+			gt 'dateValue', (new Date() - maxDay)
+			maxResults(maxEvent)
+			order "dateValue", "desc"
+		}
+	}
 }

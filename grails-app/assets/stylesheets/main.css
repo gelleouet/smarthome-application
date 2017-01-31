@@ -458,6 +458,11 @@ ul.fancytree-container {
 	margin-right: 20px;
 }
 
+.right-separator {
+	padding-right: 10px;
+	margin-right: 20px;
+}
+
 .page-panel-sidebar {
 	border-left-style:solid; 
 	border-left-width:1px; 
@@ -603,14 +608,15 @@ h5.device-grid-label {
 
 .vignettedpe {
 	position: absolute;
-	left:170px;
-	width:55px;
-	height:22px;
+	left:148px;
+	width:48px;
+	height:20px;
 	color:white;
 	background-color:black;
 	text-align:center;
 	vertical-align: middle;
 	font-weight:bold;
+	border-radius: 4px;
 }
 
 .star {
@@ -649,4 +655,33 @@ h5.device-grid-label {
 
 .smart-tabs-content {
 	padding-top: 20px;
+}
+
+
+.vignette-user {
+	width: 28px;
+	height: 28px;
+	background-color: #3572b0;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 28px
+}
+
+
+.vignette-synthese {
+	width: 100px;
+	height: 100px;
+	background-color: #3572b0;
+	border-radius: 50%;
+	text-align: center;
+	color: white;
+	font-weight: bold;
+	line-height: 100px;
+	font-size: 18pt;
+	margin: auto;
+}
+
+.synthese-content {
+	padding: 20px 0px 0px 0px;
+	text-align: center;
 }

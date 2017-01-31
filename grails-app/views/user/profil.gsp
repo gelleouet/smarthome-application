@@ -33,14 +33,8 @@
 
 			
 			<h4>Maison principale</h4>
-			<g:render template="/house/form"/>
+			<g:include action="templateEditByUser" controller="house" params="[user: user]"/> 
 
-			<!--  
-			<h4>Modes utilisateur</h4>
-			<div id="ajaxHouseMode">
-				<g:render template="/house/modes"/>
-			</div>
-			-->
 			
 			<h4>Notifications SMS</h4>
 			

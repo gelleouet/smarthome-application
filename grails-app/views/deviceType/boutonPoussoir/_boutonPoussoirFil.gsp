@@ -1,1 +1,1 @@
-<span class="label">Déclenchement bouton poussoir</span>
+<span class="aui-lozenge aui-lozenge-complete">ON</span>

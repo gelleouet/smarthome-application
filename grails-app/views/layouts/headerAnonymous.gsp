@@ -13,7 +13,7 @@
       <div class="aui-header-secondary">
           <ul class="aui-nav">
               <li>
-              	<g:link controller="site" action="decouvrir" class="aui-button aui-button-primary">Découvrir</g:link>
+              	<a href="https://connectmyhomeblog.wordpress.com/a-propos/" target="blank" class="aui-button aui-button-primary">Découvrir</a>
               </li>
               <li>
               	<g:form controller="register" action="account">

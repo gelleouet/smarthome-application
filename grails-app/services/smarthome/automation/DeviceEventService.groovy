@@ -148,6 +148,34 @@ class DeviceEventService extends AbstractService {
 	
 	
 	/**
+	 * Dernière activité du user
+	 * 
+	 * @param userId
+	 * @param maxEvent
+	 * @param maxDay
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	def listLastByUser(Long userId, int maxEvent, int maxDay) throws SmartHomeException {
+		if (!userId) {
+			throw new SmartHomeException("userId required !")
+		}
+		
+		return DeviceEvent.createCriteria().list() {
+			user {
+				idEq(userId)
+			}
+			
+			eq 'actif', true
+			gt 'lastEvent', (new Date() - maxDay)
+			join "device"
+			maxResults(maxEvent)
+			order "lastEvent", "desc"
+		}
+	}
+	
+	
+	/**
 	 * Déclenche les événéments associés à un device en exécutant chaque condition
 	 *
 	 * @param device

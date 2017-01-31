@@ -1,12 +1,12 @@
 package smarthome.application
 
 import smarthome.automation.Device;
+import smarthome.automation.DeviceEventService;
 import smarthome.automation.DeviceService;
 import smarthome.automation.HouseService;
 import smarthome.core.AbstractController;
 import smarthome.security.UserFriend;
 import smarthome.security.UserService;
-import smarthome.social.SocialService;
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -19,8 +19,8 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured("isAuthenticated()")
 class TableauBordController extends AbstractController {
 
-	SocialService socialService
 	DeviceService deviceService
+	DeviceEventService deviceEventService
 	UserService userService
 	HouseService houseService
 	
@@ -30,9 +30,15 @@ class TableauBordController extends AbstractController {
 	 */
 	def index() {
 		def user = authenticatedUser
-		def filActualite = socialService.filActualite(user, this.getPagination([:]))
 		def house = houseService.calculDefaultConsoAnnuelle(user)
-
-		render(view: 'tableauBord', model: [filActualite: filActualite, user: user, house: house])
+		def lastEvents = deviceEventService.listLastByUser(user.id, 10, 7)
+		def lastDevices = deviceService.listLastByUser(user.id, 10, 7)
+		def userDeviceCount = deviceService.countDevice(user)
+		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
+		def houseSynthese = houseService.calculSynthese(house)
+		
+		render(view: 'tableauBord', model: [lastEvents: lastEvents, user: user, house: house,
+			lastDevices: lastDevices, sharedDeviceCount: sharedDeviceCount, userDeviceCount: userDeviceCount,
+			houseSynthese: houseSynthese])
 	}
 }

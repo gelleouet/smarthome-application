@@ -21,12 +21,16 @@ class House {
 	Double consoAnnuelle
 	Date dateCalculConso
 	Device compteur
+	Device temperature
+	Device humidite
 	
 	
     static constraints = {
 		surface nullable: true
 		consoAnnuelle nullable: true
 		compteur nullable: true
+		temperature nullable: true
+		humidite nullable: true
 		dateCalculConso nullable: true
     }
 	
