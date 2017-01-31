@@ -102,7 +102,6 @@
 		border-radius: 5px;
 		border: 1px solid #3b73af;
 		width: 100%;
-		
 		display: inline-block;
 	}
 	
@@ -114,5 +113,18 @@
 	
 	.aui-page-panel-content {
 		padding: 10px;
+	}
+	
+	div.aui-group > div.aui-item {
+		display: table-row;
+	}
+	
+	div.aui-group > div.aui-item > div.filActualite {
+		margin-top: 20px;
+	}
+	
+	div.aui-group > div.aui-item > div {
+		border: none;
+		margin-top: 20px;
 	}
 }

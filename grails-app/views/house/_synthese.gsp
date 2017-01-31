@@ -2,7 +2,7 @@
 
 <div class="aui-group" style="margin-top:20px">
 	<div class="aui-item">
-		<div class="border-right-separator">
+		<div>
 			<h4 class="separator-bottom">Température</h4>
 			
 			<div class="synthese-content">
@@ -23,7 +23,7 @@
 		</div>
 	</div>
 	<div class="aui-item">
-		<div class="border-right-separator">
+		<div>
 			<h4 class="separator-bottom">Humidité </h4>
 			
 			<div class="synthese-content">
@@ -44,7 +44,7 @@
 		</div>
 	</div>
 	<div class="aui-item">
-		<div class="right-separator">
+		<div>
 			<h4 class="separator-bottom">Consommation</h4>
 			
 			<g:if test="${ house.compteur }">
