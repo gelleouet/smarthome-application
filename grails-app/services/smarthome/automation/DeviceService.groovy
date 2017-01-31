@@ -506,6 +506,37 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Déplacement dans un autre tableau de bord
+	 *
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def moveToTableauBord(Device device, String tableauBord) throws SmartHomeException {
+		device.tableauBord = tableauBord
+		device.groupe = null
+		return this.save(device)
+	}
+	
+	
+	/**
+	 * Déplacement dans un autre groupe
+	 *
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def moveToGroupe(Device device, String groupe) throws SmartHomeException {
+		device.groupe = groupe
+		return this.save(device)
+	}
+	
+	
+	/**
 	 * Calcul des tableaux de bord
 	 * 
 	 * @return

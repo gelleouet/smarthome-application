@@ -61,7 +61,27 @@ $(window).on('load', function() {
 });
 
 
+function onDropDeviceToTableauBord(event, ui) {
+	var datas = {
+		id: ui.draggable.attr('data-draggable-value'),
+		tableauBord: $(event.target).attr('data-droppable-value')
+	}
+	
+	ajaxGet(event.target, 'data-ondrop-url', datas, "", function(data) {
+		ui.draggable.remove()
+	})
+}
 
 
-
-
+function onDropDeviceToGroupe(event, ui) {
+	var datas = {
+		id: ui.draggable.attr('data-draggable-value'),
+		groupe: $(event.target).attr('data-droppable-value')
+	}
+	
+	ajaxGet(event.target, 'data-ondrop-url', datas, "", function(data) {
+		var container = $(event.target).parent().find("div.filActualite")
+		ui.helper.remove()
+		ui.draggable.appendTo(container)
+	})
+}

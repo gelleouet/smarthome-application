@@ -10,12 +10,28 @@
 		<g:form controller="device" method="post" class="aui" name="device-form">
 			<g:hiddenField name="id" value="${device.id}" />
 	
-			<g:render template="form"/>
-			
-			<div id="deviceMetadatas">
-				<g:if test="${ device.id }">
-					<g:render template="${ device.deviceType.newDeviceType().viewForm() }" model="[device: device]"/>
-				</g:if>			
+	
+			<div class="aui-tabs horizontal-tabs">
+			    <ul class="tabs-menu">
+			        <li class="menu-item active-tab">
+			            <a href="#tabs-device-general">Général</a>
+			        </li>
+			        <li class="menu-item">
+			            <a href="#tabs-device-configuration">Configuration</a>
+			        </li>
+			    </ul>
+			    <div class="tabs-pane active-pane" id="tabs-device-general">
+			    	<div class="smart-tabs-content">
+			       		<g:render template="form"/>
+			       	</div>
+			    </div>
+			    <div class="tabs-pane" id="tabs-device-configuration">
+			        <div id="deviceMetadatas" class="smart-tabs-content">
+						<g:if test="${ device.id }">
+							<g:render template="${ device.deviceType.newDeviceType().viewForm() }" model="[device: device]"/>
+						</g:if>			
+					</div>
+			    </div>
 			</div>
 			
 			<br/>
@@ -28,8 +44,6 @@
 					<g:else>
 						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
 					</g:else>
-					
-					<g:link action="devices" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 		</g:form>

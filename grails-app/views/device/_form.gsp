@@ -1,6 +1,5 @@
 <%@ page import="smarthome.automation.Device" %>
 
-
 <h4>Modèle</h4>
 
 <div class="field-group">

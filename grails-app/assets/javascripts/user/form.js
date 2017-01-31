@@ -15,3 +15,25 @@ function combobox() {
 		}
 	});
 }
+
+
+function initToggle() {
+	$('.smart-toggle').on("change", function(event) {
+		var $toggle = $(this)
+		
+		// submit le form associé dès que la valeur change
+		if ($toggle.attr('data-autosubmit') == 'true') {
+			var toggle = $toggle[0]
+			var isChecked = toggle.checked
+			
+			if (!confirm('Voulez-vous continuer ?')) {
+				toggle.checked = !isChecked;
+				return
+			}
+			
+			var form = document.getElementById($toggle.attr('form'))
+			var $form = $(form)
+			ajaxGet(form, 'action', $form.serialize(), '')
+		}
+	})
+}

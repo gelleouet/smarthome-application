@@ -37,7 +37,7 @@ class NavigationItemTagLib {
 	 * @return true si item == action courante
 	 */
 	def isCurrentItem = { attrs, body ->
-		attrs.item.controller == controllerName && attrs.item.action == actionName
+		attrs.item.controller == controllerName
 	}
 
 

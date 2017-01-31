@@ -1,16 +1,31 @@
-<%@ page import="smarthome.automation.DeviceValue" %>
+<%@ page import="smarthome.automation.Device" %>
 
-<g:set var="values" value="${ DeviceValue.doubleValueAggregategByDay(device) }"/>
+<g:set var="deviceEtatMeta" value="${ device?.metadata('deviceEtat') }"/>
 
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
-		<g:formRemote name="form-device-${ device.id }" url="[controller: 'device', action: 'invokeAction']" update="[failure: 'ajaxError']">
+		<g:formRemote name="form-device-${ device.id }" url="[action: 'invokeAction', controller: 'device']">
 			<g:hiddenField name="actionName" value="push"/>
 			<g:hiddenField name="id" value="${ device.id }"/>
-			<g:actionSubmit value="Actionner" class="aui-button confirm-button" />
+			
+			<g:if test="${ deviceEtatMeta?.value != null }">
+				<g:set var="deviceEtat" value="${ Device.read(deviceEtatMeta?.value) }"/>
+				<g:set var="labelon" value="${ device?.metadata('labelon') }"/>
+				<g:set var="labeloff" value="${ device?.metadata('labeloff') }"/>
+				<g:set var="libelleOn" value="${ labelon?.value ?: 'On' }"/>
+				<g:set var="libelleOff" value="${ labeloff?.value ?: 'Off' }"/>
+				<g:set var="libelle" value="${ deviceEtat?.value?.toLong() == 1 ? libelleOn : libelleOff }"/>
+				<aui-toggle class="smart-toggle" id="toggle-device-${ device.id }" label="${ libelle }" ${ deviceEtat?.value?.toLong() == 1 ? 'checked=true' : '' }
+					tooltip-on="${ libelleOn }" tooltip-off="${ libelleOff }" form="form-device-${ device.id }"
+					data-autosubmit="true" name="value"/>
+			</g:if>
+			<g:else>
+				<g:set var="labelpush" value="${ device?.metadata('labelpush') }"/>
+				<g:set var="libelle" value="${ labelpush?.value ?: 'Actionner' }"/>
+				
+				<button class="aui-button confirm-button">${ libelle }</button>
+			</g:else>
+			
 		</g:formRemote>
-	</div>
-	<div style="display:table-cell; padding-left:10px;; vertical-align:middle" class="separator-left">
-		<span class="aui-badge">${ values?.count ?: 0 }</span>
 	</div>
 </div>

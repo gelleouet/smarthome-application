@@ -108,7 +108,7 @@ class AgentController extends AbstractController {
 	 */
 	def save(Agent agent) {
 		agentService.save(agent)
-		redirect(action: 'agents')
+		edit(agent)
 	}
 	
 	

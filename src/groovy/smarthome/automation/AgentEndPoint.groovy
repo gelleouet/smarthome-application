@@ -101,8 +101,6 @@ class AgentEndPoint extends Endpoint {
 		
 		session.addMessageHandler(new MessageHandler.Whole<String>() {
 			public void onMessage(String text) {
-				log.info "websocket onmessage : $text"
-				
 				// conversion en JSON et traitement du message
 				try {
 					AgentEndPointMessage message = AgentEndPointMessage.newInstance(JSON.parse(text))

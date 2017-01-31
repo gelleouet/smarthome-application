@@ -19,17 +19,17 @@
 						<span class="aui-icon aui-icon-small aui-iconfont-arrows-down aui-icon-column-patch"></span></a>
 					<a class="aui-button ajax-invoke-action-button" title="Ouvrir" data-action-name="open" data-url="${ url }" data-form-id="${ formId }">
 						<span class="aui-icon aui-icon-small aui-iconfont-arrows-up aui-icon-column-patch"></span></a>
-					<a class="aui-button ajax-invoke-action-button" title="Stop" data-action-name="stop" data-url="${ url }" data-form-id="${ formId }">
+					<%--<a class="aui-button ajax-invoke-action-button" title="Stop" data-action-name="stop" data-url="${ url }" data-form-id="${ formId }">
 						<span class="aui-icon aui-icon-small aui-iconfont-pause aui-icon-column-patch"></span></a>
-				</div>
+				--%></div>
 				
 				<div style="display:table; padding-top:15px">
 					<p style="font-weight:bold; font-size:18pt; display:table-cell; padding-right:10px; vertical-align:top"><span id="slider-value-${device.id }">${device.value ? device.value.toDouble().intValue() : '-' }</span>%</p>
 					<div style="display:table-cell; padding-left:10px; vertical-align:top;" class="separator-left">
 						<p style="font-size:8pt">
-						<strong>Energy :</strong> ${ device.metavalueByLabel('energy')?.value }kWh
+						<strong>Consommation :</strong> ${ device.metavalueByLabel('energy')?.value }kWh
 						<br/>
-						<strong>Power :</strong> ${ device.metavalueByLabel('power')?.value }W
+						<strong>Puissance :</strong> ${ device.metavalueByLabel('power')?.value }W
 						</p>
 					</div>
 				</div>

@@ -331,6 +331,10 @@ tr.incluNorme td {
 	-webkit-column-break-inside: avoid;
 }
 
+.filActualiteItem.ui-draggable-dragging {
+	width: 350px;
+}
+
 .filActualiteTitre {
 	margin: 30px 0 0;
 	break-after: avoid-column;
@@ -611,4 +615,24 @@ h5.device-grid-label {
 
 .star {
 	color: #ffd76e;	
+}
+
+.smart-draggable {
+	
+}
+
+.smart-draggable:hover {
+	cursor: move;
+}
+
+li.smart-droppable {
+	
+}
+
+li.smart-droppable-active {
+	border: 1px dashed #ddd;
+}
+
+.smart-tabs-content {
+	padding-top: 20px;
 }

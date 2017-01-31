@@ -93,7 +93,8 @@ class DeviceController extends AbstractController {
 		def model = [:]
 		
 		// Compléter le model
-		model.agents = Agent.findAllByUser(authenticatedUser)
+		model.user = authenticatedUser
+		model.agents = Agent.findAllByUser(model.user)
 		model.deviceTypes = DeviceType.list()
 		
 		// on remplit avec les infos du user
@@ -109,11 +110,10 @@ class DeviceController extends AbstractController {
 	 * @param device
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
 	def saveEdit(Device device) {
 		checkErrors(this, device)
 		deviceService.save(device)
-		redirect(action: COMMAND_NAME + 's')
+		edit(device)
 	}
 
 	
@@ -137,13 +137,12 @@ class DeviceController extends AbstractController {
 	 * @param user
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "create", modelName = DeviceController.COMMAND_NAME)
 	def saveCreate(Device device) {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
 		deviceService.save(device)
-		redirect(action: COMMAND_NAME + 's')
+		edit(device)
 	}
 	
 	
@@ -186,7 +185,12 @@ class DeviceController extends AbstractController {
 	def invokeAction(Device device, String actionName) {
 		deviceService.assertSharedAccess(device, authenticatedUser)
 		deviceService.invokeAction(device, actionName)
-		redirect(action: 'devicesGrid')
+		
+		if (request.xhr) {
+			nop()
+		} else {
+			redirect(action: 'devicesGrid')
+		}
 	}
 	
 	
@@ -244,5 +248,31 @@ class DeviceController extends AbstractController {
 			redirect(action: 'devices')
 		}
 		
+	}
+	
+	
+	/**
+	 * Déplace un device sur un autre tableau de bord
+	 *
+	 * @param device
+	 * @param tableauBord
+	 * @return
+	 */
+	def moveToTableauBord(Device device, String tableauBord) {
+		deviceService.moveToTableauBord(device, tableauBord)
+		nop()
+	}
+	
+	
+	/**
+	 * Déplace un device sur un autre groupe
+	 *
+	 * @param device
+	 * @param groupe
+	 * @return
+	 */
+	def moveToGroupe(Device device, String groupe) {
+		deviceService.moveToGroupe(device, groupe)
+		nop()
 	}
 }

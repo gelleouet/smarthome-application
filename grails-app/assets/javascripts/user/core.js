@@ -10,6 +10,7 @@
 		formatDataTable();
 		combobox();
 		ajaxPagination();
+		initToggle()
 	});
 	
 })(jQuery);
@@ -25,8 +26,40 @@ $( document ).ready(function() {
 	formatDataTable();
 	ajaxPagination();
 	combobox();
+	initDragAndDrop();
+	initToggle()
 })
 
+
+function initDragAndDrop() {
+	$(".smart-draggable" ).draggable({
+		addClasses: false,
+		opacity: 0.7,
+		helper: "clone",
+		revert: "invalid",
+		start: function(event, ui) {
+			$(".smart-droppable").addClass(".smart-droppable-active")
+		},
+		stop: function(event, ui) {
+			$(".smart-droppable").removeClass(".smart-droppable-active")
+		}
+	})
+	
+	$(".smart-droppable" ).droppable({
+		addClasses: false,
+		accept: ".smart-draggable",
+		tolerance: "pointer",
+		drop: function(event, ui) {
+			var functionName = $(event.target).attr('data-ondrop')
+			
+			if (functionName && typeof window[functionName]) {
+				window[functionName](event, ui)
+			} else {
+				console.warn("Drop canceled : no drop function !")
+			}
+		}
+	})
+}
 
 
 /**
@@ -90,7 +123,9 @@ function ajaxGet(eltSrcId, urlAttr, datas, divDstId, onSuccess) {
 		url: urlAction,
 		global: global,
 		success: function(data, textStatus) {
-			$(divDstId).html(data);
+			if (divDstId) {
+				$(divDstId).html(data);
+			}
 			if (onSuccess) {
 				onSuccess(data);
 			}

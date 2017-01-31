@@ -1,17 +1,20 @@
+<g:set var="labelon" value="${ device?.metadata('labelon') }"/>
+<g:set var="labeloff" value="${ device?.metadata('labeloff') }"/>
+<g:set var="value" value="${  device.value as Double }"/>
+
+<g:set var="libelleOn" value="${ labelon?.value ?: 'On' }"/>
+<g:set var="libelleOff" value="${ labeloff?.value ?: 'Off' }"/>
+<g:set var="libelle" value="${ value == 1 ? libelleOn : libelleOff }"/>
+
 <div>
-	<g:form controller="device" >
+	<g:formRemote name="form-device-${ device.id }" url="[controller: 'device', action: 'invokeAction']" update="[failure: 'ajaxError']">
 		<g:hiddenField name="actionName" value="onOff"/>
 		<g:hiddenField name="id" value="${ device.id }"/>
 		
-		<g:set var="value" value="${  device.value as Double }"/>
+		<aui-toggle class="smart-toggle" id="toggle-device-${ device.id }" label="${ libelle }" ${ value == 1 ? 'checked=true' : '' }
+			tooltip-on="${ libelleOn }" tooltip-off="${ libelleOff }" form="form-device-${ device.id }"
+			data-autosubmit="true"/>
 		
-		<g:if test="${ value == 1 }">
-			<g:actionSubmit value="OFF" class="aui-button confirm-button" action="invokeAction"/>
-			<span class="aui-lozenge aui-lozenge-complete" style="font-size: large;">ON</span>
-		</g:if>
-		<g:else>
-			<g:actionSubmit value="ON" class="aui-button confirm-button" action="invokeAction"/>
-			<span class="aui-lozenge" style="font-size: large;">OFF</span>
-		</g:else>
-	</g:form>
+	</g:formRemote>
 </div>
+

@@ -10,27 +10,33 @@
 		<g:form controller="deviceEvent" method="post" class="aui" name="device-event-form">
 			<g:hiddenField name="id" value="${deviceEvent.id}" />
 	
-			<g:render template="form"/>
-			
-			<h4>Déclencheurs</h4>
-			
-			<br/>
-			<g:submitToRemote class="aui-button" value="Ajouter un déclencheur" url="[action: 'addTrigger']" update="eventTriggers"></g:submitToRemote>
-			
-			<h6>Pour chaque déclencheur, il est possible d'actionner un autre objet et/ou un scénario en même temps.</h6>
-			<h6 style="text-transform:none">Le script Groovy conditionnel permet de modifier l'état de l'objet actionné avant de déclencher l'action.
-			En renvoyant true ou false, il permet en plus de la condition principale de conditionner l'action. Variables pré-définies :
-				<ul>
-					<li>device : l'objet device sur lequel est branché l'événement</li>
-					<li>triggerDevice : l'objet device qu'on veut déclencher</li>
-					<li>devices : tous les devices indexés par leur mac</li>
-					<li>Ex : triggerDevice.value = device.value</li>
-					<li>Ex : triggerDevice.value = devices['gpio4'].value</li>
-				</ul>
-			</h6>
-			
-			<div id="eventTriggers" style="margin-top: 10px">
-				<g:render template="triggers"/>
+			<div class="aui-tabs horizontal-tabs">
+			    <ul class="tabs-menu">
+			        <li class="menu-item active-tab">
+			            <a href="#tabs-event-general">Général</a>
+			        </li>
+			        <li class="menu-item">
+			            <a href="#tabs-event-cron">Planification</a>
+			        </li>
+			        <li class="menu-item">
+			            <a href="#tabs-event-trigger">Déclencheurs</a>
+			        </li>
+			    </ul>
+			    <div class="tabs-pane active-pane" id="tabs-event-general">
+			    	<div class="smart-tabs-content">
+			       		<g:render template="form"/>
+			       	</div>
+			    </div>
+			    <div class="tabs-pane" id="tabs-event-cron">
+			        <div class="smart-tabs-content">
+			       		<g:render template="deviceCron"/>
+			       	</div>
+			    </div>
+			    <div class="tabs-pane" id="tabs-event-trigger">
+			        <div class="smart-tabs-content">
+			       		<g:render template="deviceTrigger"/>
+			       	</div>
+			    </div>
 			</div>
 			
 			<br/>
@@ -43,8 +49,6 @@
 					<g:else>
 						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
 					</g:else>
-					
-					<g:link action="deviceEvents" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 		</g:form>

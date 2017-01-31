@@ -90,12 +90,11 @@ class DeviceEventController extends AbstractController {
 	 * @param deviceEvent
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceEventController.COMMAND_NAME)
 	def saveEdit(DeviceEvent deviceEvent) {
 		checkErrors(this, deviceEvent)
 		deviceEvent.clearNotPersistTriggers()
 		deviceEventService.save(deviceEvent)
-		redirect(action: COMMAND_NAME + 's')
+		edit(deviceEvent)
 	}
 
 
@@ -105,14 +104,13 @@ class DeviceEventController extends AbstractController {
 	 * @param deviceEvent
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "create", modelName = DeviceEventController.COMMAND_NAME)
 	def saveCreate(DeviceEvent deviceEvent) {
 		deviceEvent.user = authenticatedUser
 		deviceEvent.validate() // important car les erreurs sont traitées lors du binding donc le deviceEvent.user sort en erreur
 		checkErrors(this, deviceEvent)
 		deviceEvent.clearNotPersistTriggers()
 		deviceEventService.save(deviceEvent)
-		redirect(action: COMMAND_NAME + 's')
+		edit(deviceEvent)
 	}
 	
 	

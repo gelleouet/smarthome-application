@@ -3,7 +3,7 @@
 	<br/>
 	Java Development Operations - Mail <a href="mailto:contact@jdevops.com">contact@jdevops.com</a> - Twitter <a href="https://twitter.com/gelleouet">@gelleouet</a>
 	<br/>
-	<g:meta name="app.code"/> v<g:meta name="app.version"/> build with Grails Framework v<g:meta name="app.grails.version"/>
+	<g:meta name="app.code"/> v<g:meta name="app.version"/> build with Grails <g:meta name="app.grails.version"/> - Atlassian AUI <g:meta name="aui.version"/>
 	</h6>
 	
 	<div class="desktop-only">
