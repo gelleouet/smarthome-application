@@ -24,7 +24,7 @@ class HouseSyntheseRule implements Rule<House, HouseSynthese> {
 		def interpretation
 		
 		// température
-		if (house.temperature) {
+		if (house?.temperature) {
 			interpretation = (synthese.interpretations[house.temperature.id] = [:])
 			double temperature = house.temperature.value as Double
 			
@@ -47,7 +47,7 @@ class HouseSyntheseRule implements Rule<House, HouseSynthese> {
 		}
 		
 		// humidité
-		if (house.humidite) {
+		if (house?.humidite) {
 			interpretation = (synthese.interpretations[house.humidite.id] = [:])
 			double humidite = house.humidite.value as Double
 			

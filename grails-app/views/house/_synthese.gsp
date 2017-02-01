@@ -6,7 +6,7 @@
 			<h4 class="separator-bottom">Température</h4>
 			
 			<div class="synthese-content">
-				<g:if test="${ house.temperature }">
+				<g:if test="${ house?.temperature }">
 					<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.temperature.id] }"/>
 				
 					<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
@@ -27,7 +27,7 @@
 			<h4 class="separator-bottom">Humidité </h4>
 			
 			<div class="synthese-content">
-				<g:if test="${ house.humidite }">
+				<g:if test="${ house?.humidite }">
 					<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.humidite.id] }"/>
 					
 					<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
@@ -47,7 +47,7 @@
 		<div>
 			<h4 class="separator-bottom">Consommation</h4>
 			
-			<g:if test="${ house.compteur }">
+			<g:if test="${ house?.compteur }">
 			
 			</g:if>
 			<g:else>
