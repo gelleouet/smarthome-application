@@ -115,15 +115,15 @@
 		padding: 10px;
 	}
 	
-	div.aui-group > div.aui-item {
+	div.aui-group > div.aui-item.responsive {
 		display: table-row;
 	}
 	
-	div.aui-group > div.aui-item > div.filActualite {
+	div.aui-group > div.aui-item.responsive > div {
 		margin-top: 20px;
 	}
 	
-	div.aui-group > div.aui-item > div {
+	div.aui-group > div.aui-item.responsive > div {
 		border: none;
 		margin-top: 20px;
 	}

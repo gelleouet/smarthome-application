@@ -1,7 +1,7 @@
 <h3>Synthèse confort habitat et consommation</h3>
 
 <div class="aui-group" style="margin-top:20px">
-	<div class="aui-item">
+	<div class="aui-item responsive">
 		<div>
 			<h4 class="separator-bottom">Température</h4>
 			
@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="aui-item">
+	<div class="aui-item responsive">
 		<div>
 			<h4 class="separator-bottom">Humidité </h4>
 			
@@ -43,7 +43,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="aui-item">
+	<div class="aui-item responsive">
 		<div>
 			<h4 class="separator-bottom">Consommation</h4>
 			
