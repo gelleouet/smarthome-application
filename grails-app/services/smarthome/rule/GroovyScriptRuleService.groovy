@@ -1,5 +1,6 @@
 package smarthome.rule
 
+import smarthome.core.ClassUtils;
 import smarthome.core.ScriptRule;
 import smarthome.core.SmartHomeException;
 import smarthome.rule.Rule;
@@ -14,7 +15,6 @@ import grails.util.Environment;
  */
 class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 
-	static GroovyClassLoader loader = new GroovyClassLoader(GroovyScriptRuleService.class.getClassLoader())
 	SpringSecurityService springSecurityService
 	
 	
@@ -31,9 +31,8 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 		
 		// Chargement de la classe "Rule" enregistrée dans le script
 		try {
-			Class ruleClass = loader.parseClass(script)
+			Class ruleClass = ClassUtils.newClass(script)
 			rule = (Rule) ruleClass.newInstance()
-			
 			injectParameters(rule, parameters)
 			
 			result = rule.execute(object)

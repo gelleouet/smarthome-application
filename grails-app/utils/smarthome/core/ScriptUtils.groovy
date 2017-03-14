@@ -13,8 +13,6 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 class ScriptUtils {
-	static GroovyClassLoader loader = new GroovyClassLoader(ScriptUtils.class.getClassLoader())
-	
 	/**
 	 * Exécute le script avec le contexte spécifié
 	 * 
@@ -28,13 +26,15 @@ class ScriptUtils {
 		}
 		
 		try {
-			GroovyShell groovyShell = new GroovyShell(loader)
+			GroovyShell groovyShell = new GroovyShell()
 			Script script = groovyShell.parse(scriptText)
 			if (params) {
 				script.setBinding(new Binding(params))
 			}
 			
-			return script.run()
+			def result = script.run()
+			groovyShell.resetLoadedClasses()
+			return result
 		} catch (Exception e) {
 			throw new SmartHomeException(e)
 		}
