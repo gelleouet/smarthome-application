@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.SmartHomeException;
+import smarthome.rule.HouseEstimationConsoRuleService;
 import smarthome.rule.HouseSyntheseRuleService;
 import smarthome.security.User;
 
@@ -16,6 +17,7 @@ import smarthome.security.User;
 class HouseService extends AbstractService {
 
 	HouseSyntheseRuleService houseSyntheseRuleService
+	HouseEstimationConsoRuleService houseEstimationConsoRuleService
 	
 	
 	/**
@@ -71,35 +73,7 @@ class HouseService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	House calculConsoAnnuelle(House house) throws SmartHomeException {
-		Date dateFin = new Date().clearTime()
-		
-		// 1 seul calcul par jour si toutes les infos sont complètes
-		if (house.surface && house.compteur && (!house.dateCalculConso || house.dateCalculConso < dateFin)) {
-			Date dateDebut = dateFin.copyWith([date: 1, month: 0]) // 1er janvier
-			def nbJour = (dateFin - 1) - dateDebut
-			
-			// pas de calcul les 2er jours de l'année car calcul sur J-1
-			if (nbJour) {
-				def firstHP = DeviceValue.firstValueByDay(house.compteur, 'hchp', dateDebut)
-				def lastHP = DeviceValue.lastValueByDay(house.compteur, 'hchp', dateFin - 1)
-				def firstHC = DeviceValue.firstValueByDay(house.compteur, 'hchc', dateDebut)
-				def lastHC = DeviceValue.lastValueByDay(house.compteur, 'hchc', dateFin - 1)
-				
-				if (firstHP && lastHP && firstHC && lastHC) {
-					def consoAnnuelle = (lastHP.value - firstHP.value) + (lastHC.value - firstHC.value)
-					
-					if (consoAnnuelle) {
-						// produit en croix pour extrapoller sur une année complète
-						house.consoAnnuelle = consoAnnuelle * 365 / nbJour
-						house.consoAnnuelle = house.consoAnnuelle.round(0)
-						house.dateCalculConso = dateFin
-						this.save(house)
-						log.info "Conso annuelle ${house.name} : ${house.consoAnnuelle}Wh"
-					}
-				}
-			}
-		}
-		
+		houseEstimationConsoRuleService.execute(house, false)
 		return house	
 	}
 	

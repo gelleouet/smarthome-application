@@ -13,13 +13,11 @@ import grails.validation.Validateable;
 class House {
 	static belongsTo = [user: User]
 	
-	static hasMany = [modes: HouseMode]
+	static hasMany = [modes: HouseMode, consos: HouseConso]
 	
 	String name
 	boolean defaut
 	Double surface
-	Double consoAnnuelle
-	Date dateCalculConso
 	Device compteur
 	Device temperature
 	Device humidite
@@ -27,16 +25,15 @@ class House {
 	
     static constraints = {
 		surface nullable: true
-		consoAnnuelle nullable: true
 		compteur nullable: true
 		temperature nullable: true
 		humidite nullable: true
-		dateCalculConso nullable: true
     }
 	
 	static mapping = {
 		user index: "House_User_Idx"
 		modes cascade: 'all-delete-orphan'
+		consos cascade: 'all-delete-orphan'
 	}
 	
 	

@@ -33,7 +33,7 @@
 	     </fieldset>
 	     
 	     
-	     <h6>Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
+	     <h6 class="h6">Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
 	     	<br/>
 	     	Ce lien permettra d'activer votre compte. Cette action permet aussi de vérifier que vous êtes bien le propriétaire de l'adresse mail.
 	     </h6>

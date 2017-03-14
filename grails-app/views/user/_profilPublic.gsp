@@ -40,7 +40,7 @@
 		<ul class="label">
 			<li>Surface : <span class="link">${ house?.surface?.toInteger() ?: '' }m²</span></li>
 			
-			<g:if test="${ house?.consoAnnuelle }">
+			<g:if test="${ false }">
 				<li>Consommation annuelle : <span class="link">${ (house.consoAnnuelle / 1000) as Integer }kWh</span> 
 			</g:if>
 			<g:else>
@@ -48,7 +48,7 @@
 			</g:else>
 			<span style="font-size:xx-small">(estimation sur une année complète en fonction de votre consommation réelle depuis le 1er janvier)</span></li>
 			
-			<g:if test="${ house?.surface && house?.consoAnnuelle }">
+			<g:if test="${ false }">
 				<g:set var="dpe" value="${ (house.consoAnnuelle / 1000 / house.surface) as Integer }"></g:set>
 				<g:set var="dpeIndex" value="${ (smarthome.automation.House.classementDPE(dpe) as char) - ('A' as char) }"></g:set>
 			</g:if>

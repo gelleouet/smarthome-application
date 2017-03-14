@@ -17,7 +17,7 @@
 	     </fieldset>
 	     
 	     
-	     <h6>Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
+	     <h6 class="h6">Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
 	     	<br/>
 	     	En cliquant dessus, vous serez alors redirigé vers une page vous demandant un nouveau mot de passe.
 	     </h6>

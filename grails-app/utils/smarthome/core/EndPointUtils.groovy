@@ -2,6 +2,7 @@ package smarthome.core
 
 import javax.servlet.ServletContext;
 import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 
 class EndPointUtils {

@@ -14,7 +14,7 @@
 			<tr>
 				<td>${ app.formatTimeAgo(date: event.lastEvent) }</td>
 				<td><g:link controller="deviceEvent" action="edit" id="${ event.id }">${ event.libelle }</g:link></td>
-				<td><g:link controller="device" action="edit" id="${ event.device.id }">${ event.device.label }</g:link></td>
+				<td><g:link controller="device" action="devicesGrid" params="[tableauBord: event.device.tableauBord]">${ event.device.label }</g:link></td>
 				<td>${ event.cron ? 'X' : '' }</td>
 			</tr>
 		</g:each>

@@ -7,10 +7,6 @@
 	<g:applyLayout name="applicationContent">
     
     <h1>Bienvenue sur l'application <g:meta name="app.code"/></h1>
-    <h6 >L'application gratuite qui rend votre maison intelligente !<br/>
-    Cette application est sécurisée par un certificat SSL . Ce certificat garantit la confidentialité des données échangées entre votre maison et le serveur SmartHome.
-    </h6>
-    <asset:image src="/gandi-ssl.png" style="vertical-align: middle;"/>
       
     <h3 class="separator">Veuillez saisir vos identifiants</h3>
           
