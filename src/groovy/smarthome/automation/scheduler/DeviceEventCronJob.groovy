@@ -1,17 +1,11 @@
 package smarthome.automation.scheduler
 
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.service.spi.InjectService;
 import org.quartz.CronExpression;
 import org.quartz.Job;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Trigger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import smarthome.automation.DeviceEvent;
 import smarthome.automation.DeviceEventService;
 
@@ -38,17 +32,18 @@ class DeviceEventCronJob implements Job {
 	void execute(JobExecutionContext jobContext) throws JobExecutionException {
 		log.info "Scan device scheduled event..."
 		
-		List<DeviceEvent> events = deviceEventService.listScheduledEvent()
+		List<Map> events = deviceEventService.listScheduledEventIds()
 		CronExpression cronExpression
 		int compteur = 0
 		
 		// pour chaque event, vérifie si le cron correspond à la date déclenchée
-		for (DeviceEvent event : events) {
-			cronExpression = new CronExpression(event.cron)
+		for (Map eventMap : events) {
+			cronExpression = new CronExpression(eventMap.cron)
 			
 			// l'événement doit être déclenché car la date correspond au cron
 			if (cronExpression.isSatisfiedBy(jobContext.getScheduledFireTime())) {
 				compteur++
+				DeviceEvent event = deviceEventService.findById(eventMap.id)
 				deviceEventService.executeScheduleDeviceEvent(event, jobContext.getScheduledFireTime())
 			}	
 		}

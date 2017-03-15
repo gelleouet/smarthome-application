@@ -8,7 +8,7 @@
 <body>
 	<g:applyLayout name="applicationConfigure">
 	
-		<g:form controller="user" method="post" class="aui">
+		<g:form name="profil-form" controller="user" method="post" class="aui">
 			<g:hiddenField name="user.id" value="${user.id}" />
 	
 			<h4>Général</h4>
@@ -33,7 +33,11 @@
 
 			
 			<h4>Maison principale</h4>
-			<g:include action="templateEditByUser" controller="house" params="[user: user]"/> 
+			<g:include action="templateEditByUser" controller="house" params="[user: user]"/>
+			
+			<div id="ajaxModes">
+				<g:include action="templateEditByUser" controller="mode" params="[user: user]"/> 
+			</div> 
 
 			
 			<h4>Notifications SMS</h4>

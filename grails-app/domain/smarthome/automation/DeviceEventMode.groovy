@@ -3,18 +3,18 @@ package smarthome.automation
 import grails.validation.Validateable;
 
 /**
- * Modes activés sur une maison
+ * Modes activés sur un event
  *  
  * @author gregory
  *
  */
 @Validateable
-class HouseMode implements Serializable  {
-	House house
+class DeviceEventMode implements Serializable  {
+	DeviceEvent deviceEvent
 	Mode mode
 	
 	static mapping = {
-		id composite: ['house', 'mode']
+		id composite: ['deviceEvent', 'mode']
 		version false
 	}
 }

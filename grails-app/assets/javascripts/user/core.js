@@ -164,7 +164,9 @@ function ajaxSubmitForm(eltSrcId, urlAttr, formId, divDstId, onSuccess) {
 		data: datas,
 		url: urlAction,
 		success: function(data, textStatus) {
-			$(divDstId).html(data);
+			if (divDstId) {
+				$(divDstId).html(data);
+			}
 			if (onSuccess) {
 				onSuccess();
 			}

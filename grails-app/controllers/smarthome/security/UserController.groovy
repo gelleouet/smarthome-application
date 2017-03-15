@@ -5,6 +5,7 @@ import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.automation.DeviceService;
 import smarthome.automation.HouseService;
+import smarthome.automation.ModeService;
 import smarthome.automation.NotificationAccount;
 import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.AbstractController
@@ -28,6 +29,7 @@ class UserController extends AbstractController {
 	RegisterService registerService
 	HouseService houseService
 	DeviceService deviceService
+	ModeService modeService
 
 
 	/**
@@ -90,6 +92,8 @@ class UserController extends AbstractController {
 		
 		command.house.user = command.user
 		houseService.save(command.house)
+		
+		modeService.saveModes(command.modes, command.user)
 		
 		redirect(action: 'profil')
 	}

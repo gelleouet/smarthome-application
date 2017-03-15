@@ -36,6 +36,8 @@ class DeviceEventService extends AbstractService {
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
 	DeviceEventDecalageRuleService deviceEventDecalageRuleService
+	ModeService modeService
+	HouseService houseService
 	
 	
 	/**
@@ -66,6 +68,45 @@ class DeviceEventService extends AbstractService {
 		} catch (Exception ex) {
 			throw new SmartHomeException(ex, deviceEvent)
 		}
+	}
+	
+	/**
+	 * Enregistrement des modes
+	 *
+	 * @param domain
+	 *
+	 * @return domain
+	 */
+	@PreAuthorize("hasPermission(#deviceEvent, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceEvent saveModes(DeviceEvent deviceEvent) throws SmartHomeException {
+		def existModes = []
+		
+		// supprime les modes non présents
+		deviceEvent.modes?.removeAll { deviceEventMode ->
+			Mode mode = deviceEvent.modeList.find {
+				it.id == deviceEventMode.mode.id
+			}
+			
+			// si on l'a trouvé, on le flag car on ne devra pas le réinséré
+			if (mode) {
+				existModes << mode
+			}
+			
+			return !mode
+		}
+		
+		// supprime les modes déjà présents
+		deviceEvent.modeList.removeAll(existModes)
+		
+		// ajoute les modes sélectionnés
+		deviceEvent.modeList.each {
+			deviceEvent.addToModes(new DeviceEventMode(deviceEvent: deviceEvent, mode: it))
+		}
+		
+		super.save(deviceEvent)
+		
+		return deviceEvent
 	}
 	
 	
@@ -225,6 +266,15 @@ class DeviceEventService extends AbstractService {
 		
 		def device = event.device
 		
+		// Vérifie si l'event doit être déclenché en fonction mode activé
+		List<Mode> houseModes = houseService.defaultHouseModes(device.user)
+		
+		// annule l'exécution si les modes sélectionnés sur event ne sont pas activés
+		if (!modeService.matchModes(event.modes*.mode, houseModes)) {
+			log.info "Cancel event ${event.libelle} : mode not match [${event.modes.collect{it.mode.name}}] !"
+			return event
+		}
+		
 		if (context == null) {
 			context = this.buildContext(device)
 		}
@@ -360,10 +410,16 @@ class DeviceEventService extends AbstractService {
 	 * 
 	 * @return
 	 */
-	List<DeviceEvent> listScheduledEvent() {
+	List<Map> listScheduledEventIds() {
 		return DeviceEvent.createCriteria().list {
 			isNotNull "cron"
 			eq "actif", true
+			projections {
+				property "id", "id"
+				property "cron", "cron"
+			}
+			// transformer pour récupérer une map au lieu d'un tableau
+			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
 		}
 	}
 	

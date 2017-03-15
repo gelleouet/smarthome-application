@@ -13,9 +13,9 @@
 		<g:each var="device" in="${ lastDevices }">
 			<tr>
 				<td>${ app.formatTimeAgo(date: device.dateValue) }</td>
-				<td><g:link controller="device" action="devicesGrid" params="[tableauBord: device.tableauBord]">${ device.label }</g:link></td>
+				<td><g:link controller="device" action="edit" id="${ device.id }">${ device.label }</g:link></td>
 				<td>${ device.deviceType.libelle }</td>
-				<td>${ device.value }</td>
+				<td><g:link controller="device" action="devicesGrid" params="[tableauBord: device.tableauBord]">${ device.value }</g:link></td>
 			</tr>
 		</g:each>
 	</tbody>

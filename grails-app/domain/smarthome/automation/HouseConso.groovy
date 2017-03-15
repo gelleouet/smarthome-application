@@ -13,7 +13,8 @@ import grails.validation.Validateable;
 class HouseConso {
 	static belongsTo = [house: House]
 	
-	Double value
+	Double kwHC
+	Double kwHP
 	Date dateConso
 	
 	

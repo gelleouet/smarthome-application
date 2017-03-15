@@ -19,6 +19,7 @@ class DeviceEventController extends AbstractController {
 	DeviceEventService deviceEventService
 	WorkflowService workflowService
 	DeviceService deviceService
+	ModeService modeService
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -73,9 +74,11 @@ class DeviceEventController extends AbstractController {
 	 */
 	def fetchModelEdit(userModel) {
 		def model = [:]
+		def user = authenticatedUser
 		
-		model.workflows = workflowService.listByUser(null, principal.id, [:])
-		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: principal.id))
+		model.workflows = workflowService.listByUser(null, user.id, [:])
+		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: user.id))
+		model.modes = modeService.listModesByUser(user)
 		
 		// on remplit avec les infos du user
 		model << userModel
@@ -94,6 +97,7 @@ class DeviceEventController extends AbstractController {
 		checkErrors(this, deviceEvent)
 		deviceEvent.clearNotPersistTriggers()
 		deviceEventService.save(deviceEvent)
+		deviceEventService.saveModes(deviceEvent)
 		edit(deviceEvent)
 	}
 
@@ -110,10 +114,11 @@ class DeviceEventController extends AbstractController {
 		checkErrors(this, deviceEvent)
 		deviceEvent.clearNotPersistTriggers()
 		deviceEventService.save(deviceEvent)
+		deviceEventService.saveModes(deviceEvent)
 		edit(deviceEvent)
 	}
-	
-	
+
+		
 	/**
 	 * Suppression
 	 *

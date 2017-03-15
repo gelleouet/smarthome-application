@@ -23,7 +23,17 @@
 		Actif		
 	</label>
 	<g:checkBox name="actif" value="${deviceEvent?.actif}" class="checkbox"/>
-	<div class="description">Suspend temporairement un événement</div>
+	<div class="description">Si désactivé, suspend temporairement un événement</div>
+</div>
+
+
+<div class="field-group">
+	<label for="modes">
+		Modes
+	</label>
+	<g:select name="modeList" from="${ modes }" value="${ deviceEvent?.modes*.mode }" 
+		optionKey="id" optionValue="name" class="select combobox" multiple="true"/>
+	<div class="description">Déclenche l'événement si au moins un mode est activé</div>
 </div>
 
 <div class="field-group">

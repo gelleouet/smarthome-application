@@ -14,30 +14,7 @@ class HouseController extends AbstractController {
 
 	HouseService houseService
 	DeviceService deviceService
-	
-	
-	/**
-	 * Suppression d'un mode par son index
-	 * 
-	 * @param command
-	 * @return
-	 */
-	def deleteMode(HouseCommand command, int status) {
-		houseService.deleteMode(command, status)
-		render(template: 'modes', model: [modes: command.modes])
-	}
-	
-	
-	/**
-	 * Ajout d'un mode
-	 * 
-	 * @param command
-	 * @return
-	 */
-	def addMode(HouseCommand command) {
-		houseService.addMode(command)
-		render(template: 'modes', model: [modes: command.modes])
-	}
+	ModeService modeService
 	
 	
 	/**
@@ -55,7 +32,23 @@ class HouseController extends AbstractController {
 			deviceTypeClass: Temperature.name]))
 		def humidites = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: Humidite.name]))
+		
 		render(template: 'form', model: [house: house, compteurs: compteurs, user: user,
 			temperatures: temperatures, humidites: humidites])
+	}
+	
+	
+	/**
+	 * Changement de modes d'une maison
+	 * 
+	 * @param house
+	 * @return
+	 */
+	def changeMode(HouseCommand command) {
+		def user = authenticatedUser
+		command.house.user = user
+		houseService.changeMode(command)
+		render(template: 'changeMode', model: [house: command.house, user: user,
+			modes: modeService.listModesByUser(user)])
 	}
 }

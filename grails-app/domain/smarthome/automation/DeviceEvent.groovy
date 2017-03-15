@@ -17,7 +17,8 @@ class DeviceEvent {
 	
 	
 	static belongsTo = [device: Device, user: User]
-	static hasMany = [triggers: DeviceEventTrigger, notifications: DeviceEventNotification]
+	static hasMany = [triggers: DeviceEventTrigger, notifications: DeviceEventNotification,
+		modes: DeviceEventMode]
 	
 	Set triggers = []
 	Set notifications = []
@@ -39,9 +40,10 @@ class DeviceEvent {
 	// propriétés utilisateur
 	boolean notificationSms
 	boolean notificationMail
+	List<Mode> modeList = []
 	
 	
-	static transients = ['notificationSms', 'notificationMail']
+	static transients = ['notificationSms', 'notificationMail', 'modeList']
 	
 	
     static constraints = {
@@ -53,6 +55,7 @@ class DeviceEvent {
 		solstice nullable: true
 		notificationSms bindable: true
 		notificationMail bindable: true
+		modeList bindable: true
     }
 	
 	static mapping = {
@@ -60,6 +63,7 @@ class DeviceEvent {
 		condition type: 'text'
 		triggers cascade: 'all-delete-orphan'
 		notifications cascade: 'all-delete-orphan'
+		modes cascade: 'all-delete-orphan'
 		heureDecalage length: 8
 		lastHeureDecalage length: 8
 		solstice length: 8

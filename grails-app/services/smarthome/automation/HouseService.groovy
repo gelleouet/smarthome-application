@@ -73,8 +73,25 @@ class HouseService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	House calculConsoAnnuelle(House house) throws SmartHomeException {
+		if (!house.attached) {
+			house.attach()
+		}
 		houseEstimationConsoRuleService.execute(house, false)
 		return house	
+	}
+	
+	
+	/**
+	 * Calcul asynchrone de la conso d'une maison.
+	 * Un message est envoyé sur le bus AMQP pour qu'un consumer prenne en charge le calcul
+	 * 
+	 * @param houseId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@AsynchronousMessage()
+	Long asyncCalculConsoAnnuelle(Long houseId) throws SmartHomeException {
+		return house
 	}
 	
 	
@@ -97,36 +114,6 @@ class HouseService extends AbstractService {
 	
 	
 	/**
-	 * Liste les modes d'un utilisateur
-	 * 
-	 * @param user
-	 * @return
-	 */
-	List<HouseMode> listModesByUser(User user) {
-		return HouseMode.createCriteria().list {
-			eq 'user', user
-			order 'name'
-		}
-	}
-	
-	
-	/**
-	 * Suppression d'un mode sans persistance
-	 * 
-	 * @param command
-	 * @param status
-	 * @return
-	 */
-	HouseCommand deleteMode(HouseCommand command, int status) {
-		command.modes?.removeAll {
-			it.status == status
-		}
-		
-		return command
-	}
-	
-	
-	/**
 	 * Calcul des interprétations de la maison
 	 * 
 	 * @param house
@@ -135,5 +122,106 @@ class HouseService extends AbstractService {
 	 */
 	HouseSynthese calculSynthese(House house) throws SmartHomeException {
 		return houseSyntheseRuleService.execute(house, false)
+	}
+	
+	
+	/**
+	 * Change les modes d'une maison
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	HouseCommand changeMode(HouseCommand command) throws SmartHomeException {
+		def existModes = []
+		
+		// supprime les modes non présents 
+		command.house.modes?.removeAll { houseMode ->
+			Mode mode = command.modes.find {
+				it.id == houseMode.mode.id
+			}
+			
+			// si on l'a trouvé, on le flag car on ne devra pas le réinséré
+			if (mode) {
+				existModes << mode
+			}
+			
+			return !mode
+		}
+		
+		// supprime les modes déjà présents
+		command.modes.removeAll(existModes)
+		
+		// ajoute les modes sélectionnés
+		command.modes.each {
+			command.house.addToModes(new HouseMode(house: command.house, mode: it))	
+		}
+		
+		this.save(command.house)
+		
+		return command
+	}
+	
+	
+	/**
+	 * Liste les modes activés de la maison par défaut d'un user
+	 * 
+	 * @return
+	 */
+	List<Mode> defaultHouseModes(User user) {
+		House house = this.findDefaultByUser(user)
+		
+		return houseModes(house)
+	}
+	
+	
+	/**
+	 * Liste les modes activés d'une maison
+	 * 
+	 * @return
+	 */
+	List<Mode> houseModes(House house) {
+		if (!house) {
+			return []
+		}
+		
+		return house.modes*.mode
+	}
+	
+	
+	/**
+	 * Classement DPE (A ... G)
+	 * @param house
+	 * @param conso
+	 * @return
+	 */
+	DPE classementDPE(House house, HouseConso conso) {
+		if (!house?.surface || !conso) {
+			return null
+		}
+		
+		DPE dpe = new DPE()
+		dpe.kwParAn = ((conso.kwHC + conso.kwHP) / house.surface) as Integer
+		
+		if (dpe.kwParAn <= 50) {
+			dpe.note = "A"
+		} else if (dpe.kwParAn > 50 && dpe.kwParAn <= 90) {
+			dpe.note = "B"
+		} else if (dpe.kwParAn > 90 && dpe.kwParAn <= 150) {
+			dpe.note = "C"
+		} else if (dpe.kwParAn > 150 && dpe.kwParAn <= 230) {
+			dpe.note = "D"
+		} else if (dpe.kwParAn > 230 && dpe.kwParAn <= 330) {
+			dpe.note = "E"
+		} else if (dpe.kwParAn > 330 && dpe.kwParAn <= 450) {
+			dpe.note = "F"
+		} else {
+			dpe.note = "G"
+		}
+		
+		dpe.index = (dpe.note as char) - ('A' as char)
+		
+		return dpe
 	}
 }

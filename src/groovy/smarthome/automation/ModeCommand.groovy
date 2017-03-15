@@ -16,7 +16,6 @@ import grails.validation.Validateable
  *
  */
 @Validateable
-class HouseCommand {
-	House house = new House()
+class ModeCommand {
 	List<Mode> modes = []
 }

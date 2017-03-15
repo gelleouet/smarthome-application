@@ -4,7 +4,7 @@
 package smarthome.security
 
 import smarthome.automation.House;
-import smarthome.automation.HouseMode;
+import smarthome.automation.Mode;
 import smarthome.security.SmartHomeSecurityUtils;
 import grails.validation.Validateable
 
@@ -19,5 +19,5 @@ import grails.validation.Validateable
 class ProfilCommand {
 	User user
 	House house
-	List<HouseMode> modes
+	List<Mode> modes = []
 }
