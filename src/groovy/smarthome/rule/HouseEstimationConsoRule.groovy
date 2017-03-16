@@ -33,7 +33,7 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 	
 	@Override
 	public House execute(House house) throws SmartHomeException {
-		int year = 2016//parameters.year
+		int year = parameters.year
 		Date debutYear = DateUtils.firstDayInYear(year)
 		
 		// calcul d'un tableau avec les consos réelles et estimées de chaque mois
