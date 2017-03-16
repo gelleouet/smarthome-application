@@ -10,19 +10,16 @@ import smarthome.automation.DeviceEvent;
 import smarthome.automation.DeviceEventService;
 
 /**
- * Un job exécuté toutes les minutes (le niveau le plus fin)
- * pour scanner toutes les events planifiés et calculés si un event 
- * doit être déclenché
- * 
- * Les événements ne sont pas excutés dans ce service mais en mode asynchrone
- * dans la queue AMQP pour être répartis entre les différents serveurs
+ * Sous job du job principal DeviceEventCronMainJob pour exécuter les événements sur une liste paginée
+ * Les infos de pagination sont récupérées dans les params du job (offset, max)
  * 
  * @author Gregory
  *
  */
-class DeviceEventCronJob implements Job {
+class DeviceEventCronPaginateSubJob implements Job {
 
 	private static final log = LogFactory.getLog(this)
+	
 	
 	@Autowired
 	DeviceEventService deviceEventService
@@ -30,11 +27,13 @@ class DeviceEventCronJob implements Job {
 	
 	@Override
 	void execute(JobExecutionContext jobContext) throws JobExecutionException {
-		log.info "Scan device scheduled event..."
+		int offset = jobContext.getJobDetail().getJobDataMap().getInt("offset")
+		int max = jobContext.getJobDetail().getJobDataMap().getInt("max")
 		
-		List<Map> events = deviceEventService.listScheduledEventIds()
 		CronExpression cronExpression
-		int compteur = 0
+		List<Map> events = deviceEventService.listScheduledEventIds([offset: offset, max: max])
+		
+		log.info "Scheedule paginate events from ${offset} to ${offset+max} : ${events.size()}"
 		
 		// pour chaque event, vérifie si le cron correspond à la date déclenchée
 		for (Map eventMap : events) {
@@ -42,13 +41,10 @@ class DeviceEventCronJob implements Job {
 			
 			// l'événement doit être déclenché car la date correspond au cron
 			if (cronExpression.isSatisfiedBy(jobContext.getScheduledFireTime())) {
-				compteur++
 				DeviceEvent event = deviceEventService.findById(eventMap.id)
 				deviceEventService.executeScheduleDeviceEvent(event, jobContext.getScheduledFireTime())
 			}	
 		}
-		
-		log.info "Scheduling ${compteur} / ${events.size()} events."
 	}
 	
 	

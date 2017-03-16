@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1489678488044-1">
+        <createTable tableName="device_event_mode">
+            <column name="device_event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mode_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-2">
+        <createTable tableName="house_conso">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_conso" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="house_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kwhc" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kwhp" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-3">
+        <createTable tableName="mode">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-4">
+        <addColumn tableName="house_mode">
+            <column name="house_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-5">
+        <addColumn tableName="house_mode">
+            <column name="mode_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-6">
+        <addPrimaryKey columnNames="device_event_id, mode_id" constraintName="device_event_mode_pkey" tableName="device_event_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-7">
+        <addPrimaryKey columnNames="id" constraintName="house_conso_pkey" tableName="house_conso"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-8">
+        <addPrimaryKey columnNames="id" constraintName="mode_pkey" tableName="mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-9">
+        <addUniqueConstraint columnNames="date_conso, house_id" constraintName="unique_house_id" deferrable="false" disabled="false" initiallyDeferred="false" tableName="house_conso"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-10">
+        <addForeignKeyConstraint baseColumnNames="device_event_id" baseTableName="device_event_mode" constraintName="fk_2rfkc7wcvw4rbryecsfjb8tg5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device_event"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-11">
+        <addForeignKeyConstraint baseColumnNames="mode_id" baseTableName="house_mode" constraintName="fk_4xfw1euybn4tedme3tec8cnuq" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-12">
+        <addForeignKeyConstraint baseColumnNames="house_id" baseTableName="house_conso" constraintName="fk_8an7omec7wwt4tjjx0ot1o6vh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="house"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-13">
+        <addForeignKeyConstraint baseColumnNames="house_id" baseTableName="house_mode" constraintName="fk_n6t5i62plvx3hugwa2mkg4vn9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="house"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-14">
+        <addForeignKeyConstraint baseColumnNames="mode_id" baseTableName="device_event_mode" constraintName="fk_pfjtxocf8su769n4bmaph0b3b" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-15">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="mode" constraintName="fk_rw6xcqu9fmupf8kw8nrg7lkex" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-16">
+        <createIndex indexName="house_mode_pkey" tableName="house_mode" unique="true">
+            <column name="house_id"/>
+            <column name="mode_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-17">
+        <createIndex indexName="houseconso_idx" tableName="house_conso" unique="false">
+            <column name="house_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-18">
+        <createIndex indexName="mode_user_idx" tableName="mode" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-19">
+        <dropForeignKeyConstraint baseTableName="house_house_mode" constraintName="fk_aewie934xpt5wobs1oi8h4456"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-20">
+        <dropForeignKeyConstraint baseTableName="house_mode" constraintName="fk_d1nc291gfhf1kfvctv44km9fo"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-21">
+        <dropForeignKeyConstraint baseTableName="house_house_mode" constraintName="fk_tnuvkpcab1uc4d642idtp504s"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-22">
+        <dropTable tableName="house_house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-23">
+        <dropColumn columnName="conso_annuelle" tableName="house"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-24">
+        <dropColumn columnName="date_calcul_conso" tableName="house"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-25">
+        <dropColumn columnName="id" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-26">
+        <dropColumn columnName="name" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-27">
+        <dropColumn columnName="user_id" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-28">
+        <dropColumn columnName="version" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-29">
+        <dropIndex indexName="house_mode_pkey" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-30">
+        <dropIndex indexName="housemode_user_idx" tableName="house_mode"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1489678488044-31">
+        <dropPrimaryKey tableName="house_mode"/>
+        <addPrimaryKey columnNames="house_id, mode_id" constraintName="house_mode_pkey" tableName="house_mode"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,6 +1,6 @@
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 
-import smarthome.automation.scheduler.DeviceEventCronJob;
+import smarthome.automation.scheduler.DeviceEventCronMainJob;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.plugin.NavigationItemUtils;
 
@@ -26,9 +26,13 @@ beans = {
 	"defaultGrailsjava.lang.DoubleConverter"(smarthome.core.DoubleValueConverter)
 	
 	// gestionnaire de crons
+	// seconde | minute | heure | jour du mois (1-31) | mois | jour semaine (1-7) | année 
 	smarthomeScheduler(SmarthomeScheduler) {
 		jobs = [
-			'smarthome.automation.scheduler.DeviceEventCronJob' : "0 * * * * ?"
+			// déclenchement des events planifiés toutes les minutes
+			'smarthome.automation.scheduler.DeviceEventCronMainJob' : "0 * * * * ?",
+			// calcul des consos maison tous les soirs juste avant minuit
+			'smarthome.automation.scheduler.HouseConsoCronMainJob' : "59 59 23 * * ?"
 		]
 	}
 	

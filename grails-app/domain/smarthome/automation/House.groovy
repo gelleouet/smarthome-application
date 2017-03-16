@@ -44,13 +44,35 @@ class House implements Serializable {
 	 * 
 	 * @return
 	 */
-	HouseConso lastConso() {
-		def house = this
-		
+	HouseConso currentConso() {
+		Date now = new Date()
+		return consoByYear(now[Calendar.YEAR])
+	}
+	
+	
+	/**
+	 * La conso d'une année (enregistrée au 1er janvier)
+	 * 
+	 * @param year
+	 * @return
+	 */
+	HouseConso consoByYear(int year) {
 		return HouseConso.createCriteria().get {
-			eq "house.id", house.id
-			order "dateConso", "desc"
-			maxResults 1
+			eq "house.id", this.id
+			eq "dateConso", HouseConso.dateConsoForYear(year)
 		}
+	}
+	
+	
+	/**
+	 * Création d'une nouvelle conso pour une année (enregistrée au 1er janvier)
+	 * 
+	 * @param year
+	 * @return
+	 */
+	HouseConso newConsoForYear(int year) {
+		HouseConso conso = new HouseConso(house: this,
+			dateConso: HouseConso.dateConsoForYear(year))
+		return conso	
 	}
 }

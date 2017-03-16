@@ -410,16 +410,33 @@ class DeviceEventService extends AbstractService {
 	 * 
 	 * @return
 	 */
-	List<Map> listScheduledEventIds() {
-		return DeviceEvent.createCriteria().list {
+	List<Map> listScheduledEventIds(Map pagination) {
+		return DeviceEvent.createCriteria().list(pagination) {
 			isNotNull "cron"
 			eq "actif", true
 			projections {
 				property "id", "id"
 				property "cron", "cron"
 			}
+			order "id"
 			// transformer pour récupérer une map au lieu d'un tableau
 			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
+		}
+	}
+	
+	
+	/**
+	 * Compte tous les événements planifiés
+	 * 
+	 * @return
+	 */
+	long countScheduledEvents() {
+		return DeviceEvent.createCriteria().get {
+			isNotNull "cron"
+			eq "actif", true
+			projections {
+				count("id")
+			}
 		}
 	}
 	

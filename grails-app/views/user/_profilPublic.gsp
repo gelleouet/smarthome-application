@@ -39,25 +39,48 @@
 
 <h5>${ house?.name ?: 'Maison principale' }</h5>
 
-<g:set var="lastConso" value="${ house?.lastConso() }"/>
+<g:set var="currentConso" value="${ house?.currentConso() }"/>
 
 <ul class="label">
 	<li>Surface : <span class="link">${ house?.surface?.toInteger() ?: '' }m²</span></li>
 	
-	<g:if test="${ lastConso }">
+	<g:if test="${ currentConso }">
+		<g:set var="beforeConso" value="${ currentConso.before() }"/>
+		
 		<li>
-			<span>Consommations annuelles <g:formatDate date="${ lastConso.dateConso }" format="yyyy"/> : <span class="link">${ (lastConso.kwHC + lastConso.kwHP) as Integer }kWh</span></span>
+			Consommations annuelles ${ currentConso.year() } : <span class="link">${ currentConso.consoTotale() }kWh</span>
+			<g:if test="${ beforeConso }">
+				<g:set var="compare" value="${ currentConso.comparePercentTotal(beforeConso) }"/>
+				&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+			</g:if>
+			
 			<ul style="margin:0">
-				<li>Heure pleine : <span class="link">${ lastConso.kwHP as Integer }kWh</span> </li>
-				<li>Heure creuse : <span class="link">${ lastConso.kwHC as Integer }kWh</span> </li>
+				<li>Heure pleine : <span class="link">${ currentConso.kwHP as Integer }kWh</span> 
+				<g:if test="${ beforeConso }">
+					<g:set var="compare" value="${ currentConso.comparePercentHP(beforeConso) }"/>
+					&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+				</g:if>
+				</li>
+				<li>Heure creuse : <span class="link">${ currentConso.kwHC as Integer }kWh</span> 
+				<g:if test="${ beforeConso }">
+					<g:set var="compare" value="${ currentConso.comparePercentHC(beforeConso) }"/>
+					&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+				</g:if>
+				</li>
 			</ul>
 		</li>
 	</g:if>
 	<g:else>
-		<li>Consommations annuelles : <span class="link">kWh</span></li>		
+		<li>
+			Consommations annuelles : <span class="link">kWh</span>
+			<ul style="margin:0">
+				<li>Heure pleine : <span class="link">kWh</span> </li>
+				<li>Heure creuse : <span class="link">kWh</span> </li>
+			</ul>
+		</li>		
 	</g:else>
 	
-	<g:set var="dpe" value="${ houseService.classementDPE(house, lastConso) }"/>
+	<g:set var="dpe" value="${ houseService.classementDPE(house, currentConso) }"/>
 	
 	<li>Classement énergétique :</li>
 	<li><div style="position:relative">
@@ -70,7 +93,7 @@
 
 <span style="font-size:xx-small">Estimation sur une année complète en fonction de votre consommation réelle depuis le 1er janvier</span>
 
-<g:if test="${ !house && !viewOnly }">
+<g:if test="${ !house?.compteur && !viewOnly }">
 	<h6 class="h6">
 	Pour calculer votre consommation annuelle et le classement énergétique de votre maison, <g:link action="profil" controller="user">veuillez compléter votre profil</g:link>
 	</h6>

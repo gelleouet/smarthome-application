@@ -157,6 +157,60 @@ class DeviceValue {
 		
 		return values ? values[0] : null
 	}
+	
+	
+	/**
+	 * Retrouve la 1er valeur sur une période
+	 * 
+	 * @param device
+	 * @param dateDebut inclusive
+	 * @param dateFin exclusive
+	 * @return
+	 */
+	static DeviceValue firstValueInPeriod(Device device, Date dateDebut, Date dateFin, String metaName = null) {
+		return DeviceValue.createCriteria().get {
+			eq "device", device
+			
+			if (metaName) {
+				eq "name", metaName
+			} else {
+				isNull "name"
+			}
+			
+			ge "dateValue", dateDebut
+			lt "dateValue", dateFin
+			
+			order "dateValue", "asc"
+			maxResults 1
+		}
+	}
+	
+	
+	/**
+	 * Retrouve la dernière valeur sur une période
+	 * 
+	 * @param device
+	 * @param dateDebut inclusive
+	 * @param dateFin exclusive
+	 * @return
+	 */
+	static DeviceValue lastValueInPeriod(Device device, Date dateDebut, Date dateFin, String metaName = null) {
+		return DeviceValue.createCriteria().get {
+			eq "device", device
+			
+			if (metaName) {
+				eq "name", metaName
+			} else {
+				isNull "name"
+			}
+			
+			ge "dateValue", dateDebut
+			lt "dateValue", dateFin
+			
+			order "dateValue", "desc"
+			maxResults 1
+		}
+	}
 
 	
 	/**

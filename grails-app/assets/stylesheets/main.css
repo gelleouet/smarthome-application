@@ -689,3 +689,15 @@ h5.device-grid-label {
 	padding: 20px 0px 0px 0px;
 	text-align: center;
 }
+
+.pourcent-plus {
+	color: #d04437;
+	font-weight: bold;
+	font-size: 9pt;
+}
+
+.pourcent-moins {
+	color: #14892c;
+	font-weight: bold;
+	font-size: 9pt;
+}

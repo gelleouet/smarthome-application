@@ -1,9 +1,12 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
@@ -18,6 +21,18 @@ class HouseService extends AbstractService {
 
 	HouseSyntheseRuleService houseSyntheseRuleService
 	HouseEstimationConsoRuleService houseEstimationConsoRuleService
+	
+	
+	/**
+	 * Edition d'une maison
+	 *
+	 * @param device
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#house, 'OWNER')")
+	House edit(House house) {
+		return house
+	}
 	
 	
 	/**
@@ -61,22 +76,27 @@ class HouseService extends AbstractService {
 	
 	
 	/**
-	 * Calcul de la conso annuelle à partir du compteur associé
+	 * Calcul de la conso sur une année à partir du compteur associé
 	 * C'est une estimation car la conso est calculé sur une année complète et
 	 * extrapollée sur le reste de l'année (réel sur l'année passée, et estimée sur le reste)
-	 * 
-	 * Le calcul est exécuté une fois par jour même si plusieurs appels
 	 * 
 	 * @param house
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	House calculConsoAnnuelle(House house) throws SmartHomeException {
+	House calculConsoAnnuelle(House house, int year) throws SmartHomeException {
 		if (!house.attached) {
 			house.attach()
 		}
-		houseEstimationConsoRuleService.execute(house, false)
+		
+		// si pas de compteur associé, pas besoin de faire le calcul car pas de conso
+		if (!house?.compteur) {
+			return house
+		}
+		
+		houseEstimationConsoRuleService.execute(house, false, [year: year])
+		
 		return house	
 	}
 	
@@ -90,26 +110,8 @@ class HouseService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@AsynchronousMessage()
-	Long asyncCalculConsoAnnuelle(Long houseId) throws SmartHomeException {
-		return house
-	}
-	
-	
-	/**
-	 * Recherche de la maison par défaut et caclul de la conso annuelle
-	 * @param user
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	House calculDefaultConsoAnnuelle(User user) throws SmartHomeException {
-		def house = this.findDefaultByUser(user)
-		
-		if (house) {
-			house = this.calculConsoAnnuelle(house)
-		}
-		
-		return house
+	Long asyncCalculConsoAnnuelle(Long houseId, int year) throws SmartHomeException {
+		return houseId
 	}
 	
 	
@@ -223,5 +225,52 @@ class HouseService extends AbstractService {
 		dpe.index = (dpe.note as char) - ('A' as char)
 		
 		return dpe
+	}
+	
+	
+	/**
+	 * Compte le nombre de maisons pour les calculs de conso
+	 * 
+	 * @return
+	 */
+	long countHouseForCalculConso() {
+		return House.createCriteria().get {
+			isNotNull "surface"
+			isNotNull "compteur"
+			projections {
+				count("id")
+			}
+		}	
+	}
+	
+	
+	/**
+	 * Les ids des maisons pour les calculs de conso
+	 * 
+	 * @return
+	 */
+	List<Map> listHouseIdsForCalculConso(Map pagination) {
+		return House.createCriteria().list(pagination) {
+			isNotNull "surface"
+			isNotNull "compteur"
+			projections {
+				property "id", "id"
+			}
+			order "id"
+			// transformer pour récupérer une map au lieu d'un tableau
+			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
+		}	
+	}
+	
+	
+	/**
+	 * Utile pour les environnements sans session hibernate automatique
+	 * Ex : Camel ESB
+	 *
+	 * @param id
+	 * @return
+	 */
+	House findById(Serializable id) {
+		House.get(id)
 	}
 }

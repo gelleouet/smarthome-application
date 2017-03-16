@@ -12,7 +12,12 @@
 		<label>Compteur principal</label>
 		<g:select name="house.compteur.id" value="${house?.compteur?.id}" from="${ compteurs }" optionKey="id" 
 			optionValue="label" class="select combobox" noSelection="[null: '']"/>
-		<div class="description">Utilisé pour le calcul du classement énergétique et la synthèse générale</div>
+		<div class="description">Utilisé pour le calcul du classement énergétique et la synthèse générale<br/>
+		Vos consommations sont calculées tous les soirs à minuit.
+		<g:if test="${ house?.id }">
+			Vous pouvez lancer un <g:remoteLink action="calculConso" controller="house" id="${ house.id }" onComplete="alert('Calcul terminée')">calcul manuel</g:remoteLink>
+		</g:if>
+		</div>
 	</div>
 	<div class="field-group">
 		<label>Température principale</label>

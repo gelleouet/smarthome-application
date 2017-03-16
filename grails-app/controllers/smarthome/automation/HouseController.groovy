@@ -51,4 +51,18 @@ class HouseController extends AbstractController {
 		render(template: 'changeMode', model: [house: command.house, user: user,
 			modes: modeService.listModesByUser(user)])
 	}
+	
+	
+	/**
+	 * Calcul conso à la demande
+	 * 
+	 * @param house
+	 * @return
+	 */
+	def calculConso(House house) {
+		houseService.edit(house)
+		Date now = new Date()
+		houseService.calculConsoAnnuelle(house, now[Calendar.YEAR])
+		nop()
+	}
 }

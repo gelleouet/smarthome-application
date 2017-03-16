@@ -107,4 +107,46 @@ class DateUtils {
 		
 		return currentDate >= date && currentDate <= endDate
 	} 
+	
+	
+	/**
+	 * Dernier jour du mois
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date lastDayInMonth(Date date) {
+		Calendar calendar = Calendar.getInstance()
+		calendar.setTime(date)
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+		return calendar.getTime().clearTime()
+	}
+	
+	
+	/**
+	 * 1er jour du mois
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date firstDayInMonth(Date date) {
+		Calendar calendar = Calendar.getInstance()
+		calendar.setTime(date)
+		calendar.set(Calendar.DAY_OF_MONTH, 1)
+		return calendar.getTime().clearTime()
+	}
+	
+	
+	/**
+	 * 1er jour de l'année
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date firstDayInYear(int year) {
+		Calendar calendar = Calendar.getInstance()
+		calendar.set(Calendar.DAY_OF_YEAR, 1)
+		calendar.set(Calendar.YEAR, year)
+		return calendar.getTime().clearTime()
+	}
 }

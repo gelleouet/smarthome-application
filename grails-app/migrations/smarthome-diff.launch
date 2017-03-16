@@ -4,6 +4,6 @@
 <mapEntry key="LIQUIBASE_HOME" value="C:\Users\Gregory\Documents\java\liquibase-3.3.5"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/smarthome-application/grails-app/migrations/smarthome-diff.bat}"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="4.0"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="4.1"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/smarthome-application/grails-app/migrations}"/>
 </launchConfiguration>
