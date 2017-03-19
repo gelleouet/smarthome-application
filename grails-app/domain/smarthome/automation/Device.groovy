@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Map;
 
 import smarthome.core.DateUtils;
+import smarthome.core.ScriptUtils;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -106,20 +107,35 @@ class Device {
 		
 		if (!meta) {
 			meta = new DeviceMetavalue(name: name)
+			
+			if (values.trace) {
+				meta.trace = values.trace
+			}
+			
+			if (values.main) {
+				meta.main = values.main
+			}
+			if (values.virtualDevice) {
+				meta.virtualDevice = values.virtualDevice
+			}
+			
 			this.addToMetavalues(meta)
 		}
 		
 		meta.value = values.value
+		
 		if (values.type) {
 			meta.type = values.type
 		}
 		if (values.label) {
 			meta.label = values.label
 		}
+		
+		return meta
 	}
 
 	
-		/**
+	/**
 	 * Ajout d'une métadata
 	 * 
 	 * @param name
@@ -137,8 +153,14 @@ class Device {
 		meta.value = values.value
 		meta.type = values.type
 		meta.label = values.label
-		meta.help = values.help
-		meta.values = values.values
+		
+		if (values.values instanceof Iterable) {
+			meta.values = values.values.join("##")
+		} else if (values.values) {
+			meta.values = values.values.toString()
+		}
+		
+		return meta
 	}
 	
 	
@@ -198,5 +220,35 @@ class Device {
 	 */
 	List lastValues(String metaName, int nbData) {
 		return DeviceValue.lastValuesByDay(this, metaName, new Date().clearTime(), nbData)
+	}
+	
+	
+	/**
+	 * Recherche d'une meta value main et synchro de sa valeur
+	 * avec la valeur du device
+	 * Lance la préparation des metavalues depuis l'implémentation du device
+	 * Applique la formule si présente
+	 * 
+	 * @return
+	 */
+	Device processValue() {
+		def deviceImpl = newDeviceImpl()
+		deviceImpl.prepareMetaValuesForSave()
+		
+		def metaValue = metavalues?.find {
+			it.main
+		}
+		
+		if (metaValue) {
+			this.value = metaValue.value
+		}
+		
+		// insère nouvelle valeur
+		// transforme les datas si formule présente sur le device
+		if (formula) {
+			ScriptUtils.runScript(formula, [device: this])
+		}
+		
+		return this
 	}
 }

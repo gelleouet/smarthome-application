@@ -48,6 +48,7 @@ class DeviceInvokeActionRouteBuilder extends RouteBuilder {
 		from("rabbitmq://$rabbitHostname/$IN_EXCHANGE?queue=$IN_QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true&exchangeType=fanout")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
+		.filter().groovy('body.result != null')
 		// filtre uniquement les appels du service deviceService.invokeAction
 		.filter().groovy("body.serviceMethodName == 'deviceService.invokeAction'")
 		.setProperty("invokeAction").groovy('body.arg1')

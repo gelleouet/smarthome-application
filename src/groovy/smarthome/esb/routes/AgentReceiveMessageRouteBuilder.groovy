@@ -51,6 +51,6 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 		.setProperty("agent").method("agentService", "findById(property.agentId)")
 		.choice()
 		.when(simple('${property.header} == "deviceValue"')).to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
-		.when(simple('${property.header} == "deviceConfig"')).to("bean:deviceService?method=changeMetadataFromAgent(property.agent, property.datas)")
+		//.when(simple('${property.header} == "deviceConfig"')).to("bean:deviceService?method=changeMetadataFromAgent(property.agent, property.datas)")
 	}
 }

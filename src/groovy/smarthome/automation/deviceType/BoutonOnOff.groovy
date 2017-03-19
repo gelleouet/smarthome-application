@@ -1,6 +1,7 @@
 package smarthome.automation.deviceType
 
 import smarthome.automation.ChartTypeEnum;
+import smarthome.automation.DeviceValue;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
 
@@ -25,6 +26,7 @@ class BoutonOnOff extends AbstractDeviceType {
 	 */
 	@WorkflowEvent
 	def on(WorkflowContext context) {
+		device.command = "on"
 		device.value = "1"
 	}
 	
@@ -36,6 +38,7 @@ class BoutonOnOff extends AbstractDeviceType {
 	 */
 	@WorkflowEvent
 	def off(WorkflowContext context) {
+		device.command = "off"
 		device.value = "0"
 	}
 	
@@ -47,7 +50,8 @@ class BoutonOnOff extends AbstractDeviceType {
 	 */
 	@WorkflowEvent
 	def onOff(WorkflowContext context) {
-		device.value = device.value as Double == 1 ? "0" : "1"
+		device.value = DeviceValue.parseDoubleValue(device.value) == 1 ? "0" : "1"
+		device.command = device.value == "1" ? "on" : "off"
 	}
 	
 	

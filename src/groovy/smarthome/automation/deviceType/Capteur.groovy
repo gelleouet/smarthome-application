@@ -4,24 +4,13 @@ import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
 
 /**
- * Composant ZWave générique
- * Permet d'envoyer des commandes directement au device
+ * Capteur générique
  * 
  * @author gregory
  *
  */
-class Zwave extends AbstractDeviceType {
+class Capteur extends AbstractDeviceType {
 	
-	/**
-	 * Envoit une commande
-	 * 
-	 * @return
-	 */
-	@WorkflowEvent
-	def send(WorkflowContext context) {
-		
-	}
-
 	@Override
 	public Object icon() {
 		"/deviceType/signal.png"
@@ -29,6 +18,6 @@ class Zwave extends AbstractDeviceType {
 	
 	
 	def isQualitatif() {
-		return false
+		return true
 	} 
 }

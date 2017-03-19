@@ -4,6 +4,31 @@ import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 
 class DateUtils {
+	
+	static final String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+	
+	
+	/**
+	 * Parse une date au format JSON
+	 * 
+	 * @param date
+	 * @param offset en minute
+	 * @return
+	 */
+	static Date parseJson(def json, def timezoneOffset) {
+		def date = json ? Date.parse(JSON_FORMAT, json) : new Date()
+		
+		if (timezoneOffset) {
+			def offset = new TimeDuration(0, timezoneOffset.toInteger(), 0, 0)
+			use(TimeCategory) {
+				date = date - offset
+			}
+		}
+		
+		return date
+	}
+	
+	
 	/**
 	 * Formatte une date avec le format "Il y a ...."
 	 * Ex: "il y a 1 minute, il y a 1 jour, etc.

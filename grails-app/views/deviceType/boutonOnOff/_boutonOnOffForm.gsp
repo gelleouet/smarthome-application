@@ -1,3 +1,5 @@
+<h4>Configuration bouton</h4>
+
 <g:set var="labelon" value="${ device?.metadata('labelon') }"/>
 
 <g:if test="${ labelon?.id }">
@@ -29,3 +31,9 @@
 	</label>
 	<g:field type="text" name="metadatas[1].value" value="${labeloff?.value}" class="text medium-field"/>
 </div>
+
+
+<h4>Configuration périphérique</h4>
+<g:render template="/deviceType/generic/metadatasForm" 
+	model="[device: device, exclude: ['labelon', 'labeloff'], startStatus: 2, commitButton: true]"/>
+

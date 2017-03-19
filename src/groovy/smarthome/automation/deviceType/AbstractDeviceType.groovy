@@ -70,16 +70,6 @@ abstract class AbstractDeviceType {
 	
 	
 	/**
-	 * La liste des metavalues du device
-	 * 
-	 * @return Map. key = metavalue name, value = metavalue label
-	 */
-	Map metaValuesInfo() {
-		[:]
-	}
-	
-	
-	/**
 	 * Le template par défaut pour préparer les données du chart
 	 * 
 	 * @return
@@ -141,17 +131,6 @@ abstract class AbstractDeviceType {
 	 */
 	def prepareMetaValuesForSave() {
 		
-	}
-	
-	
-	/**
-	 * Indique si le device doit tracer sa valeur principale
-	 * Par défaut true. C'est à chaque device qui ne le veut pas de retourner faux
-	 * 
-	 * @return
-	 */
-	boolean isTraceValue() {
-		return true
 	}
 	
 	

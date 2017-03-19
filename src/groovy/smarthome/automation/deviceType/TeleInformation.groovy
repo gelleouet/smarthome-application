@@ -14,26 +14,6 @@ import smarthome.automation.DeviceValue;
  */
 class TeleInformation extends AbstractDeviceType {
 	/**
-	 * @see smarthome.automation.deviceType.AbstractDeviceType.metaValuesName()
-	 */
-	@Override
-	Map metaValuesInfo() {
-		[
-			'opttarif': [label: 'Option tarifaire', trace: false],
-			'ptec': [label: 'Période tarifaire', trace: false],
-			'isousc': [label: 'Instansité souscrite (A)', trace: false],
-			'imax': [label: 'Instansité maximale (A)', trace: false],
-			'hchp': [label: 'Total heures pleines (Wh)', trace: true],
-			'hchc': [label: 'Total heures creuses (Wh)', trace: true],
-			'papp': [label: 'Puissance apparente (VA)', trace: false],
-			'hcinst': [label: 'Période heures creuses (Wh)', trace: true],
-			'hpinst': [label: 'Période heures pleines (Wh)', trace: true],
-			'adps' : [label: 'Avertissement Dépassement Puissance Souscrite (A)', trace: false]
-		]
-	}
-
-	
-	/**
 	 * @see smarthome.automation.deviceType.AbstractDeviceType.chartDataTemplate()
 	 */
 	@Override
@@ -50,7 +30,7 @@ class TeleInformation extends AbstractDeviceType {
 	def prepareMetaValuesForSave() {
 		// calcul conso heure creuse sur la période
 		def hc = device.metavalue("hchc")
-		device.addMetavalue("hcinst", [value: "0"])
+		device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses (Wh)", trace: true])
 		
 		if (hc) {
 			// récupère la dernière valeur hchc
@@ -64,7 +44,7 @@ class TeleInformation extends AbstractDeviceType {
 
 		// calcul conso heure pleine sur la période
 		def hp = device.metavalue("hchp")
-		device.addMetavalue("hpinst", [value: "0"])
+		device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines (Wh)", trace: true])
 		
 		if (hp) {
 			// récupère la dernièer valeur hchc

@@ -19,6 +19,9 @@
 			        <li class="menu-item">
 			            <a href="#tabs-device-configuration">Configuration</a>
 			        </li>
+			        <li class="menu-item">
+			            <a href="#tabs-device-valeurs">Valeurs</a>
+			        </li>
 			    </ul>
 			    <div class="tabs-pane active-pane" id="tabs-device-general">
 			    	<div class="smart-tabs-content">
@@ -29,6 +32,13 @@
 			        <div id="deviceMetadatas" class="smart-tabs-content">
 						<g:if test="${ device.id }">
 							<g:render template="${ device.deviceType.newDeviceType().viewForm() }" model="[device: device]"/>
+						</g:if>			
+					</div>
+			    </div>
+			    <div class="tabs-pane" id="tabs-device-valeurs">
+			        <div id="deviceMetavalues" class="smart-tabs-content">
+						<g:if test="${ device.id }">
+							<g:render template="/deviceType/generic/metavaluesForm" model="[device: device]"/>
 						</g:if>			
 					</div>
 			    </div>

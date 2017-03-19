@@ -15,16 +15,20 @@ import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.Chronometre;
+import smarthome.core.DateUtils;
 import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
+import smarthome.rule.DeviceTypeDetectRuleService;
 import smarthome.security.User;
 
 
 class DeviceService extends AbstractService {
 
 	AgentService agentService
+	DeviceTypeDetectRuleService deviceTypeDetectRuleService
+	
 	
 	/**
 	 * Enregistrement d"un device
@@ -118,6 +122,12 @@ class DeviceService extends AbstractService {
 	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def delete(Device device) throws SmartHomeException {
+		// IMPORTANT : suppression des associations en batch sinon une requete delete par value (trop long)
+		DeviceValue.where({ device == device }).deleteAll()
+		DeviceMetadata.where({ device == device }).deleteAll()
+		DeviceMetavalue.where({ device == device }).deleteAll()
+		DeviceShare.where({ device == device }).deleteAll()
+		
 		device.delete();
 		return device
 	}
@@ -143,89 +153,22 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("Value is empty !")
 		}
 		
+		String implClass = deviceTypeDetectRuleService.execute(datas, true)
+		
+		def virtualMetas = []
 		def fetchAgent = Agent.get(agent.id)
+		def device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
+		def resultDevice = null  
 		
-		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
-		// entre changeMetadataFromAgent et changeValueFromAgent
-		def device = Device.findByMacAndAgent(datas.mac, fetchAgent, [lock: true])
 		
-		// on tente de le créer auto si on a toutes les infos
-		if (!device) {
-			def deviceType = DeviceType.findByImplClass(datas.implClass)
-			
-			if (!deviceType) {
-				throw new SmartHomeException("Type device (implClass) is empty !")
-			}
-			
-			device = new Device(agent: fetchAgent, user: fetchAgent.user, mac: datas.mac, 
-				label: datas.label ?: datas.mac, deviceType: deviceType)
-		}
-		
-		// insère nouvelle valeur
-		// transforme les datas si formule présente sur le device
-		if (device.formula) {
-			ScriptUtils.runScript(device.formula, [device: datas])
-		}
-		device.value = datas.value
-		device.dateValue = datas.dateValue ? Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", datas.dateValue) : new Date()
-		
-		// on cale la date sur le bon timezone de l'agent
-		if (datas.timezoneOffset) {
-			// le offset est en minute
-			def offset = new TimeDuration(0, datas.timezoneOffset.toInteger(), 0, 0)
-			use(TimeCategory) {
-				device.dateValue = device.dateValue - offset
-			}
-		}
-		
-		// gestion des métavalues
+		// ajout des métavalues
 		datas.metavalues?.each { key, values ->
-			device.addMetavalue(key, values)
-		}
-		
-		// on passe les méta données dans l'implémentation pour transformation ou calcul
-		try {
-			device.newDeviceImpl().prepareMetaValuesForSave()
-		} catch (Exception e) {
-			log.error("Prepare metavalues for device ${device.label}", e)
-		}
-		
-		
-		return this.save(device)
-	}
-	
-	
-	/**
-	 *
-	 * @param agent
-	 * @param datas
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	Device changeMetadataFromAgent(Agent agent, def datas) throws SmartHomeException {
-		log.info "change metadata ${datas.mac}"
-		
-		if (!datas.mac) {
-			throw new SmartHomeException("Mac is empty !")
-		}
-		
-		def fetchAgent = Agent.get(agent.id)
-		
-		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
-		// entre changeMetadataFromAgent et changeValueFromAgent
-		def device = Device.findByMacAndAgent(datas.mac, fetchAgent, [lock: true])
-		
-		// on tente de le créer auto si on a toutes les infos
-		if (!device) {
-			def deviceType = DeviceType.findByImplClass(datas.implClass)
+			def meta = device.addMetavalue(key, values)
 			
-			if (!deviceType) {
-				throw new SmartHomeException("Type device (implClass) is empty !")
+			// on tri les metas pour savoir si on doit créer des devices virtuels
+			if (meta.virtualDevice) {
+				virtualMetas << meta
 			}
-			
-			device = new Device(agent: fetchAgent, user: fetchAgent.user, mac: datas.mac,
-				label: datas.label ?: datas.mac, deviceType: deviceType)
 		}
 		
 		// gestion des metadatas
@@ -233,7 +176,72 @@ class DeviceService extends AbstractService {
 			device.addMetadata(key, values)
 		}
 		
-		return this.save(device)
+		// gestion des devices virtuels associés aux metas virtuels
+		processVirtualMetas(device, virtualMetas)
+		
+		// si toutes les valeurs envoyées dans metavalue sont des  virtuelMeta
+		// alors on ne touche pas au device principal mais on met à jour seulement les devices virtuels
+		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
+			device.value = datas.value
+			device.dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
+			device.processValue()
+			resultDevice = device
+		}
+		
+		// dans tous les cas faut enregistrer car il faut quand même enregistrer les valeurs des meta
+		// même si elles sont virtuelles
+		this.save(device)
+		
+		// retourner null désactive le déclenchement des historisations sur le device
+		return resultDevice
+	}
+	
+	
+	/**
+	 * Recherche ou création d'un device
+	 */
+	private Device findOrCreateDevice(Agent agent, String mac, String label, String implClass) throws SmartHomeException {
+		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
+		def device = Device.findByMacAndAgent(mac, agent, [lock: true])
+		
+		// on tente de le créer auto si on a toutes les infos
+		if (!device) {
+			def deviceType = DeviceType.findByImplClass(implClass)
+			
+			if (!deviceType) {
+				throw new SmartHomeException("Type device (implClass) is empty or not found : ${implClass}")
+			}
+			
+			device = new Device(agent: agent, user: agent.user, mac: mac,
+				label: label ?: mac, deviceType: deviceType)
+		}
+		
+		return device
+	} 
+	
+	
+	/**
+	 * Gestion des metas virtuelles. On doit créer un device associé à la méta
+	 * avec sa propre valeur
+	 * 
+	 */
+	private void processVirtualMetas(Device device, List metas) throws SmartHomeException {
+		metas?.each {
+			def virtualDevice = findOrCreateDevice(device.agent, "${device.mac}-${it.name}",
+				"${it.label}  -> ${device.label}",
+				device.deviceType.implClass) 
+			
+			virtualDevice.value = it.value
+			virtualDevice.dateValue = device.dateValue
+			virtualDevice.processValue()
+			
+			this.save(virtualDevice)
+			
+			// envoi d'un message AMQP manuellement pour relancer toutes les actions sur les
+			// devices virtuels
+			this.sendAsynchronousMessage("smarthome.automation.deviceService.changeValue", "", 
+				[result: virtualDevice], ExchangeType.FANOUT)
+		}	
 	}
 	
 	
@@ -290,8 +298,8 @@ class DeviceService extends AbstractService {
 		def deviceType = device.newDeviceImpl()
 		doubleValue = DeviceValue.parseDoubleValue(device.value)
 		
-		// ne trace que si activé sur le device
-		if (doubleValue != null && deviceType.isTraceValue() ) {
+		// trace la valeur principale du device
+		if (doubleValue != null) {
 			value = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
 			
 			if (!value.save()) {
@@ -299,17 +307,18 @@ class DeviceService extends AbstractService {
 			}
 		}
 		
-		// enregistrement des valeurs spécifiques
+		// trace les metavalues 
 		device.metavalues?.each {
 			if (it.value) {
-				def metaValuesInfo = deviceType.metaValuesInfo()
-				
-				// verifie si le trace est activé pour la metavalue
-				if (metaValuesInfo && metaValuesInfo[it.name] && metaValuesInfo[it.name].trace) {
+				// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
+				// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
+				// sinon on regarde si activée au niveau meta
+				if (it.trace && !it.main && !it.virtualDevice) {
 					doubleValue = DeviceValue.parseDoubleValue(it.value)
 					
 					if (doubleValue != null) {
-						value = new DeviceValue(device: device, name: it.name, value: doubleValue, dateValue: device.dateValue)
+						value = new DeviceValue(device: device, name: it.name, value: doubleValue,
+							dateValue: device.dateValue)
 						
 						if (!value.save()) {
 							throw new SmartHomeException("Erreur trace meta valeur !", value)

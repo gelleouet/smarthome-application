@@ -23,11 +23,12 @@
            	</a>
 		</g:if>
 		
-		<g:if test="${ metadata.help }">
-			<div class="description"><span class="aui-icon icon-help">help</span> ${ metadata.help }</div>
-		</g:if>
 		<g:if test="${ metadata.values }">
-			<div class="description"><strong>Valeurs : ${ metadata.values }</strong></div>
+			<div class="description"><strong><ul>
+				<g:each var="value" in="${ metadata.values.split('##')  }" status="valueStatus">
+					<li>${ valueStatus } : ${ value }</li>
+				</g:each>
+			</ul></strong></div>
 		</g:if>
 	</div>
 

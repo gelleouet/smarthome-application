@@ -1,6 +1,8 @@
+<%@ page import="smarthome.automation.DeviceValue"  %>
+
 <g:set var="labelon" value="${ device?.metadata('labelon') }"/>
 <g:set var="labeloff" value="${ device?.metadata('labeloff') }"/>
-<g:set var="value" value="${  device.value as Double }"/>
+<g:set var="value" value="${  DeviceValue.parseDoubleValue(device.value) }"/>
 
 <g:set var="libelleOn" value="${ labelon?.value ?: 'On' }"/>
 <g:set var="libelleOff" value="${ labeloff?.value ?: 'Off' }"/>

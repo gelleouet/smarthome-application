@@ -18,6 +18,20 @@ class DeviceMetavalue {
 	String value
 	String type
 	
+	/*
+	 * sa valeur sera la valeur principale du device
+	 */
+	boolean main = false
+	/*
+	 *  la valeur doit être historisée à chaque changement 
+	 */
+	boolean trace = false
+	/*
+	 * la valeur devient un device virtuel (enregistrée dans un autre device sous son nom)
+	 */
+	boolean virtualDevice = false
+		
+	
 	
     static constraints = {
 		value nullable: true;
