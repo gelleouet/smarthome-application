@@ -37,7 +37,7 @@
 		<li>Principale : cette valeur sera synchronisée sur la valeur principale de l'objet. Il n'y pas besoin d'activer l'historisation
 			car la valeur principale de l'objet est toujours historisée</li>
 		<li>Historisation : conserve un historique de toutes les valeurs de l'objet. Sinon seule la dernière valeur est conservée</li>
-		<li>Object séparé : utile pour synchroniser la valeur dans un autre objet (Ex : objet connecté avec plusieurs capteurs)</li>
+		<li>Objet séparé : utile pour synchroniser la valeur dans un autre objet (Ex : objet connecté avec plusieurs capteurs)</li>
 	</ul>
 </h6>
 
