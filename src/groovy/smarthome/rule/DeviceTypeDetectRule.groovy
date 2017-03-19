@@ -30,18 +30,17 @@ class DeviceTypeDetectRule implements Rule<Object, String> {
 	@Override
 	String execute(Object datas) throws SmartHomeException {
 		String implClass = datas?.implClass
-		String detectImpl
 		
 		if (datas.label) {
-			detectImpl = IMPL.find { key, value ->
+			def detectImpl = IMPL.find { key, value ->
 				datas.label.toLowerCase().contains(key)
+			}
+			
+			if (detectImpl) {
+				return detectImpl.value
 			}
 		}
 		
-		if (detectImpl) {
-			return detectImpl
-		} else {
-			return implClass ?: "smarthome.automation.deviceType.Capteur"
-		}
+		return implClass ?: "smarthome.automation.deviceType.Capteur"
 	}
 }
