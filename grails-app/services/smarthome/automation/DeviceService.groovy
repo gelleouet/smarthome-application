@@ -160,6 +160,9 @@ class DeviceService extends AbstractService {
 		def device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
 		def resultDevice = null  
 		
+		// bien metre à jour la date avant toutes les autres instructions
+		device.dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
+		
 		
 		// ajout des métavalues
 		datas.metavalues?.each { key, values ->
@@ -183,7 +186,6 @@ class DeviceService extends AbstractService {
 		// alors on ne touche pas au device principal mais on met à jour seulement les devices virtuels
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
 			device.value = datas.value
-			device.dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
 			device.processValue()
 			resultDevice = device
 		}
