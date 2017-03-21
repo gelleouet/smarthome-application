@@ -20,6 +20,7 @@ import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
+import smarthome.core.TransactionUtils;
 import smarthome.rule.DeviceTypeDetectRuleService;
 import smarthome.security.User;
 
@@ -239,10 +240,9 @@ class DeviceService extends AbstractService {
 			
 			this.save(virtualDevice)
 			
-			// envoi d'un message AMQP manuellement pour relancer toutes les actions sur les
-			// devices virtuels
-			this.sendAsynchronousMessage("smarthome.automation.deviceService.changeValue", "", 
-				[result: virtualDevice], ExchangeType.FANOUT)
+			// envoi d'un message AMQP manuellement pour relancer toutes les actions sur les devices virtuels
+			this.asyncSendMessage("smarthome.automation.deviceService.changeValue", "",
+					[result: virtualDevice], ExchangeType.FANOUT)
 		}	
 	}
 	

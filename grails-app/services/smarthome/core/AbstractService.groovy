@@ -36,6 +36,11 @@ abstract class AbstractService {
 	
 	
 	/**
+	 * IMPORTANT : ne jamais appeler directement cette méthode car peut y avoir des problèmes 
+	 * en mode transaction (la session n'est pas flushée avant envoi des messages et au niveau
+	 * des consumers, les données ne seront pas à jour)
+	 * Depuis service : utiliser asyncSendMessage
+	 * 
 	 * Envoi d'un message asynchrone AMQP.
 	 * Avant d'envoyer le message, on déclare la queue avec les options par défaut :
 	 * durable: true
@@ -77,6 +82,25 @@ abstract class AbstractService {
 			log.error("Envoi message", ex)
 			// conversion de l'exception pour déclencher les rollback de transaction en cas d'erreur
 			throw new SmartHomeException(ex)
+		}
+	}
+	
+	
+	/**
+	 * Méthode à utiliser pour envoyer des messages manuellement depuis un service
+	 * En mode transaction, le message ne sera envoyé qu'arpès le commit
+	 * En lecture seule, le message est envoyé immédiatement
+	 * 
+	 * @param exchangeName
+	 * @param routingKey
+	 * @param message
+	 * @param exchangeType
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	void asyncSendMessage(String exchangeName, String routingKey, Object message, ExchangeType exchangeType) throws SmartHomeException {
+		TransactionUtils.executeAfterCommit {
+			sendAsynchronousMessage(exchangeName, routingKey, message, exchangeType)
 		}
 	}
 	
