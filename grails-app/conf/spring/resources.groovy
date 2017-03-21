@@ -49,4 +49,7 @@ beans = {
 		roleHierarchy = ref('roleHierarchy')
 		permissionEvaluator = ref('permissionEvaluator')
 	}
+	
+	// juste utilisé pour injecter le context dans variable static accessible depuis n'importe où
+	applicationUtils(smarthome.core.ApplicationUtils)
 }

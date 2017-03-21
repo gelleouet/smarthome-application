@@ -1,9 +1,12 @@
 <html>
 <head>
 <meta name='layout' content='authenticated' />
+<asset:stylesheet src="xterm.css"/>
+<asset:javascript src="xterm.js"/>
+<asset:javascript src="xterm-attach.js"/>
 </head>
 
-<body>
+<body onload="onLoadAgents()">
 	<g:applyLayout name="applicationConfigure">
 	
 		<div class="aui-toolbar2">
@@ -34,6 +37,8 @@
 		</h4>
 		
 		<br/>
+		
+		<div id="xterm-color"></div>
 		
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>

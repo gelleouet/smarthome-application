@@ -12,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ClassUtils;
+import smarthome.core.EndPointUtils;
 import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException;
+import smarthome.endpoint.AgentEndPoint;
+import smarthome.endpoint.AgentEndPointMessage;
 import smarthome.security.User;
 
 
@@ -213,12 +216,7 @@ class AgentService extends AbstractService {
 		
 		// on y glisse l'url du websocket en gérant le SSL ou pas
 		def urlApplication = grailsLinkGenerator.link(uri: AgentEndPoint.URL, absolute: true)
-		
-		if (urlApplication.startsWith('https')) {
-			agentToken.websocketUrl = urlApplication.replace('https', 'wss')
-		} else {
-			agentToken.websocketUrl = urlApplication.replace('http', 'ws')
-		}
+		agentToken.websocketUrl = EndPointUtils.httpToWs(urlApplication)
 		
 		return agentToken
 	}
@@ -400,7 +398,8 @@ class AgentService extends AbstractService {
 	 */
 	def sendMessageToWebsocket(String token, String websocketKey, String message) throws SmartHomeException {
 		log.info "Send message to websocket token ${token}"
-		AgentEndPoint.sendMessage(token, websocketKey, message)
+		AgentEndPoint endPoint = EndPointUtils.newEndPoint(AgentEndPoint)
+		endPoint.sendMessage(token, websocketKey, message)
 	}
 	
 	

@@ -1,14 +1,13 @@
-import smarthome.automation.AgentEndPoint
+import grails.util.Environment
+import smarthome.core.EndPointUtils
 
 class BootStrap {
 
 	// auto-inject
-	def grailsApplication
 	def smarthomeScheduler
 	
 	def init = { servletContext ->
-		// démarre le websocket
-		AgentEndPoint.register(grailsApplication, servletContext)
+		EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
 		
 		// démarre le gestionnaire de cron
 		smarthomeScheduler.start()
