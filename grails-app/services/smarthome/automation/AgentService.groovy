@@ -408,7 +408,6 @@ class AgentService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	def sendMessageToWebsocket(String token, String websocketKey, String message) throws SmartHomeException {
-		log.info "Send message to websocket token ${token}"
 		AgentEndPoint endPoint = EndPointUtils.newEndPoint(AgentEndPoint)
 		endPoint.sendMessage(token, websocketKey, message)
 	}
