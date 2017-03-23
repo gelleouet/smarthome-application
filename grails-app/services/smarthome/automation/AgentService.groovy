@@ -341,8 +341,6 @@ class AgentService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage()
 	def receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
-		log.info "Receive message from agent token ${agentToken.token}..."
-		
 		if (! message.data) {
 			throw new SmartHomeException("Data is empty !")
 		}
@@ -367,8 +365,6 @@ class AgentService extends AbstractService {
 	 */
 	//@Transactional(propagation = Propagation.REQUIRES_NEW)
 	def sendMessage(Agent agent, Map data) throws SmartHomeException {
-		log.info "send message to agent ${agent.mac}"
-		
 		if (!agent.attached) {
 			agent.attach()
 		}

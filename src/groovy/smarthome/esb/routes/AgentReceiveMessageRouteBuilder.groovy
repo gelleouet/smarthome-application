@@ -58,6 +58,6 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 			.to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
 		.when(simple('${property.header} == "shell"'))
 			.marshal().json(JsonLibrary.Gson)
-			.to("rabbitmq://$rabbitHostname/${SHELL}?username=$rabbitUsername&password=$rabbitPassword&declare=false&exchangeType=fanout&bridgeEndpoint=true")
+			.to("rabbitmq://$rabbitHostname/${SHELL}?username=$rabbitUsername&password=$rabbitPassword&automaticRecoveryEnabled=true&declare=false&exchangeType=fanout&bridgeEndpoint=true")
 	}
 }
