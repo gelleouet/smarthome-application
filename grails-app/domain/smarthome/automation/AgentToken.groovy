@@ -45,7 +45,7 @@ class AgentToken {
 	 * 
 	 * @return
 	 */
-	def hasExpired() {
+	boolean hasExpired() {
 		!dateExpiration || dateExpiration < new Date()
 	}
 	

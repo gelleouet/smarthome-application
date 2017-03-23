@@ -1,3 +1,6 @@
+<%@ page import="smarthome.endpoint.ShellEndPoint" %>
+<%@ page import="smarthome.core.EndPointUtils" %>
+
 <html>
 <head>
 <meta name='layout' content='authenticated' />
@@ -38,7 +41,8 @@
 		
 		<br/>
 		
-		<div id="xterm-color"></div>
+		<div id="xterm-color" data-endpoint-url="${ EndPointUtils.httpToWs(g.createLink(uri: ShellEndPoint.URL, absolute: true)) }">
+		</div>
 		
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
@@ -92,6 +96,10 @@
 					            	<g:link class="aui-button confirm-button" title="Reset" action="resetConfig" id="${ bean.id }">
 					            		<span class="aui-icon aui-icon-small aui-iconfont-bp-troubleshooting"></span> Reset
 					            	</g:link>
+					            	
+					            	<a onclick="connectAgent(${ bean.id})" id="connect-agent-button" class="aui-button" title="Connexion">
+					            		<span class="aui-icon aui-icon-small aui-iconfont-blogroll"></span> Connexion
+					            	</a>
 								</div>
 							</div>
 			            </td>

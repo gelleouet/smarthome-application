@@ -53,12 +53,13 @@ class AgentController extends AbstractController {
 	 */
 	@NavigableAction(label = "Agents", navigation = NavigationEnum.configuration)
 	def agents(String agentSearch) {
-		def agents = agentService.listByUser(agentSearch, principal.id, this.getPagination([:]))
+		def user = authenticatedUser
+		def agents = agentService.listByUser(agentSearch, user.id, this.getPagination([:]))
 		def recordsTotal = agents.totalCount
 
 		// agents est accessible depuis le model avec la variable agent[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond agents, model: [recordsTotal: recordsTotal, agentSearch: agentSearch]
+		respond agents, model: [recordsTotal: recordsTotal, agentSearch: agentSearch, user: user]
 	}
 	
 	

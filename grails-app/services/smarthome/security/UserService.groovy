@@ -21,6 +21,29 @@ class UserService extends AbstractService {
 
 
 	/**
+	 * Authentification d'une application
+	 * 
+	 * @param userName
+	 * @param applicationId
+	 * @return
+	 */
+	User authenticateApplication(String userName, String applicationId) throws SmartHomeException {
+		// recherche user
+		User user = User.findByUsername(userName)
+		
+		if (!user) {
+			throw new SmartHomeException("Invalid username !")
+		}
+		
+		if (user.applicationKey != applicationId) {
+			throw new SmartHomeException("Invalid applicationId !")
+		}
+		
+		return user
+	}
+	
+	
+	/**
 	 * Enregistrement du profil. 
 	 * Détecte si changement de username (ie email) pour envoyer un mail de confirmation.
 	 * 

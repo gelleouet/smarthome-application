@@ -94,7 +94,7 @@ class AgentEndPoint {
 	
 	
 	@OnMessage
-	void message(Session session, String text) {
+	void onMessage(Session session, String text) {
 		// conversion en JSON et traitement du message
 		try {
 			AgentEndPointMessage message = AgentEndPointMessage.newInstance(JSON.parse(text))
@@ -142,7 +142,7 @@ class AgentEndPoint {
 
 	@OnError
 	void onError(Session session, Throwable throwable) {
-		log.info "websocket onerror"
+		log.error "websocket onerror"
 		closeSession(session)
 	}
 	

@@ -18,6 +18,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':                ['permitAll'],
 	'/grails-errorhandler':			  ['permitAll'],
 	'/websocket/**':		  		  ['permitAll'],
+	'/shell-endpoint/**':		  	  ['permitAll'],
 	'/j_spring_security_switch_user': ["hasRole('ROLE_ADMIN')"],
 	'/j_spring_security_exit_user':   ["isAuthenticated()"],
 	'/j_spring_security_logout':   	  ["permitAll"]

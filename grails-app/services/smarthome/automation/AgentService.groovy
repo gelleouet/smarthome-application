@@ -18,7 +18,9 @@ import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.endpoint.AgentEndPoint;
 import smarthome.endpoint.AgentEndPointMessage;
+import smarthome.endpoint.ShellEndPoint;
 import smarthome.security.User;
+import smarthome.security.UserService;
 
 
 class AgentService extends AbstractService {
@@ -28,6 +30,8 @@ class AgentService extends AbstractService {
 	
 	// auto inject
 	def grailsApplication
+	
+	UserService userService
 	
 	
 	/**
@@ -99,6 +103,25 @@ class AgentService extends AbstractService {
 	
 	
 	/**
+	 * Charge un agent pour un utilisateur et vérifie autorisation
+	 * 
+	 * @param userId
+	 * @param agentId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Agent authorize(Long userId, Long agentId) throws SmartHomeException {
+		Agent agent	= Agent.read(agentId)
+		
+		if (agent.user.id != userId) {
+			throw new SmartHomeException("Droits insuffisants pour cet agent !")
+		}
+		
+		return agent
+	}
+	
+	
+	/**
 	 * Démarre l'association automatique (inclusion ou exclusion) de nouveaux devices sur un agent
 	 * 
 	 * @param agent
@@ -156,16 +179,7 @@ class AgentService extends AbstractService {
 	def subscribe(Agent agent, String username, String applicationKey) throws SmartHomeException {
 		log.info("agent subscribe for user ${username}")
 		
-		// recherche user
-		def user = User.findByUsername(username)
-		
-		if (!user) {
-			throw new SmartHomeException("User not found !")
-		}
-		
-		if (user.applicationKey != applicationKey) {
-			throw new SmartHomeException("Application key not valid !")
-		}
+		def user = userService.authenticateApplication(username, applicationKey)
 		
 		// recherche d'un agent en fonction mac
 		def domainAgent = Agent.findByMacAndUser(agent.mac, user)
@@ -375,7 +389,8 @@ class AgentService extends AbstractService {
 		
 		// prépare le message avec les infos de connexion pour permette aussi à l'agent d'authentifier les messages recus
 		AgentEndPointMessage message = new AgentEndPointMessage(mac: agent.mac, token: token.token, 
-			username: agent.user.username, applicationKey: agent.user.applicationKey, data: data, websocketKey: token.websocketKey)
+			username: agent.user.username, applicationKey: agent.user.applicationKey, data: data, 
+			websocketKey: token.websocketKey)
 		
 		// il faut envoyer le message au bon serveur dans la bonne Queue 
 		// on se sert du serverId qu'on passe en routingKey
@@ -400,6 +415,17 @@ class AgentService extends AbstractService {
 		log.info "Send message to websocket token ${token}"
 		AgentEndPoint endPoint = EndPointUtils.newEndPoint(AgentEndPoint)
 		endPoint.sendMessage(token, websocketKey, message)
+	}
+	
+	
+	/**
+	 * Envoi d'un message à tous les websockets liés au shell pour la remontée des datas de l'agent
+	 * 
+	 * @param datas
+	 */
+	void shellMessage(Agent agent, def datas) {
+		ShellEndPoint endPoint = EndPointUtils.newEndPoint(ShellEndPoint)
+		endPoint.sendMessage(agent, datas)
 	}
 	
 	

@@ -25,7 +25,8 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 	private static final log = LogFactory.getLog(this)
 	
 	final String EXCHANGE = "amq.direct"
-	final String QUEUE = "smarthome.automation.agentService.receiveMessage"
+	final String SHELL = "smarthome.automation.agentService.shellMessage"
+	final String RECEIVE = "smarthome.automation.agentService.receiveMessage"
 	
 	
 	@Autowired
@@ -40,17 +41,23 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
 
+		// IMPORTANT : utiliser bridgeEndpoint=true sur le endpoint final RabbitMQ sinon,
+		// ca tourne en boucle sur la route
+		
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
+		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$RECEIVE&routingKey=$RECEIVE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		// extrait les options et les datas
 		.setProperty("header").groovy('body.arg0.data.header')
-		.setProperty("datas").groovy('body.arg0.data')
-		.setProperty("agentId").groovy('body.result.id')
-		.setProperty("agent").method("agentService", "findById(property.agentId)")
 		.choice()
-		.when(simple('${property.header} == "deviceValue"')).to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
-		//.when(simple('${property.header} == "deviceConfig"')).to("bean:deviceService?method=changeMetadataFromAgent(property.agent, property.datas)")
+		.when(simple('${property.header} == "deviceValue"'))
+			.setProperty("datas").groovy('body.arg0.data')
+			.setProperty("agentId").groovy('body.result.id')
+			.setProperty("agent").method("agentService", "findById(property.agentId)")
+			.to("bean:deviceService?method=changeValueFromAgent(property.agent, property.datas)")
+		.when(simple('${property.header} == "shell"'))
+			.marshal().json(JsonLibrary.Gson)
+			.to("rabbitmq://$rabbitHostname/${SHELL}?username=$rabbitUsername&password=$rabbitPassword&declare=false&exchangeType=fanout&bridgeEndpoint=true")
 	}
 }
