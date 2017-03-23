@@ -7,8 +7,10 @@ class BootStrap {
 	def smarthomeScheduler
 	
 	def init = { servletContext ->
-		EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
-		EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
+		if (Environment.current == Environment.DEVELOPMENT) {
+			EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
+			EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
+		}
 		
 		// démarre le gestionnaire de cron
 		smarthomeScheduler.start()
