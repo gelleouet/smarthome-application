@@ -121,6 +121,13 @@ class AgentEndPoint {
 					}
 					
 					agentService.receiveMessage(message, agentToken)
+					
+					// ferme la session si le token a expiré
+					// On traite quand même le message (sinon perte info) donc on lance l'erreur
+					// après la réception du message
+					if (agentToken.hasExpired()) {
+						throw new SmartHomeException("Token has expired !")
+					}
 				}
 			} else {
 				// session est fermée direct car pas de token

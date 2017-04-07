@@ -340,16 +340,12 @@ class AgentService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage()
-	def receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
+	Agent receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
 		if (! message.data) {
 			throw new SmartHomeException("Data is empty !")
 		}
 		
-		if (agentToken.hasExpired()) {
-			throw new SmartHomeException("Token has expired !")
-		}
-		
-		agentToken.agent
+		return agentToken.agent
 	}
 	
 	
@@ -379,9 +375,11 @@ class AgentService extends AbstractService {
 			throw new SmartHomeException("Websocket not bind !")
 		}
 		
-		if (token.hasExpired()) {
-			throw new SmartHomeException("Token has expired !")
-		}
+		// IMPORTANT : ne pas bloquer message si token expired car on peut perdre des messages
+		// l'expiration d'un token est géré à la réception d'un message
+//		if (token.hasExpired()) {
+//			throw new SmartHomeException("Token has expired !")
+//		}
 		
 		// prépare le message avec les infos de connexion pour permette aussi à l'agent d'authentifier les messages recus
 		AgentEndPointMessage message = new AgentEndPointMessage(mac: agent.mac, token: token.token, 
