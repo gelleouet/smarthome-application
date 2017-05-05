@@ -22,7 +22,7 @@ class Chart {
 	
 	
     static constraints = {
-		groupe nullable: true
+		
     }
 	
 	static mapping = {

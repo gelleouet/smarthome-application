@@ -44,8 +44,6 @@
 					<g:else>
 						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
 					</g:else>
-					
-					<g:link action="charts" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 		</g:form>

@@ -4,6 +4,24 @@
 </head>
 
 <body>
+
+	<nav class="aui-navgroup aui-navgroup-horizontal">
+	    <div class="aui-navgroup-inner">
+	        <div class="aui-navgroup-primary">
+	            <ul class="aui-nav">
+	                <li><g:link action="devicesGrid" controller="device" params="[favori: true]">Favoris</g:link></li>
+	                <li><g:link action="devicesGrid" controller="device" params="[sharedDevice: true]">Partagés</g:link></li>
+	                <g:each var="tableauBord" in="${ tableauBords }">
+						<li>
+							<g:link action="devicesGrid" controller="device" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>
+						</li>	                
+	                </g:each>
+	            </ul>
+	        </div><!-- .aui-navgroup-primary -->
+	    </div><!-- .aui-navgroup-inner -->
+	</nav>
+
+
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 		<div class="aui-group">
 			<div class="aui-item responsive" style="width:350px">

@@ -27,7 +27,7 @@
 		<h4>
 			<g:form class="aui" action="charts">
 				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="chartSearch" value="${ chartSearch }"/>
+					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="search" value="${ command.search }"/>
 				</fieldset>
 			</g:form>
 		</h4>

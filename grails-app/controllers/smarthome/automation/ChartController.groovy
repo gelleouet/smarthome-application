@@ -18,21 +18,6 @@ class ChartController extends AbstractController {
 	
 	ChartService chartService
 	
-	/**
-	 * Affichage paginé avec fonction recherche
-	 *
-	 * @return
-	 */
-	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.configuration)
-	def charts(String chartSearch) {
-		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))
-		def recordsTotal = charts.totalCount
-
-		// charts est accessible depuis le model avec la variable chart[Instance]List
-		// @see grails.scaffolding.templates.domainSuffix
-		respond charts, model: [recordsTotal: recordsTotal, chartSearch: chartSearch]
-	}
-	
 	
 	/**
 	 * Affichage en grille
@@ -40,13 +25,20 @@ class ChartController extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.navbarPrimary)
-	def chartsGrid(String chartSearch) {
-		def charts = chartService.listByUser(chartSearch, principal.id, this.getPagination([:]))
+	def chartsGrid(ChartSearchCommand command) {
+		def groupes = chartService.listGroupes(principal.id)
+		// sélection du 1er groupe si rien de préciser
+		if (!command.groupe && groupes) {
+			command.groupe = groupes[0]
+		}
+		def charts = chartService.listByUser(command, principal.id, this.getPagination([:]))
+		def timesAgo = chartService.timesAgo()
 		def recordsTotal = charts.totalCount
 
 		// charts est accessible depuis le model avec la variable chart[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond charts, model: [recordsTotal: recordsTotal, chartSearch: chartSearch]
+		respond charts, model: [recordsTotal: recordsTotal, command: command, groupes: groupes,
+			timesAgo: timesAgo]
 	}
 	
 	
@@ -148,7 +140,7 @@ class ChartController extends AbstractController {
 	def saveEdit(Chart chart) {
 		checkErrors(this, chart)
 		chartService.save(chart)
-		redirect(action: COMMAND_NAME + 's')
+		redirect(action: 'chartsGrid', params: [groupe: chart.groupe])
 	}
 
 
@@ -164,7 +156,7 @@ class ChartController extends AbstractController {
 		chart.validate() // important car les erreurs sont traitées lors du binding donc le chart.user sort en erreur
 		checkErrors(this, chart)
 		chartService.save(chart)
-		redirect(action: COMMAND_NAME + 's')
+		redirect(action: 'chartsGrid', params: [groupe: chart.groupe])
 	}
 	
 	
@@ -176,7 +168,7 @@ class ChartController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "charts", modelName = "")
 	def delete(Chart chart) {
 		chartService.delete(chart)
-		redirect(action: 'charts')
+		redirect(action: 'chartsGrid', params: [groupe: chart.groupe])
 	}
 	
 	

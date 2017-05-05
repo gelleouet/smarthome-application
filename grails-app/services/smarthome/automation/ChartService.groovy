@@ -30,20 +30,24 @@ class ChartService extends AbstractService {
 	/**
 	 * Charts user
 	 * 
-	 * @param chartSearch
+	 * @param command
 	 * @param userId
 	 * @param pagination
 	 * @return
 	 */
-	List<Chart> listByUser(String chartSearch, Long userId, Map pagination) {
+	List<Chart> listByUser(ChartSearchCommand command, Long userId, Map pagination) {
 		Chart.createCriteria().list(pagination) {
 			user {
 				idEq(userId)
 			}
 			
-			if (chartSearch) {
-				ilike 'label', QueryUtils.decorateMatchAll(chartSearch)
+			if (command.search) {
+				ilike 'label', QueryUtils.decorateMatchAll(command.search)
 			}
+			if (command.groupe) {
+				eq 'groupe', command.groupe
+			}
+			order "label"
 		}
 	}
 	
@@ -132,7 +136,7 @@ class ChartService extends AbstractService {
 	 * @return
 	 */
 	def timesAgo() {
-		[24: '24 heures', 168: '1 semaine', 744: '1 mois', 8760: '1 an']
+		[24: 'jour', 168: 'semaine', 744: 'mois', 8760: 'an']
 	}
 	
 	
@@ -143,6 +147,23 @@ class ChartService extends AbstractService {
 	 */
 	def defaultTimeAgo() {
 		return 24
+	}
+	
+	
+	/**
+	 * Calcul des groupes
+	 *
+	 * @return
+	 */
+	List<String> listGroupes(long userId) {
+		return Chart.createCriteria().list {
+			isNotNull 'groupe'
+			eq 'user.id', userId
+			projections {
+				groupProperty 'groupe'
+			}
+			order 'groupe'
+		}
 	}
 	
 }
