@@ -13,12 +13,8 @@
 			<span class="aui-icon aui-icon-small aui-iconfont-edit"></span>
 		</g:link>
 		
-		<g:link class="aui-button aui-button-subtle" controller="device" action="chartView" id="${ device.id }" title="Graphique">
+		<g:link class="aui-button aui-button-subtle" controller="device" action="deviceChart" params="['device.id': device.id]" title="Graphique">
 			<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span>
-		</g:link>
-
-		<g:link class="aui-button aui-button-subtle" controller="device" action="deviceView" id="${ device.id }" title="Voir">
-			<span class="aui-icon aui-icon-small aui-iconfont-view"></span>
 		</g:link>
 	</div>
 </div>

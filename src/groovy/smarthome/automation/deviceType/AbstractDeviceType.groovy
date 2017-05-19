@@ -49,17 +49,6 @@ abstract class AbstractDeviceType {
 
 	
 	/**
-	 * Nom de la vue pour saisie des options
-	 * 
-	 * @return
-	 */
-	final def viewFilActualite() {
-		"/deviceType/${name}/${name}Fil"
-	}
-	
-	
-	
-	/**
 	 * Nom de l'image à associer au device
 	 * 
 	 * @return

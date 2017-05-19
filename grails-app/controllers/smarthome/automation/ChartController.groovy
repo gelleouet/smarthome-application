@@ -1,15 +1,13 @@
 package smarthome.automation
 
-
-
 import smarthome.core.AbstractController;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
-
 import org.springframework.security.access.annotation.Secured;
+
 
 @Secured("isAuthenticated()")
 class ChartController extends AbstractController {
@@ -32,13 +30,11 @@ class ChartController extends AbstractController {
 			command.groupe = groupes[0]
 		}
 		def charts = chartService.listByUser(command, principal.id, this.getPagination([:]))
-		def timesAgo = chartService.timesAgo()
 		def recordsTotal = charts.totalCount
 
 		// charts est accessible depuis le model avec la variable chart[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond charts, model: [recordsTotal: recordsTotal, command: command, groupes: groupes,
-			timesAgo: timesAgo]
+		respond charts, model: [recordsTotal: recordsTotal, command: command, groupes: groupes]
 	}
 	
 	
@@ -56,29 +52,6 @@ class ChartController extends AbstractController {
 	
 	
 	/**
-	 * Construction d'un graphique
-	 *
-	 * @param chart
-	 * @return
-	 */
-	
-	def chartView(Chart chart, Long sinceHour, Long offsetHour) {
-		chartService.edit(chart)
-		def timesAgo = chartService.timesAgo()
-		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
-		offsetHour = offsetHour ?: 0
-		
-		// calcul plage date
-		def period = DateUtils.durationToDates(sinceHour, offsetHour)
-		def datas = chartService.values(chart, period.start, period.end)
-		
-		render(view: 'chartView', model: [chart: chart, timesAgo: timesAgo, sinceHour: sinceHour, datas: datas,
-			chartType: ChartTypeEnum.valueOf(chart.chartType), offsetHour: offsetHour,
-			startDate: period.start, endDate: period.end])
-	}
-	
-	
-	/**
 	 * Rendu du graphique sans les menus autour
 	 * 
 	 * @param chart
@@ -87,7 +60,7 @@ class ChartController extends AbstractController {
 	 */
 	def chartPreview(Chart chart, Long sinceHour, Long offsetHour) {
 		chartService.edit(chart)
-		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
+		sinceHour = 24
 		offsetHour = offsetHour ?: 0
 		
 		// calcul plage date

@@ -333,11 +333,13 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
-	 * Charge les valeurs du device depuis sinceHour
+	 * Charge les valeurs du device sur une période
 	 * 
 	 * @param device
-	 * @param sinceHour
+	 * @param start
+	 * @param end
 	 * @param name
+	 * @param projection
 	 * @return
 	 * @throws SmartHomeException
 	 */

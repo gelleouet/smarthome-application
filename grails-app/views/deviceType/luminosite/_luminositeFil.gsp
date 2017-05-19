@@ -1,1 +1,0 @@
-<span class="label">Valeur : ${value.value.toLong() }LUX</span>

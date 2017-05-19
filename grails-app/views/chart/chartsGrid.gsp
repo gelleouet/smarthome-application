@@ -27,7 +27,9 @@
 	        	<g:form class="aui">
 	        		<g:hiddenField name="timeAgo" value="${ command.timeAgo }"/>
 		        	<div class="aui-buttons">
-		        		<g:field type="date" name="dateChart" style="font-family: inherit; padding: 4px 5px;" class="aui-date-picker" value="${ app.formatPicker(date: command.dateChart) }" required="true"/>
+		        		<button class="aui-button" onclick="chartPrev();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-left">View</span></button>
+		        		<g:field type="date" name="dateChart" style="font-family: inherit; padding: 4px 5px; height:2.14285714em;" class="aui-date-picker" value="${ app.formatPicker(date: command.dateChart) }" required="true"/>
+		        		<button class="aui-button" onclick="chartNext();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right">View</span></button>
 		            </div>
 		        	<div class="aui-buttons">
 		        		<g:each var="timeAgo" in="${ timesAgo }">

@@ -5,7 +5,8 @@
 
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
-		<g:if test="${ device.value == 'true' }">
+		<!--  gestion d'une valeur numérique ou boolean -->
+		<g:if test="${ (device.value?.isDouble() && device.value?.toDouble() > 0) || device.value == 'true' }">
 			<h2><span class="aui-lozenge aui-lozenge-complete" style="font-size: large;">MOUVEMENT</span></h2>
 		</g:if>
 		<g:else>

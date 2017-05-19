@@ -131,26 +131,6 @@ class ChartService extends AbstractService {
 	
 	
 	/**
-	 * Renvoit les périodes disponibles pour la construction des graphiques
-	 * 
-	 * @return
-	 */
-	def timesAgo() {
-		[24: 'jour', 168: 'semaine', 744: 'mois', 8760: 'an']
-	}
-	
-	
-	/**
-	 * La période par défaut
-	 * 
-	 * @return
-	 */
-	def defaultTimeAgo() {
-		return 24
-	}
-	
-	
-	/**
 	 * Calcul des groupes
 	 *
 	 * @return

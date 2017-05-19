@@ -54,8 +54,11 @@
 		'title': '${label }',
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
-        'explorer': {},
-        legend: {position: 'top'},
+        'legend': {position: 'top'},
+        'curveType': 'function',
+        'chartArea': {
+        	width: '90%'
+        }
 	}
 </div>
 

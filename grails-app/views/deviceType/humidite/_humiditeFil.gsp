@@ -1,1 +1,0 @@
-<span class="label">Température : ${value.value }°C</span>

@@ -5,12 +5,10 @@
 
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
-		<g:if test="${ device.value?.toDouble() > 0 }">
+		<!--  gestion d'une valeur numérique ou boolean -->
+		<g:if test="${ (device.value?.isDouble() && device.value?.toDouble() > 0) || device.value == 'true' }">
 			<h2><span class="aui-lozenge aui-lozenge-error" style="font-size: large;">FUMEE</span></h2>
 		</g:if>
-		<g:elseif test="${ device.metavalueByLabel('heat')?.value?.toDouble() > 0 }">
-			<h2><span class="aui-lozenge aui-lozenge-error" style="font-size: large;">FEU</span></h2>
-		</g:elseif>
 		<g:else>
 			<h2><span class="aui-lozenge aui-lozenge-subtle" style="font-size: large;">RAS</span></h2>
 		</g:else>

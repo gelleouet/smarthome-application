@@ -149,6 +149,44 @@ class DateUtils {
 	
 	
 	/**
+	 * Dernier jour de la semaine
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date lastDayInWeek(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+			calendar.add(Calendar.DAY_OF_YEAR, 7 - (calendar.get(Calendar.DAY_OF_WEEK) - 1))
+		}
+
+		return calendar.getTime();
+	}
+	
+	
+	/**
+	 * 1er jour de la semaine
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date firstDayInWeek(Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+			calendar.add(Calendar.DAY_OF_YEAR, -6)
+		} else {
+			calendar.add(Calendar.DAY_OF_YEAR, -(calendar.get(Calendar.DAY_OF_WEEK) - 2))
+		}
+
+		return calendar.getTime();
+	}
+	
+	
+	/**
 	 * 1er jour du mois
 	 * 
 	 * @param date
@@ -172,6 +210,35 @@ class DateUtils {
 		Calendar calendar = Calendar.getInstance()
 		calendar.set(Calendar.DAY_OF_YEAR, 1)
 		calendar.set(Calendar.YEAR, year)
+		return calendar.getTime().clearTime()
+	}
+	
+	
+	/**
+	 * 1er jour de l'année
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date firstDayInYear(Date date) {
+		Calendar calendar = Calendar.getInstance()
+		calendar.setTime(date)
+		calendar.set(Calendar.DAY_OF_YEAR, 1)
+		return calendar.getTime().clearTime()
+	}
+	
+	
+	/**
+	 * Dernier jour de l'année
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date lastDayInYear(Date date) {
+		Calendar calendar = Calendar.getInstance()
+		calendar.setTime(date)
+		calendar.set(Calendar.DAY_OF_MONTH, 31)
+		calendar.set(Calendar.MONTH, Calendar.DECEMBER)
 		return calendar.getTime().clearTime()
 	}
 }

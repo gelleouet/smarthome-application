@@ -17,7 +17,6 @@ class DeviceController extends AbstractController {
 	
 	DeviceService deviceService
 	DeviceValueService deviceValueService
-	ChartService chartService
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -151,28 +150,13 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def chartView(Device device, Long sinceHour, Long offsetHour) {
+	def deviceChart(DeviceChartCommand command) {
 		def user = authenticatedUser
-		deviceService.assertSharedAccess(device, user)
+		deviceService.assertSharedAccess(command.device, user)
+		command.deviceImpl = command.device.deviceType.newDeviceType()
+		def datas = deviceService.values(command.device, command.dateDebut(), command.dateFin(), null)
 		
-		sinceHour = sinceHour ?: chartService.defaultTimeAgo()
-		offsetHour = offsetHour ?: 0
-		
-		if (params.offsetStep == 'prev') {
-			offsetHour++
-		} else if (params.offsetStep == 'next' && offsetHour > 0) {
-			offsetHour--
-		}
-		
-		// calcul plage date
-		def period = DateUtils.durationToDates(sinceHour, offsetHour)
-		def datas = deviceService.values(device, period.start, period.end, null)
-		
-		def chartType = device.deviceType.newDeviceType().defaultChartType()
-		def timesAgo = chartService.timesAgo()
-		render(view: 'chartView', model: [device: device, sinceHour: sinceHour, 
-			chartType: chartType, datas: datas, timesAgo: timesAgo,
-			offsetHour: offsetHour, startDate: period.start, endDate: period.end])
+		render(view: 'deviceChart', model: [command: command, datas: datas])
 	}
 	
 	
