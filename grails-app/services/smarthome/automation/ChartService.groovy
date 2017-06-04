@@ -24,7 +24,7 @@ import smarthome.security.User;
 
 class ChartService extends AbstractService {
 
-	DeviceService deviceService
+	DeviceValueService deviceValueService
 	
 	
 	/**
@@ -35,14 +35,10 @@ class ChartService extends AbstractService {
 	 * @param pagination
 	 * @return
 	 */
-	List<Chart> listByUser(ChartSearchCommand command, Long userId, Map pagination) {
+	List<Chart> listByUser(ChartCommand command, Long userId, Map pagination) {
 		Chart.createCriteria().list(pagination) {
 			user {
 				idEq(userId)
-			}
-			
-			if (command.search) {
-				ilike 'label', QueryUtils.decorateMatchAll(command.search)
 			}
 			if (command.groupe) {
 				eq 'groupe', command.groupe
@@ -110,20 +106,22 @@ class ChartService extends AbstractService {
 	/**
 	 * Charge les valeurs du device depuis sinceHour
 	 *
-	 * @param device
-	 * @param sinceHour
-	 * @param name
+	 * @param command
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	Map values(Chart chart, Date start, Date end) throws SmartHomeException {
-		log.info "Load trace values for chart ${chart.label} from ${start} to ${end}"
+	Map values(ChartCommand command) throws SmartHomeException {
+		log.info "Load values for chart ${command.chart.label} at ${command.dateChart} (${command.viewMode})"
 		def map = [:]
 		
-		chart.devices?.each {
+		command.chart.devices?.each {
 			// attention au 3e parametre, il faut lui passer '' pour récupérer les valeurs par défaut dont le name est null
 			// car si on passe null, on récupère toutes les valeurs sans distinction du name
-			map.put(it, deviceService.values(it.device, start, end, it.metavalue ?: ''))
+			DeviceChartCommand deviceCommand = new DeviceChartCommand(device: it.device,
+				deviceImpl: it.device.newDeviceImpl(), metaName: it.metavalue ?: '',
+				dateChart: command.dateChart, viewMode: command.viewMode)
+			
+			map.put(it, deviceValueService.values(deviceCommand))
 		}
 		
 		return map

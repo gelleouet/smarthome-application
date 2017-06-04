@@ -1,11 +1,13 @@
 package smarthome.automation
 
 import smarthome.core.AbstractController;
+import smarthome.core.ChartUtils;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
+
 import org.springframework.security.access.annotation.Secured;
 
 
@@ -23,13 +25,14 @@ class ChartController extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.navbarPrimary)
-	def chartsGrid(ChartSearchCommand command) {
+	def chartsGrid(ChartCommand command) {
+		command.navigation()
 		def groupes = chartService.listGroupes(principal.id)
 		// sélection du 1er groupe si rien de préciser
 		if (!command.groupe && groupes) {
 			command.groupe = groupes[0]
 		}
-		def charts = chartService.listByUser(command, principal.id, this.getPagination([:]))
+		def charts = chartService.listByUser(command, principal.id, [:])
 		def recordsTotal = charts.totalCount
 
 		// charts est accessible depuis le model avec la variable chart[Instance]List
@@ -52,24 +55,16 @@ class ChartController extends AbstractController {
 	
 	
 	/**
-	 * Rendu du graphique sans les menus autour
+	 * Rendu des datas du graphique
 	 * 
 	 * @param chart
 	 * @param sinceHour
 	 * @return
 	 */
-	def chartPreview(Chart chart, Long sinceHour, Long offsetHour) {
-		chartService.edit(chart)
-		sinceHour = 24
-		offsetHour = offsetHour ?: 0
-		
-		// calcul plage date
-		def period = DateUtils.durationToDates(sinceHour, offsetHour)
-		def datas = chartService.values(chart, period.start, period.end)
-		
-		render(template: '/chart/chartDatasMap', model: [label: chart.label, datas: datas,
-			offsetHour: offsetHour, sinceHour: sinceHour, 
-			startDate: period.start, endDate: period.end])
+	def chartDatas(ChartCommand command) {
+		chartService.edit(command.chart)
+		def datas = chartService.values(command)
+		render(template: '/chart/datas/chartMultipleDatas', model: [command: command, datas: datas])
 	}
 
 	/**

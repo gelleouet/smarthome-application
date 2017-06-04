@@ -1,10 +1,12 @@
+<%@ page import="smarthome.automation.SeriesTypeEnum" %>
+
 <app:datatable datatableId="datatableDevice" recordsTotal="${ chart?.devices?.size() ?: 0 }">
     <thead>
         <tr>
             <th>Objet</th>
             <th>Graphique</th>
             <th>Donnée</th>
-            <th>Fonctions</th>
+            <th>Donnée aggrégée</th>
             <th class="column-1-buttons"></th>
         </tr>
     </thead>
@@ -21,10 +23,10 @@
 	            		optionKey="id" optionValue="label" class="select" data-url="${ g.createLink(action: 'refreshDevice') }"/>
 	            </td>
 	            
-	            <td><g:select name="devices[${ status }].chartType" from="${ chartTypes }" required="true" value="${ device.chartType }" class="select"/></td>
+	            <td><g:select name="devices[${ status }].chartType" from="${ SeriesTypeEnum.values() }" required="true" value="${ device.chartType }" class="select"/></td>
 	            <td><g:select name="devices[${ status }].metavalue" from="${ device?.device?.metavalues }" value="${ device.metavalue }" 
-	            	optionKey="name" optionValue="label" class="select" noSelection="[null: 'Valeur par défaut']"/></td>
-	            <td><g:select name="devices[${ status }].function" from="${ functions }" value="${ device.function }" class="select" noSelection="[null: '']"/></td>
+	            	optionKey="name" optionValue="label" class="select" noSelection="['': 'Valeur par défaut']"/></td>
+	            <td><g:select name="devices[${ status }].function" from="${ functions }" value="${ device.function }" class="select" required="true"/></td>
 	            <td class="column-1-buttons command-column">
 	            	<a id="delete-chart-device" class="aui-button aui-button-subtle" title="Supprimer"
 	            		data-url="${ g.createLink(action: 'deleteDevice', params:[position: status]) }">

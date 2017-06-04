@@ -1,8 +1,8 @@
+<%@ page import="smarthome.automation.ChartViewEnum" %>
 
 <div data-chart-datas="true" class="hidden">	
 
-	<g:if test="${ datas.size() > 0 && datas[0] instanceof smarthome.automation.DeviceValue }">
-		<!-- objet DeviceValue : pas de projections on affiche toutes les valeurs avec la date -->
+	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'ID', type: 'string'},
 	   		 {label: 'Date', type: 'datetime'},
@@ -14,23 +14,10 @@
 	   		</g:each>
 	   	]);
 	</g:if>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['month'] }">
+	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'ID', type: 'string'},
-	   		 {label: 'Date', type: 'datetime'},
-	   		 {label: 'Heure', type: 'number'},
-	   		 {label: '${ label }', type: 'string'},
-	   		 {label: 'Quantité', type: 'number'}],
-	   		<g:each var="data" in="${datas}">
-	   			['', new Date(${data.year},${data.month-1},1), ${ data.hour }, '${label}', ${data.count}],
-	   		</g:each>
-	   	]);
-	</g:elseif>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['day'] }">
-		<!-- objet map donc projection : objet day donc projection par jour -->
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'ID', type: 'string'},
-	   		 {label: 'Date', type: 'datetime'},
+	   		 {label: 'Date', type: 'date'},
 	   		 {label: 'Heure', type: 'number'},
 	   		 {label: 'Périphérique', type: 'string'},
 	   		 {label: 'Quantité', type: 'number'}],
@@ -39,16 +26,18 @@
 	   		</g:each>
 	   	]);
 	</g:elseif>
-	<g:else>
-		<!-- ne sait pas traiter, donc affiche graphe vide -->
+	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'ID', type: 'string'},
-	   		 {label: 'Date', type: 'datetime'},
+	   		 {label: 'Date', type: 'date'},
 	   		 {label: 'Heure', type: 'number'},
-	   		 {label: 'Périphérique', type: 'string'},
+	   		 {label: '${ label }', type: 'string'},
 	   		 {label: 'Quantité', type: 'number'}],
-	   		]);
-	</g:else>
+	   		<g:each var="data" in="${datas}">
+	   			['', new Date(${data.year},${data.month-1},1), ${ data.hour }, '${label}', ${data.count}],
+	   		</g:each>
+	   	]);
+	</g:elseif>
    	
 	chartOptions = {
 		'title': '${label }',

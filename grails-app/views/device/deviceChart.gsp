@@ -4,18 +4,30 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 
-<body>
+<body onload="onLoadChart();">
+	<nav class="aui-navgroup aui-navgroup-horizontal">
+	    <div class="aui-navgroup-inner">
+	        <div class="aui-navgroup-primary">
+	            <ul class="aui-nav">
+	                <li><g:link action="devicesGrid" controller="device" params="[favori: true]">Favoris</g:link></li>
+	                <li><g:link action="devicesGrid" controller="device" params="[sharedDevice: true]">Partagés</g:link></li>
+	                <g:each var="tableauBord" in="${ tableauBords }">
+						<li class="${ command.device.tableauBord == tableauBord ? 'aui-nav-selected': '' }">
+							<g:link action="devicesGrid" controller="device" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>
+						</li>	                
+	                </g:each>
+	            </ul>
+	        </div><!-- .aui-navgroup-primary -->
+	    </div><!-- .aui-navgroup-inner -->
+	</nav>
+
 	<g:applyLayout name="applicationContent">
-		<g:render template="/chart/chartToolbar"/>
+		<g:form name="navigation-chart-form" action="deviceChart">
+			<g:hiddenField name="device.id" value="${ command.device.id }"/>
+			<g:render template="/chart/chartToolbar"/>
+		</g:form>
 			
-		<div id="chartDiv" data-chart-type="${ command.deviceImpl.defaultChartType() }">
-			<br/>
-			<h6>Loading chart...</h6>
-			<div class="aui-progress-indicator">
-			    <span class="aui-progress-indicator-value"></span>
-			</div>
-			<g:render template="${ command.deviceImpl.chartDataTemplate() }" model="[label: command.device.label, datas: datas]"/>
-		</div>
+		<g:render template="deviceChart"/>
 	</g:applyLayout>
 	
 	<asset:script type="text/javascript">

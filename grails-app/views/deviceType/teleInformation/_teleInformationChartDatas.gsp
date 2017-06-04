@@ -1,6 +1,9 @@
+<%@ page import="smarthome.automation.ChartViewEnum" %>
+<g:set var="deviceValueService" bean="deviceValueService"/>
+
 <div data-chart-datas="true" class="hidden">
 	
-	<g:if test="${ datas.size() > 0 && datas[0] instanceof smarthome.automation.DeviceValue }">
+	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
 	   		 {label: 'Heures creuses (Wh)', type: 'number'},
@@ -31,16 +34,18 @@
 	          	0: {title: 'Index (Wh)'},
 	          	1: {title: 'Intensité (A)'}
 	          },
-	          explorer: {},
+		      'chartArea': {
+		      	width: '90%'
+		      }
 	  	};
 	  	
 	  	chartType = 'LineChart';
 	</g:if>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['day'] }">
+	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
 		var datas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: 'Heures creuses (Wh)', type: 'number'},
-	   		 {label: 'Heures pleines (Wh)', type: 'number'},
+	   		 {label: 'Heures creuses (kWh)', type: 'number'},
+	   		 {label: 'Heures pleines (kWh)', type: 'number'},
 	   		 {label: 'Intensité max (A)', type: 'number'},
 	   		],
 	   		<g:each var="data" in="${ datas?.groupBy{ it.day } }">
@@ -72,29 +77,32 @@
 	    	
 		chartOptions = {
 			  'title': '${label }',
-			  'pointSize': '2',
 		      'width': '${ params.chartWidth ?: '100%' }',
 	          'height': '${ params.chartHeight ?: '600' }',
-	          explorer: {},
 	          legend: {position: 'top'},
-	          'series': {
+	          isStacked: true,
+	          'chartArea': {
+		      	width: '90%'
+		      },
+		      'series': {
 	          	0: {targetAxisIndex: 0},
 	          	1: {targetAxisIndex: 0},
-	          	2: {targetAxisIndex: 1},
+	          	2: {targetAxisIndex: 1, type: 'line'},
 	          },
 	          vAxes: {
 	          	0: {title: 'Index (kWh)'},
 	          	1: {title: 'Intensité (A)'}
 	          },
+	          'seriesType': 'bars',
 	  	};
 	  	
-	  	chartType = 'LineChart';
+	  	chartType = 'ColumnChart';
 	</g:elseif>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['month'] }">
+	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
 		var datas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: 'Heures creuses (Wh)', type: 'number'},
-	   		 {label: 'Heures pleines (Wh)', type: 'number'},
+	   		 {label: 'Heures creuses (kWh)', type: 'number'},
+	   		 {label: 'Heures pleines (kWh)', type: 'number'},
 	   		 {label: 'Intensité max (A)', type: 'number'},
 	   		],
    			<g:each var="data" in="${ datas?.groupBy{ (it.year * 100) + it.month } }">
@@ -110,38 +118,29 @@
 	   	]);
 	   	
 	   	chartDatas = new google.visualization.DataView(datas);
-      	chartDatas.setColumns([0,
-      					1,{ calc: "stringify",
-                         sourceColumn: 1,
-                         type: "string",
-                         role: "annotation" },
-                       2,{ calc: "stringify",
-                         sourceColumn: 2,
-                         type: "string",
-                         role: "annotation" },
-                       3,{ calc: "stringify",
-                         sourceColumn: 3,
-                         type: "string",
-                         role: "annotation" }]);
-	    	
+	   	
 		chartOptions = {
 			  'title': '${label }',
 		      'width': '${ params.chartWidth ?: '100%' }',
 	          'height': '${ params.chartHeight ?: '600' }',
-	          explorer: {},
+	          legend: {position: 'top'},
 	          isStacked: true,
+	          'chartArea': {
+		      	width: '90%'
+		      },
+		      'series': {
+	          	0: {targetAxisIndex: 0},
+	          	1: {targetAxisIndex: 0},
+	          	2: {targetAxisIndex: 1, type: 'line'},
+	          },
+	          vAxes: {
+	          	0: {title: 'Index (kWh)'},
+	          	1: {title: 'Intensité (A)'}
+	          },
+	          'seriesType': 'bars',
 	  	};
 	  	
 	  	chartType = 'ColumnChart';
 	</g:elseif>
-	<g:else>
-		<!-- ne sait pas traiter, donc affiche graphe vide -->
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: 'Heures creuses (Wh)', type: 'number'},
-	   		 {label: 'Heures pleines (Wh)', type: 'number'},
-	   		 {label: 'Intensité (A)', type: 'number'},
-	   	]);
-	</g:else>
 	
 </div>

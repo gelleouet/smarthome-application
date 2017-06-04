@@ -333,40 +333,6 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
-	 * Charge les valeurs du device sur une période
-	 * 
-	 * @param device
-	 * @param start
-	 * @param end
-	 * @param name
-	 * @param projection
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	def values(Device device, Date start, Date end, String name, DataModifierEnum projection = null) throws SmartHomeException {
-		def dayDuration = 0
-		def values
-		AbstractDeviceType deviceImpl = device.newDeviceImpl()
-		
-		use(groovy.time.TimeCategory) {
-			dayDuration = end - start
-		}
-		
-		// projections automatiques pour les longues périodes (> 1 jour)
-		// pour éviter trop de volumes de données
-		if (projection || dayDuration.days > AbstractDeviceType.MAX_DAY_WITHOUT_PROJECTION) {
-			values = deviceImpl.projectionValues(start, end, name, dayDuration.days, projection)
-		} else {
-			values = deviceImpl.values(start, end, name, dayDuration.days)
-		}
-		
-		log.info "Load trace values for ${device.mac} from ${start} to ${end} : ${values?.size()} values"
-		
-		return values
-	}
-	
-	
-	/**
 	 * Liste les devices d'un user
 	 * 
 	 * @param pagination

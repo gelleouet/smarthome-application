@@ -42,15 +42,21 @@ function buildGoogleChart(divChart) {
 		var chartData = $(divData).html();
 		
 		if (chartData) {
-			var chartDatas, chartOptions, chartType;
+			var chartDatas, chartOldDatas, chartOptions, chartType, chart;
 			eval(chartData);
 			
 			if (!chartType) {
 				chartType = $(divChart).attr('data-chart-type');
 			}
-	      	
-			var chart = eval("new google.visualization." + chartType + "(document.getElementById('" + divId + "'))");
-	      	chart.draw(chartDatas, chartOptions);
+			
+			chart = eval("new google.visualization." + chartType + "(document.getElementById('" + divId + "'))");
+			
+			if (chartOldDatas) {
+				var diffDatas = chart.computeDiff(chartOldDatas, chartDatas)
+				chart.draw(diffDatas, chartOptions);
+			} else {
+				chart.draw(chartDatas, chartOptions);
+			}
 	      	
 	      	// nettoie les éléments de contruction du chart
 	      	$(divData).remove();
@@ -64,20 +70,30 @@ function buildGoogleChart(divChart) {
 }
 
 
-function chartTimeAgo(timeAgo) {
-	$('#sinceHour').val(timeAgo);
-	$('#offsetHour').val('');
+function onLoadChart() {
+	$(document).on('change', "#navigation-chart-form #dateChart", function() {
+		$("#navigation-chart-form").submit()
+	});
+	
+	$(document).on('click', "#navigation-chart-form #navigation-chart-day-button", function() {
+		$("#navigation-chart-form #viewMode").val('day')
+	});
+	$(document).on('click', "#navigation-chart-form #navigation-chart-month-button", function() {
+		$("#navigation-chart-form #viewMode").val('month')
+	});
+	$(document).on('click', "#navigation-chart-form #navigation-chart-year-button", function() {
+		$("#navigation-chart-form #viewMode").val('year')
+	});
+	
+	$(document).on('click', "#navigation-chart-form #navigation-chart-prev-button", function() {
+		$("#navigation-chart-form #navigation").val('prev')
+	});
+	$(document).on('click', "#navigation-chart-form #navigation-chart-next-button", function() {
+		$("#navigation-chart-form #navigation").val('next')
+	});
 }
 
 
-function chartPrev() {
-	$('#offsetStep').val('prev');
-}
-
-
-function chartNext() {
-	$('#offsetStep').val('next');
-}
 
 
 

@@ -3,6 +3,7 @@ package smarthome.automation
 import org.springframework.security.access.annotation.Secured;
 
 import smarthome.core.AbstractController;
+import smarthome.core.ChartUtils;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
@@ -153,10 +154,14 @@ class DeviceController extends AbstractController {
 	def deviceChart(DeviceChartCommand command) {
 		def user = authenticatedUser
 		deviceService.assertSharedAccess(command.device, user)
-		command.deviceImpl = command.device.deviceType.newDeviceType()
-		def datas = deviceService.values(command.device, command.dateDebut(), command.dateFin(), null)
 		
-		render(view: 'deviceChart', model: [command: command, datas: datas])
+		def tableauBords = deviceService.groupByTableauBord(user.id)
+		command.navigation()
+		command.deviceImpl = command.device.deviceType.newDeviceType()
+		
+		def datas = deviceValueService.values(command)
+		
+		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords])
 	}
 	
 	

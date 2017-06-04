@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.util.Date;
+
 import smarthome.security.User;
 import grails.validation.Validateable;
 import groovy.time.TimeCategory;
@@ -273,6 +275,24 @@ class DeviceValue {
 			ge "dateValue", date
 			
 			order "dateValue", "desc"
+		}
+	}
+	
+	
+	static def values(Device device, Date dateDebut, Date dateFin, String name = null) {
+		return DeviceValue.createCriteria().list {
+			eq 'device', device
+			between 'dateValue', dateDebut, dateFin
+			
+			if (name) {
+				if (name == '') {
+					isNull 'name'
+				} else {
+					eq 'name', name
+				}
+			}
+			
+			order 'dateValue', 'name'
 		}
 	}
 	

@@ -11,10 +11,10 @@
 				    <span class="aui-icon aui-icon-small aui-iconfont-configure">Outils</span>
 				</button>
 				<aui-dropdown-menu id="chart-dropdown-${ chart.id }">
-				    <aui-section label="Exports">
+				    <%--<aui-section label="Exports">
 				        <aui-item-link href="${ g.createLink(action: 'exportPDF', id: chart.id) }">PDF</aui-item-link>
 				        <aui-item-link href="${ g.createLink(action: 'exportExcel', id: chart.id) }">Excel</aui-item-link>
-				    </aui-section>
+				    </aui-section>--%>
 				    <aui-section>
 				        <aui-item-link class="confirm-button" href="${ g.createLink(action: 'delete', id: chart.id) }">Supprimer</aui-item-link>
 				    </aui-section>
@@ -29,6 +29,6 @@
 	<div class="aui-progress-indicator">
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
-	<div async-url="${ createLink(action: 'chartPreview', id: chart.id, params: [chartHeight: 400]) }" on-async-complete="buildGoogleChart('#chartDiv-${ chart.id }')">
+	<div async-url="${ createLink(action: 'chartDatas', params: [chartHeight: 400, viewMode: command.viewMode, dateChart: app.formatPicker(date: command.dateChart), 'chart.id': chart.id, comparePreviousYear: command.comparePreviousYear]) }" on-async-complete="buildGoogleChart('#chartDiv-${ chart.id }')">
 	</div>
 </div>

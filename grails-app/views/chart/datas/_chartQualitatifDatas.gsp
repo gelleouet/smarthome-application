@@ -1,8 +1,8 @@
+<%@ page import="smarthome.automation.ChartViewEnum" %>
 
 <div data-chart-datas="true" class="hidden">	
 
-	<g:if test="${ datas.size() > 0 && datas[0] instanceof smarthome.automation.DeviceValue }">
-		<!-- objet DeviceValue : pas de projections on affiche toutes les valeurs avec la date -->
+	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
 	   		 {label: 'Valeur', type: 'number'}],
@@ -11,22 +11,9 @@
 	   		</g:each>
 	   	]);
 	</g:if>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['month'] }">
-		<!-- objet map donc projection : objet month et year donc projection par mois -->
+	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
 		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: 'Min', type: 'number'},
-	   		 {label: 'Max', type: 'number'},
-	   		 {label: 'Moyenne', type: 'number'}],
-	   		 <g:each var="data" in="${datas}">
-	   			[new Date(${data.year},${data.month-1},1),  ${data.min}, ${data.max}, ${data.avg}],
-	   		</g:each>
-	   	]);
-	</g:elseif>
-	<g:elseif test="${ datas.size() > 0 && datas[0] instanceof Map && datas[0]['day'] }">
-		<!-- objet map donc projection : objet day donc projection par jour -->
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'datetime'},
+	   		[{label: 'Date', type: 'date'},
 	   		 {label: 'Min', type: 'number'},
 	   		 {label: 'Max', type: 'number'},
 	   		 {label: 'Moyenne', type: 'number'}],
@@ -35,13 +22,17 @@
 	   		</g:each>
 	   	]);
 	</g:elseif>
-	<g:else>
-		<!-- ne sait pas traiter, donc affiche graphe vide -->
+	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
 		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: '${label}', type: 'number'}],
-	   		]);
-	</g:else>
+	   		[{label: 'Date', type: 'date'},
+	   		 {label: 'Min', type: 'number'},
+	   		 {label: 'Max', type: 'number'},
+	   		 {label: 'Moyenne', type: 'number'}],
+	   		 <g:each var="data" in="${datas}">
+	   			[new Date(${data.year},${data.month-1},1),  ${data.min}, ${data.max}, ${data.avg}],
+	   		</g:each>
+	   	]);
+	</g:elseif>
    	
 	chartOptions = {
 		'title': '${label }',

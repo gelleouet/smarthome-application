@@ -4,7 +4,7 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 
-<body>
+<body onload="onLoadChart();">
 
 	<nav class="aui-navgroup aui-navgroup-horizontal">
 	    <div class="aui-navgroup-inner">
@@ -24,20 +24,12 @@
 	
 		<div class="aui-group aui-group-split">
 	        <div class="aui-item">
-	        	<g:form class="aui">
-	        		<g:hiddenField name="timeAgo" value="${ command.timeAgo }"/>
-		        	<div class="aui-buttons">
-		        		<button class="aui-button" onclick="chartPrev();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-left">View</span></button>
-		        		<g:field type="date" name="dateChart" style="font-family: inherit; padding: 4px 5px; height:2.14285714em;" class="aui-date-picker" value="${ app.formatPicker(date: command.dateChart) }" required="true"/>
-		        		<button class="aui-button" onclick="chartNext();"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right">View</span></button>
-		            </div>
-		        	<div class="aui-buttons">
-		        		<g:each var="timeAgo" in="${ timesAgo }">
-		        			<g:actionSubmit value="${ timeAgo.value }" class="aui-button ${ command.timeAgo == timeAgo.key ? 'aui-button-primary' : '' }"/>
-		        		</g:each>
-		            </div>
+	        	<g:form class="aui" name="navigation-chart-form" action="chartsGrid">
+	        		<g:hiddenField name="groupe" value="${ command.groupe }"/>
+	        		<g:render template="/chart/chartToolbar"/>
 	            </g:form>
 	        </div>
+	        
 	        <div class="aui-item">
 	        	<g:form class="aui">
 		            <div class="aui-buttons">
@@ -47,24 +39,26 @@
 	        </div>
 		</div>
 	
-		<div class="aui-group">
-			<div class="aui-item responsive">
-				<g:each var="chart" in="${ chartInstanceList }" status="status">
-					<g:if test="${ ! (status % 2) }">
-						<div class="filActualite" style="padding:15px;">
-							<g:render template="chartPreview" model="[chart: chart]"/>
-						</div>	
-					</g:if>
-				</g:each>
-			</div>
-			<div class="aui-item responsive">
-				<g:each var="chart" in="${ chartInstanceList }" status="status">
-					<g:if test="${ (status % 2) }">
-						<div class="filActualite" style="padding:15px;">
-							<g:render template="chartPreview" model="[chart: chart]"/>
-						</div>	
-					</g:if>
-				</g:each>
+		<div>
+			<div class="aui-group">
+				<div class="aui-item responsive">
+					<g:each var="chart" in="${ chartInstanceList.sort{ it.label } }" status="status">
+						<g:if test="${ ! (status % 2) }">
+							<div class="filActualite" style="padding:15px; margin-top:30px">
+								<g:render template="chartWidget" model="[chart: chart]"/>
+							</div>	
+						</g:if>
+					</g:each>
+				</div>
+				<div class="aui-item responsive">
+					<g:each var="chart" in="${ chartInstanceList.sort{ it.label } }" status="status">
+						<g:if test="${ (status % 2) }">
+							<div class="filActualite" style="padding:15px; margin-top:30px">
+								<g:render template="chartWidget" model="[chart: chart]"/>
+							</div>	
+						</g:if>
+					</g:each>
+				</div>
 			</div>
 		</div>
 	
@@ -73,8 +67,6 @@
 	
 	<asset:script type="text/javascript">
 		google.load("visualization", "1.0", {packages:["corechart"]});
-		// ne pas appeler la méthode car déjà déclenché à la suite des appels ajax
-		//google.setOnLoadCallback(buildGoogleCharts);
 	</asset:script>
 </body>
 </html>
