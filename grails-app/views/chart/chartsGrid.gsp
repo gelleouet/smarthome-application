@@ -42,7 +42,7 @@
 		<div>
 			<div class="aui-group">
 				<div class="aui-item responsive">
-					<g:each var="chart" in="${ chartInstanceList.sort{ it.label } }" status="status">
+					<g:each var="chart" in="${ chartInstanceList?.sort{ it.label } }" status="status">
 						<g:if test="${ ! (status % 2) }">
 							<div class="filActualite" style="padding:15px; margin-top:30px">
 								<g:render template="chartWidget" model="[chart: chart]"/>
@@ -51,7 +51,7 @@
 					</g:each>
 				</div>
 				<div class="aui-item responsive">
-					<g:each var="chart" in="${ chartInstanceList.sort{ it.label } }" status="status">
+					<g:each var="chart" in="${ chartInstanceList?.sort{ it.label } }" status="status">
 						<g:if test="${ (status % 2) }">
 							<div class="filActualite" style="padding:15px; margin-top:30px">
 								<g:render template="chartWidget" model="[chart: chart]"/>
