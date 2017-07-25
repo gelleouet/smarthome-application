@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.core.DateUtils;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -12,7 +14,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class DeviceEvent {
+class DeviceEvent implements Serializable {
 	public static final String FORMAT_HEURE_DECALAGE = "HH:mm"
 	
 	

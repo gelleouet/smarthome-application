@@ -21,7 +21,7 @@
 	            		data-url="${ g.createLink(action: 'templateTriggers') }" noSelection="[null: '']"></g:select>
 	            	<g:select name="triggers[${status}].actionName" value="${ bean.actionName }" from="${ bean.device?.deviceType?.newDeviceType()?.events() }" class="select" noSelection="['': 'Action synchronisée']"></g:select>
 	            </td>
-	            <td><g:select name="triggers[${status}].workflow.id" value="${ bean.workflow?.id }" from="${ workflows }" optionKey="id" optionValue="label" class="select" noSelection="[null: '']"></g:select></td>
+	            <td><g:select name="triggers[${status}].scenario.id" value="${ bean.scenario?.id }" from="${ scenarios }" optionKey="id" optionValue="label" class="select" noSelection="[null: '']"></g:select></td>
 	            <td class="column-1-buttons command-column">
 	            	<a id="delete-trigger-button" class="aui-button aui-button-subtle" title="Suppimer" data-url="${ g.createLink(action: 'deleteTrigger', params: [status: status]) }">
 	            		<span class="aui-icon aui-icon-small aui-iconfont-delete">

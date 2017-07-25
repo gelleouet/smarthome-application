@@ -33,7 +33,7 @@ import smarthome.security.User;
 class DeviceEventService extends AbstractService {
 
 	DeviceService deviceService
-	WorkflowService workflowService
+	ScenarioService scenarioService
 	SmarthomeScheduler smarthomeScheduler
 	DeviceEventDecalageRuleService deviceEventDecalageRuleService
 	ModeService modeService
@@ -300,9 +300,9 @@ class DeviceEventService extends AbstractService {
 			// Toutes les conditions sont réunies pour déclencher tous les triggers
 			event.triggers?.each { trigger ->
 				// déclenchement d'un workflow
-				if (trigger.workflow) {
-					log.info "Trigger workflow ${trigger.workflow.label} from device ${device.label}"
-					workflowService.execute(trigger.workflow, context)
+				if (trigger.scenario) {
+					log.info "Trigger scenario ${trigger.scenario.label} from device ${device.label}"
+					scenarioService.execute(trigger.scenario, context)
 				}
 				
 				// déclenchement d'un autre device via une action choisie

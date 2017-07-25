@@ -1,6 +1,7 @@
 package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import smarthome.automation.deviceType.Humidite;
 import smarthome.automation.deviceType.TeleInformation;
@@ -64,5 +65,17 @@ class HouseController extends AbstractController {
 		Date now = new Date()
 		houseService.calculConsoAnnuelle(house, now[Calendar.YEAR])
 		nop()
+	}
+	
+	
+	/**
+	 * Rendu de la synthese de la maison
+	 * 
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#house, 'OWNER')")
+	def synthese(House house) {
+		def houseSynthese = houseService.calculSynthese(house)
+		render(template: 'synthese', model: [house: house, houseSynthese: houseSynthese])
 	}
 }

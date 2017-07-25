@@ -22,6 +22,7 @@ grails.project.fork = [
 ]
 
 
+activiti.version = "5.18.0"
 camel.version = "2.14.0"
 camel.groupId = "org.apache.camel"
 quartz.version = "2.2.2"
@@ -84,6 +85,13 @@ grails.project.dependency.resolution = {
 		
 		compile "$httpclient.groupId:httpclient:$httpclient.version"
 		compile "$httpclient.groupId:fluent-hc:$httpclient.version"
+		
+		compile ("org.activiti:activiti-engine:$activiti.version") {
+			excludes "spring-beans"
+		}
+		compile ("org.activiti:activiti-spring:$activiti.version") {
+			excludes "commons-dbcp", "commons-pool"
+		}
 	}
 
 	plugins {

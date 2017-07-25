@@ -13,7 +13,7 @@
       <div class="aui-header-secondary">
           <ul class="aui-nav">
               <li>
-              	<a href="https://connectmyhomeblog.wordpress.com/a-propos/" target="blank" class="aui-button aui-button-primary">Découvrir</a>
+              	<a href="https://www.facebook.com/bemyhomesmart/" target="blank" class="aui-button aui-button-primary">Découvrir</a>
               </li>
               <li>
               	<g:form controller="register" action="account">

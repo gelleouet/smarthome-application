@@ -2,6 +2,7 @@ package smarthome.automation
 
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import smarthome.core.DateUtils;
@@ -16,10 +17,10 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class Device {
+class Device implements Serializable {
 	static belongsTo = [agent: Agent, user: User]
 	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
-		events: DeviceEvent, shares: DeviceShare]
+		events: DeviceEvent, shares: DeviceShare, levelAlerts: DeviceLevelAlert]
 	
 	String label
 	String groupe
@@ -56,6 +57,7 @@ class Device {
 		agent index: "Device_MacAgent_Idx"
 		user index: "Device_User_Idx"
 		values cascade: 'all-delete-orphan'
+		levelAlerts cascade: 'all-delete-orphan'
 		metadatas cascade: 'all-delete-orphan', batchSize: 25
 		metavalues cascade: 'all-delete-orphan', batchSize: 25
 		events cascade: 'all-delete-orphan'
@@ -250,5 +252,33 @@ class Device {
 		}
 		
 		return this
+	}
+	
+	
+	/**
+	 * Supprime les levels alerts non bindés depuis formulaire enregisrement
+	 * 
+	 * @return
+	 */
+	Device clearNotBindingLevelAlert() {
+		levelAlerts?.removeAll {
+			it.status == null	
+		}
+		
+		return this	
+	}
+	
+	
+	/**
+	 * Retourne la dernière alerte du device
+	 * 
+	 * @return
+	 */
+	DeviceAlert lastDeviceAlert() {
+		return DeviceAlert.createCriteria().get {
+			eq 'device', this
+			order 'dateDebut', 'desc'
+			maxResults 1
+		}
 	}
 }

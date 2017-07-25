@@ -11,7 +11,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class Workflow {
+class Scenario {
 	static belongsTo = [user: User]
 	
 	String label

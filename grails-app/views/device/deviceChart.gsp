@@ -26,7 +26,11 @@
 			<g:hiddenField name="device.id" value="${ command.device.id }"/>
 			<g:render template="/chart/chartToolbar"/>
 		</g:form>
-			
+		
+		<br/>
+		<h4><g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/></h4>
+		<p class="h6">${ app.formatUserDateTime(date: command.device.dateValue) } - Il y a ${ app.formatTimeAgo(date: command.device.dateValue) }</p>
+		
 		<g:render template="deviceChart"/>
 	</g:applyLayout>
 	

@@ -20,6 +20,13 @@ $(window).on('load', function() {
 
 
 $(window).on('load', function() {
+	$(document).on('click', '#level-alert-delete-button', function() {
+		ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxAlerts');
+	});
+});
+
+
+$(window).on('load', function() {
 	$(document).on('click', '.ajax-invoke-action-button', function() {
 		if (confirm('Voulez-vous continuer ?')) {
 			var form = $('#' + $(this).attr('data-form-id'))
@@ -30,7 +37,6 @@ $(window).on('load', function() {
 		}
 	});
 });
-
 
 
 $(window).on('load', function() {
@@ -85,3 +91,5 @@ function onDropDeviceToGroupe(event, ui) {
 		ui.draggable.appendTo(container)
 	})
 }
+
+

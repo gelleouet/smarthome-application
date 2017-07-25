@@ -1,6 +1,7 @@
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-
-import smarthome.automation.scheduler.DeviceEventCronMainJob;
+import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.activiti.spring.ProcessEngineFactoryBean;
+import org.activiti.engine.impl.history.HistoryLevel;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.plugin.NavigationItemUtils;
 
@@ -29,6 +30,8 @@ beans = {
 	// seconde | minute | heure | jour du mois (1-31) | mois | jour semaine (1-7) | année 
 	smarthomeScheduler(SmarthomeScheduler) {
 		jobs = [
+			// monitoring des devices
+			'smarthome.automation.scheduler.DeviceAlertMonitoringCronMainJob' : "0 * * * * ?",
 			// déclenchement des events planifiés toutes les minutes
 			'smarthome.automation.scheduler.DeviceEventCronMainJob' : "0 * * * * ?",
 			// calcul des consos maison tous les soirs juste avant minuit
@@ -39,6 +42,33 @@ beans = {
 	permissionEvaluator(smarthome.security.SmartHomePermissionEvaluator) {
 		permissionFactory = ref('aclPermissionFactory')
 	}
+	
+	// Démarre une instance Activiti Workflow
+	processEngineConfiguration(SpringProcessEngineConfiguration) {
+		transactionManager = ref("transactionManager")
+		dataSource = ref("dataSource")
+		history = HistoryLevel.NONE.getKey()
+		dbHistoryUsed = false
+		createDiagramOnDeploy = true
+		
+		// configuration SMTP
+		mailServerHost = application.config.smtp.hostname
+		mailServerPort = application.config.smtp.port
+		mailServerDefaultFrom = application.config.smtp.from
+		mailServerUsername = application.config.smtp.username
+		mailServerPassword = application.config.smtp.password
+		mailServerUseTLS = true
+		
+		//databaseTablePrefix = application.config.activiti.schemaName
+		//tablePrefixIsSchema = true
+	}
+	
+	processEngine(ProcessEngineFactoryBean) {
+		processEngineConfiguration = ref("processEngineConfiguration")
+	}
+	
+	repositoryService(processEngine: "getRepositoryService")
+	runtimeService(processEngine: "getRuntimeService")
 	
 	
 	// surchage pour supprimer le cache optimizer

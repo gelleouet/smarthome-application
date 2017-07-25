@@ -701,3 +701,9 @@ h5.device-grid-label {
 	font-weight: bold;
 	font-size: 9pt;
 }
+
+.alert-banner {
+	background-color: #d04437;
+	color: #fff;	
+	padding: 2pt;
+}

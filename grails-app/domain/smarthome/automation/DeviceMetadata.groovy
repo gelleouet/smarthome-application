@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -10,7 +12,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class DeviceMetadata {
+class DeviceMetadata implements Serializable {
 	static belongsTo = [device: Device]
 	
 	String name

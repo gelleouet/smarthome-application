@@ -11,6 +11,7 @@ import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 import smarthome.security.User;
 
+
 @Secured("isAuthenticated()")
 class DeviceController extends AbstractController {
 
@@ -18,6 +19,8 @@ class DeviceController extends AbstractController {
 	
 	DeviceService deviceService
 	DeviceValueService deviceValueService
+	DeviceAlertService deviceAlertService
+	
 	
 	/**
 	 * Affichage paginé avec fonction recherche
@@ -112,7 +115,7 @@ class DeviceController extends AbstractController {
 	 */
 	def saveEdit(Device device) {
 		checkErrors(this, device)
-		deviceService.save(device)
+		deviceService.saveWithLevelAlerts(device)
 		edit(device)
 	}
 
@@ -141,7 +144,7 @@ class DeviceController extends AbstractController {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
-		deviceService.save(device)
+		deviceService.saveWithLevelAlerts(device)
 		edit(device)
 	}
 	
@@ -263,5 +266,18 @@ class DeviceController extends AbstractController {
 	def moveToGroupe(Device device, String groupe) {
 		deviceService.moveToGroupe(device, groupe)
 		nop()
+	}
+	
+	
+	/**
+	 * Synthèse devices
+	 *
+	 * @return
+	 */
+	def synthese() {
+		def lastDevices = deviceService.listLastByUser(principal.id, 10, 7)
+		def countOpenAlert = deviceAlertService.countOpenAlert(principal.id)
+		render (template: 'deviceActivite', model: [lastDevices: lastDevices,
+			countOpenAlert: countOpenAlert])
 	}
 }

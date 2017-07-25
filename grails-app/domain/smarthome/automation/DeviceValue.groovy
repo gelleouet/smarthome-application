@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import java.io.Serializable;
 import java.util.Date;
 
 import smarthome.security.User;
@@ -13,11 +14,12 @@ import groovy.time.TimeCategory;
  *
  */
 @Validateable
-class DeviceValue {
+class DeviceValue implements Serializable {
 	static belongsTo = [device: Device]
 	
 	Double value
 	Date dateValue
+	LevelAlertEnum alertLevel
 	
 	// permet d'avoir plusieurs types de valeur pour un device
 	// si un seul type, ne rien mettre
@@ -32,12 +34,14 @@ class DeviceValue {
 	
     static constraints = {
 		name nullable: true
+		alertLevel nullable: true
     }
 	
 	static mapping = {
 		name index: "DeviceValue_DeviceName_Idx", length: 64
 		device index: "DeviceValue_DeviceName_Idx"
 		dateValue index: "DeviceValue_DeviceName_Idx"
+		alertLevel length: 16
 		
 		hourOfDay formula: 'extract(hour from date_value)'
 		monthOfYear formula: 'extract(month from date_value)'

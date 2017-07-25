@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -10,7 +12,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class Agent {
+class Agent implements Serializable {
 	static belongsTo = [user: User]
 	static hasMany = [devices: Device, tokens: AgentToken]
 	

@@ -169,7 +169,7 @@ smtp {
 	port = 25
 	password = '3MrTfsYM73g5'
 	username = 'noreply@jdevops.com'
-	from = 'SMARTHOME <noreply@smarthome.fr>'
+	from = 'BeMyHomeSmart <noreply@smarthome.fr>'
 }
 
 

@@ -26,7 +26,7 @@ import smarthome.core.SmartHomeException;
 import smarthome.security.User;
 
 
-class WorkflowService extends AbstractService {
+class ScenarioService extends AbstractService {
 
 	DeviceService deviceService
 	
@@ -34,12 +34,12 @@ class WorkflowService extends AbstractService {
 	/**
 	 * Edition ACL
 	 * 
-	 * @param workflow
+	 * @param scenario
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
-	Workflow edit(Workflow workflow) {
-		return workflow
+	@PreAuthorize("hasPermission(#scenario, 'OWNER')")
+	Scenario edit(Scenario scenario) {
+		return scenario
 	}
 	
 	
@@ -50,57 +50,57 @@ class WorkflowService extends AbstractService {
 	 *
 	 * @return domain
 	 */
-	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
+	@PreAuthorize("hasPermission(#scenario, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	Workflow save(Workflow workflow) throws SmartHomeException {
-		if (!workflow.save()) {
-			throw new SmartHomeException("Erreur enregistrement workflow", workflow);
+	Scenario save(Scenario scenario) throws SmartHomeException {
+		if (!scenario.save()) {
+			throw new SmartHomeException("Erreur enregistrement scenario", scenario);
 		}
 		
-		return workflow
+		return scenario
 	}
 	
 	
 	/**
-	 * Liste les workflows d'un user
+	 * Liste les scenarios d'un user
 	 *
 	 * @param pagination
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def listByUser(String workflowSearch, Long userId, Map pagination) throws SmartHomeException {
-		return Workflow.createCriteria().list(pagination) {
+	def listByUser(String scenarioSearch, Long userId, Map pagination) throws SmartHomeException {
+		return Scenario.createCriteria().list(pagination) {
 			user {
 				idEq(userId)
 			}
 			
-			if (workflowSearch) {
-				ilike 'label', QueryUtils.decorateMatchAll(workflowSearch)
+			if (scenarioSearch) {
+				ilike 'label', QueryUtils.decorateMatchAll(scenarioSearch)
 			}
 		}
 	}
 	
 	
 	/**
-	 * Exécute un workflow. Insère le contexte utilisateur avant exécution (injecte les devices)
+	 * Exécute un scenario. Insère le contexte utilisateur avant exécution (injecte les devices)
 	 * 
-	 * @param workflow
+	 * @param scenario
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def execute(Workflow workflow, Map context) throws SmartHomeException {
+	def execute(Scenario scenario, Map context) throws SmartHomeException {
 		// ajoute le service deviceService pour le déclenchement des actions
 		context.deviceService = deviceService
-		context.workflow = workflow
+		context.scenario = scenario
 		context.log = log
 		
-		def result = ScriptUtils.runScript(workflow.script, context)
+		def result = ScriptUtils.runScript(scenario.script, context)
 		
-		// trace l'exécution seulement si workflow s'est terminé correctement
+		// trace l'exécution seulement si scenario s'est terminé correctement
 		if (result) {
-			workflow.lastExecution = new Date()
-			workflow.save()
+			scenario.lastExecution = new Date()
+			scenario.save()
 		}
 		
 		return result
@@ -113,15 +113,15 @@ class WorkflowService extends AbstractService {
 	 * @param domain
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#workflow, 'OWNER')")
+	@PreAuthorize("hasPermission(#scenario, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void delete(Workflow workflow) {
+	void delete(Scenario scenario) {
 		try {
 			// flush direct pour catcher une erreur SQL (ex : clé étrangère) et la renvoyer en SmartHomeException
 			// sinon l'erreur est déclenchée hors méthode
-			workflow.delete(flush: true)
+			scenario.delete(flush: true)
 		} catch (Exception ex) {
-			throw new SmartHomeException(ex, workflow)
+			throw new SmartHomeException(ex, scenario)
 		}
 	}
 }

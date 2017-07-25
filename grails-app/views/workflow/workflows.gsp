@@ -3,20 +3,20 @@
 <meta name='layout' content='authenticated' />
 </head>
 
-<body>
+<body onLoad="onLoadWorkflows()">
 	<g:applyLayout name="applicationConfigure">
 	
 		<div class="aui-toolbar2">
 		    <div class="aui-toolbar2-inner">
 		        <div class="aui-toolbar2-primary">
 		            <div>
-		                <h3>Scénarios</h3>
+		                <h3>Workflows</h3>
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un scénario" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter un workflow" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -38,22 +38,25 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th>Nom</th>
+		            <th>ID</th>
+		            <th>Libellé</th>
 		            <th>Description</th>
-		            <th>Dernière exécution</th>
-		            <th class="column-1-buttons"></th>
+		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ workflowInstanceList }">
 			        <tr>
-			            <td><g:link action="edit" id="${bean.id }">${ bean.label }</g:link></td>
+			            <td><g:link action="edit" id="${bean.id }">${ bean.id }</g:link></td>
+			            <td>${ bean.libelle }</td>
 			            <td>${ bean.description }</td>
-			            <td>${ app.formatTimeAgo(date: bean.lastExecution) }</td>
-			            <td class="column-1-buttons command-column">
-			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            <td class="column-2-buttons command-column">
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Supprimer" action="delete" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-delete"></span>
 			            	</g:link>
+			            	<a id="diagram-button" class="aui-button aui-button-subtle" title="Diagramme BPMN" data-url="${ g.createLink(action: 'dialogDiagram', id: bean.id) }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-workflow"></span>
+			            	</a>
 			            </td>
 			        </tr>
 		        </g:each>

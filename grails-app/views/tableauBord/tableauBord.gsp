@@ -1,7 +1,6 @@
 <html>
 <head>
 <meta name='layout' content='authenticated' />
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 
 <body>
@@ -38,27 +37,21 @@
 			</div>
 			<div class="aui-item responsive">
 				<div class="filActualite" style="padding:15px;">
-					<g:render template="/house/synthese"/>
+					<div id="divHouseSynthese" async-url="${ g.createLink(controller: 'house', action: 'synthese', id: house?.id) }"></div>
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<g:render template="/device/deviceActivite"/>
+					<div id="divDeviceSynthese" async-url="${ g.createLink(controller: 'device', action: 'synthese') }"></div>
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<g:render template="/deviceEvent/deviceEventActivite"/>
+					<div id="divEventSynthese" async-url="${ g.createLink(controller: 'deviceEvent', action: 'synthese') }"></div>
 				</div>
 				
 			</div>
 		</div>
 	
 	</g:applyLayout>
-	
-	
-	<asset:script type="text/javascript">
-		google.load("visualization", "1.0", {packages:["corechart"]});
-		google.setOnLoadCallback(buildGoogleCharts);
-	</asset:script>
 	
 </body>
 </html>

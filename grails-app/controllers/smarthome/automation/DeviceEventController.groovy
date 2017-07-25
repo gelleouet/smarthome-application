@@ -17,7 +17,7 @@ class DeviceEventController extends AbstractController {
     private static final String COMMAND_NAME = 'deviceEvent'
 	
 	DeviceEventService deviceEventService
-	WorkflowService workflowService
+	ScenarioService scenarioService
 	DeviceService deviceService
 	ModeService modeService
 	
@@ -26,7 +26,7 @@ class DeviceEventController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration)
+	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration, header = "Options avancées")
 	def deviceEvents(String deviceEventSearch) {
 		def search = QueryUtils.decorateMatchAll(deviceEventSearch)
 		
@@ -76,7 +76,7 @@ class DeviceEventController extends AbstractController {
 		def model = [:]
 		def user = authenticatedUser
 		
-		model.workflows = workflowService.listByUser(null, user.id, [:])
+		model.scenarios = scenarioService.listByUser(null, user.id, [:])
 		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: user.id))
 		model.modes = modeService.listModesByUser(user)
 		
@@ -184,5 +184,16 @@ class DeviceEventController extends AbstractController {
 	def saveNotification(DeviceEventNotification notification) {
 		deviceEventService.saveNotification(notification)
 		nop()
+	}
+	
+	
+	/**
+	 * Synthèse activité
+	 * 
+	 * @return
+	 */
+	def synthese() {
+		def lastEvents = deviceEventService.listLastByUser(principal.id, 10, 7)
+		render (template: 'deviceEventActivite', model: [lastEvents: lastEvents])
 	}
 }

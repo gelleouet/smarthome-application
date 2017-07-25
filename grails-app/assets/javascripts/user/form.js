@@ -37,3 +37,10 @@ function initToggle() {
 		}
 	})
 }
+
+
+function initForm() {
+	if (typeof AJS !== 'undefined') {
+		AJS.$('.ffi input[type="file"]').fancyFileInput();
+	}
+}

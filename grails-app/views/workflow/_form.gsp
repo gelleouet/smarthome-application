@@ -1,30 +1,30 @@
-<%@ page import="smarthome.automation.Workflow" %>
-
+<%@ page import="smarthome.core.Workflow" %>
 
 
 <div class="field-group">
-	<label for="label">
-		Nom
+	<label for="libelle">
+		Libellé
 		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textField name="label" required="true" value="${workflow?.label}" class="text long-field"/>
+	<g:textField name="libelle" required="true" value="${workflow?.libelle}" class="text long-field" autofocus="true"/>
 </div>
-
 
 <div class="field-group">
 	<label for="description">
 		Description
+		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textField name="description" value="${workflow?.label}" class="text long-field"/>
+	<g:textField name="description" required="true" value="${workflow?.description }" class="text long-field"/>
 </div>
 
 <div class="field-group">
-	<label for="script">
-		Script
+	<label for="bpmnFile">
+		Diagramme BPMN 2.0
 		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textArea name="script" required="true" value="${workflow?.script}" class="script textarea text long-field"/>
-	<div class="description">Script Groovy</div>
+	<label class="ffi" data-ffi-button-text="Parcourir">
+       <input type="file" id="bpmnFile" name="bpmnFile"/>
+    </label>
 </div>
 
 

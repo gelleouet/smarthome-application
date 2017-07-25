@@ -60,16 +60,13 @@
               	<a href="#dropdown2-aide" aria-owns="dropdown2-aide" aria-haspopup="true" class="aui-dropdown2-trigger" ><span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span></a>
                 <div class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" id="dropdown2-aide" style="display: none; top: 40px; min-width: 160px; left: 1213px; " aria-hidden="true">
                     <div class="aui-dropdown2-section">
+                    	<div class="aui-dropdown2-heading">
+                    		Liens utiles	
+                    	</div>
                         <ul>
-                            <li><a href="https://connectmyhomeblog.wordpress.com/" target="blank">Blog Smarthome</a></li>
-                            <li><a href="https://connectmyhomeblog.wordpress.com/a-propos/" target="blank">Découvrir l'application</a></li>
-                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank">Installation d'un agent Raspberry</a></li>
+                            <li><a href="https://www.facebook.com/bemyhomesmart/" target="blank"><g:meta name="app.code"/> Facebook</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome" target="blank">Installation Raspberry</a></li>
                             <li><a href="https://github.com/gelleouet/smarthome-application" target="blank">Dépôt Github</a></li>
-                        </ul>
-                    </div>
-                    <div class="aui-dropdown2-section">
-                        <ul>
-                            <li><a href=""><g:meta name="app.code"/> version <g:meta name="app.version"/></a></li>
                         </ul>
                     </div>
                 </div>
@@ -97,6 +94,7 @@
                     	<ul>
 		                    <li>
 		                    	<g:link controller="user" action="profil">Paramètres</g:link>
+		                    	<g:link controller="deviceAlert" action="deviceAlerts">Alertes</g:link>
 		                    </li>
                     	</ul>
                     </div>

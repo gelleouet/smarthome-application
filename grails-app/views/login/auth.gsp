@@ -43,9 +43,9 @@
 	
 	<div class="buttons-container" style="padding-top:20px">
         <div class="buttons">
-            <button class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Google</button>
-            <button class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Facebook</button>
-            <button class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Twitter</button>
+            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Google</button>
+            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Facebook</button>
+            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Twitter</button>
         </div>
     </div>
 	</g:applyLayout>

@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.ExchangeType;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
 
 import org.apache.commons.lang.StringUtils;
@@ -106,7 +108,7 @@ class AsynchronousMessageAspect {
 		}
 		
 		// construction d'une map contenant les paramètres d'entrée et le résultat de la méthode
-		def payload =[:]
+		def payload = [:]
 		payload.result = result
 		payload.serviceMethodName = StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name
 		
@@ -117,6 +119,14 @@ class AsynchronousMessageAspect {
 		}
 		
 		log.debug "Publish message to ${asynchronousMessage.exchange()}"
-		joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload, asynchronousMessage.exchangeType())
+		joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload,
+			asynchronousMessage.exchangeType())
+		
+		// envoi en même temps vers le exchange prévu pour le workflow
+		// on a un seul exchange workflow, cela permet d'avoir une seule route pour exécuter les workflow
+		// plutot que définir une route pour chaque workflow à exécuter. Cela évite de la configuration
+		// pour démarrer le système workflow
+		joinPoint.target.sendAsynchronousMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
+			SmartHomeCoreConstantes.WORKFLOW_QUEUE, payload, ExchangeType.DIRECT)
 	}
 }

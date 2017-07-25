@@ -1,5 +1,6 @@
 package smarthome.security
 
+import java.io.Serializable;
 import java.util.Set;
 
 import grails.validation.Validateable
@@ -12,7 +13,7 @@ import grails.validation.Validateable
  *
  */
 @Validateable
-class UserFriend {
+class UserFriend implements Serializable {
 
 	static belongsTo = [user: User]
 	User friend

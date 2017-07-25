@@ -6,6 +6,7 @@ import groovy.time.TimeDuration;
 class DateUtils {
 	
 	static final String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+	static final String FORMAT_DATETIME_USER = "dd/MM/yyyy HH:mm"
 	
 	
 	/**

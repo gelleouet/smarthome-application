@@ -50,6 +50,21 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Enregistrement d"un device avec la config des alertes
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	def saveWithLevelAlerts(Device device) throws SmartHomeException {
+		device.clearNotBindingLevelAlert()
+		return this.save(device)
+	}
+	
+	
+	/**
 	 * Edition d'un device
 	 * 
 	 * @param device
@@ -162,8 +177,7 @@ class DeviceService extends AbstractService {
 		def resultDevice = null  
 		
 		// bien metre à jour la date avant toutes les autres instructions
-		device.dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
-		
+		Date dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
 		
 		// ajout des métavalues
 		datas.metavalues?.each { key, values ->
@@ -181,12 +195,13 @@ class DeviceService extends AbstractService {
 		}
 		
 		// gestion des devices virtuels associés aux metas virtuels
-		processVirtualMetas(device, virtualMetas)
+		processVirtualMetas(device, virtualMetas, dateValue)
 		
 		// si toutes les valeurs envoyées dans metavalue sont des  virtuelMeta
 		// alors on ne touche pas au device principal mais on met à jour seulement les devices virtuels
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
 			device.value = datas.value
+			device.dateValue = dateValue
 			device.processValue()
 			resultDevice = device
 		}
@@ -228,14 +243,14 @@ class DeviceService extends AbstractService {
 	 * avec sa propre valeur
 	 * 
 	 */
-	private void processVirtualMetas(Device device, List metas) throws SmartHomeException {
+	private void processVirtualMetas(Device device, List metas, Date dateValue) throws SmartHomeException {
 		metas?.each {
 			def virtualDevice = findOrCreateDevice(device.agent, "${device.mac}-${it.name}",
 				"${it.label}  -> ${device.label}",
 				device.deviceType.implClass) 
 			
 			virtualDevice.value = it.value
-			virtualDevice.dateValue = device.dateValue
+			virtualDevice.dateValue = dateValue
 			virtualDevice.processValue()
 			
 			this.save(virtualDevice)

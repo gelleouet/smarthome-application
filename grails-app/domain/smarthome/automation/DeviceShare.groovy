@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -11,7 +13,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class DeviceShare {
+class DeviceShare implements Serializable {
 	static belongsTo = [device: Device]
 	
 	User sharedUser // si null, le device sera partagé à tous les amis

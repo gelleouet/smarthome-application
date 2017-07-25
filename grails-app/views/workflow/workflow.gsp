@@ -5,14 +5,26 @@
 
 <body>
 	<g:applyLayout name="applicationConfigure">
-		<h3>${ workflow.id ? 'Scénario : ' + workflow.label : 'Nouveau scénario' } <span id="ajaxSpinner" class="spinner"/></h3>
+		<g:uploadForm controller="workflow" method="post" class="aui" name="workflow-form">
 		
-		<g:form controller="workflow" method="post" class="aui">
+			<div class="aui-toolbar2">
+			    <div class="aui-toolbar2-inner">
+			        <div class="aui-toolbar2-primary">
+			            <div>
+			               <h3>${ workflow.id ? 'Workflow : ' + workflow.libelle : 'Nouveau workflow' } <span id="ajaxSpinner" class="spinner"/></h3>
+			            </div>		            
+			        </div>
+			        <div class="aui-toolbar2-secondary">
+			            <div class="aui-buttons">
+			            </div>
+			        </div>
+			    </div><!-- .aui-toolbar-inner -->
+			  </div>
+		
 			<g:hiddenField name="id" value="${workflow.id}" />
 	
 			<g:render template="form"/>
 			
-			<br/>
 	
 			<div class="buttons-container">
 				<div class="buttons">
@@ -26,7 +38,7 @@
 					<g:link action="workflows" class="cancel">Annuler</g:link>
 				</div>
 			</div>
-		</g:form>
+		</g:uploadForm>
 		
 	</g:applyLayout>
 </body>

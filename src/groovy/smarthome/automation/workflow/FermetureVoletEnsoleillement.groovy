@@ -5,39 +5,41 @@ import org.apache.commons.logging.Log;
 import smarthome.automation.Device;
 import smarthome.automation.DeviceEvent;
 import smarthome.automation.DeviceService;
-import smarthome.automation.Workflow;
+import smarthome.automation.Scenario;
 
 class FermetureVoletEnsoleillement {
 	Device device
 	DeviceEvent deviceEvent
 	Map<String, Device> devices = [:]
 	DeviceService deviceService
-	Workflow workflow
+	Scenario workflow
 	Log log
 	
 	boolean execute() {
 		Date dateJour = new Date().clearTime()
+		def workflowParams = [lux: 900, nbLux: 5, labelTemperature: "T° séjour (FGMS)",
+			maxTemperature: 23.5]
 		
 		// device = luminosité
 		
-		// moyenne d'ensoleillement > 1000lux sur les 3 dernières valeurs 
-		def lastValues = device.lastValues(null, 3).collect{it.value}
+		// moyenne d'ensoleillement sur les dernières valeurs 
+		def lastValues = device.lastValues(null, workflowParams.nbLux).collect{it.value}
 		
 		if (!lastValues) {
 			log.warn("FermetureVoletEnsoleillement : no values")
 			return false
 		}
 		
-		def avg = lastValues.sum() / lastValues.size()
+		def avg = (int) lastValues.sum() / lastValues.size()
 		
-		if (avg < 1000) {
-			log.warn("FermetureVoletEnsoleillement : luminosité not matching 1000lum ($avg)")
+		if (avg < workflowParams.lux) {
+			log.warn("FermetureVoletEnsoleillement : luminosité not matching ${workflowParams.lux}lum ($avg)")
 			return false
 		}
 		
-		log.info("FermetureVoletEnsoleillement : luminosité matching 950lum ($avg)")
+		log.info("FermetureVoletEnsoleillement : luminosité matching ${workflowParams.lux}lum ($avg)")
 		
-		def temperatureDevice = devices.find({ key, device -> device.label == "T° séjour (FGMS)" })?.value
+		def temperatureDevice = devices.find({ key, device -> device.label == workflowParams.labelTemperature })?.value
 		
 		// valeur température du jour
 		if (dateJour != temperatureDevice?.dateValue?.clearTime()) {
@@ -45,20 +47,20 @@ class FermetureVoletEnsoleillement {
 			return false
 		}
 		
-		// limite température (23°C)
-		if (temperatureDevice?.value?.toDouble() <= 23) {
-			log.warn("FermetureVoletEnsoleillement : T° not matching 23°C (${temperatureDevice?.value?.toDouble()})")
+		// limite température
+		if (temperatureDevice?.value?.toDouble() <= workflowParams.maxTemperature) {
+			log.warn("FermetureVoletEnsoleillement : T° not matching ${workflowParams.maxTemperature}°C (${temperatureDevice?.value?.toDouble()})")
 			return false
 		}
 		
-		log.info("FermetureVoletEnsoleillement : T° matching 23°C (${temperatureDevice?.value?.toDouble()})")
+		log.info("FermetureVoletEnsoleillement : T° matching ${workflowParams.maxTemperature}°C (${temperatureDevice?.value?.toDouble()})")
 		
 		// conditions sont réunies pour fermer à moitié les volets
 		// seuls les volets ouverts à plus de 50% sont fermés
 		devices.each { key, device ->
-			if (device.label in ["Volet panoramique", "Volet salle", "Volet salon", "Volet salon [Gilles]"]) {
-				if (device.value?.toDouble() > 50) {
-					device.value = "50"
+			if (device.label in ["Panoramique", "Baie salle", "Baie salon", "Baie salon [Gilles]"]) {
+				if (device.value?.toDouble() > 95) {
+					device.value = "25"
 					deviceService.invokeAction(device, "level")
 				}
 			}

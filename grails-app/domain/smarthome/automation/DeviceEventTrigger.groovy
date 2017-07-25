@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -11,10 +13,10 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class DeviceEventTrigger {
+class DeviceEventTrigger implements Serializable {
 	static belongsTo = [deviceEvent: DeviceEvent]
 	
-	Workflow workflow
+	Scenario scenario
 	
 	Device device
 	String actionName
@@ -27,7 +29,7 @@ class DeviceEventTrigger {
 	
 	
     static constraints = {
-		workflow nullable: true
+		scenario nullable: true
 		preScript nullable: true
 		device nullable: true
 		actionName nullable: true

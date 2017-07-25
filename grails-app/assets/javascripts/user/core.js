@@ -27,6 +27,7 @@ $( document ).ready(function() {
 	combobox();
 	initDragAndDrop();
 	initToggle()
+	initForm()
 })
 
 

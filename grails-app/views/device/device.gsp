@@ -22,6 +22,9 @@
 			        <li class="menu-item">
 			            <a href="#tabs-device-valeurs">Valeurs</a>
 			        </li>
+			        <li class="menu-item">
+			            <a href="#tabs-device-alerts">Alertes</a>
+			        </li>
 			    </ul>
 			    <div class="tabs-pane active-pane" id="tabs-device-general">
 			    	<div class="smart-tabs-content">
@@ -40,6 +43,13 @@
 						<g:if test="${ device.id }">
 							<g:render template="/deviceType/generic/metavaluesForm" model="[device: device]"/>
 						</g:if>			
+					</div>
+			    </div>
+			    <div class="tabs-pane" id="tabs-device-alerts">
+			        <div id="deviceLevelAlerts" class="smart-tabs-content">
+						<g:if test="${ device.id }">
+							<g:render template="/deviceAlert/deviceLevelAlert" model="[device: device]"/>
+						</g:if>				
 					</div>
 			    </div>
 			</div>

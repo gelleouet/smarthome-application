@@ -36,7 +36,7 @@
 			<label>Application ID<span
 				class="aui-icon icon-required"> required</span></label>
 			<h5>${ user.applicationKey }</h5>
-			<div class="description">Utilisez cet ID pour connecter des agents à l'application SmartHome. Il vous sera demandé dans les identifiants de connexion.</div>
+			<div class="description">Utilisez cet ID pour connecter des agents à l'application <g:meta name="app.code"/>. Il vous sera demandé dans les identifiants de connexion.</div>
 		</div>
 	</fieldset>
 	
