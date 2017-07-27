@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -27,6 +28,7 @@ class Mode implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "Mode_User_Idx"
 		name length:32
 	}

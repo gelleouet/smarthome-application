@@ -30,6 +30,7 @@ class ScriptRule {
 	
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'ruleName'
 		script type: 'text'
 	}

@@ -2,6 +2,7 @@ package smarthome.automation
 
 import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.automation.notification.NotificationSender;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -33,6 +34,7 @@ class NotificationAccount {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "NotificationAccount_User_Idx"
 	}
 	

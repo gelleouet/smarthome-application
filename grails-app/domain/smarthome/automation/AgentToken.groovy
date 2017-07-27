@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 import groovy.time.TimeCategory;
@@ -29,6 +30,7 @@ class AgentToken {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		token index: "AgentToken_Token_Idx"
 	}
 	

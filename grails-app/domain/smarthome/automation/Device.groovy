@@ -7,6 +7,7 @@ import java.util.Map;
 
 import smarthome.core.DateUtils;
 import smarthome.core.ScriptUtils;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -53,6 +54,7 @@ class Device implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		mac index: "Device_MacAgent_Idx"
 		agent index: "Device_MacAgent_Idx"
 		user index: "Device_User_Idx"

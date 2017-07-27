@@ -3,6 +3,7 @@ package smarthome.security
 import java.io.Serializable;
 import java.util.Set;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable
 
 
@@ -24,6 +25,7 @@ class UserFriend implements Serializable {
 	}
 
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "UserFriend_User_Idx"
 	}
 

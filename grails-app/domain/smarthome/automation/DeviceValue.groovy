@@ -3,6 +3,7 @@ package smarthome.automation
 import java.io.Serializable;
 import java.util.Date;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 import groovy.time.TimeCategory;
@@ -38,6 +39,7 @@ class DeviceValue implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		name index: "DeviceValue_DeviceName_Idx", length: 64
 		device index: "DeviceValue_DeviceName_Idx"
 		dateValue index: "DeviceValue_DeviceName_Idx"

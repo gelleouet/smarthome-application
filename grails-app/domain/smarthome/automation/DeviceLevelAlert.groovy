@@ -3,6 +3,7 @@ package smarthome.automation
 import java.io.Serializable;
 import java.util.Date;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable;
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
@@ -37,6 +38,7 @@ class DeviceLevelAlert implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceLevelAlert_Idx"
 	}
 	

@@ -22,6 +22,7 @@ class ComposantVue {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		name index: "ComposantVue_NamePageUser_Idx"
 		page index: "ComposantVue_NamePageUser_Idx"
 		userId index: "ComposantVue_NamePageUser_Idx"

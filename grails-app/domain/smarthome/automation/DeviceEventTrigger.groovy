@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -38,6 +39,7 @@ class DeviceEventTrigger implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		deviceEvent index: "DeviceEventTrigger_DeviceEvent_Idx"
 	}
 	

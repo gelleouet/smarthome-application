@@ -3,6 +3,7 @@ package smarthome.automation
 import java.io.Serializable;
 
 import smarthome.core.DateUtils;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -61,6 +62,7 @@ class DeviceEvent implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceEvent_Device_Idx"
 		condition type: 'text'
 		triggers cascade: 'all-delete-orphan'

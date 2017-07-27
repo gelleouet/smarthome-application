@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -42,6 +43,7 @@ class DeviceMetavalue implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceMetavalue_Device_Idx"
 	}
 }

@@ -21,6 +21,7 @@ class Workflow {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'libelle'
 	}
 	

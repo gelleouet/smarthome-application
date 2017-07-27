@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable;
 
 /**
@@ -27,6 +28,7 @@ class DeviceAlert implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceAlert_Idx"
 		dateDebut index: "DeviceAlert_Idx"
 		level length: 16

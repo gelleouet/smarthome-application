@@ -1,5 +1,6 @@
 package smarthome.security
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable;
 
 @Validateable
@@ -10,6 +11,7 @@ class Role {
 	String authority
 
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'authority'
 	}
 

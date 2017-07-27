@@ -2,6 +2,7 @@ package smarthome.security
 
 import java.util.Set;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable
 
 
@@ -47,6 +48,7 @@ class User implements Serializable {
 	}
 
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		table name: 'utilisateur' // conflit sur certaines bases avec "user"
 		password column: '`password`'
 		friends cascade: 'all-delete-orphan'

@@ -3,6 +3,7 @@ package smarthome.automation
 import java.io.Serializable;
 
 import smarthome.automation.notification.NotificationAccountEnum;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -24,6 +25,7 @@ class DeviceShare implements Serializable {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceShare_Device_Idx"
 		sharedUser index: "DeviceShare_SharedUser_Idx"
 	}

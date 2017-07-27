@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable;
 
 /**
@@ -14,6 +15,7 @@ class HouseMode implements Serializable  {
 	Mode mode
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		id composite: ['house', 'mode']
 		version false
 	}

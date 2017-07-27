@@ -2,6 +2,7 @@ package smarthome.security
 
 import java.util.Date;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.SmartHomeSecurityConstantes;
 
 
@@ -19,6 +20,7 @@ class RegistrationCode {
 	String serverUrl
 
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		version false
 	}
 	

@@ -2,6 +2,8 @@ package smarthome.security
 
 import org.apache.commons.lang.builder.HashCodeBuilder
 
+import smarthome.core.SmartHomeCoreConstantes;
+
 class UserRole implements Serializable {
 
 	private static final long serialVersionUID = 1
@@ -92,6 +94,7 @@ class UserRole implements Serializable {
 	}
 
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		id composite: ['role', 'user']
 		version false
 	}

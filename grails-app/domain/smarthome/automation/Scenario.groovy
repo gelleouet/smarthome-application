@@ -1,6 +1,7 @@
 package smarthome.automation
 
 import smarthome.core.DateUtils;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -26,6 +27,7 @@ class Scenario {
     }
 	
 	static mapping = {
+		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "Workflow_User_Idx"
 		script type: 'text'
 		sort 'label'
