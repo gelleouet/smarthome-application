@@ -2,7 +2,9 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="myProcess" name="My process" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
-    <sequenceFlow id="flow1" name="Début" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
+    <sequenceFlow id="flow1" name="Nouvelle alerte ?" sourceRef="startevent1" targetRef="scripttask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${context.result != null}]]></conditionExpression>
+    </sequenceFlow>
     <sequenceFlow id="flow2" sourceRef="scripttask1" targetRef="inclusivegateway1"></sequenceFlow>
     <serviceTask id="mailtask1" name="Notification alerte mail" activiti:type="mail">
       <extensionElements>
@@ -70,8 +72,7 @@
 		</div>
 		
 	</body>
-</html>
-]]></activiti:expression>
+</html>]]></activiti:expression>
         </activiti:field>
         <activiti:field name="bcc">
           <activiti:string><![CDATA[contact@jdevops.com]]></activiti:string>
@@ -120,14 +121,14 @@ lims.core.Notification notification = new lims.core.Notification(
 
 smsNotificationService.sendNotification(notification)</script>
     </scriptTask>
-    <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>
     <sequenceFlow id="flow6" name="Notification SMS ?" sourceRef="inclusivegateway1" targetRef="scripttask2">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${alertLevel.notifSms && user.telephoneMobile != null}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent3" name="End"></endEvent>
     <sequenceFlow id="flow7" name="Fin" sourceRef="scripttask2" targetRef="endevent3"></sequenceFlow>
+    <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>
     <textAnnotation id="textannotation1">
-      <text>Workflow : Process  Device Alert</text>
+      <text>Workflow : Device Value Alert</text>
     </textAnnotation>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
@@ -150,11 +151,11 @@ smsNotificationService.sendNotification(notification)</script>
       <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
         <omgdc:Bounds height="55.0" width="161.0" x="400.0" y="360.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="inclusivegateway1" id="BPMNShape_inclusivegateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="340.0" y="257.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
         <omgdc:Bounds height="35.0" width="35.0" x="463.0" y="470.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inclusivegateway1" id="BPMNShape_inclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="340.0" y="257.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
         <omgdc:Bounds height="50.0" width="631.0" x="10.0" y="10.0"></omgdc:Bounds>
@@ -163,7 +164,7 @@ smsNotificationService.sendNotification(notification)</script>
         <omgdi:waypoint x="360.0" y="105.0"></omgdi:waypoint>
         <omgdi:waypoint x="360.0" y="150.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="369.0" y="119.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="80.0" x="369.0" y="119.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
@@ -175,14 +176,14 @@ smsNotificationService.sendNotification(notification)</script>
         <omgdi:waypoint x="250.0" y="277.0"></omgdi:waypoint>
         <omgdi:waypoint x="250.0" y="360.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="259.0" y="320.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="83.0" x="259.0" y="320.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="250.0" y="415.0"></omgdi:waypoint>
         <omgdi:waypoint x="250.0" y="470.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="258.0" y="429.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="14.0" x="258.0" y="429.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
@@ -197,14 +198,14 @@ smsNotificationService.sendNotification(notification)</script>
         <omgdi:waypoint x="480.0" y="277.0"></omgdi:waypoint>
         <omgdi:waypoint x="480.0" y="360.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="489.0" y="320.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="87.0" x="489.0" y="320.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
         <omgdi:waypoint x="480.0" y="415.0"></omgdi:waypoint>
         <omgdi:waypoint x="480.0" y="470.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="490.0" y="429.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="14.0" x="490.0" y="429.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

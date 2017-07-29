@@ -97,7 +97,7 @@ class AsynchronousMessageAspect {
 	 * @param asynchronousMessage
 	 * @return
 	 */
-	private def sendAsyncMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage, Object result) {
+	private void sendAsyncMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage, Object result) {
 		def routingKey
 		
 		// détermination du routing key : par défaut = package.nameService.nameMethod
@@ -111,6 +111,7 @@ class AsynchronousMessageAspect {
 		def payload = [:]
 		payload.result = result
 		payload.serviceMethodName = StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name
+		payload.workflowName = asynchronousMessage.workflow()
 		
 		if (joinPoint.args) {
 			joinPoint.args.eachWithIndex { arg, index ->

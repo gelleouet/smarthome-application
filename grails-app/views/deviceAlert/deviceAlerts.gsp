@@ -29,8 +29,8 @@
 			</div>
 			<div class="aui-item">
 				<div class="aui-buttons">
-					<g:link class="aui-button" controller="deviceAlert" action="deviceAlerts">Tous</g:link>
-					<g:link class="aui-button" controller="deviceAlert" action="deviceAlerts" params="[open: true]">Open</g:link>
+					<g:link class="aui-button ${ !command.open ? 'aui-button-primary' : '' }" controller="deviceAlert" action="deviceAlerts">Tous</g:link>
+					<g:link class="aui-button ${ command.open ? 'aui-button-primary' : '' }" controller="deviceAlert" action="deviceAlerts" params="[open: true]">Open</g:link>
 				</div>
 			</div>
 		</div>
@@ -45,7 +45,7 @@
 			            <th>Relance</th>
 			            <th>Objet</th>
 			            <th>Statut</th>
-			            <th class="column-1-buttons"></th>
+			            <th class="column-3-buttons"></th>
 			        </tr>
 			    </thead>
 			    <tbody>
@@ -57,10 +57,13 @@
 				            <td><g:if test="${ bean.relance }"><aui-badge>${ bean.relance }</aui-badge></g:if></td>
 							<td><g:link controller="device" action="deviceChart" params="['device.id': bean.device.id]">${ bean.device.label }</g:link></td>
 				            <td><div id="ajaxAlertStatus${bean.id}"><g:render template="deviceAlertStatusLozenge" model="[alert: bean]"/></div></td>
-				            <td class="column-1-buttons">
+				            <td class="column-3-buttons">
 				            	<g:if test="${ bean.isOpen() }">
-					            	<g:remoteLink class="aui-button aui-button-subtle" title="Viewed" url="[action: 'markViewed', controller: 'deviceAlert', id: bean.id]" update="ajaxAlertStatus${bean.id}">
+					            	<g:remoteLink class="aui-button aui-button-subtle" title="Approuver" url="[action: 'markViewed', controller: 'deviceAlert', id: bean.id]" update="ajaxAlertStatus${bean.id}">
 					            		<span class="aui-icon aui-icon-small aui-iconfont-approve"></span>
+					            	</g:remoteLink>
+					            	<g:remoteLink class="aui-button aui-button-subtle" title="Supprimer" url="[action: 'delete', controller: 'deviceAlert', id: bean.id]">
+					            		<span class="aui-icon aui-icon-small aui-iconfont-delete"></span>
 					            	</g:remoteLink>
 				            	</g:if>
 				            </td>

@@ -7,6 +7,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import smarthome.automation.DeviceAlertService;
+import smarthome.automation.DeviceLevelAlert;
 
 
 /**
@@ -31,9 +32,14 @@ class DeviceAlertMonitoringCronPaginateSubJob implements Job {
 		int offset = jobContext.getJobDetail().getJobDataMap().getInt("offset")
 		int max = jobContext.getJobDetail().getJobDataMap().getInt("max")
 		
-		log.info "Start monitoring from ${offset} to ${offset+max}"
+		// recherche configs alertes monitoring
+		List<DeviceLevelAlert> levelAlerts = deviceAlertService.listDeviceLevelAlertMonitoring([offset: offset, max: max])
 		
-		deviceAlertService.processMonitoring(jobContext.getScheduledFireTime(), [offset: offset, max: max])
+		log.info "Start monitoring from ${offset} to ${offset+max} : ${levelAlerts.size()}"
+		
+		for (DeviceLevelAlert levelAlert : levelAlerts) {
+			deviceAlertService.processMonitoring(levelAlert, jobContext.getScheduledFireTime())
+		}
 	}
 	
 	

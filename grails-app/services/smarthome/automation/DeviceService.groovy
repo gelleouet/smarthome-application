@@ -157,7 +157,8 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue", exchangeType = ExchangeType.FANOUT)
+	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue",
+		exchangeType = ExchangeType.FANOUT, workflow = "deviceService.changeValue")
 	Device changeValueFromAgent(Agent agent, def datas) throws SmartHomeException {
 		log.info "change value ${datas.mac} : ${datas.value}"
 		
@@ -271,7 +272,8 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue", exchangeType = ExchangeType.FANOUT)
+	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue",
+		exchangeType = ExchangeType.FANOUT, workflow = "deviceService.changeValue")
 	Device invokeAction(Device device, String actionName) throws SmartHomeException {
 		log.info "Invoke action ${actionName} on device ${device.mac}"
 		
@@ -303,10 +305,10 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void traceValue(Device device) throws SmartHomeException {
+	DeviceValue traceValue(Device device) throws SmartHomeException {
 		log.info "Trace value for device ${device.mac}"
-		def value
-		def doubleValue
+		DeviceValue value, defaultValue
+		Double doubleValue
 		
 		if (!device.attached) {
 			device.attach()
@@ -317,10 +319,10 @@ class DeviceService extends AbstractService {
 		
 		// trace la valeur principale du device
 		if (doubleValue != null) {
-			value = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
+			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
 			
-			if (!value.save()) {
-				throw new SmartHomeException("Erreur trace valeur !", value)
+			if (!defaultValue.save()) {
+				throw new SmartHomeException("Erreur trace valeur !", defaultValue)
 			}
 		}
 		
@@ -344,6 +346,8 @@ class DeviceService extends AbstractService {
 				}
 			}
 		}
+		
+		return defaultValue
 	}
 	
 	

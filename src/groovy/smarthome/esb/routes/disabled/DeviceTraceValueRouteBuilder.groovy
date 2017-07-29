@@ -1,7 +1,7 @@
 /**
  * 
  */
-package smarthome.esb.routes
+package smarthome.esb.routes.disabled
 
 import org.apache.camel.CamelContext
 import org.apache.camel.RoutesBuilder;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @author gregory
  *
  */
-class DeviceTraceValueRouteBuilder extends RouteBuilder {
+class DeviceTraceValueRouteBuilder /*extends RouteBuilder*/ {
 
 	private static final log = LogFactory.getLog(this)
 	
@@ -33,7 +33,7 @@ class DeviceTraceValueRouteBuilder extends RouteBuilder {
 	/**
 	 * 
 	 */
-	@Override
+	//@Override
 	void configure() throws Exception {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username

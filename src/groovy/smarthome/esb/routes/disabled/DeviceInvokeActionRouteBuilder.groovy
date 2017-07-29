@@ -1,7 +1,7 @@
 /**
  * 
  */
-package smarthome.esb.routes
+package smarthome.esb.routes.disabled
 
 import org.apache.camel.CamelContext
 import org.apache.camel.RoutesBuilder;
@@ -13,18 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Ecoute le exchange "smarthome.automation.deviceService.changeValue" et 
- * déclenche les événements associés au devices
+ * Ecoute le exchange "smarthome.automation.deviceService.changeValue" et filtre les messages
+ * venant uniquement de la méhode "device.invokeAction" pour envoyer un message si nécessaire
+ * à l'agent associé via le websocket
  * 
  * @author gregory
  *
  */
-class DeviceEventRouteBuilder extends RouteBuilder {
+class DeviceInvokeActionRouteBuilder /*extends RouteBuilder*/ {
 
 	private static final log = LogFactory.getLog(this)
 	
 	final String IN_EXCHANGE = "smarthome.automation.deviceService.changeValue"
-	final String IN_QUEUE = "smarthome.automation.deviceService.triggerEvents"
+	final String IN_QUEUE = "smarthome.automation.deviceService.invokeAction"
 	
 	
 	@Autowired
@@ -33,7 +34,7 @@ class DeviceEventRouteBuilder extends RouteBuilder {
 	/**
 	 * 
 	 */
-	@Override
+	//@Override
 	void configure() throws Exception {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
@@ -47,12 +48,19 @@ class DeviceEventRouteBuilder extends RouteBuilder {
 		from("rabbitmq://$rabbitHostname/$IN_EXCHANGE?queue=$IN_QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&autoDelete=false&automaticRecoveryEnabled=true&exchangeType=fanout")
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
-		// filtre les messages sans result
 		.filter().groovy('body.result != null')
+		// filtre uniquement les appels du service deviceService.invokeAction
+		.filter().groovy("body.serviceMethodName == 'deviceService.invokeAction'")
+		.setProperty("invokeAction").groovy('body.arg1')
 		// recupère le device
-		.setProperty("actionName").groovy('body.result.actionName')
 		.setProperty("deviceId").groovy('body.result.id')
 		.setProperty("device").method("deviceService", "findById(property.deviceId)")
-		.to("bean:deviceEventService?method=triggerEvents(property.device, property.actionName)")
+		// récupère l'agent associé
+		.setProperty("agent").method("agentService", "findByDevice(property.device)")
+		// filtre les devices sans agent
+		.filter().simple('${property.agent} != null')
+		// construit le message à envoyer
+		.setProperty("data").method("deviceService", "invokeActionMessage(property.device, property.invokeAction)")
+		.to("bean:agentService?method=sendMessage(property.agent, property.data)")
 	}
 }

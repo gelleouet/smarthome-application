@@ -68,4 +68,16 @@ class DeviceAlertController extends AbstractController {
 		deviceAlertService.markViewed(alert)
 		render(template: 'deviceAlertStatusLozenge', model: [alert: alert])
 	}
+	
+	
+	/**
+	 * Suppression d'une alerte
+	 * 
+	 * @param alert
+	 * @return
+	 */
+	def delete(DeviceAlert alert) {
+		deviceAlertService.delete(alert)
+		nop()
+	}
 }

@@ -25,7 +25,7 @@ import smarthome.automation.DeviceAlertService;
 class DeviceAlertMonitoringCronMainJob implements Job {
 
 	private static final log = LogFactory.getLog(this)
-	private static final int MAX_PAGE = 1000
+	private static final int MAX_PAGE = 250
 	
 	
 	@Autowired

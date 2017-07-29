@@ -48,8 +48,7 @@ class User implements Serializable {
 	}
 
 	static mapping = {
-		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
-		table name: 'utilisateur' // conflit sur certaines bases avec "user"
+		table name: 'utilisateur', schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA // conflit sur certaines bases avec "user"
 		password column: '`password`'
 		friends cascade: 'all-delete-orphan'
 		sort 'nom'

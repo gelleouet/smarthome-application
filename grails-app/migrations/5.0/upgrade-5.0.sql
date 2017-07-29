@@ -1,3 +1,9 @@
+ALTER SCHEMA public
+	RENAME TO smarthome;
+
+CREATE SCHEMA public
+  AUTHORIZATION postgres;
+	
 ALTER TABLE smarthome.workflow
 	RENAME TO scenario;
 
@@ -26,4 +32,5 @@ WITH (
 ALTER TABLE smarthome.workflow
   OWNER TO postgres;
 
-
+ALTER SEQUENCE smarthome.hibernate_sequence
+  SET SCHEMA public;
