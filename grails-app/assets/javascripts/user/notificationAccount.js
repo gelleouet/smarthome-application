@@ -7,10 +7,7 @@ function showNotificationAccountDialog() {
 }
 
 
-function onNotificationAccountChange(select) {
-	var datas = {
-		className: select.value
-	}
-	ajaxGet(select, 'data-url', datas, '#ajaxNotificationSenderForm');
+function onNotificationAccountSenderChange(select) {
+	ajaxSubmitForm(select, 'data-url', '#notificationAccount-form', '#ajaxNotificationSenderForm')
 }
 

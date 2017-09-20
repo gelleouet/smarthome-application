@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.AsynchronousWorkflow;
 import smarthome.core.Chronometre;
 import smarthome.core.DateUtils;
 import smarthome.core.ExchangeType;
@@ -157,8 +158,7 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue",
-		exchangeType = ExchangeType.FANOUT, workflow = "deviceService.changeValue")
+	@AsynchronousWorkflow("deviceService.changeValue")
 	Device changeValueFromAgent(Agent agent, def datas) throws SmartHomeException {
 		log.info "change value ${datas.mac} : ${datas.value}"
 		
@@ -272,15 +272,14 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceService.changeValue",
-		exchangeType = ExchangeType.FANOUT, workflow = "deviceService.changeValue")
-	Device invokeAction(Device device, String actionName) throws SmartHomeException {
+	@AsynchronousWorkflow("deviceService.changeValue")
+	Device execute(Device device, String actionName, Map actionParameters) throws SmartHomeException {
 		log.info "Invoke action ${actionName} on device ${device.mac}"
 		
 		// instancie le type device pour exécuter l'action
 		def deviceImpl = device.newDeviceImpl()
 		device.fetchParams()
-		def context = new WorkflowContext()
+		def context = new WorkflowContext(parameters: actionParameters)
 		
 		try {
 			deviceImpl."${actionName}"(context)
@@ -294,60 +293,6 @@ class DeviceService extends AbstractService {
 		device.actionName = actionName
 		
 		return this.save(device)
-	}
-	
-	
-	/**
-	 * Trace le changement de valeur pour garder un historique
-	 * 
-	 * @param device
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	DeviceValue traceValue(Device device) throws SmartHomeException {
-		log.info "Trace value for device ${device.mac}"
-		DeviceValue value, defaultValue
-		Double doubleValue
-		
-		if (!device.attached) {
-			device.attach()
-		}
-		
-		def deviceType = device.newDeviceImpl()
-		doubleValue = DeviceValue.parseDoubleValue(device.value)
-		
-		// trace la valeur principale du device
-		if (doubleValue != null) {
-			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
-			
-			if (!defaultValue.save()) {
-				throw new SmartHomeException("Erreur trace valeur !", defaultValue)
-			}
-		}
-		
-		// trace les metavalues 
-		device.metavalues?.each {
-			if (it.value) {
-				// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
-				// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
-				// sinon on regarde si activée au niveau meta
-				if (it.trace && !it.main && !it.virtualDevice) {
-					doubleValue = DeviceValue.parseDoubleValue(it.value)
-					
-					if (doubleValue != null) {
-						value = new DeviceValue(device: device, name: it.name, value: doubleValue,
-							dateValue: device.dateValue)
-						
-						if (!value.save()) {
-							throw new SmartHomeException("Erreur trace meta valeur !", value)
-						}
-					}
-				}
-			}
-		}
-		
-		return defaultValue
 	}
 	
 	
@@ -444,7 +389,7 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	Map invokeActionMessage(Device device, String invokeAction) throws SmartHomeException {
+	Map createMessage(Device device, String actionName) throws SmartHomeException {
 		if (!device.attached) {
 			device.attach()
 		}
@@ -452,9 +397,10 @@ class DeviceService extends AbstractService {
 		// chargement des associations pour eviter erreur à conversion json
 		// @see static Device JSON.registerObjectMarshaller
 		def deviceType = device.deviceType
-		device.metadatas = DeviceMetadata.findAllByDevice(device)
+		//device.metadatas = DeviceMetadata.findAllByDevice(device)
+		device.metadatas.size()
 		
-		return [header: 'invokeAction', action: invokeAction, 
+		return [header: 'invokeAction', action: actionName, 
 			device: device]
 	}
 	

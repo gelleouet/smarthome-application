@@ -2,6 +2,7 @@ package smarthome.automation.deviceType
 
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import smarthome.automation.ChartTypeEnum;
@@ -9,6 +10,8 @@ import smarthome.automation.DataModifierEnum;
 import smarthome.automation.Device;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.WorkflowEvent;
+import smarthome.automation.WorkflowEventParameter;
+import smarthome.automation.WorkflowEventParameters;
 
 abstract class AbstractDeviceType {
 	Device device
@@ -104,6 +107,30 @@ abstract class AbstractDeviceType {
 		}
 		
 		return events.sort()
+	}
+	
+	
+	/**
+	 * Liste des paramètres pour la méthode demandée
+	 * 
+	 * @param actionName
+	 * @return
+	 */
+	final List eventParameters(String actionName) {
+		List parameters = []
+		
+		getClass().getMethods()?.each { method ->
+			if (method.name == actionName) {
+				WorkflowEventParameters workflowEventParameters = method.getAnnotation(WorkflowEventParameters)
+				
+				if (workflowEventParameters) {
+					for (WorkflowEventParameter workflowEventParameter : workflowEventParameters.value()) {
+						parameters << workflowEventParameter
+					}
+				}
+			}
+		}
+		return parameters	
 	}
 	
 	

@@ -39,7 +39,7 @@
 		    <thead>
 		        <tr>
 		            <th>Libellé</th>
-		            <th>Classe</th>
+		            <th>Implémentation</th>
 		        </tr>
 		    </thead>
 		    <tbody>

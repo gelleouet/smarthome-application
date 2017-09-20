@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.AsynchronousWorkflow;
 import smarthome.core.ExchangeType;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
@@ -72,19 +73,31 @@ class AsynchronousMessageAspect {
 		MethodSignature signature = (MethodSignature) joinPoint.signature
 		Method method = signature.method
 		Annotation asyncMessage = method.getAnnotation(AsynchronousMessage)
+		Annotation asyncWorkflow = method.getAnnotation(AsynchronousWorkflow)
 		
-		if (asyncMessage) {
+		if (asyncMessage || asyncWorkflow) {
+			Map payload = createPayload(joinPoint, result)
+			
 			def transactionAttribute = transactionAttributeSource.getTransactionAttribute(joinPoint.signature.method, joinPoint.target.class)
+			
+			def closure = {
+				if (asyncMessage) {
+					sendAsyncMessage(joinPoint, asyncMessage, payload)
+				}
+				if (asyncWorkflow) {
+					sendAsyncWorkflow(joinPoint, asyncWorkflow, payload)
+				}
+			}
 
 			if (transactionAttribute) {
 				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 					@Override
 					public void afterCommit() {
-						sendAsyncMessage(joinPoint, asyncMessage, result)
+						closure()	
 					}
 				});
 			} else {
-				sendAsyncMessage(joinPoint, asyncMessage, result)
+				closure()
 			}
 		}
 	}
@@ -95,9 +108,10 @@ class AsynchronousMessageAspect {
 	 * 
 	 * @param joinPoint
 	 * @param asynchronousMessage
+	 * @param payload
 	 * @return
 	 */
-	private void sendAsyncMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage, Object result) {
+	private void sendAsyncMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage, Map payload) {
 		def routingKey
 		
 		// détermination du routing key : par défaut = package.nameService.nameMethod
@@ -107,21 +121,20 @@ class AsynchronousMessageAspect {
 			routingKey = ClassUtils.prefixAMQ(joinPoint.target) + '.' + joinPoint.signature.name
 		}
 		
-		// construction d'une map contenant les paramètres d'entrée et le résultat de la méthode
-		def payload = [:]
-		payload.result = result
-		payload.serviceMethodName = StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name
-		payload.workflowName = asynchronousMessage.workflow()
-		
-		if (joinPoint.args) {
-			joinPoint.args.eachWithIndex { arg, index ->
-				payload."arg$index" = arg
-			}
-		}
-		
-		log.debug "Publish message to ${asynchronousMessage.exchange()}"
 		joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload,
 			asynchronousMessage.exchangeType())
+	}
+	
+	
+	/**
+	 * Exécution d'un workflow en mode asynchrone
+	 * 
+	 * @param joinPoint
+	 * @param asynchronousWorkflow
+	 * @param payload
+	 */
+	private void sendAsyncWorkflow(ProceedingJoinPoint joinPoint, AsynchronousWorkflow asynchronousWorkflow, Map payload) {
+		payload.workflowName = asynchronousWorkflow.value()
 		
 		// envoi en même temps vers le exchange prévu pour le workflow
 		// on a un seul exchange workflow, cela permet d'avoir une seule route pour exécuter les workflow
@@ -129,5 +142,26 @@ class AsynchronousMessageAspect {
 		// pour démarrer le système workflow
 		joinPoint.target.sendAsynchronousMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
 			SmartHomeCoreConstantes.WORKFLOW_QUEUE, payload, ExchangeType.DIRECT)
+	}
+	
+	
+	/**
+	 * Création du message
+	 * 
+	 * @param joinPoint
+	 * @param result
+	 * @return
+	 */
+	private Map createPayload(ProceedingJoinPoint joinPoint, Object result) {
+		Map payload = [result: result, serviceMethodName: StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name,
+			methodName: joinPoint.signature.name]
+		
+		if (joinPoint.args) {
+			joinPoint.args.eachWithIndex { arg, index ->
+				payload."arg$index" = arg
+			}
+		}
+		
+		return payload
 	}
 }

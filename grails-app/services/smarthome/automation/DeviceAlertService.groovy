@@ -2,9 +2,9 @@ package smarthome.automation
 
 
 import org.springframework.transaction.annotation.Transactional;
+
 import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.ExchangeType;
+import smarthome.core.AsynchronousWorkflow;
 import smarthome.core.SmartHomeException;
 
 
@@ -101,7 +101,7 @@ class DeviceAlertService extends AbstractService {
 	 * @return non null si nouvelle alerte à avertir
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceAlertService.processMonitoring", exchangeType =  ExchangeType.FANOUT)
+	@AsynchronousWorkflow("deviceAlertService.processAlert")
 	DeviceAlert processMonitoring(DeviceLevelAlert levelAlert, Date dateMonitoring) throws SmartHomeException {
 		// récupère la dernière alerte du device
 		DeviceAlert alert = levelAlert.device.lastDeviceAlert()
@@ -129,7 +129,7 @@ class DeviceAlertService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(exchange = "smarthome.automation.deviceAlertService.processDeviceValue", exchangeType =  ExchangeType.FANOUT)
+	@AsynchronousWorkflow("deviceAlertService.processAlert")
 	DeviceAlert processDeviceValue(DeviceValue deviceValue) throws SmartHomeException {
 		List<DeviceLevelAlert> levelAlerts = listDeviceLevelAlertValue(deviceValue.device)
 		DeviceAlert deviceAlert = deviceValue.device.lastDeviceAlert()
@@ -291,12 +291,12 @@ class DeviceAlertService extends AbstractService {
 		// calcul du temps écoulé depuis le début de l'alerte
 		long minuteEllape = (dateReference.time - alert.dateDebut.time) / 1000 / 60
 		
-		// les relances ne commencent qu'à la 3e période car la 1ère est autorisée par la tempo,
-		// la 2e est le 1er envoi de l'alerte, la 3e est donc la 1ere relance
+		// les relances ne commencent qu'à la 2e période car la 1ère est le 1er envoi de l'alerte, 
+		// la 2e est donc la 1ere relance
 		int nbPeriode = minuteEllape / tempo
 		
-		if (nbPeriode >= 3) {
-			alert.relance = nbPeriode - 2
+		if (nbPeriode >= 2) {
+			alert.relance = nbPeriode - 1
 		} else {
 			alert.relance = 0
 		}

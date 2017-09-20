@@ -153,25 +153,6 @@ grails.cache.enabled = true
 
 smarthome.cluster.serverId = System.properties["smarthome.cluster.serverId"]
 
-rabbitmq {
-	connectionfactory {
-		username = 'guest'
-		password = 'guest'
-		hostname = 'localhost'
-	}
-	
-	messageDirectory = 'E:/Tmp/RabbitMQ'
-}
-
-
-smtp {
-	hostname = 'smtp.jdevops.com'
-	port = 25
-	password = '3MrTfsYM73g5'
-	username = 'noreply@jdevops.com'
-	from = 'BeMyHomeSmart <noreply@smarthome.fr>'
-}
-
 
 // default pagination
 smarthome.pagination.defaultMax = 25
@@ -181,6 +162,7 @@ grails.databinding.dateFormats = [
 	'yyyy-MM-dd HH:mm:ss.S',
 	"yyyy-MM-dd'T'hh:mm:ss'Z'"
 ]
+
 
 quartz.scheduler.instanceName = "SmarthomeQuartzScheduler"
 quartz.scheduler.instanceId = "AUTO"

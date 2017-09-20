@@ -1,5 +1,12 @@
 package smarthome.automation
 
-class WorkflowContext {
 
+/**
+ * Contexte d'exécution des implémentations devices
+ * 
+ * @author Gregory
+ *
+ */
+class WorkflowContext {
+	Map parameters = [:]
 }

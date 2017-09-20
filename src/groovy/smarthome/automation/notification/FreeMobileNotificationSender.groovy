@@ -1,5 +1,7 @@
 package smarthome.automation.notification
 
+import java.util.Map;
+
 import grails.converters.JSON;
 
 import org.apache.http.HttpResponse;
@@ -9,6 +11,7 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.ContentType;
 import org.apache.http.message.BasicNameValuePair;
 
+import smarthome.automation.Notification;
 import smarthome.core.SmartHomeException
 
 class FreeMobileNotificationSender extends AbstractNotificationSender {
@@ -24,13 +27,14 @@ class FreeMobileNotificationSender extends AbstractNotificationSender {
 	
 	
 	@Override
-	void send(Notification notification) throws SmartHomeException {
-		if (!config.user || !config.pass) {
+	void send(Notification notification, Map context) throws SmartHomeException {
+		if (!notification.notificationAccount.jsonConfig.user || !notification.notificationAccount.jsonConfig.pass) {
 			throw new SmartHomeException("Free mobile configuration incomplète ! (user, pass obligatoires)")
 		}
 
 		// encodage du message en iso sinon caractères spéciaux ne passent pas
-		String encodMessage = new String((["user": config.user, "pass": config.pass, "msg": notification.message] as JSON).toString().bytes, CHARSET_ISO8859)
+		String encodMessage = new String((["user": notification.notificationAccount.jsonConfig.user,
+			"pass": notification.notificationAccount.jsonConfig.pass, "msg": notification.message] as JSON).toString().bytes, CHARSET_ISO8859)
 		
 		try {
 			HttpResponse response = Request.Post(FREE_SMS_URL)
@@ -46,11 +50,4 @@ class FreeMobileNotificationSender extends AbstractNotificationSender {
 			throw new SmartHomeException(ex) 
 		}
 	}
-
-
-	@Override
-	String getDescription() {
-		return "Free Mobile Notification SMS";
-	}
-
 }

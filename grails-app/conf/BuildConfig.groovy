@@ -29,6 +29,8 @@ quartz.version = "2.2.2"
 quartz.groupId = "org.quartz-scheduler"
 httpclient.groupId = "org.apache.httpcomponents"
 httpclient.version = "4.5.2"
+aws.version = "1.11.140"
+aws.groupId = "com.amazonaws"
 
 
 grails.project.dependency.resolver = "maven" // or ivy
@@ -87,10 +89,13 @@ grails.project.dependency.resolution = {
 		compile "$httpclient.groupId:fluent-hc:$httpclient.version"
 		
 		compile ("org.activiti:activiti-engine:$activiti.version") {
-			excludes "spring-beans"
+			excludes "spring-beans", "jackson-core"
 		}
 		compile ("org.activiti:activiti-spring:$activiti.version") {
 			excludes "commons-dbcp", "commons-pool"
+		}
+		compile ("$aws.groupId:aws-java-sdk-sns:$aws.version") {
+		
 		}
 	}
 

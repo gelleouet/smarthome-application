@@ -12,6 +12,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import smarthome.core.SmartHomeCoreConstantes;
+
 /**
  * Prend en charge les messages AMQP de la queue registerService.resetPassowrd.
  * Envoit d'un mail à l'utilisateur contenant un lien avec le token d'identification
@@ -24,7 +26,7 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
-	final String EXCHANGE = "amq.direct"
+	final String EXCHANGE = SmartHomeCoreConstantes.DIRECT_EXCHANGE
 	final String SHELL = "smarthome.automation.agentService.shellMessage"
 	final String RECEIVE = "smarthome.automation.agentService.receiveMessage"
 	

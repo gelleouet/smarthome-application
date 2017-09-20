@@ -3,7 +3,7 @@
 		<h3>Modes</h3>
 	</div>
 	<div class="aui-item">
-		<g:link class="aui-button-cancel" controller="user" action="profil"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Gérer les modes</g:link>
+		<g:link class="aui-button-cancel" controller="profil" action="profil"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Gérer les modes</g:link>
 	</div>
 </div>
 

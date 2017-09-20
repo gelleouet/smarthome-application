@@ -33,7 +33,7 @@ beans = {
 			// monitoring des devices
 			'smarthome.automation.scheduler.DeviceAlertMonitoringCronMainJob' : "0 * * * * ?",
 			// déclenchement des events planifiés toutes les minutes
-			'smarthome.automation.scheduler.DeviceEventCronMainJob' : "0 * * * * ?",
+			'smarthome.automation.scheduler.EventCronMainJob' : "0 * * * * ?",
 			// calcul des consos maison tous les soirs juste avant minuit
 			'smarthome.automation.scheduler.HouseConsoCronMainJob' : "59 59 23 * * ?"
 		]

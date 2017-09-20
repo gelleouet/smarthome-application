@@ -1,15 +1,16 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>
 
-import lims.core.AbstractLimsController;
-import lims.core.ExceptionNavigationHandler;
-import lims.core.QueryUtils;
-import lims.plugin.NavigableAction;
-import lims.plugin.NavigationEnum;
-
 import org.springframework.security.access.annotation.Secured;
+import smarthome.core.AbstractController;
+import smarthome.core.ExceptionNavigationHandler;
+import smarthome.core.SmartHomeException;
+import smarthome.plugin.NavigableAction;
+import smarthome.plugin.NavigationEnum;
+import smarthome.core.QueryUtils;
+
 
 @Secured("hasRole('ROLE_ADMIN')")
-class ${className}Controller extends AbstractLimsController {
+class ${className}Controller extends AbstractController {
 
     private static final String COMMAND_NAME = '${propertyName}'
 	
@@ -20,10 +21,7 @@ class ${className}Controller extends AbstractLimsController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "${className}s", navigation = NavigationEnum.configuration, header = "${className}s", breadcrumb = [
-		NavigableAction.CONFIG_APPLICATION,
-		"${className}s"
-	])
+	@NavigableAction(label = "${className}s", navigation = NavigationEnum.configuration, header = "")
 	def ${propertyName}s(String ${propertyName}Search) {
 		def search = QueryUtils.decorateMatchAll(${propertyName}Search)
 		
@@ -51,21 +49,11 @@ class ${className}Controller extends AbstractLimsController {
 	 */
 	def edit(${className} ${propertyName}) {
 		def edit${className} = parseFlashCommand(COMMAND_NAME, ${propertyName})
+		${propertyName}Service.edit(${propertyName})
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): edit${className}]))
 	}
 
 
-	/**
-	 * Création
-	 *
-	 * @return
-	 */
-	def create() {
-		def edit${className} = parseFlashCommand(COMMAND_NAME, new ${className}())
-		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): edit${className}]))
-	}
-	
-	
 	/**
 	 * Prépare le model pour les ecrans de création et modification
 	 *
@@ -91,27 +79,13 @@ class ${className}Controller extends AbstractLimsController {
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = ${className}Controller.COMMAND_NAME)
-	def saveEdit(${className} ${propertyName}) {
+	def save(${className} ${propertyName}) {
 		checkErrors(this, ${propertyName})
 		${propertyName}Service.save(${propertyName})
-		redirect(action: COMMAND_NAME + 's')
+		redirect(action: 'edit', id: ${propertyName}.id)
 	}
 
 
-	/**
-	 * Enregistrement d'un nouveau
-	 *
-	 * @param ${propertyName}
-	 * @return
-	 */
-	@ExceptionNavigationHandler(actionName = "create", modelName = ${className}Controller.COMMAND_NAME)
-	def saveCreate(${className} ${propertyName}) {
-		checkErrors(this, ${propertyName})
-		${propertyName}Service.save(${propertyName})
-		redirect(action: COMMAND_NAME + 's')
-	}
-	
-	
 	/**
 	 * Suppression
 	 *
@@ -120,7 +94,7 @@ class ${className}Controller extends AbstractLimsController {
 	 */
 	@ExceptionNavigationHandler(actionName = "${propertyName}s")
 	def delete(${className} ${propertyName}) {
-		${propertyName}Service.save(${propertyName})
+		${propertyName}Service.delete(${propertyName})
 		redirect(action: COMMAND_NAME + 's')
 	}
 }

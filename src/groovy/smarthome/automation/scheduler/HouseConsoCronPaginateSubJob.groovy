@@ -6,6 +6,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import smarthome.automation.House;
 import smarthome.automation.HouseService;
 
 
@@ -34,7 +35,7 @@ class HouseConsoCronPaginateSubJob implements Job {
 		log.info "Scheedule house conso from ${offset} to ${offset+max} : ${houses.size()}"
 		
 		houses.each {
-			houseService.asyncCalculConsoAnnuelle(it.id, jobContext.getScheduledFireTime()[Calendar.YEAR])
+			houseService.calculConsoAnnuelle(House.read(it.id), jobContext.getScheduledFireTime()[Calendar.YEAR])
 		}
 	}
 	

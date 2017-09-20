@@ -12,6 +12,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
 
 /**
@@ -26,7 +27,7 @@ class AgentSendMessageRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
-	final String EXCHANGE = "amq.direct"
+	final String EXCHANGE = SmartHomeCoreConstantes.DIRECT_EXCHANGE
 	final String QUEUE = "smarthome.automation.agentService.sendMessage"
 	
 	

@@ -172,4 +172,57 @@ class DeviceValueService extends AbstractService {
 			return map
 		}
 	}
+	
+	
+	/**
+	 * Trace le changement de valeur pour garder un historique
+	 *
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValue traceValue(Device device) throws SmartHomeException {
+		DeviceValue value, defaultValue
+		Double doubleValue
+		
+		if (!device.attached) {
+			device.attach()
+		}
+		
+		def deviceType = device.newDeviceImpl()
+		doubleValue = DeviceValue.parseDoubleValue(device.value)
+		
+		// trace la valeur principale du device
+		if (doubleValue != null) {
+			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
+			
+			if (!defaultValue.save()) {
+				throw new SmartHomeException("Erreur trace valeur !", defaultValue)
+			}
+		}
+		
+		// trace les metavalues
+		device.metavalues?.each {
+			if (it.value) {
+				// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
+				// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
+				// sinon on regarde si activée au niveau meta
+				if (it.trace && !it.main && !it.virtualDevice) {
+					doubleValue = DeviceValue.parseDoubleValue(it.value)
+					
+					if (doubleValue != null) {
+						value = new DeviceValue(device: device, name: it.name, value: doubleValue,
+							dateValue: device.dateValue)
+						
+						if (!value.save()) {
+							throw new SmartHomeException("Erreur trace meta valeur !", value)
+						}
+					}
+				}
+			}
+		}
+		
+		return defaultValue
+	}
 }

@@ -1,6 +1,8 @@
 package smarthome.core
 
 import java.lang.reflect.Method;
+
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -69,6 +71,23 @@ class ClassUtils {
 			throw new SmartHomeException(ex)
 		}
 		
+	}
+	
+	
+	/**
+	 * Instance un objet directement à partir du nom de la classe
+	 *
+	 * @param className
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	static Object forNameInstance(String className) throws SmartHomeException {
+		try {
+			Class classe = Class.forName(className)
+			return newInstance(classe)
+		} catch (Exception ex) {
+			throw new SmartHomeException(ex)
+		}
 	}
 	
 	

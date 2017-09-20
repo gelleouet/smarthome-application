@@ -5,7 +5,7 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
+import smarthome.core.AsynchronousWorkflow;
 import smarthome.core.SmartHomeException;
 import smarthome.security.RegistrationCode;
 import smarthome.security.ResetPasswordCommand;
@@ -22,8 +22,8 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
-    def forgotPassword(String username) throws SmartHomeException {
+	@AsynchronousWorkflow("registerService.forgotPassword")
+    RegistrationCode forgotPassword(String username) throws SmartHomeException {
 		log.info "Demande reset mot de passe ${username}"
 		
 		// on vérifie que l'adresse est connue
@@ -34,7 +34,7 @@ class RegisterService extends AbstractService {
 		}
 		
 		// création d'un code d'enregistrement
-		def registrationCode = new RegistrationCode(username: username)
+		RegistrationCode registrationCode = new RegistrationCode(username: username)
 		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'resetPassword', 
 				params: [username: username, token: registrationCode.token], absolute: true)
 		
@@ -53,8 +53,8 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousMessage()
-	def createAccount(AccountCommand account) throws SmartHomeException {
+	@AsynchronousWorkflow("registerService.createAccount")
+	RegistrationCode createAccount(AccountCommand account) throws SmartHomeException {
 		log.info "Demande création compte ${account.username}"
 		
 		// on vérifie que l'adresse n'est pas déjà prie
@@ -65,7 +65,7 @@ class RegisterService extends AbstractService {
 		}
 		
 		// création d'un code d'enregistrement
-		def registrationCode = new RegistrationCode(username: account.username)
+		RegistrationCode registrationCode = new RegistrationCode(username: account.username)
 		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'confirmAccount',
 				params: [username: account.username, token: registrationCode.token], absolute: true)
 		
@@ -93,7 +93,7 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def resetPassword(ResetPasswordCommand command) {
+	void resetPassword(ResetPasswordCommand command) {
 		log.info "Reset password ${command.username}"
 		
 		// on vérifie que le token existe bien pour le user
@@ -137,7 +137,7 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def confirmAccount(String username, String token) {
+	void confirmAccount(String username, String token) {
 		log.info "Activation compte ${username}"
 		
 		// on vérifie que l'adresse n'est pas déjà prie

@@ -48,7 +48,7 @@
 			    <div class="tabs-pane" id="tabs-device-alerts">
 			        <div id="deviceLevelAlerts" class="smart-tabs-content">
 						<g:if test="${ device.id }">
-							<g:render template="/deviceAlert/deviceLevelAlert" model="[device: device]"/>
+							<g:render template="/deviceAlert/deviceLevelAlert" model="[device: device, deviceEvents: deviceEvents]"/>
 						</g:if>				
 					</div>
 			    </div>

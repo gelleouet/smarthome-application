@@ -14,15 +14,6 @@
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
-		        	<g:form controller="user" >
-		            <div class="aui-buttons">
-		            	<g:hiddenField name="username" value="${user.username }"/>
-		            	<g:if test="${ user.id }">
-							<g:actionSubmit class="aui-button" value="Réinitialiser le mot de passe" action="resetPassword" 
-								onclick="return confirm('Un mail va être envoyé à ${user.username } pour réinitialiser son mot de passe.Voulez-vous continuer ?')"/>
-						</g:if>
-		            </div>
-		            </g:form>
 		        </div>
 		    </div><!-- .aui-toolbar-inner -->
 		</div>

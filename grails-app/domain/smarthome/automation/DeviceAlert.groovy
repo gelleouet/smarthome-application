@@ -81,4 +81,14 @@ class DeviceAlert implements Serializable {
 		level = alertLevel
 		return this
 	}
+	
+	
+	/**
+	 * Retrouve la config de l'alerte
+	 * 
+	 * @return
+	 */
+	DeviceLevelAlert findLevelAlert() {
+		return DeviceLevelAlert.findByDeviceAndLevel(device, level)
+	}
 }

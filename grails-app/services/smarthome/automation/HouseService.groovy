@@ -102,20 +102,6 @@ class HouseService extends AbstractService {
 	
 	
 	/**
-	 * Calcul asynchrone de la conso d'une maison.
-	 * Un message est envoyé sur le bus AMQP pour qu'un consumer prenne en charge le calcul
-	 * 
-	 * @param houseId
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@AsynchronousMessage()
-	Long asyncCalculConsoAnnuelle(Long houseId, int year) throws SmartHomeException {
-		return houseId
-	}
-	
-	
-	/**
 	 * Calcul des interprétations de la maison
 	 * 
 	 * @param house

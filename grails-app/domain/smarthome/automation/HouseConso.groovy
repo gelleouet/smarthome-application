@@ -1,5 +1,7 @@
 package smarthome.automation
 
+import java.io.Serializable;
+
 import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
@@ -12,7 +14,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class HouseConso {
+class HouseConso implements Serializable {
 	static belongsTo = [house: House]
 	
 	Double kwHC

@@ -2,7 +2,6 @@ package smarthome.automation
 
 import java.io.Serializable;
 
-import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;

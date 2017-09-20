@@ -1,9 +1,12 @@
 package smarthome.automation
 
-import smarthome.automation.notification.NotificationAccountEnum;
+import java.io.Serializable;
+
 import smarthome.automation.notification.NotificationSender;
 import smarthome.core.SmartHomeCoreConstantes;
+import smarthome.core.SmartHomeException;
 import smarthome.security.User;
+import grails.converters.JSON;
 import grails.validation.Validateable;
 
 /**
@@ -13,22 +16,20 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class NotificationAccount {
+class NotificationAccount implements Serializable {
 	static belongsTo = [user: User]
 	
-	NotificationAccountEnum type
-	String className 
+	NotificationAccountSender notificationAccountSender
 	String config
 	
 	
-	// propriétés utilisateur
+	static transients = ['jsonConfig']
 	def jsonConfig = [:]
 	
-	static transients = ['jsonConfig']
 	
 	
     static constraints = {
-		type unique: ['user']
+		notificationAccountSender unique: ['user']
 		config nullable: true
 		jsonConfig bindable: true
     }
@@ -39,16 +40,23 @@ class NotificationAccount {
 	}
 	
 	
+	void configToJson() {
+		jsonConfig = config ? JSON.parse(config) : [:]
+	}
+	
+	void configFromJson() {
+		config = jsonConfig as JSON
+	}
+	
 	/**
-	 * Instancie un sender 
-	 * 
-	 * @return
+	 * Vérifie si autorisation pour utiliser le le service
+	 *
 	 */
-	NotificationSender getSenderInstance() {
-		try {
-			return Class.forName(className).newInstance()
-		} catch (Exception ex) {
-			return null
-		}	
+	void assertAutorisation() throws SmartHomeException {
+		if (notificationAccountSender.role) {
+			if (!user.hasRole(notificationAccountSender.role)) {
+				throw new SmartHomeException("Autorisation insuffisante pour utiliser le service ${notificationAccountSender.libelle} !")
+			}
+		}
 	}
 }

@@ -44,12 +44,4 @@ public  @interface AsynchronousMessage {
 	 * @return
 	 */
 	ExchangeType exchangeType() default ExchangeType.DIRECT;
-	
-	
-	/**
-	 * En plus du 1er message, un 2e sera envoyé pour le workflow
-	 * 
-	 * @return
-	 */
-	String workflow() default "";
 }

@@ -74,6 +74,14 @@ class User implements Serializable {
 		return roles.collect { it.role }
 		//UserRole.findAllByPersonne(this).collect { it.role }
 	}
+	
+	
+	boolean hasRole(String role) {
+		this.getAuthorities().find {
+			it.authority == role
+		}
+	}
+	
 
 	def beforeInsert() {
 		encodePassword()

@@ -3,6 +3,7 @@ package smarthome.automation
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import smarthome.core.DateUtils;
@@ -18,10 +19,10 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class Device implements Serializable {
+class Device implements Serializable, EventTriggerPreparable {
 	static belongsTo = [agent: Agent, user: User]
 	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
-		events: DeviceEvent, shares: DeviceShare, levelAlerts: DeviceLevelAlert]
+		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert]
 	
 	String label
 	String groupe
@@ -282,5 +283,33 @@ class Device implements Serializable {
 			order 'dateDebut', 'desc'
 			maxResults 1
 		}
+	}
+
+	
+	@Override
+	List domainList(EventTrigger eventTrigger) {
+		return Device.createCriteria().list {
+			eq 'user', eventTrigger.event.user
+			order 'label'
+		}
+	}
+
+	@Override
+	List actionList(EventTrigger eventTrigger) {
+		List actions = [EventTrigger.HERITED_ACTION_NAME]
+		Device device = Device.read(eventTrigger.domainId)
+		actions.addAll(device.newDeviceImpl().events())
+		return actions
+	}
+
+	@Override
+	List parameterList(EventTrigger eventTrigger) {
+		Device device = Device.read(eventTrigger.domainId)
+		return device.newDeviceImpl().eventParameters(eventTrigger.actionName)
+	}
+
+	@Override
+	String domainValue() {
+		return "label"
 	}
 }

@@ -22,12 +22,10 @@ class DeviceLevelAlert implements Serializable {
 	ModeAlertEnum mode
 	Double value
 	int tempo
-	boolean notifMail
-	boolean notifSms
+	Event event
 	
 	// propriétés utilisateur
 	Integer status
-	
 	
 	static transients = ['status']
 	
@@ -35,6 +33,7 @@ class DeviceLevelAlert implements Serializable {
     static constraints = {
 		tempo min:1
 		status bindable: true
+		event nullable: true
     }
 	
 	static mapping = {
@@ -80,7 +79,7 @@ class DeviceLevelAlert implements Serializable {
 		use (TimeCategory) {
 			// +5 : on ajoute une marge d'erreur car les boitiers ne sont pas synchronisés avec l'heure des
 			// serveurs et surtout ils ne sont pas planifiés à la minute ET 0sec alors que le job lui l'est
-			dateNewValue = thisObject.device.dateValue + new TimeDuration(0, this.tempo +5, 0, 0)
+			dateNewValue = this.device.dateValue + new TimeDuration(0, this.tempo +5, 0, 0)
 		}
 		
 		return dateNewValue < date

@@ -4,11 +4,9 @@ package smarthome.automation
 import grails.converters.JSON;
 
 import org.springframework.security.access.annotation.Secured;
-
 import smarthome.automation.notification.NotificationSender;
 import smarthome.core.AbstractController;
 import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
@@ -19,60 +17,94 @@ import smarthome.security.User;
 @Secured("isAuthenticated()")
 class NotificationAccountController extends AbstractController {
 
+	private static final String COMMAND_NAME = 'notificationAccount'
+	
 	NotificationAccountService notificationAccountService
 	
 	
-	/**
-	 * dialogue ajout/modif notification compte
-	 * 
-	 * @param notification
-	 * @return
-	 */
-	def dialogNotificationAccount(NotificationAccount notificationAccount, String typeNotification) {
-		notificationAccountService.edit(notificationAccount)
-		render(view: 'dialogNotificationAccount', model: [notificationAccount: notificationAccount,
-			notificationSenders: notificationAccountService.listNotificationSender(),
-			typeNotification: typeNotification])
-	}
-	
-	
 	
 	/**
-	 * Rendu du 
-	 * @param notificationAccount
+	 * Affichage paginé avec fonction recherche
+	 *
 	 * @return
 	 */
-	def formTemplateNotificationSender(NotificationAccount notificationAccount, String className) {
-		if (className && !notificationAccount.className) {
-			notificationAccount.className = className
-		}
+	@NavigableAction(label = "Services API", navigation = NavigationEnum.configuration, header = "Compte")
+	def notificationAccounts(NotificationAccountCommand command) {
+		command.user = authenticatedUser
+		def notificationAccounts = notificationAccountService.search(command, this.getPagination([:]))
+		def recordsTotal = notificationAccounts.totalCount
 		
-		if (notificationAccount.className) {
-			NotificationSender sender = notificationAccount.senderInstance
-			
-			if (notificationAccount.config) {
-				notificationAccount.jsonConfig = JSON.parse(notificationAccount.config)
-			}
-			
-			render(template: "sender/${sender.simpleName}", model: [notificationAccount: notificationAccount])	
-		} else {
-			nop()
-		}
+		// devices est accessible depuis le model avec la variable device[Instance]List
+		// @see grails.scaffolding.templates.domainSuffix
+		respond notificationAccounts, model: [recordsTotal: recordsTotal, command: command]
 	}
 	
 	
 	/**
-	 * Enregistrement account
-	 * 
-	 * @param notificationAccount
+	 * Edition
+	 *
+	 * @param device
 	 * @return
 	 */
+	def edit(NotificationAccount notificationAccount) {
+		def editObject = parseFlashCommand(COMMAND_NAME, notificationAccount)
+		editObject = notificationAccountService.edit(editObject)
+		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editObject]))
+	}
+
+
+	/**
+	 * Création
+	 *
+	 * @return
+	 */
+	def create() {
+		def editObject = parseFlashCommand(COMMAND_NAME, new NotificationAccount())
+		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editObject]))
+	}
+	
+	
+	/**
+	 * Prépare le model pour les ecrans de création et modification
+	 *
+	 * @return
+	 */
+	def fetchModelEdit(userModel) {
+		def model = [:]
+		// Compléter le model
+		model.notificationSenders = NotificationAccountSender.list()
+		// on remplit avec les infos du user
+		model << userModel
+		return model
+	}
+	
+	
+	/**
+	 * Enregistrement d'un nouveau
+	 *
+	 * @param user
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = "notificationAccount")
 	def save(NotificationAccount notificationAccount) {
+		notificationAccount.user = authenticatedUser
 		// la config est bindée en map, faut la transformer
-		notificationAccount.config = notificationAccount.jsonConfig as JSON
-		notificationAccount.user = User.read(principal.id)
+		notificationAccount.configFromJson()
+		notificationAccount.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
+		checkErrors(this, notificationAccount)
 		notificationAccountService.save(notificationAccount)
-		
-		redirect (action: 'profil', controller: 'user')
+		edit(notificationAccount)
+	}
+	
+	
+	/**
+	 * Exécute une action sur un device
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "notificationAccounts", modelName = "")
+	def delete(NotificationAccount notificationAccount) {
+		notificationAccountService.delete(notificationAccount)
+		redirect(action: 'notificationAccounts')
 	}
 }

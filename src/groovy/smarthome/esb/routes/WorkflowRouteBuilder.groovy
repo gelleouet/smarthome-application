@@ -47,7 +47,7 @@ class WorkflowRouteBuilder extends RouteBuilder {
 		// Décodage du JSON dans une map
 		.unmarshal().json(JsonLibrary.Gson, Map.class)
 		// détermine le workflow à exécuter
-		.setProperty("workflowLibelle").groovy("'Activiti_' + (body.workflowName ?: body.serviceMethodName)")
+		.setProperty("workflowLibelle").groovy("'Activiti_' + body.workflowName")
 		.setProperty("workflow").method("workflowService", "findByLibelle(property.workflowLibelle)")
 		// filtre les messages sans worklow connu
 		.filter().simple('${property.workflow} != null')

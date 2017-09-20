@@ -20,6 +20,7 @@ class DeviceController extends AbstractController {
 	DeviceService deviceService
 	DeviceValueService deviceValueService
 	DeviceAlertService deviceAlertService
+	EventService eventService
 	
 	
 	/**
@@ -27,7 +28,7 @@ class DeviceController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Objets connectés", navigation = NavigationEnum.configuration)
+	@NavigableAction(label = "Objets connectés", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def devices(String deviceSearch) {
 		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]), 
 			search: deviceSearch, userId: principal.id))
@@ -99,6 +100,7 @@ class DeviceController extends AbstractController {
 		model.user = authenticatedUser
 		model.agents = Agent.findAllByUser(model.user)
 		model.deviceTypes = DeviceType.list()
+		model.deviceEvents = eventService.listByUser(null, model.user.id, [:])
 		
 		// on remplit avec les infos du user
 		model << userModel
@@ -176,7 +178,7 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def invokeAction(Device device, String actionName) {
 		deviceService.assertSharedAccess(device, authenticatedUser)
-		deviceService.invokeAction(device, actionName)
+		deviceService.execute(device, actionName, [:])
 		
 		if (request.xhr) {
 			nop()
@@ -196,7 +198,7 @@ class DeviceController extends AbstractController {
 	def publicInvokeAction(Device device, String actionName, String applicationKey) {
 		User user = User.findByApplicationKey(applicationKey)
 		deviceService.assertSharedAccess(device, user)
-		deviceService.invokeAction(device, actionName)
+		deviceService.execute(device, actionName, [:])
 		redirect(action: 'devicesGrid')
 	}
 	

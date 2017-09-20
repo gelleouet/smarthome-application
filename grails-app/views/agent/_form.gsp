@@ -1,7 +1,5 @@
 <%@ page import="smarthome.automation.Agent" %>
 
-
-
 <div class="field-group">
 	<label for="mac">
 		Nom

@@ -15,6 +15,7 @@ import smarthome.core.ClassUtils;
 import smarthome.core.EndPointUtils;
 import smarthome.core.ExchangeType;
 import smarthome.core.QueryUtils;
+import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
 import smarthome.endpoint.AgentEndPoint;
 import smarthome.endpoint.AgentEndPointMessage;
@@ -389,8 +390,8 @@ class AgentService extends AbstractService {
 		// il faut envoyer le message au bon serveur dans la bonne Queue 
 		// on se sert du serverId qu'on passe en routingKey
 		// Seul le bon serveur ayant le websocket va recevoir le message à traiter
-		this.asyncSendMessage("amq.direct", ClassUtils.prefixAMQ(this) + '.sendMessage.' + token.serverId, 
-			message, ExchangeType.DIRECT)
+		this.asyncSendMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
+			ClassUtils.prefixAMQ(this) + '.sendMessage.' + token.serverId, message, ExchangeType.DIRECT)
 	}
 	
 	

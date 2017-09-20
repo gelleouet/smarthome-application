@@ -11,6 +11,7 @@ class DeviceAlertController extends AbstractController {
     private static final String COMMAND_NAME = 'deviceAlert'
 	
 	DeviceAlertService deviceAlertService
+	EventService eventService
 	DeviceService deviceService
 	
 	
@@ -41,7 +42,8 @@ class DeviceAlertController extends AbstractController {
 	 */
 	def addLevelAlert(Device device) {
 		deviceAlertService.addLevelAlert(device)
-		render(template: 'deviceLevelAlertTable', model: [levelAlerts: device.levelAlerts])
+		render(template: 'deviceLevelAlertTable', model: [levelAlerts: device.levelAlerts,
+			deviceEvents: eventService.listByUser(null, principal.id, [:])])
 	}
 	
 	
@@ -54,7 +56,8 @@ class DeviceAlertController extends AbstractController {
 	 */
 	def deleteLevelAlert(Device device, int status) {
 		deviceAlertService.deleteLevelAlert(device, status)
-		render(template: 'deviceLevelAlertTable', model: [levelAlerts: device.levelAlerts])
+		render(template: 'deviceLevelAlertTable', model: [levelAlerts: device.levelAlerts,
+			deviceEvents: eventService.listByUser(null, principal.id, [:])])
 	}
 	
 	

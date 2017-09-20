@@ -3,6 +3,8 @@ package smarthome.automation.deviceType
 import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
+import smarthome.automation.WorkflowEventParameter;
+import smarthome.automation.WorkflowEventParameters;
 
 /**
  * Périphérique Volet roulant
@@ -63,9 +65,17 @@ class VoletRoulant extends AbstractDeviceType {
 	 * @return
 	 */
 	@WorkflowEvent
+	@WorkflowEventParameters([
+		@WorkflowEventParameter(name="level", label="Level", type="number", minValue="0", maxValue="100")
+	])
 	def level(WorkflowContext context) {
 		this.device.command = "level"
-		// la valeur doit déjà être injectée sur le device
+		
+		// la valeur est récupérée depuis le param level
+		// sinon elle doit être injectée dans "device.value" avant l'appel de la méthode
+		if (context.parameters.level != null) {
+			this.device.value = context.parameters.level
+		}
 		
 		// vérifie la valeur max
 		if (this.device.value?.toDouble() >= 100) {

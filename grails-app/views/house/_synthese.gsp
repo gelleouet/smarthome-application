@@ -21,7 +21,7 @@
 				</g:if>
 				<g:else>
 					<p class="h6"><span class="aui-icon aui-icon-small aui-iconfont-warning"></span> 
-					L'objet <g:link controller="user" action="profil">Température principale</g:link> n'est pas configuré sur votre profil !</p>
+					L'objet <g:link controller="profil" action="profil">Température principale</g:link> n'est pas configuré sur votre profil !</p>
 				</g:else>
 			</div>
 		</div>
@@ -44,7 +44,7 @@
 				</g:if>
 				<g:else>
 					<h6 class="h6"><span class="aui-icon aui-icon-small aui-iconfont-warning"></span> 
-					L'objet <g:link controller="user" action="profil">Humidité principale</g:link> n'est pas configuré sur votre profil !</h6>
+					L'objet <g:link controller="profil" action="profil">Humidité principale</g:link> n'est pas configuré sur votre profil !</h6>
 				</g:else>
 			</div>
 		</div>
@@ -73,7 +73,7 @@
 				</g:if>
 				<g:else>
 					<h6 class="h6"><span class="aui-icon aui-icon-small aui-iconfont-warning"></span> 
-					L'objet <g:link controller="user" action="profil">Compteur principal</g:link> n'est pas configuré sur votre profil !</h6>
+					L'objet <g:link controller="profil" action="profil">Compteur principal</g:link> n'est pas configuré sur votre profil !</h6>
 				</g:else>
 			</div>
 		</div>

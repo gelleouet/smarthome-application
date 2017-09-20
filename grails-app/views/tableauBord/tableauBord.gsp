@@ -26,7 +26,7 @@
 		<div class="aui-group">
 			<div class="aui-item responsive" style="width:350px">
 				<div class="filActualite" style="padding:15px;">
-					<g:render template="/user/profilPublic" model="[userDeviceCount: userDeviceCount, sharedDeviceCount: sharedDeviceCount]"></g:render>
+					<g:render template="/profil/profilPublic" model="[userDeviceCount: userDeviceCount, sharedDeviceCount: sharedDeviceCount]"></g:render>
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
@@ -45,7 +45,7 @@
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<div id="divEventSynthese" async-url="${ g.createLink(controller: 'deviceEvent', action: 'synthese') }"></div>
+					<div id="divEventSynthese" async-url="${ g.createLink(controller: 'event', action: 'synthese') }"></div>
 				</div>
 				
 			</div>

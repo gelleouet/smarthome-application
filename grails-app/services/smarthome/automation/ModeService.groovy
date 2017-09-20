@@ -88,7 +88,7 @@ class ModeService extends AbstractService {
 				}).deleteAll()
 				
 				// suppression association DeviceEvent
-				DeviceEventMode.where({
+				EventMode.where({
 					mode == existMode
 				}).deleteAll()
 				

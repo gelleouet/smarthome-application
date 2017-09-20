@@ -65,7 +65,7 @@
                     	</div>
                         <ul>
                             <li><a href="https://www.facebook.com/bemyhomesmart/" target="blank"><g:meta name="app.code"/> Facebook</a></li>
-                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome" target="blank">Installation Raspberry</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome" target="blank">Wiki Github</a></li>
                             <li><a href="https://github.com/gelleouet/smarthome-application" target="blank">Dépôt Github</a></li>
                         </ul>
                     </div>
@@ -93,7 +93,7 @@
 						</div>
                     	<ul>
 		                    <li>
-		                    	<g:link controller="user" action="profil">Paramètres</g:link>
+		                    	<g:link controller="profil" action="profil">Paramètres</g:link>
 		                    	<g:link controller="deviceAlert" action="deviceAlerts">Alertes</g:link>
 		                    </li>
                     	</ul>

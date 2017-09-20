@@ -6,12 +6,6 @@ import smarthome.core.SmartHomeException
 
 abstract class AbstractNotificationSender implements NotificationSender {
 
-	/**
-	 * Propriétés du gestionnaire de notification
-	 *
-	 */
-	def config = [:]
-
 	@Override
 	final String getName() {
 		return this.getClass().name

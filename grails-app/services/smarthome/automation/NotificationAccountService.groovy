@@ -14,13 +14,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.automation.notification.EmailNotificationSender;
-import smarthome.automation.notification.Notification;
-import smarthome.automation.notification.NotificationAccountEnum;
 import smarthome.automation.notification.NotificationSender;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.ClassUtils;
 import smarthome.core.ExchangeType;
+import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
@@ -28,6 +27,55 @@ import smarthome.security.User;
 
 class NotificationAccountService extends AbstractService {
 
+	
+	/**
+	 * Enregistrement
+	 *
+	 * @param domain
+	 *
+	 * @return domain
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	NotificationAccount save(NotificationAccount notificationAccount) throws SmartHomeException {
+		// vérif du rôle sur sender
+		notificationAccount.assertAutorisation()
+		
+		if (!notificationAccount.save()) {
+			throw new SmartHomeException("Erreur enregistrement notificationAccount", notificationAccount)
+		}
+		
+		return notificationAccount
+	}
+	
+	
+	/**
+	 * Recherche paginée
+	 * 
+	 * @return
+	 */
+	List<NotificationAccount> search(NotificationAccountCommand command, Map pagination) {
+		return NotificationAccount.createCriteria().list(pagination) {
+			eq 'user', command.user
+			notificationAccountSender {
+				if (command.libelle) {
+					ilike 'libelle', QueryUtils.decorateMatchAll(command.libelle)
+				}
+				order 'libelle'
+			}
+		}
+	}
+	
+	
+	/**
+	 * Les services de l'utilisateur
+	 * 
+	 * @param user
+	 * @return
+	 */
+	List<NotificationAccount> listForUser(User user) {
+		return search(new NotificationAccountCommand(user: user), [:])
+	}
+	
 	
 	/**
 	 * Edition ACL
@@ -42,28 +90,12 @@ class NotificationAccountService extends AbstractService {
 	
 	
 	/**
-	 * Liste des sender de notifications
-	 * 
-	 * @return
-	 */
-	List<NotificationSender> listNotificationSender() {
-		def senders = []
-		
-		ServiceLoader.load(NotificationSender).each {
-			senders << it
-		}
-		
-		return senders
-	}
-	
-	
-	/**
 	 * Envoi des notifications lors du déchenchement d'un event
 	 *
 	 * @param deviceEvent
 	 * @param context
 	 */
-	void sendDeviceEventNotifications(DeviceEvent deviceEvent) throws SmartHomeException {
+	void sendDeviceEventNotifications(Event deviceEvent) throws SmartHomeException {
 		if (!deviceEvent.attached) {
 			deviceEvent.attach()
 		}
@@ -84,7 +116,7 @@ class NotificationAccountService extends AbstractService {
 			if (notification.message) {
 				if (notification.script) {
 					// Utiliser une transaction séparée en lecture seule pour éviter des abus
-					DeviceEvent.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
+					Event.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
 						message = ScriptUtils.runScript(notification.message, context)?.toString()
 					}
 				} else {

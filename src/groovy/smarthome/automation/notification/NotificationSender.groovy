@@ -1,5 +1,6 @@
 package smarthome.automation.notification
 
+import smarthome.automation.Notification;
 import smarthome.core.SmartHomeException;
 
 /**
@@ -15,7 +16,7 @@ interface NotificationSender {
 	 * 
 	 * @throws SmartHomeException
 	 */
-	void send(Notification notification) throws SmartHomeException
+	void send(Notification notification, Map context) throws SmartHomeException
 	
 	
 	/**
@@ -32,12 +33,4 @@ interface NotificationSender {
 	 * @return
 	 */
 	String getSimpleName()
-	
-	
-	/**
-	 * Description utilisateur
-	 * 
-	 * @return
-	 */
-	String getDescription()
 }

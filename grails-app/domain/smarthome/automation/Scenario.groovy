@@ -1,5 +1,9 @@
 package smarthome.automation
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
@@ -12,7 +16,7 @@ import grails.validation.Validateable;
  *
  */
 @Validateable
-class Scenario {
+class Scenario implements Serializable, EventTriggerPreparable {
 	static belongsTo = [user: User]
 	
 	String label
@@ -28,7 +32,7 @@ class Scenario {
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
-		user index: "Workflow_User_Idx"
+		user index: "Scenario_User_Idx"
 		script type: 'text'
 		sort 'label'
 	}
@@ -53,5 +57,31 @@ class Scenario {
 	 */
 	boolean isBlindTime(int dateField, int delta) {
 		return DateUtils.isBlindTime(lastExecution, dateField, delta)
+	}
+
+
+	@Override
+	List domainList(EventTrigger eventTrigger) {
+		return Scenario.createCriteria().list {
+			eq 'user', eventTrigger.event.user
+			order 'label'
+		}
+	}
+
+
+	@Override
+	List actionList(EventTrigger eventTrigger) {
+		return ['execute'];
+	}
+
+
+	@Override
+	List parameterList(EventTrigger eventTrigger) {
+		return [];
+	}
+	
+	@Override
+	String domainValue() {
+		return "label"
 	}
 }

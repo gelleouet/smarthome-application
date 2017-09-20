@@ -22,4 +22,6 @@ public class SmartHomeCoreConstantes {
 	public static final String FANOUT_EXCHANGE = "amq.fanout";
 	
 	public static final String WORKFLOW_QUEUE = "smarthome.core.workflow";
+	public static final String EVENT_QUEUE = "smarthome.core.event";
+	public static final String EMAIL_QUEUE = "smarthome.core.email";
 }
