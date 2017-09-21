@@ -22,8 +22,8 @@
 	<legend><span>Options</span></legend>
 	<div class="checkbox">
 		<g:checkBox name="synchroSoleil" value="${event?.synchroSoleil}" class="checkbox"/>
-		<label>Ajuster l'heure de planification pour déclencher l'événement à <g:field type="time" name="heureDecalage" value="${ deviceEvent?.heureDecalage }" class="text" style="width:100px;"/>
-			au solstice d'<g:select name="solstice" value="${ deviceEvent?.solstice }" from="['été', 'hiver']" class="select"/>.
+		<label>Ajuster l'heure de planification pour déclencher l'événement à <g:field type="time" name="heureDecalage" value="${ event?.heureDecalage }" class="text" style="width:100px;"/>
+			au solstice d'<g:select name="solstice" value="${ event?.solstice }" from="['été', 'hiver']" class="select"/>.
 		<div class="description">Le cron doit toujours être programmé sur l'heure la plus tôt. La nouvelle heure sera calculée tous les jours.</div>
 	</div>
 	<div class="checkbox">
