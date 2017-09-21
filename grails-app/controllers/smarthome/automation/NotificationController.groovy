@@ -12,7 +12,7 @@ import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 
 
-@Secured("hasRole('ROLE_ADMIN')")
+@Secured("isAuthenticated()")
 class NotificationController extends AbstractController {
 
     private static final String COMMAND_NAME = 'notification'
