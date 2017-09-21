@@ -40,7 +40,7 @@
 		Condition
 	</label>
 	<g:textArea name="condition" value="${event?.condition}" class="short-script textarea text long-field"/>
-	<div class="description">Expression Groovy renvoyant en dernière instruction un Boolean.
+	<div class="description">Expression Groovy renvoyant en dernière instruction un Boolean ou CronExpression.
 		Variables pré-définies : device, event, alert, alertLevel, devices
 	</div>
 </div>

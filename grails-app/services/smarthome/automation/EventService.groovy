@@ -310,6 +310,8 @@ class EventService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Event execute(Event event, Map heritedContext = [:]) throws SmartHomeException {
+		Date dateEvent = new Date()
+		
 		if (!event.attached) {
 			event.attach()
 		}
@@ -343,6 +345,12 @@ class EventService extends AbstractService {
 			Event.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW, readOnly: true]) {
 				hasTrigger = ScriptUtils.runScript(event.condition, context)
 			}
+		}
+		
+		// le retour de la condition est un CronExpression. On vérifie qu'il matche avec l'heure d'exécution de l'event
+		// et on le transforme en boolean
+		if (hasTrigger instanceof CronExpression) {
+			hasTrigger = hasTrigger.isSatisfiedBy(dateEvent)
 		}
 		
 		// on s'assure que le result de la condition est bien un boolean
@@ -383,7 +391,7 @@ class EventService extends AbstractService {
 			}
 			
 			// trace l'exécution de l'event
-			event.lastEvent = new Date()
+			event.lastEvent = dateEvent
 			event.save()
 		}
 		

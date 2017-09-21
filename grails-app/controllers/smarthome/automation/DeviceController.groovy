@@ -7,6 +7,7 @@ import smarthome.core.ChartUtils;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
+import smarthome.core.chart.GoogleChart;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 import smarthome.security.User;
@@ -165,8 +166,10 @@ class DeviceController extends AbstractController {
 		command.deviceImpl = command.device.deviceType.newDeviceType()
 		
 		def datas = deviceValueService.values(command)
+		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
 		
-		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords])
+		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords,
+			chart: chart])
 	}
 	
 	
@@ -212,6 +215,67 @@ class DeviceController extends AbstractController {
 	def delete(Device device) {
 		deviceService.delete(device)
 		redirect(action: 'devices')
+	}
+	
+	
+	/**
+	 * Suppression d'une valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	def deleteDeviceValue(DeviceValue deviceValue) {
+		deviceValueService.delete(deviceValue)
+		nop()
+	}
+	
+	
+	/**
+	 * Modification d'une valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	def saveDeviceValue(DeviceValue deviceValue) {
+		deviceValueService.save(deviceValue)
+		nop()
+	}
+	
+	
+	/**
+	 * Ajout d'une valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	def addDeviceValue(DeviceValue deviceValue) {
+		// binding datetime à la main
+		deviceValue.dateValue = Date.parse(DateUtils.FORMAT_DATETIME_USER, params.dateValue)
+		deviceValue.validate()
+		deviceValueService.addValue(deviceValue)
+		nop()
+	}
+	
+	
+	/**
+	 * Boite de dialogue pour modifier valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	def dialogDeviceValue(DeviceValue deviceValue) {
+		render(template: 'dialogDeviceValue', model: [deviceValue: deviceValue])	
+	}
+	
+	
+	/**
+	 * Boite de dialogue pour ajouter valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	def dialogAddDeviceValue(Device device) {
+		render(template: 'dialogAddDeviceValue', model: [device: device])	
 	}
 	
 	

@@ -167,6 +167,12 @@ class DeviceAlertService extends AbstractService {
 						}
 					}	
 					
+					// borne la recherche du début de l'alerte à 15J, sinon si tous les valeurs sont en alerte
+					// la recherche va charger toutes les valeurs du device
+					if (deviceValue.dateValue - lastAlertValue.dateValue > 15) {
+						searchValue = false	// casse la boucle WHILE
+					}
+					
 					offsetValues += MAX_VALUES_ALERT_SEARCH
 				} // while
 				

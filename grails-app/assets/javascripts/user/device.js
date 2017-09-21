@@ -93,3 +93,35 @@ function onDropDeviceToGroupe(event, ui) {
 }
 
 
+function showDeviceValueDialog() {
+	AJS.dialog2('#device-value-dialog').show();
+}
+
+
+function closeDeviceValueDialog(refreshChart) {
+	AJS.dialog2('#device-value-dialog').hide()
+	
+	if (refreshChart) {
+		$('#navigation-chart-form').submit()
+	}
+}
+
+
+function showAddDeviceValueDialog() {
+	AJS.dialog2('#add-device-value-dialog').show();
+	initDateTimePicker()
+}
+
+
+function closeAddDeviceValueDialog(refreshChart) {
+	AJS.dialog2('#add-device-value-dialog').hide()
+	
+	if (refreshChart) {
+		$('#navigation-chart-form').submit()
+	}
+}
+
+
+function onLoadDeviceChart() {
+	onLoadChart()
+}

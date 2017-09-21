@@ -1,38 +1,14 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
-<div data-chart-datas="true" class="hidden">	
+<div data-chart-datas="true" class="hidden" data-on-build-chart="onBuildQualitatifChart"
+	data-url-delete-value="${ g.createLink(controller: 'device', action: 'deleteDeviceValue') }"
+	data-url-change-value="${ g.createLink(controller: 'device', action: 'dialogDeviceValue') }" data-immediate="true">	
 
-	<g:if test="${ command.viewMode == ChartViewEnum.day }">
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'datetime'},
-	   		 {label: 'Valeur', type: 'number'}],
-	   		<g:each var="data" in="${datas}">
-	   			[new Date(<g:formatDate date="${data.dateValue}" format="yyyy,${data.dateValue.getAt(Calendar.MONTH)},d,H,m,s,0"/>),  ${data.value}],
-	   		</g:each>
-	   	]);
-	</g:if>
-	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'date'},
-	   		 {label: 'Min', type: 'number'},
-	   		 {label: 'Max', type: 'number'},
-	   		 {label: 'Moyenne', type: 'number'}],
-	   		 <g:each var="data" in="${datas}">
-	   			[new Date(<g:formatDate date="${data.day}" format="yyyy,${data.day.getAt(Calendar.MONTH)},d"/>),  ${data.min}, ${data.max}, ${data.avg}],
-	   		</g:each>
-	   	]);
-	</g:elseif>
-	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
-		chartDatas = google.visualization.arrayToDataTable([
-	   		[{label: 'Date', type: 'date'},
-	   		 {label: 'Min', type: 'number'},
-	   		 {label: 'Max', type: 'number'},
-	   		 {label: 'Moyenne', type: 'number'}],
-	   		 <g:each var="data" in="${datas}">
-	   			[new Date(${data.year},${data.month-1},1),  ${data.min}, ${data.max}, ${data.avg}],
-	   		</g:each>
-	   	]);
-	</g:elseif>
+   	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
+   	
+   	<g:if test="${ chart.joinChart }">
+   		chartJoinDatas = new google.visualization.DataTable(${ raw(chart.joinChart.toJsonDataTable().toString(false)) });	
+   	</g:if>
    	
 	chartOptions = {
 		'pointSize': '2',
@@ -42,8 +18,34 @@
         'curveType': 'function',
         'chartArea': {
         	width: '90%'
-        }
+        },
+        'tooltip': {
+			'isHtml': true,
+			'trigger': 'selection'
+		},
+		'explorer': {
+			'axis': 'horizontal',
+			'actions': ['dragToZoom', 'rightClickToReset']
+		},
+		'series': {
+			<g:each var="serie" in="${ chart.series }" status="status">
+				${ status }: {color: '${ serie.color }', lineDashStyle: ${ chart.lineDashStyle(serie) },
+					type: '${ serie.type ?: "line" }', targetAxisIndex: ${ serie.axisIndex ?: 0}},
+			</g:each>
+		},
+		'vAxes': {
+			<g:each var="axis" in="${ chart.vAxis }" status="status">
+				${ status }: {title: '${ axis.title }', maxValue: '${ axis.maxValue ?: 'automatic' }'},
+			</g:each>
+	    },
+	    <g:if test="${ chart.joinChart }">
+	    'interpolateNulls': true,
+	    </g:if>
 	}
+	
+	<g:if test="${ chart.chartType }">
+		chartType = '${ chart.chartType }'
+	</g:if>
 </div>
 
 

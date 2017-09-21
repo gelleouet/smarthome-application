@@ -23,6 +23,68 @@ class DeviceValueService extends AbstractService {
 	
 	
 	/**
+	 * Ajoute une nouvelle valeur. Si c'est la valeur la plus récente, met à jour le device
+	 * 
+	 * @param deviceValue
+	 * @return
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValue addValue(DeviceValue deviceValue) throws SmartHomeException {
+		this.save(deviceValue)
+		
+		if (deviceValue.dateValue > deviceValue.device.dateValue) {
+			deviceValue.device.dateValue = deviceValue.dateValue
+			deviceValue.device.value = deviceValue.value.toString()
+			super.save(deviceValue.device)
+		}
+		
+		return deviceValue	
+	}
+	
+	
+	/**
+	 * Suppression d'une valeur. Si dernière valeur, il faut ajuster la date du device 
+	 * avec l'avant dernière valeur
+	 * 
+	 * @param deviceValue
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValue delete(DeviceValue deviceValue) throws SmartHomeException {
+		// recherche d'une valeur plus récente
+		DeviceValue findValue = DeviceValue.createCriteria().get {
+			eq 'device', deviceValue.device
+			gt 'dateValue', deviceValue.dateValue
+			isNull 'name'
+			maxResults 1
+		}
+		
+		// c'était la valeur la plus récente, donc on doit rafraichir les infos générales de la sonde
+		// avec la valeur précédente
+		if (!findValue) {
+			findValue = DeviceValue.createCriteria().get {
+				eq 'device', deviceValue.device
+				lt 'dateValue', deviceValue.dateValue
+				isNull 'name'
+				order 'dateValue', 'desc'
+				maxResults 1
+			}
+			
+			if (findValue) {
+				deviceValue.device.dateValue = findValue.dateValue
+				deviceValue.device.value = findValue.value.toString()
+				super.save(deviceValue.device)
+			}
+		}
+		
+		deviceValue.delete()
+		
+		return deviceValue
+	}
+
+
+	/**
 	 * Les dernières valeurs des devices
 	 * 
 	 * @param devices

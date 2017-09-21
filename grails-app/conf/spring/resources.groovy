@@ -16,9 +16,7 @@ beans = {
 	
 	
 	// Auto détection des routes Camel depuis le contexte Spring
-	camel.camelContext(
-		id: "camelContext"
-	) {
+	camel.camelContext(id: "camelContext") {
 		camel.package "smarthome.esb.routes"
 	}
 	

@@ -9,6 +9,7 @@
 *
 *= require datatables-1.10.2
 *= require jquery-picklist
+*= require jquery.datetimepicker
 *= require jquery-ui.min-1.11.3
 *= require main
 *= require mobile

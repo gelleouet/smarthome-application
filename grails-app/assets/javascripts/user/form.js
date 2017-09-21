@@ -44,3 +44,12 @@ function initForm() {
 		AJS.$('.ffi input[type="file"]').fancyFileInput();
 	}
 }
+
+
+function initDateTimePicker() {
+	$('input.aui-datetime-picker').datetimepicker({
+		allowTimes: [],
+		step: 30,
+		format: 'd/m/Y H:i'
+	})
+}

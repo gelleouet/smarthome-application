@@ -36,13 +36,14 @@ function buildGoogleCharts() {
 function buildGoogleChart(divChart) {
 	// récupère le type de chart
 	var divData = $(divChart).find('div[data-chart-datas]');
+	var $divData = $(divData)
 	var divId = $(divChart).attr('id');
 	
-	if ($(divData)) {
-		var chartData = $(divData).html();
+	if ($divData) {
+		var chartData = $divData.html();
 		
 		if (chartData) {
-			var chartDatas, chartOldDatas, chartOptions, chartType, chart;
+			var chartDatas, chartJoinDatas, chartOldDatas, chartOptions, chartType, chart;
 			eval(chartData);
 			
 			if (!chartType) {
@@ -51,16 +52,25 @@ function buildGoogleChart(divChart) {
 			
 			chart = eval("new google.visualization." + chartType + "(document.getElementById('" + divId + "'))");
 			
+			if ($divData.attr('data-on-build-chart')) {
+				var onBuildChart = window[$divData.attr('data-on-build-chart')]
+				onBuildChart($divData, chart, chartDatas)
+			}
+			
 			if (chartOldDatas) {
 				var diffDatas = chart.computeDiff(chartOldDatas, chartDatas)
 				chart.draw(diffDatas, chartOptions);
+			} else if (chartJoinDatas) {
+				var joinDatas = google.visualization.data.join(chartDatas, chartJoinDatas, 'full',
+						[[0,0]], [1,2,3,4], [1])
+				chart.draw(joinDatas, chartOptions);
 			} else {
 				chart.draw(chartDatas, chartOptions);
 			}
 	      	
 	      	// nettoie les éléments de contruction du chart
-	      	$(divData).remove();
-			$(divChart).removeAttr('data-chart-type');
+	      	//divData.remove();
+			//$(divChart).removeAttr('data-chart-type');
 		} else {
 			console.log('build chart cancel (no data)');
 		}
@@ -91,6 +101,41 @@ function onLoadChart() {
 	$(document).on('click', "#navigation-chart-form #navigation-chart-next-button", function() {
 		$("#navigation-chart-form #navigation").val('next')
 	});
+}
+
+
+function onBuildQualitatifChart(divData, chart, chartDatas) {
+	if (divData.attr('data-url-delete-value')) {
+		chart.setAction({
+				id: 'deleteValue',
+				text: 'Supprimer valeur',
+				action: function() { 
+					var selection = chart.getSelection()
+					var valueId = chartDatas.getRowProperty(selection[0].row, "deviceValueId")
+					
+					if (confirm('Voulez-vous supprimer cette valeur ?')) {
+						ajaxGet(divData, 'data-url-delete-value', {id: valueId}, null, function() {
+							$('#navigation-chart-form').submit()
+						})
+					}
+				}
+		})
+	}
+	
+	if (divData.attr('data-url-change-value')) {
+		chart.setAction({
+			id: 'changeValue',
+			text: 'Modifier valeur',
+			action: function() { 
+				var selection = chart.getSelection()
+				var valueId = chartDatas.getRowProperty(selection[0].row, "deviceValueId")
+				
+				ajaxGet(divData, 'data-url-change-value', {id: valueId}, "#ajaxDialog", function() {
+					showDeviceValueDialog()
+				})
+			}
+		})
+	}
 }
 
 

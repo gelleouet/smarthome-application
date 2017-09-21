@@ -4,7 +4,7 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 </head>
 
-<body onload="onLoadChart();">
+<body onload="onLoadDeviceChart();">
 	<nav class="aui-navgroup aui-navgroup-horizontal">
 	    <div class="aui-navgroup-inner">
 	        <div class="aui-navgroup-primary">
@@ -22,10 +22,20 @@
 	</nav>
 
 	<g:applyLayout name="applicationContent">
-		<g:form name="navigation-chart-form" action="deviceChart">
-			<g:hiddenField name="device.id" value="${ command.device.id }"/>
-			<g:render template="/chart/chartToolbar"/>
-		</g:form>
+		<div class="aui-group aui-group-split">
+			<div class="aui-item">
+				<g:form name="navigation-chart-form" action="deviceChart">
+					<g:hiddenField name="device.id" value="${ command.device.id }"/>
+					<g:render template="/chart/chartToolbar"/>
+				</g:form>
+			</div>
+			<div class="aui-item">
+				<g:remoteLink class="aui-button" url="[action: 'dialogAddDeviceValue', id: command.device.id]" update="ajaxDialog"
+					onSuccess="showAddDeviceValueDialog()">
+					<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter valeur
+				</g:remoteLink>
+			</div>
+		</div>	
 		
 		<br/>
 		<h4><g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/></h4>

@@ -7,7 +7,8 @@ public enum ChartTypeEnum {
 	Line("LineChart"), 
 	Pie("PieChart"), 
 	Scatter("ScatterChart"), 
-	Bubble("BubbleChart");
+	Bubble("BubbleChart"),
+	Area("AreaChart");
 	
 	
 	private ChartTypeEnum(String factory) {

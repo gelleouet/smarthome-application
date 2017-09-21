@@ -10,6 +10,7 @@ import smarthome.core.DateUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
+import grails.converters.JSON;
 import grails.validation.Validateable;
 
 /**
@@ -31,14 +32,16 @@ class Device implements Serializable, EventTriggerPreparable {
 	Date dateValue
 	DeviceType deviceType
 	boolean favori
-	String command
-	String formula
+	String command	// commande à envoyer à l'agent
+	String formula	// formule à appliquer sur chaque valeur reçue
 	String tableauBord
+	String extras	// option extra json
 		
-	static transients = ['params', 'actionName']
+	static transients = ['params', 'actionName', 'extrasJson']
 	
+	Map extrasJson = [:]
 	Map params = [:]
-	String actionName
+	String actionName	// action en cours d'exécution sur deviceImpl
 	
 	
     static constraints = {
@@ -52,6 +55,7 @@ class Device implements Serializable, EventTriggerPreparable {
 		command nullable: true
 		formula nullable: true
 		tableauBord nullable: true
+		extras nullable: true
     }
 	
 	static mapping = {
@@ -66,6 +70,7 @@ class Device implements Serializable, EventTriggerPreparable {
 		events cascade: 'all-delete-orphan'
 		shares cascade: 'all-delete-orphan', batchSize: 25
 		formula type: 'text'
+		extras type: 'text'
 		sort 'label'
 	}
 	
@@ -311,5 +316,13 @@ class Device implements Serializable, EventTriggerPreparable {
 	@Override
 	String domainValue() {
 		return "label"
+	}
+
+	
+	/**
+	 * Convertit les options extras au format json dans la propriété associée	
+	 */
+	void extrasToJson() {
+		extrasJson = extras ? JSON.parse(extras) : [:]	
 	}
 }

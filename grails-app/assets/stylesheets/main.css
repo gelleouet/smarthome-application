@@ -707,3 +707,8 @@ h5.device-grid-label {
 	color: #fff;	
 	padding: 2pt;
 }
+
+.aui-group > .aui-item > .aui-buttons {
+	margin-top: 20px;
+}
+
