@@ -15,7 +15,7 @@
 	
 	<g:remoteLink class="h6-normal" action="dialogProfilPublic" controller="profil" id="${ device.user.id }" update="ajaxDialog" onSuccess="AJS.dialog2('#profil-dialog').show();">${ device.user.prenomNom }</g:remoteLink> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
 	
-	<g:render template="/deviceAlert/deviceAlertlozenge" model="[alert: device.lastDeviceAlert()]"/>
+	<g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: device.lastDeviceAlert()]"/>
 </h4>
 								
 <div class="aui-group">
