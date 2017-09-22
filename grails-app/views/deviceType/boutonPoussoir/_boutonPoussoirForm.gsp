@@ -90,4 +90,20 @@
 </div>
 
 
+<g:set var="defaulttimer" value="${ device?.metadata('defaulttimer') }"/>
+
+<g:if test="${ defaulttimer?.id }">
+	<g:hiddenField name="metadatas[5].id" value="${ defaulttimer.id }"/>
+</g:if>
+
+<g:hiddenField name="metadatas[5].name" value="defaulttimer"/>
+
+<div class="field-group">
+	<label title="API : device.metadata('defaulttimer')?.value">
+		Minuterie par défaut (en minutes)
+	</label>
+	<g:field type="text" name="metadatas[5].value" value="${defaulttimer?.value}" class="text medium-field"/>
+</div>
+
+
 

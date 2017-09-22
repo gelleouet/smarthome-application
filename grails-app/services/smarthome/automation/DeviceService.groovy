@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.automation.deviceType.AbstractDeviceType;
+import smarthome.automation.scheduler.SmarthomeScheduler;
+import smarthome.automation.scheduler.WorkflowContextJob;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.AsynchronousWorkflow;
@@ -34,6 +36,7 @@ class DeviceService extends AbstractService {
 	AgentService agentService
 	DeviceTypeDetectRuleService deviceTypeDetectRuleService
 	WorkflowService workflowService
+	SmarthomeScheduler smarthomeScheduler
 	
 	
 	/**
@@ -277,21 +280,41 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousWorkflow(DeviceService.CHANGE_VALUE_WORKFLOW)
 	Device execute(Device device, String actionName, Map actionParameters) throws SmartHomeException {
-		log.info "Invoke action ${actionName} on device ${device.mac}"
+		if (!device.attached) {
+			device.attach()
+		}
+		
+		WorkflowContext context = new WorkflowContext(parameters: actionParameters,
+			device: device, actionName: actionName, dateAction: new Date())
+		
+		WorkflowContext delayContext = context.withDelay()
+		
+		// le contexte doit être différé. On replanifie l'exécution à la bonne date
+		// et on interromp le process
+		if (delayContext) {
+			smarthomeScheduler.scheduleOneShotJob(WorkflowContextJob, delayContext.dateAction,
+				WorkflowContextJob.convertJobParams(delayContext))
+			return null
+		}
 		
 		// instancie le type device pour exécuter l'action
 		def deviceImpl = device.newDeviceImpl()
 		device.fetchParams()
-		def context = new WorkflowContext(parameters: actionParameters)
+		Object result
 		
 		try {
-			deviceImpl."${actionName}"(context)
+			result = deviceImpl."${actionName}"(context)
+			log.info "Invoke ${deviceImpl.class.name}.${actionName} [${device.label}]"
 		} catch (Exception e) {
-			log.error("Runtime execution ${actionName} on device : ${e.message}")
-			throw new SmartHomeException("Can't invoke ${actionName} on device ${device.label}")
+			throw new SmartHomeException("Can't invoke ${deviceImpl.class.name}.${actionName} [${device.label}]")
 		}
-	
-		// traca de l'action
+		
+		// le device a déclenché un timer pour une autre exécution
+		if (result instanceof WorkflowContext) {
+			smarthomeScheduler.scheduleOneShotJob(WorkflowContextJob, result.dateAction,
+				WorkflowContextJob.convertJobParams(result))
+		}
+		
 		device.dateValue = new Date()
 		device.actionName = actionName
 		

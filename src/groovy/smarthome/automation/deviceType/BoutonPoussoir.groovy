@@ -3,6 +3,8 @@ package smarthome.automation.deviceType
 import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.WorkflowContext;
 import smarthome.automation.WorkflowEvent;
+import smarthome.automation.WorkflowEventParameter;
+import smarthome.automation.WorkflowEventParameters;
 
 /**
  * Un bouton poussoir avec impulsion
@@ -17,19 +19,25 @@ import smarthome.automation.WorkflowEvent;
  */
 class BoutonPoussoir extends AbstractDeviceType {
 	
-	@Override
-	public Object icon() {
-		"/deviceType/boutonOnOff.png"
-	}
-
 	/**
 	 * Envoit une valeur ON juste pendant 1 seconde avant de renvoyer une valeur OFF
 	 * 
 	 * @return
 	 */
 	@WorkflowEvent
+	@WorkflowEventParameters([
+		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
+		@WorkflowEventParameter(name=WorkflowContext.TIMER_PARAM, label="Timer (min)", type="number", minValue="0", required=false)
+	])
 	def push(WorkflowContext context) {
 		device.value = "1"
+		return context.withTimer("push", [:])
+	}
+	
+	
+	@Override
+	public Object icon() {
+		"/deviceType/boutonOnOff.png"
 	}
 	
 	def isQualitatif() {

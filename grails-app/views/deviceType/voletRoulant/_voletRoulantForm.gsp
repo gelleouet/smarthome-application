@@ -1,5 +1,3 @@
-<h4>Configuration volet</h4>
-
 <g:set var="orientation" value="${ device?.metadata('orientation') }"/>
 
 <g:if test="${ orientation?.id }">

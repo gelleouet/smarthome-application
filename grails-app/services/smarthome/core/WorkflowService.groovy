@@ -227,5 +227,4 @@ class WorkflowService extends AbstractService {
 	Workflow findByLibelle(String libelle) {
 		return Workflow.findByLibelle(libelle)
 	}
-	
 }

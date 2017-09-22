@@ -1,5 +1,3 @@
-<h4>Configuration bouton</h4>
-
 <g:set var="labelon" value="${ device?.metadata('labelon') }"/>
 
 <g:if test="${ labelon?.id }">
@@ -33,7 +31,24 @@
 </div>
 
 
+
+<g:set var="defaulttimer" value="${ device?.metadata('defaulttimer') }"/>
+
+<g:if test="${ defaulttimer?.id }">
+	<g:hiddenField name="metadatas[2].id" value="${ defaulttimer.id }"/>
+</g:if>
+
+<g:hiddenField name="metadatas[2].name" value="defaulttimer"/>
+
+<div class="field-group">
+	<label title="API : device.metadata('defaulttimer')?.value">
+		Minuterie par défaut (en minutes)
+	</label>
+	<g:field type="text" name="metadatas[2].value" value="${defaulttimer?.value}" class="text medium-field"/>
+</div>
+
+
 <h4>Configuration périphérique</h4>
 <g:render template="/deviceType/generic/metadatasForm" 
-	model="[device: device, exclude: ['labelon', 'labeloff'], startStatus: 2, commitButton: true]"/>
+	model="[device: device, exclude: ['labelon', 'labeloff', 'defaulttimer'], startStatus: 3, commitButton: true]"/>
 

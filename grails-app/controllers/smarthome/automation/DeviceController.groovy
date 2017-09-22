@@ -181,7 +181,7 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "devicesGrid", modelName = "")
 	def invokeAction(Device device, String actionName) {
 		deviceService.assertSharedAccess(device, authenticatedUser)
-		deviceService.execute(device, actionName, [:])
+		deviceService.execute(device, actionName, device.params)
 		
 		if (request.xhr) {
 			nop()
@@ -201,7 +201,7 @@ class DeviceController extends AbstractController {
 	def publicInvokeAction(Device device, String actionName, String applicationKey) {
 		User user = User.findByApplicationKey(applicationKey)
 		deviceService.assertSharedAccess(device, user)
-		deviceService.execute(device, actionName, [:])
+		deviceService.execute(device, actionName, device.params)
 		redirect(action: 'devicesGrid')
 	}
 	
