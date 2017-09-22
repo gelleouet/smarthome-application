@@ -33,7 +33,7 @@ class EventDecalageRule implements Rule<Event, Date> {
 	
 	
 	@Override
-	public Date execute(Event deviceEvent) throws SmartHomeException {
+	public Date execute(Event event) throws SmartHomeException {
 		Date scheduledDate = parameters.scheduledDate
 		Date dateDecalage = null
 		
@@ -42,7 +42,7 @@ class EventDecalageRule implements Rule<Event, Date> {
 		Date changementEte = new CronExpression(HEURE_ETE_CRON).getNextValidTimeAfter(jour1)
 		Date changementHiver = new CronExpression(HEURE_HIVER_CRON).getNextValidTimeAfter(jour1)
 		
-		if (deviceEvent.synchroSoleil && deviceEvent.heureDecalage) {
+		if (event.synchroSoleil && event.heureDecalage) {
 			// calcul des solstices
 			Date solsticeEte = scheduledDate.copyWith([date: 21, month: 5])
 			Date solsticeEteSuiv = scheduledDate.copyWith([date: 21, month: 5, year: scheduledDate[YEAR]+1])
@@ -51,13 +51,13 @@ class EventDecalageRule implements Rule<Event, Date> {
 			
 			BaseDuration ellapseDays = null
 			BaseDuration totalDays = null
-			BaseDuration duree = this.dureeDecalage(deviceEvent, scheduledDate)
+			BaseDuration duree = this.dureeDecalage(event, scheduledDate)
 			
 			// calcul de la durée entre le jour J et le solstice de référence
 			use(TimeCategory) {
 				// l'heure de planif est en hiver et le décalage max en été
 				// l'heure augmente jusqu'en été puis diminue jusqu'en hiver
-				if (deviceEvent.solstice == "été") {
+				if (event.solstice == "été") {
 					if (scheduledDate <= solsticeEte) {
 						ellapseDays = scheduledDate - solsticeHiverPrec
 						totalDays = solsticeEte - solsticeHiverPrec
@@ -71,7 +71,7 @@ class EventDecalageRule implements Rule<Event, Date> {
 				}
 				// l'heure de planif est en été et le décalage max en hiver
 				// l'heure diminue jusqu'en été puis augmente jusqu'en hiver
-				else if (deviceEvent.solstice == "hiver") {
+				else if (event.solstice == "hiver") {
 					if (scheduledDate <= solsticeEte) {
 						ellapseDays = solsticeEte - scheduledDate
 						totalDays = solsticeEte - solsticeHiverPrec
@@ -98,7 +98,7 @@ class EventDecalageRule implements Rule<Event, Date> {
 		}
 		
 		// gestion passage heure été
-		if (deviceEvent.heureEte && scheduledDate >= changementEte && scheduledDate < changementHiver) {
+		if (event.heureEte && scheduledDate >= changementEte && scheduledDate < changementHiver) {
 			if (!dateDecalage) {
 				dateDecalage = scheduledDate
 			}
@@ -115,13 +115,13 @@ class EventDecalageRule implements Rule<Event, Date> {
 	/**
 	 * Calcule la durée du décalage
 	 * 
-	 * @param deviceEvent
+	 * @param event
 	 * @param date
 	 * @return
 	 */
-	BaseDuration dureeDecalage(Event deviceEvent, Date date) {
-		int hour = deviceEvent.heureDecalage.substring(0, 2) as Integer
-		int minute = deviceEvent.heureDecalage.substring(3, 5) as Integer
+	BaseDuration dureeDecalage(Event event, Date date) {
+		int hour = event.heureDecalage.substring(0, 2) as Integer
+		int minute = event.heureDecalage.substring(3, 5) as Integer
 		
 		Date dateFin = date.copyWith([hourOfDay: hour, minute: minute])
 		BaseDuration duree

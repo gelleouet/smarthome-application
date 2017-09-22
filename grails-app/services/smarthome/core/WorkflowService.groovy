@@ -71,7 +71,7 @@ class WorkflowService extends AbstractService {
 		// ajout du workflow à exécuter dans le payload
 		context.workflowName = workflowName
 		
-		sendAsynchronousMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE, SmartHomeCoreConstantes.WORKFLOW_QUEUE,
+		asyncSendMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE, SmartHomeCoreConstantes.WORKFLOW_QUEUE,
 			context, ExchangeType.DIRECT)
 	}
 	
@@ -87,6 +87,8 @@ class WorkflowService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Workflow execute(Workflow workflow, def context) throws SmartHomeException {
+		Chronometre chrono = new Chronometre()
+		
 		// recherche du workflow dans le repo
 		def deployment = this.findAndCreateDeployment(workflow)
 		
@@ -98,7 +100,7 @@ class WorkflowService extends AbstractService {
 		ProcessInstance processInstance = runtimeService.startProcessInstanceById(processDefinition.getId(),
 			[context: context])
 		
-		log.info "Execute workflow ${workflow.libelle}"
+		log.info "Execute workflow ${workflow.libelle} : ${chrono.stop()}ms"
 		
 		return workflow
 	}

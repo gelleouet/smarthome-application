@@ -30,7 +30,7 @@
 				<div class="field-group">
 					<label >N° téléphone mobile</label>
 					<g:textField name="user.telephoneMobile" value="${user.telephoneMobile}" class="text medium-field" />
-					<div class="description">Utile pour l'envoi de notifications SMS</div>
+					<div class="description">Utile pour l'envoi de notifications SMS. Au format +336...</div>
 				</div>
 			</fieldset>
 

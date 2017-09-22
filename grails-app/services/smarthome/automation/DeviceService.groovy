@@ -22,14 +22,18 @@ import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.core.TransactionUtils;
+import smarthome.core.WorkflowService;
 import smarthome.rule.DeviceTypeDetectRuleService;
 import smarthome.security.User;
 
 
 class DeviceService extends AbstractService {
 
+	static final String CHANGE_VALUE_WORKFLOW = "deviceService.changeValue"
+	
 	AgentService agentService
 	DeviceTypeDetectRuleService deviceTypeDetectRuleService
+	WorkflowService workflowService
 	
 	
 	/**
@@ -158,7 +162,7 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousWorkflow("deviceService.changeValue")
+	@AsynchronousWorkflow(DeviceService.CHANGE_VALUE_WORKFLOW)
 	Device changeValueFromAgent(Agent agent, def datas) throws SmartHomeException {
 		log.info "change value ${datas.mac} : ${datas.value}"
 		
@@ -256,9 +260,8 @@ class DeviceService extends AbstractService {
 			
 			this.save(virtualDevice)
 			
-			// envoi d'un message AMQP manuellement pour relancer toutes les actions sur les devices virtuels
-			this.asyncSendMessage("smarthome.automation.deviceService.changeValue", "",
-					[result: virtualDevice], ExchangeType.FANOUT)
+			// Exécute le workflow dédié au changement de valeur
+			workflowService.asyncExecute(CHANGE_VALUE_WORKFLOW, [result: virtualDevice])
 		}	
 	}
 	
@@ -272,7 +275,7 @@ class DeviceService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@AsynchronousWorkflow("deviceService.changeValue")
+	@AsynchronousWorkflow(DeviceService.CHANGE_VALUE_WORKFLOW)
 	Device execute(Device device, String actionName, Map actionParameters) throws SmartHomeException {
 		log.info "Invoke action ${actionName} on device ${device.mac}"
 		
