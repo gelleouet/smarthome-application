@@ -4,6 +4,12 @@ function onLoadEventEdit() {
 			ajaxSubmitForm($(this), 'data-url', '#device-event-form', '#eventTriggers');
 		}
 	});
+	
+	$(document).on('click', '#event-chart-button', function() {
+		ajaxSubmitForm($(this), 'data-url', '#device-event-form', '#ajaxDialog', function() {
+			showEventChartDialog()
+		});
+	});
 }
 
 function onChangeEventTriggerDomainClassName(select) {
@@ -27,5 +33,15 @@ function closeNotificationDialog() {
 
 function showNotificationDialog() {
 	AJS.dialog2('#notification-dialog').show();
+}
+
+
+function closeEventChartDialog() {
+	AJS.dialog2('#event-chart-dialog').hide();
+}
+
+function showEventChartDialog() {
+	AJS.dialog2('#event-chart-dialog').show();
+	buildGoogleCharts()
 }
 

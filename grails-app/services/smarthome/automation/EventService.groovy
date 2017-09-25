@@ -18,6 +18,8 @@ import smarthome.core.QueryUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.core.SmartHomeException;
+import smarthome.core.chart.GoogleChart;
+import smarthome.core.chart.GoogleDataTableCol;
 import smarthome.rule.EventDecalageRuleService;
 import smarthome.security.User;
 
@@ -431,6 +433,58 @@ class EventService extends AbstractService {
 		}
 		
 		return event
+	}
+	
+	
+	/**
+	 * Calcule les dates sur une année complète d'une planif solsticiale
+	 * 
+	 * @param event
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	List<Map> getYearScheduledDates(Event event) throws SmartHomeException {
+		List<Map> scheduledDates = []
+		
+		if (event.cron) {
+			CronExpression cron = new CronExpression(event.cron)
+			Date scheduledDate = cron.getNextValidTimeAfter(new Date().clearTime().copyWith([date: 1, month: Calendar.JANUARY])) 
+			Date maxDate = scheduledDate.copyWith([date: 1, month: Calendar.JANUARY, year: scheduledDate[Calendar.YEAR] + 1])
+			
+			while (scheduledDate < maxDate) {
+				scheduledDates << [object: event, parameters: [scheduledDate: scheduledDate]]
+				scheduledDate += 1
+			}
+			
+			eventDecalageRuleService.executeBatch(scheduledDates, true)
+		}
+		
+		return scheduledDates
+	}
+	
+	
+	/**
+	 * Création d'un graphique avec les dates de la planif
+	 * 
+	 * @param event
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	GoogleChart createScheduledChart(Event event) throws SmartHomeException {
+		GoogleChart chart = new GoogleChart(chartType: ChartTypeEnum.Line.factory)
+		chart.values = this.getYearScheduledDates(event)
+		
+		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
+			deviceValue.parameters.scheduledDate
+		})
+		chart.colonnes << new GoogleDataTableCol(label: "Heure", type: "timeofday", value: { deviceValue, index, currentChart ->
+			deviceValue.result ?: deviceValue.parameters.scheduledDate
+		})
+		
+		// série par défaut en bleu
+		chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
+		
+		return chart
 	}
 	
 	

@@ -12,6 +12,7 @@ import smarthome.automation.Device;
 import smarthome.automation.DeviceChartCommand;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.LevelAlertEnum;
+import smarthome.automation.SeriesTypeEnum;
 import smarthome.automation.WorkflowEvent;
 import smarthome.automation.WorkflowEventParameter;
 import smarthome.automation.WorkflowEventParameters;
@@ -181,7 +182,7 @@ abstract class AbstractDeviceType {
 			]
 			
 			// série par défaut en bleu
-			chart.series << [color: '#3572b0', type: 'area']
+			chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
 			
 			// affichage des alertes
 			command.device.levelAlerts?.findAll({ it.level != LevelAlertEnum.monitoring })?.sort({ it.level })?.each {
@@ -199,7 +200,7 @@ abstract class AbstractDeviceType {
 			chart.series = [
 			    [color: '#ff9f00'],					// min
 			    [color: '#dc3912'],					// max
-				[color: '#3572b0', type: 'area']	// moyenne
+				[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
 			]
 		} else if (command.viewMode == ChartViewEnum.year) {
 			chart.colonnes = [
@@ -214,7 +215,7 @@ abstract class AbstractDeviceType {
 			chart.series = [
 				[color: '#ff9f00'],					// min
 				[color: '#dc3912'],					// max
-				[color: '#3572b0', type: 'area']	// moyenne
+				[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
 			]
 		}
 		

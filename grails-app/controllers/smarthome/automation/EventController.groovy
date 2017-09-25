@@ -76,6 +76,18 @@ class EventController extends AbstractController {
 	
 	
 	/**
+	 * Dialogue avec graphique calcul solstice
+	 * 
+	 * @param event
+	 * @return
+	 */
+	def dialogEventChart(Event event) {
+		def model = [chart: eventService.createScheduledChart(event), event: event]
+		render (template: 'dialogEventChart', model: model)	
+	}
+	
+	
+	/**
 	 * Enregistrement d'un nouveau
 	 *
 	 * @param event

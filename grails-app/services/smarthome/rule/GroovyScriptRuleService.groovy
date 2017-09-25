@@ -1,11 +1,15 @@
 package smarthome.rule
 
+import java.util.List;
+import java.util.Map;
+
 import smarthome.core.ClassUtils;
 import smarthome.core.ScriptRule;
 import smarthome.core.SmartHomeException;
 import smarthome.rule.Rule;
 import grails.plugin.springsecurity.SpringSecurityService;
 import grails.util.Environment;
+import groovy.lang.Closure;
 
 /**
  * Exécution d'un script Groovy enregistré en base
@@ -26,24 +30,22 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	
 	@Override
 	O executeFromScript(String script, I object, Map parameters) throws SmartHomeException {
-		O result = null
-		Rule rule
+		Rule rule = (Rule) ClassUtils.newInstance(script)
+		return this.executeRule(rule, object, parameters)
+	}
+	
+	
+	@Override
+	List<Map> executeBatch(List<Map> objects, boolean ruleObligatoire) throws SmartHomeException {
+		Rule rule = this.newRuleInstance(ruleObligatoire)
 		
-		// Chargement de la classe "Rule" enregistrée dans le script
-		try {
-			Class ruleClass = ClassUtils.newClass(script)
-			rule = (Rule) ruleClass.newInstance()
-			injectParameters(rule, parameters)
-			
-			result = rule.execute(object)
-		} catch (SmartHomeException ex) {
-			throw ex
-		} catch (Exception ex) {
-			throw new SmartHomeException(ex)
+		if (rule) {
+			for (Map object : objects) {
+				object.result = this.executeRule(rule, object.object, object.parameters)
+			}	
 		}
 		
-		log.info "Exécution rule ${rule.class.simpleName}"
-		return result
+		return objects
 	}
 	
 	
@@ -55,66 +57,18 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	
 	@Override
 	O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
-		// recherche de la règle via la nom de l'implémentation (sans le mot Service de fin)
-		def className = this.class.name.substring(0, this.class.name.length()-7)
+		Rule rule = this.newRuleInstance(ruleObligatoire)
 		
-		
-		if (Environment.getCurrent() != Environment.PRODUCTION) {
-			return executeDev(object, ruleObligatoire, className, parameters)
-		}
-		
-		def scriptRule = ScriptRule.find( {
-			ruleName == className
-		})
-		
-		if (!scriptRule && ruleObligatoire) {
-			throw new SmartHomeException("Aucune règle trouvée en base : $className")
-		}
-		
-		if (scriptRule) {
-			return executeFromScript(scriptRule.script, object, parameters)
+		if (rule) {
+			return executeRule(rule, object, parameters)
 		} else {
-			log.info "La règle $className n'existe pas !"
 			return null
 		}
 	}
 
 	
-	
 	/**
-	 * Exécution de la règle en mode DEV
-	 * 
-	 * La classe est chargée depuis le classloader directement pour permettre du debuggage
-	 * 
-	 * @param object
-	 * @param ruleObligatoire
-	 * @return
-	 * @throws LimsException
-	 */
-	private executeDev(I object, boolean ruleObligatoire, String className, Map parameters) throws SmartHomeException {
-		Rule rule = null
-		
-		try {
-			rule = (Rule) Class.forName(className).newInstance()
-		} catch (Exception e) {
-			e.printStackTrace()
-		}
-		
-		if (!rule && ruleObligatoire) {
-			throw new SmartHomeException("Aucune règle trouvée dans le classLoader : $className")
-		}
-		
-		injectParameters(rule, parameters)
-		
-		def result = rule.execute(object)
-		log.info "Exécution rule ${rule.class.simpleName}"
-		return result
-		
-	}
-	
-	
-	/**
-	 * INjecte les paramètres dans la règle
+	 * Injecte les paramètres dans la règle
 	 * 
 	 * @param rule
 	 * @param parameters
@@ -131,5 +85,56 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 			rule.parameters = parameters
 		}
 	} 
-    
+	
+	
+	/**
+	 * Instancie la rule
+	 * 
+	 * @return
+	 */
+	private Rule newRuleInstance(boolean ruleObligatoire) throws SmartHomeException {
+		Rule rule
+		
+		// recherche de la règle via la nom de l'implémentation (sans le mot Service de fin)
+		def className = this.class.name.substring(0, this.class.name.length()-7)
+		
+		
+		if (Environment.getCurrent() != Environment.PRODUCTION) {
+			try {
+				rule = (Rule) ClassUtils.forNameInstance(className)
+			} catch (Exception e) {
+				log.error("Cannot create instance ${className}")
+			}
+		} else {
+			ScriptRule scriptRule = ScriptRule.find( {
+				ruleName == className
+			})
+			
+			if (scriptRule) {
+				rule = (Rule) ClassUtils.newInstance(scriptRule.script)
+			}
+		}
+		
+		if (!rule && ruleObligatoire) {
+			throw new SmartHomeException("Règle obligatoire $className introuvable !")
+		}
+		
+		return rule
+	}
+	
+	
+	/**
+	 * Exécution de la règle
+	 * 
+	 * @param rule
+	 * @param object
+	 * @param parameters
+	 * @return
+	 * @throws SmartHomeException
+	 */
+    private O executeRule(Rule rule, I object, Map parameters) throws SmartHomeException {
+		injectParameters(rule, parameters)
+		log.info "Exécution rule ${rule.class.simpleName}"
+		return rule.execute(object)
+	}
 }

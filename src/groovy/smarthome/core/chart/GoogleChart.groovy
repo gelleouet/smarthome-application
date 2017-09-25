@@ -51,15 +51,25 @@ class GoogleChart {
 				// cas spécial pour les dates qui doivent être formattées avec le mot clé "Date"
 				// @see https://developers.google.com/chart/interactive/docs/datesandtimes
 				if (value instanceof Date) {
-					def format = col.type == "date" ? "yyyy,${value.getAt(Calendar.MONTH)},d" : 
-						"yyyy,${value.getAt(Calendar.MONTH)},d,HH,mm"
-					value = "Date(${value.format(format)})"
+					if (col.type == "timeofday") {
+						value = [value[Calendar.HOUR_OF_DAY], value[Calendar.MINUTE], value[Calendar.SECOND]]
+					} else {
+						def format = col.type == "date" ? "yyyy,${value.getAt(Calendar.MONTH)},d" : 
+							"yyyy,${value.getAt(Calendar.MONTH)},d,HH,mm"
+						value = "Date(${value.format(format)})"
+					}
 				}
 				
 				values << [v: value]
 			}
 			
-			dataTableRows << ["c": values, "p": [deviceValueId: deviceValue.id]]
+			def row = ["c": values]
+			
+			if (deviceValue?.hasProperty('id')) {
+				row["p"] = deviceValue.id	
+			}
+			
+			dataTableRows << row
 		}
 		
 		return builder.build {

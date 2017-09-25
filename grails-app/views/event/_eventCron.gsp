@@ -23,8 +23,13 @@
 	<div class="checkbox">
 		<g:checkBox name="synchroSoleil" value="${event?.synchroSoleil}" class="checkbox"/>
 		<label>Ajuster l'heure de planification pour déclencher l'événement à <g:field type="time" name="heureDecalage" value="${ event?.heureDecalage }" class="text" style="width:100px;"/>
-			au solstice d'<g:select name="solstice" value="${ event?.solstice }" from="['été', 'hiver']" class="select"/>.
-		<div class="description">Le cron doit toujours être programmé sur l'heure la plus tôt. La nouvelle heure sera calculée tous les jours.</div>
+			au solstice d'<g:select name="solstice" value="${ event?.solstice }" from="['été', 'hiver']" class="select"/>.</label>
+		<div class="description">
+			Le cron doit toujours être programmé sur l'heure la plus tôt. La nouvelle heure sera calculée tous les jours. 
+			<a id="event-chart-button" data-url="${ g.createLink(action: 'dialogEventChart') }" class="aui-button aui-button-link cancel">
+				<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Afficher le graphique annuel.
+			</a>
+		</div>
 	</div>
 	<div class="checkbox">
 		<g:checkBox name="heureEte" value="${event?.heureEte}" class="checkbox"/>
@@ -32,3 +37,4 @@
 		<div class="description">Cette option est compatible avec la planification solsticiale.</div>
 	</div>
 </fieldset>
+
