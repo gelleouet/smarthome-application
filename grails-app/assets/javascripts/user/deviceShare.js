@@ -8,6 +8,7 @@ function showDeviceShareDialog() {
 	AJS.$("#selectSharedUser").auiSelect2({
 		placeholder: "Rechercher des utilisateurs...",
 		minimumInputLength: 3,
+		dropdownCssClass: 'combobox-dropdown',
 		ajax: {
 	        url: $("#selectSharedUser").attr("data-url") + ".json",
 	        dataType: 'json',

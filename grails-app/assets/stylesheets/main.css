@@ -712,3 +712,11 @@ h5.device-grid-label {
 	margin-top: 20px;
 }
 
+.combobox-dropdown {
+	z-index: 5000;
+}
+
+.aui-select2-drop.combobox-dropdown {
+	z-index: 5000;
+}
+

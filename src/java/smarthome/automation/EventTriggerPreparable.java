@@ -1,7 +1,6 @@
 package smarthome.automation;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Interface pour les objets capable de préparer un EventTrigger
