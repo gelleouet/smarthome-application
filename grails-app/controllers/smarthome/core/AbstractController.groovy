@@ -162,9 +162,6 @@ abstract class AbstractController {
 		} else if (request.xhr) {
 			// rendu erreur uniquement pour les appels Ajax
 			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
-		} else {
-			// redirection par défaut vers la dernière page
-			redirectLastURI()
 		}
 	}
 	

@@ -1,0 +1,42 @@
+{
+  "actions": [
+    {
+      "description": "BeMyHomeSmart Default",
+      "name": "MAIN",
+      "fulfillment": {
+        "conversationName": "bemyhomesmart"
+      },
+      "intent": {
+        "name": "actions.intent.MAIN"
+      }
+    },
+	{
+      "description": "BeMyHomeSmart Devices Actions",
+      "name": "ACTIONS",
+      "signInRequired": true,
+      "fulfillment": {
+        "conversationName": "bemyhomesmart"
+      },
+      "intent": {
+        "name": "smarthome.automation.ACTIONS",
+		"parameters": [
+		  {"name": "device_name", "type": "SchemaOrg_Text"}
+		],
+        "trigger": {
+          "queryPatterns": [
+			"ouvre (les)? (la)? (le)? $SchemaOrg_Text:device_name",
+			"ferme (les)? (la)? (le)? $SchemaOrg_Text:device_name",
+			"éteint (les)? (la)? (le)? $SchemaOrg_Text:device_name",
+			"allume (les)? (la)? (le)? $SchemaOrg_Text:device_name"
+          ]
+        }
+      }
+    }
+  ],
+  "conversations": {
+    "bemyhomesmart": {
+      "name": "bemyhomesmart",
+      "url": "https://www.jdevops.com/smarthome/googleAction/conversation"
+    }
+  }
+}

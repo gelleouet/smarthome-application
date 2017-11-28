@@ -59,6 +59,6 @@ class EmailRouteBuilder extends RouteBuilder {
 		// template mail
 		.to("velocity:/smarthome/esb/routes/EmailNotificationTemplate.vm")
 		// envoi mail SMTP
-		.to("smtp://$smtpHostname:$smtpPort?password=$smtpPassword&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
+		.to("smtp://$smtpHostname:$smtpPort?password=RAW($smtpPassword)&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
 	}
 }

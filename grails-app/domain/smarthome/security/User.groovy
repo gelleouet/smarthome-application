@@ -51,6 +51,7 @@ class User implements Serializable {
 		table name: 'utilisateur', schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA // conflit sur certaines bases avec "user"
 		password column: '`password`'
 		friends cascade: 'all-delete-orphan'
+		username index: 'UserApplication_Username_Idx'
 		sort 'nom'
 	}
 	

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1511555424292-1">
+        <createTable tableName="user_application">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="application_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-2">
+        <addPrimaryKey columnNames="id" constraintName="user_application_pkey" tableName="user_application"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-3">
+        <addUniqueConstraint columnNames="token" constraintName="uk_gqve0ke8hruo4ugv8oc5sw2s2" deferrable="false" disabled="false" initiallyDeferred="false" tableName="user_application"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-4">
+        <addUniqueConstraint columnNames="application_id, client_id" constraintName="unique_client_id" deferrable="false" disabled="false" initiallyDeferred="false" tableName="user_application"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-5">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_application" constraintName="fk_f3hm86vrk5vvdee5l082u5s0n" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-6">
+        <createIndex indexName="userapplication_clientid_idx" tableName="user_application" unique="false">
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1511555424292-7">
+        <createIndex indexName="userapplication_user_idx" tableName="user_application" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
