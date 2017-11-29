@@ -1,13 +1,12 @@
 package smarthome.automation
 
-
-
 import grails.test.mixin.*
 import spock.lang.*
 
-@TestFor(DeviceEventController)
-@Mock(DeviceEvent)
-class DeviceEventControllerSpec extends Specification {
+
+@TestFor(EventController)
+@Mock(Event)
+class EventControllerSpec extends Specification {
 
     def populateValidParams(params) {
         assert params != null
@@ -38,7 +37,7 @@ class DeviceEventControllerSpec extends Specification {
         when:"The save action is executed with an invalid instance"
             request.contentType = FORM_CONTENT_TYPE
             request.method = 'POST'
-            def deviceEvent = new DeviceEvent()
+            def deviceEvent = new Event()
             deviceEvent.validate()
             controller.save(deviceEvent)
 
@@ -49,14 +48,14 @@ class DeviceEventControllerSpec extends Specification {
         when:"The save action is executed with a valid instance"
             response.reset()
             populateValidParams(params)
-            deviceEvent = new DeviceEvent(params)
+            deviceEvent = new Event(params)
 
             controller.save(deviceEvent)
 
         then:"A redirect is issued to the show action"
             response.redirectedUrl == '/deviceEvent/show/1'
             controller.flash.message != null
-            DeviceEvent.count() == 1
+            Event.count() == 1
     }
 
     void "Test that the show action returns the correct model"() {
@@ -68,7 +67,7 @@ class DeviceEventControllerSpec extends Specification {
 
         when:"A domain instance is passed to the show action"
             populateValidParams(params)
-            def deviceEvent = new DeviceEvent(params)
+            def deviceEvent = new Event(params)
             controller.show(deviceEvent)
 
         then:"A model is populated containing the domain instance"
@@ -84,7 +83,7 @@ class DeviceEventControllerSpec extends Specification {
 
         when:"A domain instance is passed to the edit action"
             populateValidParams(params)
-            def deviceEvent = new DeviceEvent(params)
+            def deviceEvent = new Event(params)
             controller.edit(deviceEvent)
 
         then:"A model is populated containing the domain instance"
@@ -104,7 +103,7 @@ class DeviceEventControllerSpec extends Specification {
 
         when:"An invalid domain instance is passed to the update action"
             response.reset()
-            def deviceEvent = new DeviceEvent()
+            def deviceEvent = new Event()
             deviceEvent.validate()
             controller.update(deviceEvent)
 
@@ -115,7 +114,7 @@ class DeviceEventControllerSpec extends Specification {
         when:"A valid domain instance is passed to the update action"
             response.reset()
             populateValidParams(params)
-            deviceEvent = new DeviceEvent(params).save(flush: true)
+            deviceEvent = new Event(params).save(flush: true)
             controller.update(deviceEvent)
 
         then:"A redirect is issues to the show action"
@@ -136,16 +135,16 @@ class DeviceEventControllerSpec extends Specification {
         when:"A domain instance is created"
             response.reset()
             populateValidParams(params)
-            def deviceEvent = new DeviceEvent(params).save(flush: true)
+            def deviceEvent = new Event(params).save(flush: true)
 
         then:"It exists"
-            DeviceEvent.count() == 1
+            Event.count() == 1
 
         when:"The domain instance is passed to the delete action"
             controller.delete(deviceEvent)
 
         then:"The instance is deleted"
-            DeviceEvent.count() == 0
+            Event.count() == 0
             response.redirectedUrl == '/deviceEvent/index'
             flash.message != null
     }

@@ -1,17 +1,17 @@
 package smarthome.automation
 
-import smarthome.rule.DeviceEventDecalageRuleService;
+import smarthome.rule.EventDecalageRuleService;
 import spock.lang.Specification;
 
-@TestFor(DeviceEventDecalageRuleService)
-class DeviceEventDecalageRuleServiceTest {
-	DeviceEvent deviceEvent
+@TestFor(EventDecalageRuleService)
+class EventDecalageRuleServiceTest {
+	Event deviceEvent
 	Date scheduledDate
 	Date resultDate
 	
 	@Test
 	void testAvantHeureEteSoir() {
-		deviceEvent = new DeviceEvent(solstice: 'été', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'été', synchroSoleil: true,
 			heureDecalage: '22:30', heureEte: true)
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "26/03/2016 18:15")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])
@@ -24,7 +24,7 @@ class DeviceEventDecalageRuleServiceTest {
 	
 	@Test
 	void testApresHeureEteSoir() {
-		deviceEvent = new DeviceEvent(solstice: 'été', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'été', synchroSoleil: true,
 				heureDecalage: '22:30', heureEte: true)
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "27/03/2016 18:15")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])
@@ -37,7 +37,7 @@ class DeviceEventDecalageRuleServiceTest {
 	
 	@Test
 	void testAvantHeureHiverSoir() {
-		deviceEvent = new DeviceEvent(solstice: 'été', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'été', synchroSoleil: true,
 			heureDecalage: '22:30', heureEte: true)
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "29/10/2016 18:15")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])
@@ -50,7 +50,7 @@ class DeviceEventDecalageRuleServiceTest {
 	
 	@Test
 	void testApresHeureHiverSoir() {
-		deviceEvent = new DeviceEvent(solstice: 'été', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'été', synchroSoleil: true,
 				heureDecalage: '22:30', heureEte: true)
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "30/10/2016 18:15")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])
@@ -64,7 +64,7 @@ class DeviceEventDecalageRuleServiceTest {
 	
 	@Test
 	void testSolsticeEte_14avrilSoir() {
-		deviceEvent = new DeviceEvent(solstice: 'été', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'été', synchroSoleil: true,
 				heureDecalage: '22:30', heureEte: true)
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "14/04/2016 18:15")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])
@@ -77,7 +77,7 @@ class DeviceEventDecalageRuleServiceTest {
 	
 	@Test
 	void testSolsticeHiver_14avrilMatin() {
-		deviceEvent = new DeviceEvent(solstice: 'hiver', synchroSoleil: true,
+		deviceEvent = new Event(solstice: 'hiver', synchroSoleil: true,
 				heureDecalage: '08:15')
 		scheduledDate = Date.parse("dd/MM/yyyy HH:mm", "14/04/2016 07:45")
 		resultDate = service.execute(deviceEvent, true, [scheduledDate: scheduledDate])

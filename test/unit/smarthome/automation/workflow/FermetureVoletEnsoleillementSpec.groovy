@@ -1,9 +1,10 @@
+
 package smarthome.automation.workflow
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import smarthome.automation.scenario.FermetureVoletEnsoleillement;
 import spock.lang.Specification
-import smarthome.automation.workflow.FermetureVoletEnsoleillement
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
