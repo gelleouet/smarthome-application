@@ -1,8 +1,10 @@
 {
+  "locale": "fr",
   "actions": [
     {
       "description": "BeMyHomeSmart Default",
       "name": "MAIN",
+      "signInRequired": true,
       "fulfillment": {
         "conversationName": "bemyhomesmart"
       },
@@ -19,15 +21,12 @@
       },
       "intent": {
         "name": "smarthome.automation.ACTIONS",
-		"parameters": [
-		  {"name": "device_name", "type": "SchemaOrg_Text"}
-		],
         "trigger": {
           "queryPatterns": [
-			"ouvre (les)? (la)? (le)? $SchemaOrg_Text:device_name",
-			"ferme (les)? (la)? (le)? $SchemaOrg_Text:device_name",
-			"éteint (les)? (la)? (le)? $SchemaOrg_Text:device_name",
-			"allume (les)? (la)? (le)? $SchemaOrg_Text:device_name"
+			"ouvre les volets",
+			"ferme les volets",
+			"ouvre la porte de garage",
+			"ferme la porte de garage"
           ]
         }
       }
@@ -36,7 +35,8 @@
   "conversations": {
     "bemyhomesmart": {
       "name": "bemyhomesmart",
-      "url": "https://www.jdevops.com/smarthome/googleAction/conversation"
+      "url": "https://b2a33a6a.ngrok.io/smarthome-application/googleAction/conversation",
+      "fulfillmentApiVersion": 2
     }
   }
 }

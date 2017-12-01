@@ -3,6 +3,7 @@ package smarthome.rule
 import java.util.List;
 import java.util.Map;
 
+import smarthome.core.ApplicationUtils;
 import smarthome.core.ClassUtils;
 import smarthome.core.ScriptRule;
 import smarthome.core.SmartHomeException;
@@ -84,6 +85,8 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 			
 			rule.parameters = parameters
 		}
+		
+		ApplicationUtils.autowireBean(rule)
 	} 
 	
 	
@@ -106,9 +109,7 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 				log.error("Cannot create instance ${className}")
 			}
 		} else {
-			ScriptRule scriptRule = ScriptRule.find( {
-				ruleName == className
-			})
+			ScriptRule scriptRule = ScriptRule.findByRuleName(className)
 			
 			if (scriptRule) {
 				rule = (Rule) ClassUtils.newInstance(scriptRule.script)

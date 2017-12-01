@@ -20,17 +20,18 @@ class GoogleActionResponse {
 	}
 	
 	
-	GoogleActionResponse askQuestion(String text, List intents) {
+	GoogleActionResponse askQuestion(String text, List suggestions = []) {
 		expectUserResponse = true
 		GoogleActionExpectedInput input = new GoogleActionExpectedInput()
-		intents.each {
-			input.possibleIntents << new GoogleActionExpectedIntent(intent: it)
-		}
+		input.possibleIntents << new GoogleActionExpectedIntent(intent: "actions.intent.TEXT")
 		input.inputPrompt = new GoogleActionInputPrompt()
 		input.inputPrompt.richInitialPrompt = new GoogleActionRichResponse()
 		input.inputPrompt.richInitialPrompt.items << new GoogleActionItem(simpleResponse: new GoogleActionSimpleResponse(
 			textToSpeech: text))
-		input.inputPrompt.noInputPrompts << new GoogleActionSimpleResponse(textToSpeech: text)
+		suggestions?.each { suggestion ->
+			input.inputPrompt.richInitialPrompt.suggestions << new GoogleActionSuggestion(title: suggestion)
+		}
+		//input.inputPrompt.noInputPrompts << new GoogleActionSimpleResponse(textToSpeech: text)
 		expectedInputs << input 
 		return this
 	}

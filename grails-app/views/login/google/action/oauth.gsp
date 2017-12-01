@@ -3,24 +3,15 @@
 	<meta name='layout' content='anonymous'/>
 </head>
 
-<body>
+<body data-page-size="aui-page-size-medium">
 	<g:applyLayout name="applicationContent">
     
     <g:if test="${ command.error }">
     	<g:render template="/templates/messageError" model="[message: command.error]"/>
     </g:if>
     
-    <h3>Associer ${linkApp} à votre compte <g:meta name="app.code"/></h3>
+    <h3 class="separator">Associer ${linkApp} à votre compte <g:meta name="app.code"/></h3>
     
-    <div class="separator" style="padding:10px 50px">
-	    <h4>Autorisation nécessaires :</h4>
-	    
-	    <ul>
-	    	<li>${ command.scope }</li>
-	    </ul>
-    </div>
-    
-          
 	<g:form action="authenticate" controller="googleAction" class="aui" autocomplete="off">
 	
 		<g:hiddenField name="client_id" value="${ command.client_id }"/>
@@ -30,6 +21,17 @@
 		<g:hiddenField name="scope" value="${ command.scope }"/>
 	
 		<fieldset>
+	        <div class="field-group" style="padding-bottom:15px">
+	            <label></label>
+	            <div>
+	            	<h5>Autorisation nécessaires :</h5>
+	            	<ul>
+				    	<g:each var="scope" in="${ command.scope?.split(' ') }">
+				    		<li>${ scope }</li>
+				    	</g:each>
+				    </ul>
+	            </div>
+	        </div>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
 	            <input class="text" type="email" id="username" name="j_username" placeholder="yourmail@example.com" autofocus="true">

@@ -85,6 +85,7 @@ class GoogleActionController extends AbstractController {
 			render gactionResponse as JSON
 			return
 		} catch (Exception ex) {
+			log.error("Google Action Conversation : ${ex.message}")
 			render(status: HttpServletResponse.SC_FORBIDDEN, text: ex.message)
 		}
 	}

@@ -19,7 +19,7 @@
 		
 		<g:layoutHead/>
 	</head>
-	<body class="aui-page-focused aui-page-size-large" onload="${pageProperty(name: 'body.onload')}">
+	<body class="aui-page-focused ${pageProperty(name: 'body.data-page-size') ?: 'aui-page-size-large'}" onload="${pageProperty(name: 'body.onload')}">
 		<g:include view="/layouts/headerAnonymous.gsp"/>
 		<section id="content" role="main">
 			<g:layoutBody/>
