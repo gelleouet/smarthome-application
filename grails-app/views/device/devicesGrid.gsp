@@ -1,3 +1,5 @@
+<%@ page import="smarthome.core.LayoutUtils" %>
+
 <html>
 <head>
 <meta name='layout' content='authenticated' />
@@ -24,24 +26,29 @@
 
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 	
-		<div class="${ mobileAgent ? '' : 'grid-3column' }">
-			<g:each var="groupe" in="${ devices?.groupBy({ it.groupe })?.sort{ it.key } }" status="statusGroupe">
-					<div class="filActualiteTitre smart-droppable" data-droppable-value="${ groupe.key }" data-ondrop="onDropDeviceToGroupe" data-ondrop-url="${ g.createLink(controller: 'device', action: 'moveToGroupe') }">
-						<h3>${ groupe.key ?: 'Autres' }</h3>
-					</div>
-					
-					<div class="filActualite">
-						<g:each var="device" in="${ groupe.value.sort{ it.label } }">
-							<div class="filActualiteItem smart-draggable" data-draggable-value="${ device.id }">
-								<g:render template="deviceView" model="[device: device, user: user]"></g:render>
-							</div>
-						</g:each>
-					</div>
-				
+		<g:if test="${ mobileAgent }">
+			<g:each var="device" in="${ devices?.sort{ it.label } }">
+				<div class="filActualiteItem2">
+					<g:render template="deviceView" model="[device: device, user: user]"></g:render>
+				</div>
 			</g:each>
-		</div>
-	
-	
+		</g:if>
+		<g:else>
+			<g:each var="deviceSplit" in="${ LayoutUtils.splitRow(devices?.sort{ it.label }, 3) }">
+				<div class="aui-group">
+					<g:each var="device" in="${ deviceSplit }" status="status">
+						<div class="aui-item">
+							<g:if test="${ device }">
+								<div class="filActualiteItem2 smart-draggable" data-draggable-value="${ device.id }">
+									<g:render template="deviceView" model="[device: device, user: user]"></g:render>
+								</div>
+							</g:if>
+						</div>
+					</g:each>
+				</div>
+			</g:each>
+				
+		</g:else>
 	</g:applyLayout>
 </body>
 </html>

@@ -335,6 +335,18 @@ tr.incluNorme td {
 	-webkit-column-break-inside: avoid;
 }
 
+.filActualiteItem2 {
+	border-radius: 5px;
+	border: 1px solid #ddd;
+	background-color: #ffffff;	
+	padding: 15px 10px 0px 10px;
+	min-height: 125px;
+}
+
+.filActualiteGroup {
+	
+}
+
 .filActualiteItem.ui-draggable-dragging {
 	width: 350px;
 }
@@ -571,6 +583,8 @@ table tr:hover td.command-column a {
 	width: 40px;
 	height: 40px;	
 	vertical-align: middle;
+	filter: grayscale(100%) opacity(75%);
+	-webkit-filter: grayscale(100%) opacity(75%);
 }
 
 .h3 {

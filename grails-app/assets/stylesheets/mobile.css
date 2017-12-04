@@ -127,4 +127,12 @@
 		border: none;
 		margin-top: 20px;
 	}
+	
+	.filActualiteItem2 {
+		border-radius: 5px;
+		border: 1px solid #ddd;
+		background-color: #ffffff;	
+		padding: 15px 10px 0px 10px;
+		margin-bottom: 10px;
+	}
 }
