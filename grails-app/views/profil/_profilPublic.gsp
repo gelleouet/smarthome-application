@@ -1,7 +1,7 @@
 <g:set var="houseService" bean="houseService"/>
 
 
-<h3><asset:image src="useravatar.png" width="48px" />
+<h3 class="separator"><asset:image src="useravatar.png" width="48px" />
 	<g:if test="${ viewOnly }">
 		${ user.prenomNom }
 	</g:if>
@@ -10,72 +10,81 @@
 	</g:else>
 </h3>
 
-<div class="aui-group">
-	<div class="aui-item">
-		<p class="label">Objets personnels</p>
-	</div>
-	<div class="aui-item">
-		<p class="label">Objets partagés</p>
-	</div>
-</div>
-<div class="aui-group">
-	<g:if test="${ viewOnly }">
-		<div class="aui-item">
-			<span style="font-size:16pt" class="link">${ userDeviceCount }</span>
-		</div>
-		<div class="aui-item">
-			<span style="font-size:16pt" class="link">${ sharedDeviceCount }</span>
-		</div>
-	</g:if>
-	<g:else>
-		<div class="aui-item">
-			<g:link action="devicesGrid" controller="device" style="font-size:16pt">${ userDeviceCount }</g:link>
-		</div>
-		<div class="aui-item">
-			<g:link action="devicesGrid" controller="device" params="[sharedDevice: true]"style="font-size:16pt">${ sharedDeviceCount }</g:link>
-		</div>
-	</g:else>
-</div>
-
-<h5>${ house?.name ?: 'Maison principale' }</h5>
-
 <g:set var="currentConso" value="${ house?.currentConso() }"/>
 
 <ul class="label">
 	<li>Surface : <span class="link">${ house?.surface?.toInteger() ?: '' }m²</span></li>
 	
-	<g:if test="${ currentConso }">
+	<g:if test="${ currentConso && house?.compteur }">
 		<g:set var="beforeConso" value="${ currentConso.before() }"/>
+		<g:set var="compteurElectrique" value="${ house?.compteurElectriqueImpl() }"/>
+		<g:set var="tarifHP" value="${ compteurElectrique.calculTarif('HP', currentConso.kwHP, currentConso.year()) }"/>
+		<g:set var="tarifHC" value="${ compteurElectrique.calculTarif('HC', currentConso.kwHC, currentConso.year()) }"/>
+		<g:set var="tarifTotal" value="${ tarifHP != null || tarifHC != null ? (tarifHP ?: 0) + (tarifHC ?: 0) : null }"/>
 		
 		<li>
-			Consommations annuelles ${ currentConso.year() } : <span class="link">${ currentConso.consoTotale() }kWh</span>
-			<g:if test="${ beforeConso }">
-				<g:set var="compare" value="${ currentConso.comparePercentTotal(beforeConso) }"/>
-				&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
-			</g:if>
+			<span>Estimations consommations ${ currentConso.year() } :</span>
 			
-			<ul style="margin:0">
-				<li>Heure pleine : <span class="link">${ currentConso.kwHP as Integer }kWh</span> 
-				<g:if test="${ beforeConso }">
-					<g:set var="compare" value="${ currentConso.comparePercentHP(beforeConso) }"/>
-					&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
-				</g:if>
-				</li>
-				<li>Heure creuse : <span class="link">${ currentConso.kwHC as Integer }kWh</span> 
-				<g:if test="${ beforeConso }">
-					<g:set var="compare" value="${ currentConso.comparePercentHC(beforeConso) }"/>
-					&nbsp;<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
-				</g:if>
-				</li>
-			</ul>
+			<g:if test="${ compteurElectrique?.fournisseur }">
+				<br/><span style="font-size:xx-small">Fournisseur : <g:link action="edit" controller="device" id="${ house?.compteur?.id }" fragment="tabs-device-configuration">${ compteurElectrique.fournisseur.libelle }</g:link></span>
+			</g:if>
+			<g:else>
+				<br/><span style="font-size:xx-small">Sélectionner un <g:link action="edit" controller="device" id="${ house?.compteur?.id }" fragment="tabs-device-configuration">gestionnaire d'énergie</g:link> pour calculer le prix de vos consommations</span>
+			</g:else>
+			
+			<table class="aui datatable" style="margin-bottom:20px;">
+				<thead>
+					<tr>
+						<th></th>
+						<th>kWh</th>
+						<th><span class="aui-icon aui-icon-small aui-iconfont-switch-small"></span></td>
+						<th>€</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>HP</td>
+						<td><span class="link">${ currentConso.kwHP as Integer }</span></td>
+						<td>
+							<g:if test="${ beforeConso }">
+								<g:set var="compare" value="${ currentConso.comparePercentHP(beforeConso) }"/>
+								<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+							</g:if>
+						</td>
+						<td><span class="link">${ tarifHP as Integer }</span></td>
+					</tr>
+					<tr>
+						<td>HC</td>
+						<td><span class="link">${ currentConso.kwHC as Integer }</span></td>
+						<td>
+							<g:if test="${ beforeConso }">
+								<g:set var="compare" value="${ currentConso.comparePercentHC(beforeConso) }"/>
+								<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+							</g:if>
+						</td>
+						<td><span class="link">${ tarifHC as Integer }</span></td>
+					</tr>
+					<tr>
+						<td><strong>TOTAL</strong></td>
+						<td><span class="link"><strong>${ currentConso.consoTotale() }</strong></span></td>
+						<td>
+							<g:if test="${ beforeConso }">
+								<g:set var="compare" value="${ currentConso.comparePercentTotal(beforeConso) }"/>
+								<span class="aui-lozenge aui-lozenge-subtle ${ compare < 0 ? 'aui-lozenge-success' : 'aui-lozenge-error' }"><g:formatNumber number="${ compare }" format="+0;-0"/>%</span>
+							</g:if>
+						</td>
+						<td><span class="link"><strong>${ tarifTotal as Integer }</strong></span></td>
+					</tr>
+				</tbody>
+			</table>
 		</li>
 	</g:if>
 	<g:else>
 		<li>
-			Consommations annuelles : <span class="link">kWh</span>
+			Estimations consommations : <span class="link">-kWh</span>
 			<ul style="margin:0">
-				<li>Heure pleine : <span class="link">kWh</span> </li>
-				<li>Heure creuse : <span class="link">kWh</span> </li>
+				<li>Heure pleine : <span class="link">-kWh</span> </li>
+				<li>Heure creuse : <span class="link">-kWh</span> </li>
 			</ul>
 		</li>		
 	</g:else>
@@ -90,8 +99,6 @@
 		</g:if>
 	</div></li>
 </ul>
-
-<span style="font-size:xx-small">Estimation sur une année complète en fonction de votre consommation réelle depuis le 1er janvier</span>
 
 <g:if test="${ !house?.compteur && !viewOnly }">
 	<h6 class="h6">

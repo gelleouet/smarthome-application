@@ -1,7 +1,6 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<meta name='layout' content='authenticated-chart' />
 </head>
 
 <body onload="onLoadDeviceChart();">
@@ -21,7 +20,12 @@
 	    </div><!-- .aui-navgroup-inner -->
 	</nav>
 
-	<g:applyLayout name="applicationContent">
+
+	<g:applyLayout name="applicationHeader">
+		<h3><g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/>
+		<span class="h6">${ app.formatUserDateTime(date: command.device.dateValue) } - Il y a ${ app.formatTimeAgo(date: command.device.dateValue) }</span>
+		</h3>
+		
 		<div class="aui-group aui-group-split">
 			<div class="aui-item">
 				<g:form name="navigation-chart-form" action="deviceChart">
@@ -36,18 +40,17 @@
 				</g:remoteLink>
 			</div>
 		</div>	
-		
-		<br/>
-		<h4><g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/></h4>
-		<p class="h6">${ app.formatUserDateTime(date: command.device.dateValue) } - Il y a ${ app.formatTimeAgo(date: command.device.dateValue) }</p>
-		
-		<g:render template="deviceChart"/>
 	</g:applyLayout>
-	
-	<asset:script type="text/javascript">
-		google.load("visualization", "1.0", {packages:["corechart"]});
-		google.setOnLoadCallback(buildGoogleCharts);
-	</asset:script>
+
+
+	<g:applyLayout name="applicationContent">
+		<g:if test="${ command.deviceImpl.viewChart() }">
+			<g:render template="${ command.deviceImpl.viewChart() }"/>	
+		</g:if>
+		<g:else>
+			<g:render template="deviceChart"/>
+		</g:else>
+	</g:applyLayout>
 	
 </body>
 </html>

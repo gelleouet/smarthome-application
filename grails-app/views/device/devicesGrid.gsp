@@ -26,6 +26,7 @@
 
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 	
+	
 		<g:if test="${ mobileAgent }">
 			<g:each var="device" in="${ devices?.sort{ it.label } }">
 				<div class="filActualiteItem2">
@@ -47,7 +48,6 @@
 					</g:each>
 				</div>
 			</g:each>
-				
 		</g:else>
 	</g:applyLayout>
 </body>

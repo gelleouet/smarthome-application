@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -76,5 +77,18 @@ class House implements Serializable {
 		HouseConso conso = new HouseConso(house: this,
 			dateConso: HouseConso.dateConsoForYear(year))
 		return conso	
+	}
+	
+	
+	/**
+	 * Retourne une instance du compteur électrique principal
+	 * 
+	 * @return
+	 */
+	AbstractDeviceType compteurElectriqueImpl() {
+		if (compteur) {
+			return compteur.newDeviceImpl()
+		}	
+		return null
 	}
 }

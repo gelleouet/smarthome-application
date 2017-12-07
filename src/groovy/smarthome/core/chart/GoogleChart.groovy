@@ -7,7 +7,8 @@ import java.util.List;
 
 class GoogleChart {
 	String chartType
-	List values = []
+	def values
+	def aggregateValues
 	List<GoogleDataTableCol> colonnes = []
 	List<Map> series = []
 	List<Map> metaValues = []
@@ -66,7 +67,7 @@ class GoogleChart {
 			def row = ["c": values]
 			
 			if (deviceValue?.hasProperty('id')) {
-				row["p"] = deviceValue.id	
+				row["p"] = [deviceValueId: deviceValue.id]	
 			}
 			
 			dataTableRows << row

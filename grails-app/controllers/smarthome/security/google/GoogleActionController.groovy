@@ -14,7 +14,6 @@ import smarthome.security.google.GoogleActionService;
 import smarthome.security.google.GoogleActionAuthCommand;
 import smarthome.security.google.action.GoogleActionRequest;
 import grails.converters.JSON;
-import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -29,7 +28,6 @@ import smarthome.core.ExceptionNavigationHandler
 @Secured("permitAll()")
 class GoogleActionController extends AbstractController {
 
-	def springSecurityService
 	GoogleActionService googleActionService
 	AuthenticationManager authenticationManager
 

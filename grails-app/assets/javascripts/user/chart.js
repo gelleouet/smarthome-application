@@ -20,6 +20,11 @@ $(window).on('load', function() {
 });
 
 
+function onLoadGoogleChart() {
+	google.load("visualization", "1.0", {packages:["corechart"]});
+	google.setOnLoadCallback(buildGoogleCharts);
+}
+
 
 /**
  * Construction de tous les charts

@@ -103,6 +103,7 @@ class NotificationAccountSenderController extends AbstractController {
 	 * @param notificationAccount
 	 * @return
 	 */
+	@Secured("isAuthenticated()")
 	def formTemplateNotificationSender(NotificationAccount notificationAccount) {
 		if (notificationAccount.notificationAccountSender) {
 			NotificationSender sender = notificationAccount.notificationAccountSender.newNotificationSender()
@@ -119,6 +120,7 @@ class NotificationAccountSenderController extends AbstractController {
 	 * @param notification
 	 * @return
 	 */
+	@Secured("isAuthenticated()")
 	def formSenderParameter(Notification notification) {
 		if (notification.notificationAccount) {
 			NotificationSender sender = notification.notificationAccount.notificationAccountSender.newNotificationSender()

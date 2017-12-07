@@ -39,7 +39,6 @@ class EmailRouteBuilder extends RouteBuilder {
 		String rabbitHostname = grailsApplication.config.rabbitmq.connectionfactory.hostname
 		String rabbitUsername = grailsApplication.config.rabbitmq.connectionfactory.username
 		String rabbitPassword = grailsApplication.config.rabbitmq.connectionfactory.password
-		String messageDirectory = grailsApplication.config.rabbitmq.messageDirectory
 
 		String smtpHostname = grailsApplication.config.smtp.hostname
 		String smtpPort = grailsApplication.config.smtp.port

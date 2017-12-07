@@ -10,6 +10,8 @@ import smarthome.automation.ChartViewEnum;
 import smarthome.automation.DataModifierEnum;
 import smarthome.automation.Device;
 import smarthome.automation.DeviceChartCommand;
+import smarthome.automation.DeviceTypeProvider;
+import smarthome.automation.DeviceTypeProviderPrix;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.LevelAlertEnum;
 import smarthome.automation.SeriesTypeEnum;
@@ -25,6 +27,10 @@ import smarthome.core.chart.GoogleDataTableCol;
 abstract class AbstractDeviceType {
 	Device device
 	String name = simpleName()
+	protected DeviceTypeProvider fournisseurCache
+	protected String contratCache
+	protected Map tarifCache
+	
 	
 	/**
 	 * Son nom simple pour le système de convention
@@ -46,6 +52,15 @@ abstract class AbstractDeviceType {
 	}
 	
 	
+	/**
+	 * Les values à charger pour le graphe
+	 * 
+	 * @return
+	 */
+	String chartMetaNames(DeviceChartCommand command) {
+		
+	}
+	
 	
 	/**
 	 * Nom de la vue pour saisie des options
@@ -54,6 +69,17 @@ abstract class AbstractDeviceType {
 	 */
 	final def viewForm() {
 		"/deviceType/${name}/${name}Form"
+	}
+	
+	
+	/**
+	 * Une vue chart spécifique à un device.
+	 * Par défaut, rien : affichage du graphique normal
+	 * 
+	 * @return
+	 */
+	String viewChart() {
+		
 	}
 
 	
@@ -226,5 +252,71 @@ abstract class AbstractDeviceType {
 		}
 		
 		return chart
+	}
+	
+	/**
+	 * Charge les prix pour une année donnée et les renvoit indexés dans une map en
+	 * fonction de l'option tarifaire
+	 *
+	 * @param annee
+	 * @return
+	 */
+	final Map listTarifAnnee(int annee) {
+		if (tarifCache != null) {
+			return tarifCache
+		}
+		
+		tarifCache = [:]
+		DeviceTypeProvider provider = getFournisseur()
+		
+		if (provider) {
+			String contrat = getContrat()
+			
+			if (contrat) {
+				DeviceTypeProviderPrix.findAllByDeviceTypeProviderAndContratAndAnnee(provider, contrat, annee).each {
+					tarifCache.put(it.period, it.prixUnitaire)
+				}
+			}
+		}
+		
+		return tarifCache
+	}
+	
+	
+	/**
+	 * Calcul d'un tarif pour une période donnée
+	 * 
+	 * @param period
+	 * @param quantite
+	 * @param annee
+	 * @return
+	 */
+	Double calculTarif(String period, double quantite, int annee) {
+		Double prixUnitaire = listTarifAnnee(annee)?.get(period.toUpperCase())
+		
+		if (prixUnitaire != null) {
+			return prixUnitaire * quantite
+		}
+		
+		return null
+	}
+	
+	
+	/**
+	 * Retourne le nom du contrat
+	 * @return
+	 */
+	String getContrat() {
+		
+	}
+	
+	
+	/**
+	 * Retourne le fournisseur du contrat
+	 *
+	 * @return
+	 */
+	DeviceTypeProvider getFournisseur() {
+		
 	}
 }

@@ -285,17 +285,23 @@ class DeviceValue implements Serializable {
 	}
 	
 	
-	static def values(Device device, Date dateDebut, Date dateFin, String name = null) {
+	static def values(Device device, Date dateDebut, Date dateFin, String metaName = null) {
 		return DeviceValue.createCriteria().list {
 			eq 'device', device
 			between 'dateValue', dateDebut, dateFin
 			
-			if (name) {
-				if (name == '') {
-					isNull 'name'
-				} else {
-					eq 'name', name
+			if (metaName) {
+				or {
+					for (String token : metaName.split(",")) {
+						if (token == "null" || !token) {
+							isNull "name"	
+						} else {
+							eq "name", token
+						}
+					}
 				}
+			} else {
+				isNull "name"
 			}
 			
 			order 'dateValue', 'name'

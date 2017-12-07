@@ -1,6 +1,6 @@
 <%@ page import="smarthome.automation.DeviceValue" %>
 
-<h3>Synthèse confort habitat et consommation</h3>
+<h3>Synthèse confort habitat</h3>
 
 <div class="aui-group" style="margin-top:20px">
 	<div class="aui-item responsive">
@@ -51,30 +51,14 @@
 	</div>
 	<div class="aui-item responsive">
 		<div>
-			<h4 class="separator-bottom">Consommation</h4>
+			<h4 class="separator-bottom">Qualité air</h4>
 			
 			<div class="synthese-content">
-				<g:if test="${ house?.compteur }">
-					<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.compteur.id] }"/>
-					<g:set var="first_hchp" value="${ DeviceValue.firstValueByDay(house?.compteur, 'hchp') }"/>
-					<g:set var="last_hchp" value="${ DeviceValue.lastValueByDay(house?.compteur, 'hchp') }"/>
-					<g:set var="first_hchc" value="${ DeviceValue.firstValueByDay(house?.compteur, 'hchc') }"/>
-					<g:set var="last_hchc" value="${ DeviceValue.lastValueByDay(house?.compteur, 'hchc') }"/>
-					<g:set var="hchp" value="${ first_hchp?.value && last_hchp?.value ? (last_hchp.value - first_hchp.value) / 1000.0 : 0.0 }"/>
-					<g:set var="hchc" value="${ first_hchc?.value && last_hchc?.value ? (last_hchc.value - first_hchc.value) / 1000.0 : 0.0 }"/>
-					
-					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
-						<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-								${ (hchp + hchc as Double).round(1) }kWh
-							</div>
-					</g:link>
-					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
-					<p style="text-align:left"><strong>Interprétation :</strong> ${ interpretation?.commentaire }</p>
-				</g:if>
-				<g:else>
-					<h6 class="h6"><span class="aui-icon aui-icon-small aui-iconfont-warning"></span> 
-					L'objet <g:link controller="profil" action="profil">Compteur principal</g:link> n'est pas configuré sur votre profil !</h6>
-				</g:else>
+				<div class="vignette-synthese" style="background: radial-gradient(#3572b0, orange 100%);">
+					-	
+				</div>
+				<h6 class="h6">Dernier relevé :</h6>
+				<p style="text-align:left"><strong>Interprétation :</strong></p>
 			</div>
 		</div>
 	</div>

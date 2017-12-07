@@ -32,13 +32,10 @@ class TableauBordController extends AbstractController {
 	def index() {
 		def user = authenticatedUser
 		def house = houseService.findDefaultByUser(user)
-		def userDeviceCount = deviceService.countDevice(user)
-		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
 		def modes = modeService.listModesByUser(user)
 		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		
 		render(view: 'tableauBord', model: [user: user, house: house,
-			sharedDeviceCount: sharedDeviceCount, userDeviceCount: userDeviceCount,
 			modes: modes, tableauBords: tableauBords])
 	}
 }

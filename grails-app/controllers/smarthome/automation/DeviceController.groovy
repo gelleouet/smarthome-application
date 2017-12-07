@@ -163,13 +163,35 @@ class DeviceController extends AbstractController {
 		
 		def tableauBords = deviceService.groupByTableauBord(user.id)
 		command.navigation()
-		command.deviceImpl = command.device.deviceType.newDeviceType()
+		command.deviceImpl = command.device.newDeviceImpl()
 		
+		command.metaName = command.deviceImpl.chartMetaNames(command)
 		def datas = deviceValueService.values(command)
 		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
 		
 		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords,
 			chart: chart])
+	}
+	
+	
+	/**
+	 * Juste le graphique du device sans les barres de menu et autre
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def templateDeviceChart(DeviceChartCommand command) {
+		def user = authenticatedUser
+		deviceService.assertSharedAccess(command.device, user)
+		
+		command.navigation()
+		command.deviceImpl = command.device.newDeviceImpl()
+		
+		command.metaName = command.deviceImpl.chartMetaNames(command)
+		def datas = deviceValueService.values(command)
+		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
+		
+		render(template: 'deviceChart', model: [command: command, datas: datas, chart: chart])
 	}
 	
 	

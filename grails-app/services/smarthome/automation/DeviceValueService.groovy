@@ -152,11 +152,17 @@ class DeviceValueService extends AbstractService {
 			between 'dateValue', command.dateDebut(), command.dateFin()
 			
 			if (command.metaName) {
-				if (command.metaName == '') {
-					isNull 'name'
-				} else {
-					eq 'name', command.metaName
+				or {
+					for (String token : command.metaName.split(",")) {
+						if (token == "null" || !token) {
+							isNull "name"
+						} else {
+							eq "name", token
+						}
+					}
 				}
+			} else {
+				isNull 'name'
 			}
 			
 			projections {

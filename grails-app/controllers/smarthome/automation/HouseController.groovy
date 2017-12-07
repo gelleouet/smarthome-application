@@ -69,13 +69,25 @@ class HouseController extends AbstractController {
 	
 	
 	/**
-	 * Rendu de la synthese de la maison
+	 * Rendu de la synthese confort de la maison
 	 * 
 	 * @return
 	 */
 	@PreAuthorize("hasPermission(#house, 'OWNER')")
-	def synthese(House house) {
+	def syntheseConfort(House house) {
 		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'synthese', model: [house: house, houseSynthese: houseSynthese])
+		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese])
+	}
+	
+	
+	/**
+	 * Rendu de la synthese confort de la maison
+	 * 
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#house, 'OWNER')")
+	def syntheseConsommation(House house) {
+		def houseSynthese = houseService.calculSynthese(house)
+		render(template: 'syntheseConsommation', model: [house: house, houseSynthese: houseSynthese])
 	}
 }

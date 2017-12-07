@@ -10,8 +10,8 @@
 		formatDataTable();
 		combobox();
 		ajaxPagination();
+		buildGoogleCharts();
 	});
-	
 })(jQuery);
 
 
@@ -28,7 +28,22 @@ $( document ).ready(function() {
 	initDragAndDrop();
 	initToggle()
 	initForm()
+	selectHashTab()
 })
+
+
+/**
+ * Si un fragment (#tabs-....) est spécifié dans l'url, le tab doit être sélectionné automatiquement
+ */
+function selectHashTab() {
+	if (window.location.hash) {
+		var fragment = window.location.hash.substr(1)
+		
+		if (fragment.startsWith("tabs")) {
+			AJS.tabs.change($('a[href="#' + fragment + '"]'));
+		}
+	}
+}
 
 
 function initDragAndDrop() {

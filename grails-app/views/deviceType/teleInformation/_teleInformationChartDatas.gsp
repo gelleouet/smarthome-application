@@ -1,5 +1,4 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
-<g:set var="deviceValueService" bean="deviceValueService"/>
 
 <div data-chart-datas="true" class="hidden">
 	
