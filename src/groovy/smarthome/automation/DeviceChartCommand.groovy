@@ -15,6 +15,7 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 		deviceImpl nullable: true
 		metaName nullable: true
 		navigation nullable: true
+		dateDebutUser nullable: true
 	}
 	
 	

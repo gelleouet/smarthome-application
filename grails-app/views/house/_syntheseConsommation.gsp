@@ -30,10 +30,10 @@
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
 						<div class="aui-item">
-							<h4 >${ app.formatUser(date: currentDate) }</h4>
+							<h4>${ app.formatUser(date: currentDate) }</h4>
 						</div>
 						<div class="aui-item">
-							<span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span>
+							<h4><span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span></h4>
 						</div>
 					</div>
 				</div>	
@@ -58,13 +58,13 @@
 						<tbody>
 							<tr>
 								<td>HP</td>
-								<td><span class="link">${ hchp as Integer }</span></td>
-								<td><span class="link">${ tarifHP }</span></td>
+								<td><span class="link">${ (hchp as Double)?.round(1) }</span></td>
+								<td><span class="link">${ (tarifHP as Double)?.round(1) }</span></td>
 							</tr>
 							<tr>
 								<td>HC</td>
-								<td><span class="link">${ hchc as Integer }</span></td>
-								<td><span class="link">${ tarifHC }</span></td>
+								<td><span class="link">${ (hchc as Double)?.round(1) }</span></td>
+								<td><span class="link">${ (tarifHC as Double)?.round(1) }</span></td>
 							</tr>
 						</tbody>
 					</table>
@@ -75,7 +75,9 @@
 		</div>
 		<div class="aui-item responsive">
 			<div>
-				<g:include action="templateDeviceChart" controller="device" params="[viewMode: 'month', dateChart: app.formatPicker(date: new Date()), 'device.id': house.compteur.id, chartHeight: '350']"/>	
+				<g:include action="templateDeviceChart" controller="device" params="[viewMode: 'month',
+					dateChart: app.formatPicker(date: new Date()), dateDebutUser: app.formatPicker(date: new Date() - 7),
+					'device.id': house.compteur.id, chartHeight: '350']"/>	
 			</div>
 		</div>
 	</div>

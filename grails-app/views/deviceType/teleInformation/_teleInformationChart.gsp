@@ -74,7 +74,7 @@
 						<g:formatDate date="${ data.key }" format="HH:mm"/>
 					</g:if>
 					<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
-						<g:formatDate date="${ data.key }" format="dd/MM/yyyy"/>
+						<g:formatDate date="${ data.key }" format="EEEE dd/MM/yyyy"/>
 					</g:elseif>
 					<g:else>
 						<g:formatDate date="${ data.key }" format="MMMM yyyy"/>

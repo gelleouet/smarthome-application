@@ -7,6 +7,7 @@ import groovy.time.TimeCategory;
 
 abstract class AbstractChartCommand<T> {
 	Date dateChart
+	Date dateDebutUser
 	ChartViewEnum viewMode
 	ChartNavigationEnum navigation
 	boolean comparePreviousYear
@@ -28,12 +29,16 @@ abstract class AbstractChartCommand<T> {
 	 * @return
 	 */
 	Date dateDebut() {
-		Date date = dateChart.clearTime()
-		
-		switch (viewMode) {
-			case ChartViewEnum.year: return DateUtils.firstDayInYear(date) 
-			case ChartViewEnum.month: return DateUtils.firstDayInMonth(date) 
-			default: return date
+		if (dateDebutUser) {
+			return dateDebutUser
+		} else {
+			Date date = dateChart.clearTime()
+			
+			switch (viewMode) {
+				case ChartViewEnum.year: return DateUtils.firstDayInYear(date) 
+				case ChartViewEnum.month: return DateUtils.firstDayInMonth(date) 
+				default: return date
+			}
 		}
 	}
 	
