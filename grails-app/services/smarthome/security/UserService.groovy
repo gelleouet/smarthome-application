@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousMessage;
+import smarthome.core.QueryUtils;
 import smarthome.core.SmartHomeException
 import smarthome.security.ChangePasswordCommand;
 import smarthome.security.User;
@@ -20,6 +21,43 @@ class UserService extends AbstractService {
 
 
 
+	/**
+	 * Recherche multi-critère
+	 * 
+	 * @param command
+	 * @param pagination
+	 * 
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	List<User> search(UserCommand command, Map pagination) throws SmartHomeException {
+		return User.createCriteria().list(pagination) {
+			if (command.search) {
+				def search = QueryUtils.decorateMatchAll(command.search)
+				
+				or {
+					ilike 'nom', search
+					ilike 'prenom', search
+					ilike 'username', search
+				}
+			}
+			
+			if (command.profilPublic != null) {
+				eq 'profilPublic', command.profilPublic 
+			}
+			
+			if (command.notInIds) {
+				not {
+					'in' 'id', command.notInIds
+				}
+			}
+			
+			order "prenom" 	
+			order "nom" 	
+		}
+	}
+	
+	
 	/**
 	 * Authentification d'une application
 	 * 
@@ -115,16 +153,5 @@ class UserService extends AbstractService {
 		}
 		
 		return user
-	}
-	
-	
-	/**
-	 * Nombre d'amis d'un user
-	 * 
-	 * @param user
-	 * @return
-	 */
-	long countUserFriend(User user) {
-		return UserFriend.where({ user == user}).count()	
 	}
 }

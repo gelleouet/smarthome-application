@@ -25,6 +25,7 @@ class House implements Serializable {
 	Device compteur
 	Device temperature
 	Device humidite
+	Chauffage chauffage
 	
 	
     static constraints = {
@@ -32,6 +33,7 @@ class House implements Serializable {
 		compteur nullable: true
 		temperature nullable: true
 		humidite nullable: true
+		chauffage nullable: true
     }
 	
 	static mapping = {

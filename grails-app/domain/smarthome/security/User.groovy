@@ -31,6 +31,7 @@ class User implements Serializable {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
+	boolean profilPublic
 	
 	
 	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)

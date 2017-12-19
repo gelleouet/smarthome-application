@@ -4,7 +4,6 @@ import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
-import smarthome.core.QueryUtils;
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
 import smarthome.security.RegistrationCode;
@@ -29,42 +28,16 @@ class UserController extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "Utilisateurs", navigation = NavigationEnum.configuration, header = "Administrateur")
-	def users(String userSearch) {
-		def users
-		int recordsTotal
-		def pagination = this.getPagination([:])
-
-		if (userSearch) {
-			def search = QueryUtils.decorateMatchAll(userSearch)
-			
-			def query = User.where {
-				username =~ search || prenom =~ search || nom =~ search
-			}
-			users = query.list(pagination)
-			recordsTotal = query.count()
-		} else {
-			recordsTotal = User.count()
-			users = User.list(pagination)
-		}
+	def users(UserCommand command) {
+		def users = userService.search(command, this.getPagination([:]))
+		def recordsTotal = users.totalCount
 
 		// users est accessible depuis le model avec la variable user[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond users, model: [recordsTotal: recordsTotal, userSearch: userSearch]
+		respond users, model: [recordsTotal: recordsTotal, command: command]
 	}
 	
 	
-	/**
-	 * Recherche utilisateur publique
-	 * 
-	 * @param userSearch
-	 * @return
-	 */
-	@Secured("isAuthenticated()")
-	def userList(String userSearch) {
-		users(userSearch)
-	}
-
-
 	/**
 	 * Edition d'un utilisateur
 	 * 

@@ -14,7 +14,7 @@
 	    	<g:formRemote name="form-device-share-ajout" class="aui" url="[action: 'addShare']" update="ajaxDeviceShare">
 	    		<g:hiddenField name="id" value="${ device.id }"/>
 	    		<fieldset>
-					<input name="sharedUserId" id="selectSharedUser" type="hidden" data-url="${ g.createLink(controller: 'user', action: 'userList') }"></input>
+					<input name="sharedUserId" id="selectSharedUser" type="hidden" data-url="${ g.createLink(controller: 'userFriend', action: 'userFriendList') }"></input>
 					<button class="aui-button aui-button-subtle" style="vertical-align:bottom"><span class="aui-icon aui-icon-small aui-iconfont-add">Ajouter </span> Ajouter</button>
 				</fieldset>
 			</g:formRemote>

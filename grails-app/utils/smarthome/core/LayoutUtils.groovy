@@ -31,7 +31,7 @@ class LayoutUtils {
 			row << data
 		}
 		
-		if (rows.last()) {
+		if (rows && rows.last()) {
 			for (int idx = rows.last().size(); idx < column; idx++) {
 				rows.last() << null
 			}

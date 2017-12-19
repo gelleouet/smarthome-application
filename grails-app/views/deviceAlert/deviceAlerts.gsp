@@ -10,7 +10,6 @@
 	        <div class="aui-navgroup-primary">
 	            <ul class="aui-nav">
 	                <li><g:link action="devicesGrid" controller="device" params="[favori: true]">Favoris</g:link></li>
-	                <li><g:link action="devicesGrid" controller="device" params="[sharedDevice: true]">Partagés</g:link></li>
 	                <g:each var="tableauBord" in="${ tableauBords }">
 						<li>
 							<g:link action="devicesGrid" controller="device" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>
@@ -22,19 +21,22 @@
 	</nav>
 
 
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="applicationHeader">
 		<div class="aui-group aui-group-split">
 			<div class="aui-item">
 				<h3>Alertes</h3>
 			</div>
 			<div class="aui-item">
-				<div class="aui-buttons">
+				<div class="aui-buttons" style="margin-top:0px;">
 					<g:link class="aui-button ${ !command.open ? 'aui-button-primary' : '' }" controller="deviceAlert" action="deviceAlerts">Tous</g:link>
 					<g:link class="aui-button ${ command.open ? 'aui-button-primary' : '' }" controller="deviceAlert" action="deviceAlerts" params="[open: true]">Open</g:link>
 				</div>
 			</div>
 		</div>
-		
+	</g:applyLayout>
+
+
+	<g:applyLayout name="applicationContent">
 		<div style="padding:15px; margin-top:15px;">
 			<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 			    <thead>

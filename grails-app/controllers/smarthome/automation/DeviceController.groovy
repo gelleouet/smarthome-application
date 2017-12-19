@@ -11,6 +11,7 @@ import smarthome.core.chart.GoogleChart;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 import smarthome.security.User;
+import smarthome.security.UserFriendService;
 
 
 @Secured("isAuthenticated()")
@@ -22,6 +23,7 @@ class DeviceController extends AbstractController {
 	DeviceValueService deviceValueService
 	DeviceAlertService deviceAlertService
 	EventService eventService
+	UserFriendService userFriendService
 	
 	
 	/**
@@ -53,15 +55,34 @@ class DeviceController extends AbstractController {
 		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		
 		// activation favori si aucun tableau de bord
-		if (!search.tableauBord && !search.sharedDevice) {
+		if (!search.tableauBord) {
 			search.favori = true	
 		}
 		
 		def devices = deviceService.listByUser(search)
+		def user = authenticatedUser
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond devices, model: [user: authenticatedUser, search: search, tableauBords: tableauBords]
+		respond devices, model: [user: user, search: search, tableauBords: tableauBords,
+			secUser: user]
+	}
+	
+	
+	/**
+	 * Les objets partagés d'un ami
+	 * 
+	 * @param friend
+	 * @return
+	 */
+	def deviceShareGrid(User friend) {
+		def user = authenticatedUser
+		userFriendService.assertFriend(user, friend)
+		
+		def devices = deviceService.listByUser(new DeviceSearchCommand(
+			userId: friend.id, userSharedId: user.id))
+		
+		render(template: 'deviceShareGrid', model: [devices: devices, user: user])
 	}
 	
 	
@@ -170,7 +191,7 @@ class DeviceController extends AbstractController {
 		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
 		
 		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords,
-			chart: chart])
+			chart: chart, secUser: user])
 	}
 	
 	
@@ -191,7 +212,8 @@ class DeviceController extends AbstractController {
 		def datas = deviceValueService.values(command)
 		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
 		
-		render(template: 'deviceChart', model: [command: command, datas: datas, chart: chart])
+		render(template: 'deviceChart', model: [command: command, datas: datas, chart: chart,
+			secUser: user])
 	}
 	
 	
@@ -247,6 +269,7 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def deleteDeviceValue(DeviceValue deviceValue) {
+		deviceService.edit(deviceValue.device)
 		deviceValueService.delete(deviceValue)
 		nop()
 	}
@@ -259,6 +282,7 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def saveDeviceValue(DeviceValue deviceValue) {
+		deviceService.edit(deviceValue.device)
 		deviceValueService.save(deviceValue)
 		nop()
 	}
@@ -271,6 +295,8 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def addDeviceValue(DeviceValue deviceValue) {
+		deviceService.edit(deviceValue.device)
+		
 		// binding datetime à la main
 		deviceValue.dateValue = Date.parse(DateUtils.FORMAT_DATETIME_USER, params.dateValue)
 		deviceValue.validate()
@@ -286,6 +312,7 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def dialogDeviceValue(DeviceValue deviceValue) {
+		deviceService.edit(device)
 		render(template: 'dialogDeviceValue', model: [deviceValue: deviceValue])	
 	}
 	
@@ -297,6 +324,7 @@ class DeviceController extends AbstractController {
 	 * @return
 	 */
 	def dialogAddDeviceValue(Device device) {
+		deviceService.edit(device)
 		render(template: 'dialogAddDeviceValue', model: [device: device])	
 	}
 	

@@ -1,8 +1,8 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
 <div data-chart-datas="true" class="hidden" data-on-build-chart="onBuildQualitatifChart"
-	data-url-delete-value="${ g.createLink(controller: 'device', action: 'deleteDeviceValue') }"
-	data-url-change-value="${ g.createLink(controller: 'device', action: 'dialogDeviceValue') }" data-immediate="true">	
+	data-url-delete-value="${ deviceOwner ? g.createLink(controller: 'device', action: 'deleteDeviceValue') : '' }"
+	data-url-change-value="${ deviceOwner ? g.createLink(controller: 'device', action: 'dialogDeviceValue') : '' }" data-immediate="true">	
 
    	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
    	

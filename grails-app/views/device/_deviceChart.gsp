@@ -5,5 +5,5 @@
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
 	<g:render template="${ command.deviceImpl.chartDataTemplate() }"
-		model="[label: command.device.label, datas: datas, chart: chart]"/>
+		model="[label: command.device.label, datas: datas, chart: chart, deviceOwner: (command.device.user.id == secUser?.id)]"/>
 </div>

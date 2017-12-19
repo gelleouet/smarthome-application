@@ -3,7 +3,7 @@
 
 <h3 class="separator"><asset:image src="useravatar.png" width="48px" />
 	<g:if test="${ viewOnly }">
-		${ user.prenomNom }
+		<g:link action="tableauBordFriend" controller="tableauBord" style="color:black;" id="${ user.id }">${ user.prenomNom }</g:link>
 	</g:if>
 	<g:else>
 		<g:link action="profil" controller="profil" style="color:black;">${ user.prenomNom }</g:link>
@@ -14,6 +14,8 @@
 
 <ul class="label">
 	<li>Surface : <span class="link">${ house?.surface?.toInteger() ?: '' }m²</span></li>
+
+	<li>Chauffage : <span class="link">${ house?.chauffage?.libelle }</span></li>
 	
 	<g:if test="${ currentConso && house?.compteur }">
 		<g:set var="beforeConso" value="${ currentConso.before() }"/>
@@ -26,11 +28,16 @@
 			<span>Estimations consommations ${ currentConso.year() } :</span>
 			
 			<g:if test="${ compteurElectrique?.fournisseur }">
-				<br/><span style="font-size:xx-small">Fournisseur : <g:link action="edit" controller="device" id="${ house?.compteur?.id }" fragment="tabs-device-configuration">${ compteurElectrique.fournisseur.libelle }</g:link></span>
+				<g:if test="${ viewOnly }">
+					<br/><span style="font-size:xx-small">Fournisseur : <span class="link">${ compteurElectrique.fournisseur.libelle }</span></span>
+				</g:if>
+				<g:else>
+					<br/><span style="font-size:xx-small">Fournisseur : <g:link action="edit" controller="device" id="${ house?.compteur?.id }" fragment="tabs-device-configuration">${ compteurElectrique.fournisseur.libelle }</g:link></span>
+				</g:else>
 			</g:if>
-			<g:else>
+			<g:elseif test="${ !viewOnly }">
 				<br/><span style="font-size:xx-small">Sélectionner un <g:link action="edit" controller="device" id="${ house?.compteur?.id }" fragment="tabs-device-configuration">gestionnaire d'énergie</g:link> pour calculer le prix de vos consommations</span>
-			</g:else>
+			</g:elseif>
 			
 			<table class="aui datatable" style="margin-bottom:20px;">
 				<thead>

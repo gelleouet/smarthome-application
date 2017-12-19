@@ -33,6 +33,17 @@
 					<div class="description">Utile pour l'envoi de notifications SMS. Au format +336...</div>
 				</div>
 			</fieldset>
+			<fieldset class="group">
+		        <legend><span>Social</span></legend>
+		        <div class="checkbox">
+		        	<g:checkBox name="user.profilPublic" value="${ user.profilPublic }" class="checkbox"/>
+		            <label for="user.profilPublic">J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
+		            dans le but de partager les statistiques de ma maison. Vous pouvez ainsi suivre d'autres utilisateurs et comparer vos consommations.
+		            <br/>
+		            Dans un souci de confidentialité, vos données ne seront visibles à vos amis que si vous acceptez leurs invitations.
+		            </label>
+		        </div>
+		    </fieldset>
 
 			
 			<h4>Maison principale</h4>

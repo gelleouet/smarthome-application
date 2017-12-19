@@ -9,7 +9,6 @@
 	        <div class="aui-navgroup-primary">
 	            <ul class="aui-nav">
 	                <li><g:link action="devicesGrid" controller="device" params="[favori: true]">Favoris</g:link></li>
-	                <li><g:link action="devicesGrid" controller="device" params="[sharedDevice: true]">Partagés</g:link></li>
 	                <g:each var="tableauBord" in="${ tableauBords }">
 						<li class="${ command.device.tableauBord == tableauBord ? 'aui-nav-selected': '' }">
 							<g:link action="devicesGrid" controller="device" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>
@@ -22,7 +21,15 @@
 
 
 	<g:applyLayout name="applicationHeader">
-		<h3><g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/>
+		<h3>
+		<g:if test="${ command.device.user.id != secUser.id }">
+			<g:link action="tableauBordFriend" controller="tableauBord" id="${ command.device.user.id }"> ${ command.device.user.prenomNom } </g:link>
+			/ ${ command.device.label } (${ command.device.value })
+		</g:if>
+		<g:else>
+			<g:link style="color:black;" action="edit" controller="device" id="${ command.device.id }"> ${ command.device.label } (${ command.device.value })</g:link> <g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: command.device.lastDeviceAlert()]"/>
+		</g:else>
+		
 		<span class="h6">${ app.formatUserDateTime(date: command.device.dateValue) } - Il y a ${ app.formatTimeAgo(date: command.device.dateValue) }</span>
 		</h3>
 		
@@ -34,10 +41,12 @@
 				</g:form>
 			</div>
 			<div class="aui-item">
-				<g:remoteLink class="aui-button" url="[action: 'dialogAddDeviceValue', id: command.device.id]" update="ajaxDialog"
-					onSuccess="showAddDeviceValueDialog()">
-					<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter valeur
-				</g:remoteLink>
+				<g:if test="${ command.device.user.id == secUser.id }">
+					<g:remoteLink class="aui-button" url="[action: 'dialogAddDeviceValue', id: command.device.id]" update="ajaxDialog"
+						onSuccess="showAddDeviceValueDialog()">
+						<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter valeur
+					</g:remoteLink>
+				</g:if>
 			</div>
 		</div>	
 	</g:applyLayout>

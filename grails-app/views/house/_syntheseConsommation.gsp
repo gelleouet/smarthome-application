@@ -6,7 +6,6 @@
 <h3>Synthèse consommations</h3>
 
 <g:if test="${ house?.compteur }">
-
 	<g:set var="compteurElectrique" value="${ house.compteurElectriqueImpl() }"/>
 					
 	<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.compteur.id] }"/>
@@ -29,11 +28,15 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item">
+						<div class="aui-item" style="width:25%">
 							<h4>${ app.formatUser(date: currentDate) }</h4>
 						</div>
 						<div class="aui-item">
-							<h4><span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span></h4>
+							<h4><span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span>
+								<g:if test="${ params.compare }">
+									<button class="aui-button" style="float:right; margin-left:10px; margin-top:-5px;">Comparer</button>
+								</g:if>
+							</h4>
 						</div>
 					</div>
 				</div>	
@@ -81,5 +84,7 @@
 			</div>
 		</div>
 	</div>
-
 </g:if>
+<g:else>
+	<p class="label">Profil incomplet : les objets par défaut ne sont pas renseignés</p>
+</g:else>

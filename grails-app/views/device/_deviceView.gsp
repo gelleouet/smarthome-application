@@ -13,7 +13,7 @@
 	${ device.label }
 	<span class="h6-normal"> 
 	
-	<g:remoteLink class="h6-normal" action="dialogProfilPublic" controller="profil" id="${ device.user.id }" update="ajaxDialog" onSuccess="AJS.dialog2('#profil-dialog').show();">${ device.user.prenomNom }</g:remoteLink> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
+	<g:link class="h6-normal" action="tableauBordFriend" controller="tableauBord" id="${ device.user.id }">${ device.user.prenomNom }</g:link> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
 	
 	<g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: device.lastDeviceAlert()]"/>
 </h4>

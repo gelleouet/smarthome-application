@@ -734,3 +734,17 @@ h5.device-grid-label {
 	z-index: 5000;
 }
 
+.focus-large {
+	width: 800px;
+	border-radius: 5px;
+	border: 1px solid #ddd;
+	background-color: #ffffff;	
+	margin-left: auto;
+	margin-right: auto;
+	padding: 20px;
+}
+
+.align-right {
+	margin-left: auto;
+	margin-right: 0;
+}

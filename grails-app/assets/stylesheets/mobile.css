@@ -135,4 +135,13 @@
 		padding: 15px 10px 0px 10px;
 		margin-bottom: 10px;
 	}
+	
+	.focus-large {
+		width: 100%;
+		border: 0px solid #ddd;
+		background-color:#f5f5f5;
+		margin-left: 0px;
+		margin-right: 0px;
+		padding: 0px;
+	}
 }

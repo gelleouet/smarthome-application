@@ -6,7 +6,7 @@ function showDeviceShareDialog() {
 	AJS.dialog2('#device-share-dialog').show();
 	
 	AJS.$("#selectSharedUser").auiSelect2({
-		placeholder: "Rechercher des utilisateurs...",
+		placeholder: "Rechercher des amis...",
 		minimumInputLength: 3,
 		dropdownCssClass: 'combobox-dropdown',
 		ajax: {
@@ -15,13 +15,13 @@ function showDeviceShareDialog() {
 	        quietMillis: 250,
 	        data: function (term, page) {
 	            return {
-	            	userSearch: term,
+	            	search: term,
 	            	offset: page-1,
 	            	max: 25,
 	            };
 	        },
 	        results: function (data, page) {
-	        	var items = {results: [{id:-1, text: 'Tous mes amis'}]}
+	        	var items = {results: []}
 	        	
 	        	if (data.length) {
 	        		for (var i=0; i<data.length; i++) {

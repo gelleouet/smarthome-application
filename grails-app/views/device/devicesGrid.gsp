@@ -13,7 +13,6 @@
 	        <div class="aui-navgroup-primary">
 	            <ul class="aui-nav">
 	                <li class="${ search.favori ? 'aui-nav-selected': '' }"><g:link action="devicesGrid" params="[favori: true]">Favoris</g:link></li>
-	                <li class="${ search.sharedDevice ? 'aui-nav-selected': '' }"><g:link action="devicesGrid" params="[sharedDevice: true]">Partagés</g:link></li>
 	                <g:each var="tableauBord" in="${ tableauBords }">
 						<li class="${ search.tableauBord == tableauBord ? 'aui-nav-selected': '' } smart-droppable" data-droppable-value="${ tableauBord }" data-ondrop="onDropDeviceToTableauBord" data-ondrop-url="${ g.createLink(controller: 'device', action: 'moveToTableauBord') }">
 							<g:link action="devicesGrid" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>

@@ -3,30 +3,25 @@ package smarthome.automation
 import java.io.Serializable;
 
 import smarthome.core.SmartHomeCoreConstantes;
-import smarthome.security.User;
 import grails.validation.Validateable;
 
 /**
- * Partage de devices entre plusieurs utilisateurs avec notion de modification / execution / consultation
- *  
+ * Mode de chauffage
+ * 
  * @author gregory
  *
  */
 @Validateable
-class DeviceShare implements Serializable {
-	Device device
-	User sharedUser
-	
-	static belongsTo = [device: Device]
+class Chauffage implements Serializable {
+	String libelle
 	
 	
     static constraints = {
-		
+		libelle unique: true
     }
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
-		device index: "DeviceShare_Device_Idx"
+		sort 'libelle'
 	}
-	
 }

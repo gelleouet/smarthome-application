@@ -73,10 +73,11 @@ class HouseController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#house, 'OWNER')")
 	def syntheseConfort(House house) {
+		def user = authenticatedUser
 		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese])
+		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese,
+			secUser: user])
 	}
 	
 	
@@ -85,9 +86,10 @@ class HouseController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#house, 'OWNER')")
 	def syntheseConsommation(House house) {
+		def user = authenticatedUser
 		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'syntheseConsommation', model: [house: house, houseSynthese: houseSynthese])
+		render(template: 'syntheseConsommation', model: [house: house, houseSynthese: houseSynthese,
+			secUser: user])
 	}
 }

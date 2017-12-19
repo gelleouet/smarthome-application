@@ -162,6 +162,8 @@ abstract class AbstractController {
 		} else if (request.xhr) {
 			// rendu erreur uniquement pour les appels Ajax
 			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
+		} else {
+			render (view: 'error', model: [error: exception.message])
 		}
 	}
 	

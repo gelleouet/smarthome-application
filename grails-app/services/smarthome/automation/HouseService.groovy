@@ -21,6 +21,44 @@ class HouseService extends AbstractService {
 
 	HouseSyntheseRuleService houseSyntheseRuleService
 	HouseEstimationConsoRuleService houseEstimationConsoRuleService
+	DeviceShareService deviceShareService
+	
+	
+	/**
+	 * Maison par défaut de plusieurs users
+	 * 
+	 * @param userList
+	 * @return
+	 */
+	List<House> listDefaultByUsers(List<User> userList, List<String> fetchs) {
+		if (!userList) {
+			return []
+		}
+		
+		return House.createCriteria().list() {
+			'in' 'user', userList
+			eq 'defaut', true
+			
+			for (String fetch : fetchs) {
+				join fetch
+			}
+		}	
+	}
+	
+	
+	List<HouseConso> listLastConsoByHouses(List<House> houses) {
+		if (!houses) {
+			return []
+		}
+		
+		Date dateConso = new Date().clearTime()
+		dateConso[Calendar.DAY_OF_YEAR] = 1
+		
+		return HouseConso.createCriteria().list() {
+			'in' 'house', houses
+			eq 'dateConso', dateConso
+		}
+	}
 	
 	
 	/**
@@ -258,5 +296,50 @@ class HouseService extends AbstractService {
 	 */
 	House findById(Serializable id) {
 		House.get(id)
+	}
+	
+	
+	/**
+	 * Partage une maison à un utilisateur
+	 * Seuls les objets par défaut liés à la maison sont partagés
+	 * 
+	 * @param house
+	 * @param sharedUser
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void shareHouse(House house, User sharedUser) throws SmartHomeException {
+		if (house) {
+			if (house.compteur) {
+				deviceShareService.addShare(house.compteur, sharedUser.id)
+			}	
+			if (house.humidite) {
+				deviceShareService.addShare(house.humidite, sharedUser.id)
+			}
+			if (house.temperature) {
+				deviceShareService.addShare(house.temperature, sharedUser.id)
+			}
+		}
+	}
+	
+	
+	/**
+	 * Partage la maison par défaut à un utilisateur
+	 * Seuls les objets par défaut liés à la maison sont partagés
+	 *
+	 * @param house
+	 * @param sharedUser
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void shareDefaultHouse(User user, User sharedUser) throws SmartHomeException {
+		House house = this.findDefaultByUser(user)
+		
+		if (house) {
+			this.shareHouse(house, sharedUser)
+		}
+		if (house.compteur) {
+			deviceShareService.addShare(house.compteur, sharedUser.id)
+		}
 	}
 }

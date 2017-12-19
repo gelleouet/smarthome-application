@@ -9,6 +9,11 @@
 		<div class="description">Utilisé pour le calcul du classement énergétique</div>
 	</div>
 	<div class="field-group">
+		<label>Chauffage</label>
+		<g:select name="house.chauffage.id" value="${house?.chauffage?.id}" from="${ smarthome.automation.Chauffage.list() }" optionKey="id" 
+			optionValue="libelle" class="select combobox" noSelection="[null: ' ']"/>
+	</div>
+	<div class="field-group">
 		<label>Compteur principal
 			<g:if test="${ house?.compteur }">
 				<g:link action="edit" controller="device" id="${ house.compteur.id }"><span class="aui-icon aui-icon-small aui-iconfont-edit"></span></g:link>

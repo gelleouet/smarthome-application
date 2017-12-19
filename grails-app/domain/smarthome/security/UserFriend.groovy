@@ -16,17 +16,23 @@ import grails.validation.Validateable
 @Validateable
 class UserFriend implements Serializable {
 
-	static belongsTo = [user: User]
+	User user
 	User friend
+	boolean confirm
+	
+	
+	static belongsTo = [user: User]
 	
 	
 	static constraints = {
 		friend unique: 'user'
 	}
 
+	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "UserFriend_User_Idx"
+		friend index: "UserFriend_Friend_Idx"
 	}
 
 }

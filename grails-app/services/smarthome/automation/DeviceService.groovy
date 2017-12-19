@@ -338,16 +338,9 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("userId must be fill !", command)
 		}
 		
-		// calcul des devices partagés à l'utilisateur
-		def sharedDevices = command.sharedDevice ? this.listSharedDeviceId(command.userId) : []
-		
 		def commonCriteria = {
-			if (command.sharedDevice) {
-				'in' 'id', sharedDevices ?: [0L]
-			} else {
-				user {
-					idEq(command.userId)
-				}
+			user {
+				idEq(command.userId)
 			}
 			
 			if (command.search) {
@@ -367,9 +360,15 @@ class DeviceService extends AbstractService {
 					eq 'implClass', command.deviceTypeClass
 				}
 			}
+			if (command.userSharedId) {
+				shares {
+					eq 'sharedUser.id', command.userSharedId
+				}
+			}
 			
 			join "deviceType"
 			join "user"
+			
 			order "label"
 		}
 		
@@ -380,7 +379,6 @@ class DeviceService extends AbstractService {
 			devices = Device.createCriteria().listDistinct() {
 				commonCriteria.delegate = delegate
 				commonCriteria()
-				
 				join 'shares'
 			}
 		} else {
@@ -390,7 +388,7 @@ class DeviceService extends AbstractService {
 			}
 		}
 		
-		log.info "List devices : ${chrono.stop()}ms"
+		log.info "List ${devices?.size()} devices : ${chrono.stop()}ms"
 		
 		return devices
 	}

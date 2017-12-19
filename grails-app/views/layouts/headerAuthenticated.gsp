@@ -15,11 +15,6 @@
 	                        	<g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'navbarPrimary')?.subitems, category: 'navbarPrimary' ]"/>
 	                        </ul>
 	                    </div>
-	                    <div class="aui-dropdown2-section">
-	                        <ul>
-	                        	<g:render template="/templates/dropDownItem" model="[items: app.navigationItems(category: 'configuration')?.subitems, category: 'configuration' ]"/>
-	                        </ul>
-	                    </div>
 	                </div>
 	  	  		</li>      	 	
 	      	 </ul>
@@ -79,7 +74,7 @@
                           <div class="aui-avatar-inner">
                               <!-- <asset:image src="useravatar.png" />  -->
 	                           	<div class="vignette-user">
-	                           		<g:set var="loggedInUser" value="${ smarthome.security.User.read(sec.loggedInUserInfo(field: 'id')) }"/>
+	                           		<g:set var="loggedInUser" value="${ secUser ?: smarthome.security.User.read(sec.loggedInUserInfo(field: 'id')) }"/>
 	                           		<span>${ loggedInUser.initiale }</span>
 	                           	</div>
                           </div>
