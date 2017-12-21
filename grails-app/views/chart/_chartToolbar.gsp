@@ -2,6 +2,9 @@
 
 <g:hiddenField name="viewMode" value="${ command.viewMode }"/>
 <g:hiddenField name="navigation" value=""/>
+<g:each var="compareDevice" in="${ command.compareDevices }" status="status">
+	<g:hiddenField name="compareDevices[${status}].id" value="${ compareDevice.id }"/>
+</g:each>
 
 <div class="aui-toolbar2">
     <div class="aui-toolbar2-inner">

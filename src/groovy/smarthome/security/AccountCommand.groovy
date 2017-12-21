@@ -20,7 +20,9 @@ class AccountCommand {
 	String username
 	String newPassword
 	String confirmPassword
+	boolean profilPublic
 
+	
 	static constraints = {
 		newPassword blank: false, validator: SmartHomeSecurityUtils.passwordValidator
 		confirmPassword blank: false, validator: SmartHomeSecurityUtils.passwordConfirmValidator

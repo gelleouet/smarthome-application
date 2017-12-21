@@ -108,11 +108,24 @@ abstract class AbstractChartCommand<T> {
 	 * @return
 	 */
 	T cloneForLastYear() {
-		T clone = this.getClass().newInstance()
-		clone.viewMode = this.viewMode
+		T clone = this.clone()
 		use(TimeCategory) {
 			clone.dateChart = this.dateChart - 1.years
 		}
+		return clone
+	}
+	
+	
+	/**
+	 * Clone l'objet
+	 *
+	 * @return
+	 */
+	T clone() {
+		T clone = this.getClass().newInstance()
+		clone.viewMode = this.viewMode
+		clone.dateChart = this.dateChart
+		clone.dateDebutUser = this.dateDebutUser
 		return clone
 	}
 	

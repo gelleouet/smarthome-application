@@ -9,6 +9,8 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 	Device device
 	AbstractDeviceType deviceImpl
 	String metaName
+	List<Device> compareDevices = []
+	List<List> compareValues = []
 	
 	
 	static constraints = {
@@ -20,8 +22,30 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 	
 	
 	@Override
+	void navigation() {
+		// pas de chart à la journée si plusieurs devices car les heures risquent de ne pas correspondre
+		// et puis trop de données à gérer
+		if (compareDevices && viewMode == ChartViewEnum.day) {
+			viewMode = ChartViewEnum.month	
+		}
+		
+		super.navigation()
+	}
+
+
+	@Override
 	DeviceChartCommand cloneForLastYear() {
 		DeviceChartCommand command = super.cloneForLastYear()
+		command.deviceImpl = deviceImpl
+		command.device = device
+		command.metaName = metaName
+		return command
+	}
+	
+	
+	@Override
+	DeviceChartCommand clone() {
+		DeviceChartCommand command = super.clone()
 		command.deviceImpl = deviceImpl
 		command.device = device
 		command.metaName = metaName

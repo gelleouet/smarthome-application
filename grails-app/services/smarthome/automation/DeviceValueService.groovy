@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.util.Date;
 
+import grails.async.PromiseList;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
@@ -14,6 +15,7 @@ import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.Chronometre;
 import smarthome.core.SmartHomeException;
+import smarthome.core.chart.GoogleChart;
 import smarthome.security.User;
 
 
@@ -293,5 +295,41 @@ class DeviceValueService extends AbstractService {
 		}
 		
 		return defaultValue
+	}
+	
+	
+	/**
+	 * Création d'un chart
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	GoogleChart createChart(DeviceChartCommand command) throws SmartHomeException {
+		command.navigation()
+		command.deviceImpl = command.device.newDeviceImpl()
+		command.metaName = command.deviceImpl.chartMetaNames(command)
+		def datas = []
+		
+		// on va threader le chargement des values. utile si plusieurs devices
+		def promiseList = new PromiseList()
+		promiseList << { this.values(command) }
+		command.compareDevices.each {
+			def compareCommand = command.clone()
+			compareCommand.device = it
+			promiseList << { this.values(compareCommand) }
+		}
+		
+		promiseList.get().eachWithIndex { result, index ->
+			if (index == 0) {
+				datas = result
+			} else {
+				command.compareValues << result
+			}
+		}
+		
+		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
+		
+		return chart
 	}
 }

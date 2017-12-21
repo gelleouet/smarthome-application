@@ -1,13 +1,5 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
-<g:if test="${ !command.deviceImpl.fournisseur }">
-	<g:applyLayout name="messageWarning">
-		Pour visualiser les coûts des consommations, veuillez sélectionner
-			<g:link action="edit" controller="device" id="${ command.device.id }" fragment="tabs-device-configuration">un gestionnaire d'énergie</g:link>	
-	</g:applyLayout>
-</g:if>
-
-
 <p class="separator" style="text-align:center; font-weight:bold; font-size: medium;">Consommations (Wh)</p>
 
 <div id="chartDivConso" data-chart-type="${ command.deviceImpl.defaultChartType().factory }">
@@ -21,6 +13,13 @@
 
 
 <p class="separator" style="text-align:center; font-weight:bold; font-size: medium;">Tarifs consommations (€)</p>
+
+<g:if test="${ !command.deviceImpl.fournisseur }">
+	<g:applyLayout name="messageWarning">
+		Pour visualiser les coûts des consommations, veuillez sélectionner
+			<g:link action="edit" controller="device" id="${ command.device.id }" fragment="tabs-device-configuration">un gestionnaire d'énergie</g:link>	
+	</g:applyLayout>
+</g:if>
 
 <g:set var="googleChartTarif" value="${ command.deviceImpl.googleChartTarif(command, datas) }"/>
 

@@ -3,6 +3,9 @@ package smarthome.automation
 import java.io.Serializable;
 
 import smarthome.automation.deviceType.AbstractDeviceType;
+import smarthome.automation.deviceType.Humidite;
+import smarthome.automation.deviceType.TeleInformation;
+import smarthome.automation.deviceType.Temperature;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -92,5 +95,26 @@ class House implements Serializable {
 			return compteur.newDeviceImpl()
 		}	
 		return null
+	}
+	
+	
+	/**
+	 * Retrouve le device équivalent dans ceux associés à la maison
+	 * 
+	 * @param device
+	 * @return
+	 */
+	Device findSameDevice(Device device) {
+		def deviceImpl = device.newDeviceImpl()
+		
+		if (deviceImpl instanceof Temperature) {
+			return this.temperature
+		} else if (deviceImpl instanceof Humidite) {
+			return this.humidite
+		} else if (deviceImpl instanceof TeleInformation) {
+			return this.compteur
+		}
+		
+		return null	
 	}
 }

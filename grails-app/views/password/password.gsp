@@ -24,7 +24,7 @@
 		    </div><!-- .aui-toolbar-inner -->
 		</div>
 
-		<g:form controller="user" method="post" class="aui">
+		<g:form method="post" class="aui">
 			<g:hiddenField name="username" value="${command.username}" />
 			<g:hiddenField name="nom" value="${command.nom}" />
 			<g:hiddenField name="prenom" value="${command.prenom}" />
@@ -38,13 +38,14 @@
 				<div class="field-group">
 					<label for="newPassword">Nouveau mot de passe<span
 						class="aui-icon icon-required"> required</span></label>
-					<g:passwordField name="newPassword" class="text" required="true" value="${command.newPassword}"/>
+					<g:passwordField name="newPassword" class="text" required="true" value="${command.newPassword}" pattern=".{8,64}"/>
+					<div class="description">Minimum 8 caractères dont 1 chiffre</div>
 				</div>
 				<div class="field-group">
 					<label for="confirmPassword">Confirmation mot de passe<span
 						class="aui-icon icon-required"> required</span></label>
-					<g:passwordField name="confirmPassword" class="text"
-						required="true" value="${command.confirmPassword}"/>
+					<g:passwordField name="confirmPassword" class="text" required="true" value="${command.confirmPassword}" pattern=".{8,64}"/>
+					<div class="description">Minimum 8 caractères dont 1 chiffre</div>
 				</div>
 			</fieldset>
 

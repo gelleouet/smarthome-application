@@ -5,7 +5,7 @@
 <g:set var="dpe" value="${ houseService.classementDPE(house, conso) }"/>
 
 <p>
-	<label>
+	<label class="label">
 		<strong>Classement : ${ dpe?.note ?: '-'} <g:if test="${ dpe }">(${ dpe.kwParAn }kWh/an/m²)</g:if></strong>
 		<br/>
 		Surface : ${ house?.surface}m²,

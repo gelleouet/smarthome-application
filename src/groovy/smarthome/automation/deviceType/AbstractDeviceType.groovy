@@ -190,14 +190,13 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	GoogleChart googleChart(DeviceChartCommand command, List<DeviceValue> values) {
-		if (!isQualitatif()) {
-			return null
-		}
-		
-		command.device.extrasToJson()
-		
 		GoogleChart chart = new GoogleChart()
+		command.device.extrasToJson()
 		chart.values = values
+		
+		if (!isQualitatif()) {
+			return chart
+		}
 		
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.colonnes = [
@@ -222,6 +221,24 @@ abstract class AbstractDeviceType {
 				new GoogleDataTableCol(label: "Max", property: "max", type: "number"),
 				new GoogleDataTableCol(label: "Moyenne", property: "avg", type: "number"),
 			]
+			
+			command.compareDevices?.eachWithIndex { compareDevice, idx ->
+				chart.colonnes << new GoogleDataTableCol(label: "Min ${compareDevice.user.prenomNom}", type: "number",
+					value: { deviceValue, index, currentChart ->
+						command.compareValues[idx].find { deviceValue.date == it.date }?.min
+					}
+				)
+				chart.colonnes << new GoogleDataTableCol(label: "Max ${compareDevice.user.prenomNom}", type: "number",
+					value: { deviceValue, index, currentChart ->
+						command.compareValues[idx].find { deviceValue.date == it.date }?.max
+					}
+				)
+				chart.colonnes << new GoogleDataTableCol(label: "Moyenne ${compareDevice.user.prenomNom}", type: "number",
+					value: { deviceValue, index, currentChart ->
+						command.compareValues[idx].find { deviceValue.date == it.date }?.avg
+					}
+				)
+			}
 			
 			chart.series = [
 			    [color: '#ff9f00'],					// min

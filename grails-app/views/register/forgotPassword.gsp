@@ -12,7 +12,7 @@
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <input class="text" type="text" id="username" name="username" placeholder="you@example.com" required="true" value="${ username }">
+	            <input class="text" type="email" id="username" name="username" placeholder="you@example.com" required="true" value="${ username }">
 	        </div>
 	     </fieldset>
 	     

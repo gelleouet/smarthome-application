@@ -25,6 +25,7 @@ import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.core.TransactionUtils;
 import smarthome.core.WorkflowService;
+import smarthome.core.chart.GoogleChart;
 import smarthome.rule.DeviceTypeDetectRuleService;
 import smarthome.security.User;
 

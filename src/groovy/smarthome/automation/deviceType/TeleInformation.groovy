@@ -66,6 +66,7 @@ class TeleInformation extends AbstractDeviceType {
 	@Override
 	GoogleChart googleChart(DeviceChartCommand command, List<DeviceValue> values) {
 		GoogleChart chart = new GoogleChart()
+		chart.values = values
 		return chart
 	}
 	

@@ -74,8 +74,8 @@ function buildGoogleChart(divChart) {
 			}
 	      	
 	      	// nettoie les éléments de contruction du chart
-	      	//divData.remove();
-			//$(divChart).removeAttr('data-chart-type');
+	      	divData.remove();
+			$(divChart).removeAttr('data-chart-type');
 		} else {
 			console.log('build chart cancel (no data)');
 		}

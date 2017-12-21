@@ -93,7 +93,7 @@ abstract class AbstractController {
 	 * @return
 	 */
 	def parseFlashCommand(commandName, defaultObject) {
-		flash[commandName] ?: defaultObject
+		request[commandName] ?: defaultObject
 	}
 	
 	
@@ -114,8 +114,27 @@ abstract class AbstractController {
 	 * @return
 	 */
 	def handleAccessDeniedException(AccessDeniedException exception) {
-		// on insère l'exception dans la request
-		flash.error = exception.message
+		setError(exception.message)
+	}
+	
+	
+	void setError(def error) {
+		request.setAttribute("error", error)
+	}
+	
+	
+	void setErrors(def errors) {
+		request.setAttribute("errors", errors)
+	}
+	
+	
+	void setCommand(String name, def command) {
+		request.setAttribute(name, command)
+	}
+	
+	
+	void setInfo(def info) {
+		request.setAttribute("info", info)
 	}
 	
 	
@@ -131,16 +150,17 @@ abstract class AbstractController {
 	def handleSmartHomeException(SmartHomeException exception) {
 		// on insère l'exception dans la request
 		request.setAttribute("exception", exception)
+		
 
 		// ajout des erreurs pour la redirection (sauf ajax)
 		if (!request.xhr) {
-			flash.error = exception.message
+			setError(exception.message)
 			
 			if (exception.errors) {
-				flash.errors = exception.errors
+				setErrors(exception.errors)
 			} else if (exception.artefactObject && exception.artefactObject.metaClass.respondsTo(exception.artefactObject, 'hasErrors')) {
 				if (exception.artefactObject.hasErrors()) {
-					flash.errors = exception.artefactObject.errors
+					setErrors(exception.artefactObject)
 				}
 			}
 		}
@@ -152,18 +172,16 @@ abstract class AbstractController {
 		if (metaHandler) {
 			// ajout de l'objet en erreur dans le modèle
 			if (metaHandler.modelName()) {
-				flash[metaHandler.modelName()] = exception.artefactObject
+				setCommand(metaHandler.modelName(), exception.artefactObject)
 			}
 
 			// sélection du controller
 			def controller = metaHandler.controllerName() ?: controllerName
 
-			redirect (action : metaHandler.actionName(), controller: controller)
+			forward (controller: controller, action : metaHandler.actionName())
 		} else if (request.xhr) {
 			// rendu erreur uniquement pour les appels Ajax
 			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
-		} else {
-			render (view: 'error', model: [error: exception.message])
 		}
 	}
 	

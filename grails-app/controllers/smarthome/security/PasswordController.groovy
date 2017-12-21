@@ -44,7 +44,7 @@ class PasswordController extends AbstractController {
 		checkErrors(this, command)
 
 		userService.changePassword(command)
-		flash.info = "Changement de votre mot de passe effectué avec succès !"
-		redirect(action: 'password')
+		setInfo "Changement de votre mot de passe effectué avec succès"
+		forward(action: 'password')
 	}
 }

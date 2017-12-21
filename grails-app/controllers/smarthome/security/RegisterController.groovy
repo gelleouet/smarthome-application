@@ -52,8 +52,8 @@ class RegisterController extends AbstractController {
 	def createAccount(AccountCommand account) {
 		checkErrors(this, account)
 		registerService.createAccount(account)
-		flash.info = "Votre demande a bien été prise en compte. Veuillez consulter vos mails pour activer votre compte."
-		redirect(controller: 'login', action: 'auth')	
+		setInfo "Votre demande a bien été prise en compte. Veuillez consulter vos mails pour activer votre compte."
+		forward(controller: 'login', action: 'auth')	
 	}
 	
 	
@@ -66,8 +66,8 @@ class RegisterController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "forgotPassword", modelName = "username")
 	def confirmForgotPassword(String username) {
 		registerService.forgotPassword(username)
-		flash.info = "Un email pour réinitialiser votre mot de passe vous a été envoyé à l'adresse suivante : $username !"
-		redirect(controller: 'login', action: 'auth')	
+		setInfo "Un email pour réinitialiser votre mot de passe vous a été envoyé à l'adresse suivante : $username"
+		forward(controller: 'login', action: 'auth')	
 	}
 	
 	
@@ -94,8 +94,8 @@ class RegisterController extends AbstractController {
 	def confirmResetPassword(ResetPasswordCommand command) {
 		checkErrors(this, command)
 		registerService.resetPassword(command)
-		flash.info = "Votre mot de passe a été réinitialisé !"
-		redirect(controller: 'login', action: 'auth')	
+		setInfo "Votre mot de passe a été réinitialisé"
+		forward(controller: 'login', action: 'auth')	
 	}
 	
 	
@@ -109,10 +109,10 @@ class RegisterController extends AbstractController {
 	def confirmAccount(String username, String token) {
 		try {
 			registerService.confirmAccount(username, token)
-			flash.info = 'Votre compte est activé !'
+			setInfo 'Votre compte est activé !'
 		} catch (Exception e) {
-			flash.error = "Erreur lors de l'activation de votre compte: ${e.message}"
+			setError "Erreur lors de l'activation de votre compte: ${e.message}"
 		}
-		redirect(controller: 'login', action: 'auth')
+		forward(controller: 'login', action: 'auth')
 	}
 }

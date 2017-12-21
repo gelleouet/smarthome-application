@@ -20,11 +20,13 @@
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Nouveau mot de passe<span class="aui-icon icon-required"> required</span></label>
-	            <g:passwordField name="newPassword" class="text" required="true"/>
+	            <g:passwordField name="newPassword" class="text" required="true" pattern=".{8,64}"/>
+	            <div class="description">Minimum 8 caractères dont 1 chiffre</div>
 	        </div>
 	        <div class="field-group">
 	            <label for="username">Confirmation<span class="aui-icon icon-required"> required</span></label>
-	            <g:passwordField name="confirmPassword" class="text" required="true"/>
+	            <g:passwordField name="confirmPassword" class="text" required="true" pattern=".{8,64}"/>
+	            <div class="description">Minimum 8 caractères dont 1 chiffre</div>
 	        </div>
 	     </fieldset>
 	     

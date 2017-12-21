@@ -24,6 +24,7 @@ class DeviceController extends AbstractController {
 	DeviceAlertService deviceAlertService
 	EventService eventService
 	UserFriendService userFriendService
+	HouseService houseService
 	
 	
 	/**
@@ -183,15 +184,28 @@ class DeviceController extends AbstractController {
 		deviceService.assertSharedAccess(command.device, user)
 		
 		def tableauBords = deviceService.groupByTableauBord(user.id)
-		command.navigation()
-		command.deviceImpl = command.device.newDeviceImpl()
+		GoogleChart chart = deviceValueService.createChart(command)
 		
-		command.metaName = command.deviceImpl.chartMetaNames(command)
-		def datas = deviceValueService.values(command)
-		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
-		
-		render(view: 'deviceChart', model: [command: command, datas: datas, tableauBords: tableauBords,
+		render(view: 'deviceChart', model: [command: command, tableauBords: tableauBords,
 			chart: chart, secUser: user])
+	}
+	
+	
+	/**
+	 * Graphique comparatif pour les devices liés à la maison entre 2 users
+	 * 
+	 */
+	def compareHouseDeviceChart(DeviceChartCommand command) {
+		def user = authenticatedUser
+		House house = houseService.findDefaultByUser(user)
+		// recherche du device associé de l'utilisateur
+		def device = house?.findSameDevice(command.device)
+		
+		if (device) {
+			command.compareDevices << device
+		}
+		
+		deviceChart(command)
 	}
 	
 	
@@ -205,15 +219,9 @@ class DeviceController extends AbstractController {
 		def user = authenticatedUser
 		deviceService.assertSharedAccess(command.device, user)
 		
-		command.navigation()
-		command.deviceImpl = command.device.newDeviceImpl()
+		GoogleChart chart = deviceValueService.createChart(command)
 		
-		command.metaName = command.deviceImpl.chartMetaNames(command)
-		def datas = deviceValueService.values(command)
-		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
-		
-		render(template: 'deviceChart', model: [command: command, datas: datas, chart: chart,
-			secUser: user])
+		render(template: 'deviceChart', model: [command: command, chart: chart, secUser: user])
 	}
 	
 	

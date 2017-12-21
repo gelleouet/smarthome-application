@@ -37,7 +37,7 @@
 		        <legend><span>Social</span></legend>
 		        <div class="checkbox">
 		        	<g:checkBox name="user.profilPublic" value="${ user.profilPublic }" class="checkbox"/>
-		            <label for="user.profilPublic">J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
+		            <label for="user.profilPublic" class="label">J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
 		            dans le but de partager les statistiques de ma maison. Vous pouvez ainsi suivre d'autres utilisateurs et comparer vos consommations.
 		            <br/>
 		            Dans un souci de confidentialité, vos données ne seront visibles à vos amis que si vous acceptez leurs invitations.

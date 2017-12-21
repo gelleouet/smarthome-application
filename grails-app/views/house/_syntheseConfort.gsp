@@ -7,8 +7,8 @@
 		<div class="aui-item responsive">
 			<div>
 				<h4 class="separator-bottom">Température
-					<g:if test="${ params.compare }">
-						<button class="aui-button" style="float:right">Comparer</button>
+					<g:if test="${ params.compare && house?.temperature }">
+						<g:link class="aui-button" style="float:right" action="compareHouseDeviceChart" controller="device" params="['device.id': house.temperature.id]">Comparer</g:link>
 					</g:if>
 				</h4>
 				
@@ -34,8 +34,8 @@
 		<div class="aui-item responsive">
 			<div>
 				<h4 class="separator-bottom">Humidité
-					<g:if test="${ params.compare }">
-						<button class="aui-button" style="float:right">Comparer</button>
+					<g:if test="${ params.compare && house?.humidite }">
+						<g:link class="aui-button" style="float:right" action="compareHouseDeviceChart" controller="device" params="['device.id': house.humidite.id]">Comparer</g:link>
 					</g:if>
 				</h4>
 				

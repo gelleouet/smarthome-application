@@ -4,9 +4,9 @@
 </head>
 <body>
 	<g:set var="error">
-		Une erreur grave est survenue ou la page n'existe pas !
+		Erreur générale. Impossible d'exécuter la requête demandée.
 	</g:set>
-
+	
 	<g:applyLayout name="applicationContent">
 		<g:link uri="/">Revenir à la page d'accueil</g:link>
 		

@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:set var="message" scope="flash">
+	<g:set var="message">
 		<g:message code="springSecurity.denied.message" />
 	</g:set>
 

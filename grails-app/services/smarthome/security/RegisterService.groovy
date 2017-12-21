@@ -30,7 +30,7 @@ class RegisterService extends AbstractService {
 		def user = User.findByUsername(username)
 		
 		if (!user) {
-			throw new SmartHomeException("Adresse introuvable : $username !", username)
+			throw new SmartHomeException("Adresse incorrecte !", username)
 		}
 		
 		// création d'un code d'enregistrement
@@ -76,7 +76,7 @@ class RegisterService extends AbstractService {
 		// création d'un user avec compte bloqué en attente déblocage
 		user = new User(username: account.username, password: account.newPassword, prenom: account.prenom, 
 			nom: account.nom, lastActivation: new Date(), accountLocked: true,
-			applicationKey: UUID.randomUUID())
+			applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic)
 		
 		if (!user.save()) {
 			throw new SmartHomeException("Erreur création nouveau compte !", account)
@@ -93,7 +93,7 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void resetPassword(ResetPasswordCommand command) {
+	void resetPassword(ResetPasswordCommand command) throws SmartHomeException {
 		log.info "Reset password ${command.username}"
 		
 		// on vérifie que le token existe bien pour le user
@@ -102,19 +102,19 @@ class RegisterService extends AbstractService {
 		}).find()
 		
 		if (!registration) {
-			throw new SmartHomeException("Token introuvable pour cet utilisateur !", command)
+			throw new SmartHomeException("Le lien n'est plus valide !", command)
 		}
 		
 		// on vérifie si le token n'a pas expiré, dans ce cas, il est supprimé directement
 		if (registration.dateCreated < (new Date() - 1)) {
 			registration.delete(flush: true) // on flush direct avant que la transaction ne soit rollbacké
-			throw new SmartHomeException("Token expiré !", command)
+			throw new SmartHomeException("Le lien a expiré !", command)
 		}
 		
 		def user = User.findByUsername(command.username)
 		
 		if (!user) {
-			throw new SmartHomeException("Utilisateur introuvable : $command.username !", command)
+			throw new SmartHomeException("Utilisateur introuvable !", command)
 		}
 		
 		// on peut changer de mot de passe et on met à jour les statuts relatifs au mot de passe
@@ -137,7 +137,7 @@ class RegisterService extends AbstractService {
 	 * @return
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void confirmAccount(String username, String token) {
+	void confirmAccount(String username, String token) throws SmartHomeException {
 		log.info "Activation compte ${username}"
 		
 		// on vérifie que l'adresse n'est pas déjà prie
