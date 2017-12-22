@@ -8,7 +8,7 @@
 <body>
 	<g:applyLayout name="applicationHeader">
 		<div class="aui-group aui-group-split">
-			<div class="aui-item">
+			<div class="aui-item responsive">
 				<g:form action="userFriendFollowing" class="aui">
 					<h3>Recherchez vos amis</h3>
 					<fieldset>
@@ -17,9 +17,9 @@
 					</fieldset>
 				</g:form>
 			</div>
-			<div class="aui-item">
+			<div class="aui-item responsive">
 				<div class="aui-buttons">
-					<g:link action="userFriendSearch" class="aui-button">Nouveaux amis</g:link>
+					<g:link action="userFriendSearch" class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-user-large"></span> Voir tous les utilisateurs</g:link>
 				</div>
 			</div>
 		</div>	
@@ -34,7 +34,7 @@
 			<div id="div-confirm-follower" async-url="${ g.createLink(action: 'userFriendConfirmFollower') }"></div>
 			<div id="div-waiting-following" async-url="${ g.createLink(action: 'userFriendWaitingFollowing') }" style="margin-top:30px;"></div>
 			
-			<h3 style="background-color:#f5f5f5">Amis (${ recordsTotal })</h3>
+			<h3 style="background-color:#f4f5f7">Amis (${ recordsTotal })</h3>
 			
 			<g:if test="${ userFriendInstanceList  }">
 				<g:set var="friendSplits" value="${ LayoutUtils.splitRow(userFriendInstanceList, 2) }"/>

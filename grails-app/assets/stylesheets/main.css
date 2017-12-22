@@ -364,7 +364,8 @@ tr.incluNorme td {
 
 
 .panelContentGrey {
-	background-color: #f5f5f5;	
+	/*background-color: #f5f5f5;*/	
+	background-color: #f4f5f7;	
 }
 
 
@@ -679,7 +680,7 @@ h5.device-grid-label {
 .vignette-user {
 	width: 28px;
 	height: 28px;
-	background-color: #3572b0;
+	background-color: #0747a6;
 	border-radius: 50%;
 	text-align: center;
 	line-height: 28px
@@ -689,7 +690,7 @@ h5.device-grid-label {
 .vignette-synthese {
 	width: 100px;
 	height: 100px;
-	background-color: #3572b0;
+	background-color: #0747a6;
 	border-radius: 50%;
 	text-align: center;
 	color: white;

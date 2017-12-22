@@ -10,6 +10,8 @@
 //= require jquery-picklist.min
 //= require datatables-1.10.2
 //= require jquery.datetimepicker.full.min
+//= require aui-7.3.0.min
+//= require aui-experimental-7.3.0.min
 //= require_full_tree ./user
 //= require_self
 

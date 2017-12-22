@@ -17,7 +17,7 @@
 						<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.temperature.id] }"/>
 					
 						<g:link controller="device" action="deviceChart" params="['device.id': house.temperature.id]">
-							<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
+							<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 								${ house.temperature.value }°C
 							</div>
 						</g:link>
@@ -44,7 +44,7 @@
 						<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.humidite.id] }"/>
 						
 						<g:link controller="device" action="deviceChart" params="['device.id': house.humidite.id]">
-							<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
+							<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 								${ house.humidite.value }%
 							</div>
 						</g:link>
@@ -67,7 +67,7 @@
 				</h4>
 				
 				<div class="synthese-content">
-					<div class="vignette-synthese" style="background: radial-gradient(#3572b0, orange 100%);">
+					<div class="vignette-synthese" style="background: radial-gradient(#0747a6, orange 100%);">
 						-	
 					</div>
 					<h6 class="h6">Dernier relevé :</h6>

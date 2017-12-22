@@ -8,7 +8,7 @@
 <body>
 	<g:applyLayout name="applicationHeader">
 		<div class="aui-group aui-group-split">
-			<div class="aui-item">
+			<div class="aui-item responsive">
 				<g:form action="userFriendSearch" class="aui">
 					<h3>Recherchez des amis</h3>
 					<fieldset>
@@ -17,9 +17,9 @@
 					</fieldset>
 				</g:form>
 			</div>
-			<div class="aui-item">
+			<div class="aui-item responsive">
 				<div class="aui-buttons">
-					<g:link action="userFriendFollowing" class="aui-button">Mes amis</g:link>
+					<g:link action="userFriendFollowing" class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-user-large"></span> Mes amis</g:link>
 				</div>
 			</div>
 		</div>	
@@ -30,7 +30,7 @@
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
 	
 		<div class="focus-large">
-			<h3 style="background-color:#f5f5f5">Invitez de nouveaux amis</h3>
+			<h3 style="background-color:#f4f5f7">Invitez de nouveaux amis</h3>
 		
 			<g:if test="${ userInstanceList  }">
 				<g:set var="userSplits" value="${ LayoutUtils.splitRow(userInstanceList, 2) }"/>

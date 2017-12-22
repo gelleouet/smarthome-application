@@ -1,6 +1,6 @@
 <%@ page import="smarthome.core.LayoutUtils" %>
 
-<h3 style="background-color:#f5f5f5">Invitations envoyées (${ followings.size() })</h3>
+<h3 style="background-color:#f4f5f7">Invitations envoyées (${ followings.size() })</h3>
 
 <g:if test="${ followings }">
 	<g:set var="friendSplits" value="${ LayoutUtils.splitRow(followings, 2) }"/>

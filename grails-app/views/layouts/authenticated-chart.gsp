@@ -10,14 +10,8 @@
 		<link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}">
 		
 		<asset:stylesheet src="application.css"/>
-		<link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/${g.meta(name: 'aui.version') }/css/aui.min.css" media="all">
-		<link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/${g.meta(name: 'aui.version') }/css/aui-experimental.min.css" media="all">
-		
 		<asset:javascript src="application.js"/>
-		<script src="//aui-cdn.atlassian.com/aui-adg/${g.meta(name: 'aui.version') }/js/aui.min.js"></script>
-		<script src="//aui-cdn.atlassian.com/aui-adg/${g.meta(name: 'aui.version') }/js/aui-experimental.min.js"></script>
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-		
 		<g:layoutHead/>
 	</head>
 	<body onload="${pageProperty(name: 'body.onload')}">

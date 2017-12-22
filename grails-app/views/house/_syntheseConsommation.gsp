@@ -44,7 +44,7 @@
 				<div class="synthese-content">
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
-						<div class="vignette-synthese" style="background: radial-gradient(#3572b0 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
+						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 							${ hctotal }kWh
 						</div>
 					</g:link>

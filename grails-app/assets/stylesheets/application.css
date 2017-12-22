@@ -8,6 +8,8 @@
 * compiled file, but it's generally better to create a new file per style scope.
 *
 *= require datatables-1.10.2
+*= require aui-7.3.0.min
+*= require aui-experimental-7.3.0.min
 *= require jquery-picklist
 *= require jquery.datetimepicker
 *= require jquery-ui.min-1.11.3
