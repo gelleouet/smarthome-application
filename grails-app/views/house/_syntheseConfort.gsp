@@ -6,11 +6,18 @@
 	<div class="aui-group" style="margin-top:20px">
 		<div class="aui-item responsive">
 			<div>
-				<h4 class="separator-bottom">Température
-					<g:if test="${ params.compare && house?.temperature }">
-						<g:link class="aui-button" style="float:right" action="compareHouseDeviceChart" controller="device" params="['device.id': house.temperature.id]">Comparer</g:link>
-					</g:if>
-				</h4>
+				<div class="separator-bottom">
+					<div class="aui-group aui-group-split">
+						<div class="aui-item">
+							<h4>Température</h4>
+						</div>
+						<div class="aui-item">
+							<g:if test="${ params.compare && house?.temperature }">
+								<g:link class="aui-button" action="compareHouseDeviceChart" controller="device" params="['device.id': house.temperature.id]">Comparer</g:link>
+							</g:if>
+						</div>
+					</div>	
+				</div>
 				
 				<div class="synthese-content">
 					<g:if test="${ house?.temperature }">
@@ -33,11 +40,18 @@
 		</div>
 		<div class="aui-item responsive">
 			<div>
-				<h4 class="separator-bottom">Humidité
-					<g:if test="${ params.compare && house?.humidite }">
-						<g:link class="aui-button" style="float:right" action="compareHouseDeviceChart" controller="device" params="['device.id': house.humidite.id]">Comparer</g:link>
-					</g:if>
-				</h4>
+				<div class="separator-bottom">
+					<div class="aui-group aui-group-split">
+						<div class="aui-item">
+							<h4>Humidité</h4>
+						</div>
+						<div class="aui-item">
+							<g:if test="${ params.compare && house?.humidite }">
+								<g:link class="aui-button" action="compareHouseDeviceChart" controller="device" params="['device.id': house.humidite.id]">Comparer</g:link>
+							</g:if>
+						</div>
+					</div>	
+				</div>
 				
 				<div class="synthese-content">
 					<g:if test="${ house?.humidite }">
@@ -60,11 +74,18 @@
 		</div>
 		<div class="aui-item responsive">
 			<div>
-				<h4 class="separator-bottom">Qualité air
-					<g:if test="${ params.compare }">
-						<button class="aui-button" style="float:right">Comparer</button>
-					</g:if>
-				</h4>
+				<div class="separator-bottom">
+					<div class="aui-group aui-group-split">
+						<div class="aui-item">
+							<h4>Qualité air</h4>
+						</div>
+						<div class="aui-item">
+							<g:if test="${ params.compare }">
+								<button class="aui-button" style="float:right">Comparer</button>
+							</g:if>
+						</div>
+					</div>	
+				</div>
 				
 				<div class="synthese-content">
 					<div class="vignette-synthese" style="background: radial-gradient(#0747a6, orange 100%);">

@@ -34,7 +34,7 @@
 						<div class="aui-item">
 							<h4><span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span>
 								<g:if test="${ params.compare }">
-									<g:link class="aui-button" style="float:right; margin-left:10px; margin-top:-5px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
+									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
 								</g:if>
 							</h4>
 						</div>
