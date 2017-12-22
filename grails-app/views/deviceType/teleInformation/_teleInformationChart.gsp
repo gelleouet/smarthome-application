@@ -8,7 +8,7 @@
 	<div class="aui-progress-indicator">
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
-	<g:render template="${ command.deviceImpl.chartDataTemplate() }" model="[command: command, datas: datas]"/>
+	<g:render template="${ command.deviceImpl.chartDataTemplate() }" model="[command: command, datas: chart.values, chart: chart]"/>
 </div>
 
 
@@ -21,7 +21,7 @@
 	</g:applyLayout>
 </g:if>
 
-<g:set var="googleChartTarif" value="${ command.deviceImpl.googleChartTarif(command, datas) }"/>
+<g:set var="googleChartTarif" value="${ command.deviceImpl.googleChartTarif(command, chart.values) }"/>
 
 <div id="chartDivTarif" data-chart-type="ColumnChart">
 	<br/>
