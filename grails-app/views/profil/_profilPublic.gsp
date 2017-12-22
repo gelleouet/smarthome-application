@@ -1,7 +1,13 @@
 <g:set var="houseService" bean="houseService"/>
 
 
-<h3 class="separator"><asset:image src="useravatar.png" width="48px" />
+<h3 class="separator">
+	<span class="aui-avatar aui-avatar-project aui-avatar-large">
+	    <span class="aui-avatar-inner">
+	        <asset:image src="useravatar.png" style="width:48px" />
+	    </span>
+	</span>
+
 	<g:if test="${ viewOnly }">
 		<g:link action="tableauBordFriend" controller="tableauBord" style="color:black;" id="${ user.id }">${ user.prenomNom }</g:link>
 	</g:if>
