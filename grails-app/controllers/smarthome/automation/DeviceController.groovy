@@ -53,6 +53,7 @@ class DeviceController extends AbstractController {
 	@NavigableAction(label = "Objets", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(DeviceSearchCommand search) {
 		search.userId = principal.id
+		def user = authenticatedUser
 		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		
 		// activation favori si aucun tableau de bord
@@ -61,7 +62,7 @@ class DeviceController extends AbstractController {
 		}
 		
 		def devices = deviceService.listByUser(search)
-		def user = authenticatedUser
+		deviceService.prepareForView(devices)
 		
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix

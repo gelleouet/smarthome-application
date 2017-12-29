@@ -749,3 +749,24 @@ h5.device-grid-label {
 	margin-left: auto;
 	margin-right: 0;
 }
+
+.grid-3-column {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 15px;
+	ms-display: grid;
+	ms-grid-template-columns: repeat(3, 1fr);
+	ms-grid-gap: 15px;
+}
+
+.grid-2row {
+	grid-row: span 2;
+	ms-grid-row: span 2;
+}
+
+.grid-2row-2col {
+	grid-row: span 2;
+	grid-column: span 2;
+	ms-grid-row: span 2;
+	ms-grid-column: span 2;
+}

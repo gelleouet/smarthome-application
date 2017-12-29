@@ -15,15 +15,15 @@
 	
 	<g:link class="h6-normal" action="tableauBordFriend" controller="tableauBord" id="${ device.user.id }">${ device.user.prenomNom }</g:link> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
 	
-	<g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: device.lastDeviceAlert()]"/>
+	<g:render template="/deviceAlert/deviceAlertLozenge" model="[alert: device.deviceImpl.viewParams.lastAlert]"/>
 </h4>
 								
 <div class="aui-group">
 	<div class="aui-item filActualiteIcon">
-		<asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-grid"/>
+		<asset:image src="${ device.deviceImpl.icon() }" class="device-icon-grid"/>
 	</div>
 	<div class="aui-item">
-		<g:render template="${ device.newDeviceImpl().viewGrid() }" model="[device: device]"></g:render>
+		<g:render template="${ device.deviceImpl.viewGrid() }" model="[device: device]"></g:render>
 	</div>
 </div>
 

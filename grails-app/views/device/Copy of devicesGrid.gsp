@@ -34,15 +34,19 @@
 			</g:each>
 		</g:if>
 		<g:else>
-			<div class="grid-3-column">
-				<g:each var="device" in="${ devices?.sort{ it.label } }" status="status">
-					<g:if test="${ device }">
-						<div class="filActualiteItem2 smart-draggable ${ device?.deviceImpl?.cssStyle() }" data-draggable-value="${ device.id }">
-							<g:render template="deviceView" model="[device: device, user: user]"></g:render>
+			<g:each var="deviceSplit" in="${ LayoutUtils.splitRow(devices?.sort{ it.label }, 3) }">
+				<div class="aui-group">
+					<g:each var="device" in="${ deviceSplit }" status="status">
+						<div class="aui-item">
+							<g:if test="${ device }">
+								<div class="filActualiteItem2 smart-draggable" data-draggable-value="${ device.id }">
+									<g:render template="deviceView" model="[device: device, user: user]"></g:render>
+								</div>
+							</g:if>
 						</div>
-					</g:if>
-				</g:each>
-			</div>
+					</g:each>
+				</div>
+			</g:each>
 		</g:else>
 	</g:applyLayout>
 </body>

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.DateUtils;
 import smarthome.core.ScriptUtils;
 import smarthome.core.SmartHomeCoreConstantes;
@@ -37,8 +38,9 @@ class Device implements Serializable, EventTriggerPreparable {
 	String tableauBord
 	String extras	// option extra json
 		
-	static transients = ['params', 'actionName', 'extrasJson']
+	static transients = ['params', 'actionName', 'extrasJson', 'deviceImpl']
 	
+	AbstractDeviceType deviceImpl
 	Map extrasJson = [:]
 	Map params = [:]
 	String actionName	// action en cours d'exécution sur deviceImpl
@@ -193,7 +195,7 @@ class Device implements Serializable, EventTriggerPreparable {
 	 * @return
 	 */
 	def newDeviceImpl() {
-		def deviceImpl = deviceType.newDeviceType()
+		deviceImpl = deviceType.newDeviceType()
 		deviceImpl.device = this
 		return deviceImpl
 	}

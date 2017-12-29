@@ -44,7 +44,11 @@
 										<div class="filActualiteItem2">
 											<div class="aui-group">
 												<div class="aui-item" style="width:50px">
-													<asset:image src="useravatar.png" width="48px" />
+													<span class="aui-avatar aui-avatar-project aui-avatar-large">
+													    <span class="aui-avatar-inner">
+													        <asset:image src="useravatar.png" style="width:48px" />
+													    </span>
+													</span>
 												</div>
 												<div class="aui-item">
 													<h4>${ col.prenomNom }</h4>

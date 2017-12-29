@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import grails.async.PromiseList;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
@@ -544,6 +545,29 @@ class DeviceService extends AbstractService {
 			gt 'dateValue', (new Date() - maxDay)
 			maxResults(maxEvent)
 			order "dateValue", "desc"
+		}
+	}
+	
+	
+	/**
+	 * Prépare les objets pour la vue
+	 * Optimise le chargement des métadonnées de chaque objet en
+	 * parallélisant le traitement de chaque objet
+	 * 
+	 * @param devices
+	 */
+	void prepareForView(List<Device> devices) throws SmartHomeException {
+		if (devices) {
+			PromiseList promiseList = new PromiseList()
+			
+			devices.each { device ->
+				promiseList << {
+					device.newDeviceImpl()
+					device.deviceImpl.prepareForView()
+				}
+			}
+		
+			promiseList.get()
 		}
 	}
 }

@@ -30,6 +30,7 @@ abstract class AbstractDeviceType {
 	protected DeviceTypeProvider fournisseurCache
 	protected String contratCache
 	protected Map tarifCache
+	protected Map viewParams = [:]
 	
 	
 	/**
@@ -49,6 +50,16 @@ abstract class AbstractDeviceType {
 	 */
 	final def viewGrid() {
 		"/deviceType/${name}/${name}"
+	}
+	
+	
+	/**
+	 * Style du widget
+	 * 
+	 * @return
+	 */
+	String cssStyle() {
+		""
 	}
 	
 	
@@ -334,6 +345,25 @@ abstract class AbstractDeviceType {
 	 * @return
 	 */
 	DeviceTypeProvider getFournisseur() {
+		
+	}
+	
+	
+	/**
+	 * Préparation des données pour la vue
+	 * Cette méthode est appelée par le service et permet de charger des éléments
+	 * indispensables à la vue.
+	 * 
+	 * Pour les impl, surcharger la méthode implPrepareForView
+	 * 
+	 */
+	final void prepareForView() {
+		viewParams.lastAlert = device.lastDeviceAlert()
+		implPrepareForView()
+	}
+	
+	
+	void implPrepareForView() {
 		
 	}
 }

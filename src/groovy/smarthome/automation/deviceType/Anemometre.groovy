@@ -1,5 +1,7 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.DeviceValue;
+
 /**
  * Périphérique Anémomètre
  * Aucune action particulière car capteur
@@ -77,5 +79,17 @@ class Anemometre extends AbstractDeviceType {
 		}
 		
 		return null
+	}
+	
+	
+	@Override
+	String cssStyle() {
+		""
+	}
+	
+	
+	@Override
+	void implPrepareForView() {
+		viewParams << DeviceValue.doubleValueAggregategByDay(device)
 	}
 }
