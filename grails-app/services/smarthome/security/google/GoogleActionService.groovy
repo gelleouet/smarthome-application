@@ -52,6 +52,7 @@ class GoogleActionService extends AbstractService {
 		// rafraichit le token à chaque auth
 		userApp.publicToken = UUID.randomUUID().toString().bytes.encodeBase64().toString()
 		userApp.token = userApp.publicToken //springSecurityService.encodePassword(userApp.publicToken)
+		userApp.name = grailsApplication.config.google.action.appName
 		
 		return this.save(userApp)
 	}
@@ -66,15 +67,14 @@ class GoogleActionService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	GoogleActionResponse conversation(GoogleActionRequest request, String token) throws SmartHomeException {
-		if (!request.user?.accessToken) {
+		if (!token) {
 			throw new SmartHomeException("accessToken is empty !")
 		}
 		
-		String userToken = request.user.accessToken //springSecurityService.encodePassword(request.user.accessToken)
-		UserApplication userApp = UserApplication.findByToken(userToken)
+		UserApplication userApp = UserApplication.findByToken(token)
 		
 		if (!userApp) {
-			throw new SmartHomeException("accessToken not found !")
+			throw new SmartHomeException("accessToken not valid !")
 		}
 		
 		return googleActionRuleService.execute(request, true, [user: userApp.user])

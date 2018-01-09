@@ -16,15 +16,21 @@ import grails.validation.Validateable;
 class DeviceType implements Serializable {
 	String libelle
 	String implClass
+	Set config = []
+	
+	
+	static hasMany = [config: DeviceTypeConfig]
 	
 	
     static constraints = {
 		libelle unique: true
     }
 	
+	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'libelle'
+		config cascade: 'all-delete-orphan'
 	}
 	
 	
@@ -35,5 +41,19 @@ class DeviceType implements Serializable {
 	 */
 	def newDeviceType() {
 		Class.forName(implClass).newInstance()
+	}
+	
+	
+	/**
+	 * La config
+	 * 
+	 * @return
+	 */
+	DeviceTypeConfig config() {
+		if (config?.size()) {
+			return config[0]
+		} else {
+			return null
+		}
 	}
 }

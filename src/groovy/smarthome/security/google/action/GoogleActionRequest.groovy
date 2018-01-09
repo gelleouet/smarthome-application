@@ -3,11 +3,10 @@ package smarthome.security.google.action
 import java.util.List;
 
 class GoogleActionRequest {
-	GoogleActionUser user = new GoogleActionUser()
-	GoogleActionDevice device = new GoogleActionDevice()
-	GoogleActionSurface surface = new GoogleActionSurface()
-	List availableSurfaces = []
-	GoogleActionConversation conversation = new GoogleActionConversation()
+	/**
+	 * Required. Id of request for ease of tracing
+	 */
+	String requestId
+	
 	List<GoogleActionInput> inputs = []
-	boolean isInSandbox
 }

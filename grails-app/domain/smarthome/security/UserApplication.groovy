@@ -21,6 +21,7 @@ class UserApplication implements Serializable {
 	
 	String applicationId
 	String token
+	String name
 	
 	
 	static transients = ['publicToken']

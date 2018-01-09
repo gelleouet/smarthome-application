@@ -78,7 +78,7 @@ class DeviceTypeController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		
-		// TODO : Compléter le model
+		model.deviceTypeConfig = userModel.deviceType?.config()
 		
 		// on remplit avec les infos du user
 		model << userModel
@@ -96,7 +96,7 @@ class DeviceTypeController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceTypeController.COMMAND_NAME)
 	def saveEdit(DeviceType deviceType) {
 		checkErrors(this, deviceType)
-		deviceTypeService.save(deviceType)
+		deviceTypeService.save(deviceType, params.configuration)
 		redirect(action: COMMAND_NAME + 's')
 	}
 
@@ -110,7 +110,7 @@ class DeviceTypeController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "create", modelName = DeviceTypeController.COMMAND_NAME)
 	def saveCreate(DeviceType deviceType) {
 		checkErrors(this, deviceType)
-		deviceTypeService.save(deviceType)
+		deviceTypeService.save(deviceType, params.configuration)
 		redirect(action: COMMAND_NAME + 's')
 	}
 	
