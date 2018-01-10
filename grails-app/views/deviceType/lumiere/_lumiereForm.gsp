@@ -9,9 +9,8 @@
 <div class="field-group">
 	<label title="API : device.metadata('timeout')?.value">
 		Timeout bouton poussoir (en millisecondes)
-		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:field type="number" name="metadatas[0].value" required="true" value="${timeout?.value}" class="text medium-field"/>
+	<g:field type="number" name="metadatas[0].value" value="${timeout?.value}" class="text medium-field"/>
 </div>
 
 

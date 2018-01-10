@@ -325,6 +325,51 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Liste les devices d'un user pour une application tierce (Ex : google home, alexa, etc.)
+	 * Pour apparaitre dans la liste, le device doit être dispo sur un tableau de bord ou favori (visible déjà 
+	 * dans l'application actuelle) et avoir une config spéciale au niveau de l'implémentation du device
+	 * 
+	 * @param user
+	 * @param applicationName
+	 * @return une liste de Map contenant un élément device et config
+	 * 
+	 * @throws SmartHomeException
+	 */
+	List<Map> listForApplication(User user, String applicationName) throws SmartHomeException {
+		// 1ere recherche des devices avec soit tableau bord, soit favori
+		List<Device> devices = Device.createCriteria().list {
+			eq 'user', user
+			or {
+				isNotNull 'tableauBord'
+				eq 'favori', true
+			}
+			join 'deviceType'
+			order 'label'
+		}
+		
+		// Filtre : ne prend que les devices qui ont une config liée à l'application
+		Map<Long, DeviceTypeConfig> configs = [:]
+		List<Map> results = []
+		
+		devices.each { Device device ->
+			DeviceTypeConfig config = configs[device.deviceType.id]
+			
+			if (!config) {
+				config = device.deviceType.config() ?: new DeviceTypeConfig()
+				config.loadJsonData()
+				configs[device.deviceType.id] = config
+			}
+			
+			if (config.jsonData[applicationName]) {
+				results << [device: device, config: config]
+			}
+		}
+		
+		return results
+	}
+	
+	
+	/**
 	 * Liste les devices d'un user
 	 * 
 	 * @param pagination

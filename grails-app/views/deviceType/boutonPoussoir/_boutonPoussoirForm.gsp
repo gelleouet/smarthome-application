@@ -46,7 +46,7 @@
 
 <div class="field-group">
 	<label title="API : device.metadata('deviceEtat')?.value">
-		Object état associé
+		Objet état associé
 	</label>
 	<g:select name="metadatas[2].value" from="${ deviceService.listByUser(new DeviceSearchCommand([userId: user.id])) }"
 		value="${ deviceEtat?.value }"

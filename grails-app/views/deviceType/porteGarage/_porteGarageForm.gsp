@@ -29,9 +29,9 @@
 
 <div class="field-group">
 	<label title="API : device.metadata('deviceEtat')?.value">
-		Object état associé
+		Objet état associé
 	</label>
-	<g:select name="metadatas[1].value" from="${ deviceService.listByUser(new DeviceSearchCommand([userId: user.id])) }"
+	<g:select name="metadatas[1].value" from="${ deviceService.listByUser(new DeviceSearchCommand([userId: user?.id])) }"
 		value="${ deviceEtat?.value }"
 		class="select combobox" optionKey="id" optionValue="label" noSelection="['' : ' ']"/>
 	<div class="description">Un bouton poussoir ne connait pas forcément l'état de l'objet qu'il actionne.

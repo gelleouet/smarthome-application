@@ -18,16 +18,17 @@ class GoogleActionResponsePayload {
 	 */
 	String errorCode
 	
+	
 	/**
-	 * Map of devices. Each property has the following name and value:
+	 * Optional. Detailed error which will never be presented to users but may be logged or used during development.
 	 */
-	Map devices = [:]
-		
+	String debugString
+	
 	/**
 	 *  Required. Each object contains one or more devices with response details. N.B. 
 	 *  These may not be grouped the same way as in the request. 
 	 *  For example, the request might turn 7 lights on, with 3 lights succeeding and 4 failing, 
 	 *  thus with two groups in the response.
 	 */
-	List<GoogleActionResponseCommand> commands = []
+	//List<GoogleActionResponseCommand> commands = []
 }

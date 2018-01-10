@@ -122,7 +122,8 @@ class DeviceTypeController extends AbstractController {
 	 */
 	def templateMetadataForm(DeviceType deviceType) {
 		def device = params.deviceId ? Device.get(params.deviceId) : null
-		render(template: deviceType.newDeviceType().viewForm(), model: [device: device])
+		render(template: deviceType.newDeviceType().viewForm(), model: [device: device,
+			user: authenticatedUser])
 	}
 	
 }

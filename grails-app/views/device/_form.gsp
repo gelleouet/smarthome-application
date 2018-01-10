@@ -38,13 +38,6 @@
 </div>
 
 <div class="field-group">
-	<label for="groupe">
-		Groupe
-	</label>
-	<g:textField name="groupe" value="${device?.groupe}" class="text long-field"/>
-</div>
-
-<div class="field-group">
 	<label for="tableauBord">
 		Tableau de bord
 	</label>
