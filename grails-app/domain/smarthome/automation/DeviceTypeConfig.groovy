@@ -39,6 +39,7 @@ class DeviceTypeConfig extends JsonDataDomain implements Serializable {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		id generator: 'foreign', column: 'device_type_id', params: [property: 'deviceType']
 		deviceType insertable: false, updateable: false // car la propriété est déjà mappée dans id
+		data type: 'text'
 	}
 	
 	

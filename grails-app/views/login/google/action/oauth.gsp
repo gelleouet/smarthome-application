@@ -10,9 +10,9 @@
     	<g:render template="/templates/messageError" model="[message: command.error]"/>
     </g:if>
     
-    <h3 class="separator">Associer ${linkApp} à votre compte <g:meta name="app.code"/></h3>
+    <h3 class="separator">Associer ${command.applicationName} à votre compte <g:meta name="app.code"/></h3>
     
-	<g:form action="authenticate" controller="googleAction" class="aui" autocomplete="off">
+	<g:form action="authenticate" controller="googleAction" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete="off">
 	
 		<g:hiddenField name="client_id" value="${ command.client_id }"/>
 		<g:hiddenField name="redirect_uri" value="${ command.redirect_uri }"/>

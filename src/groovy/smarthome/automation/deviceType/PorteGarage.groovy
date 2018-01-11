@@ -26,16 +26,16 @@ class PorteGarage extends AbstractDeviceType {
 		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
 		@WorkflowEventParameter(name=WorkflowContext.TIMER_PARAM, label="Timer (min)", type="number", minValue="0", required=false)
 	])
-	def on(WorkflowContext context) {
+	def open(WorkflowContext context) {
 		if (device.metadata("timeout")?.value) {
 			device.command = "on"
 			device.value = "1"
-			return context.withTimer("on", [:])
 		} else {
 			device.command = "on"
 			device.value = "1"
-			return context.withTimer("off", [:])
 		}
+		
+		return context.withTimer("close", [:])
 	}
 	
 	
@@ -49,16 +49,16 @@ class PorteGarage extends AbstractDeviceType {
 		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
 		@WorkflowEventParameter(name=WorkflowContext.TIMER_PARAM, label="Timer (min)", type="number", minValue="0", required=false)
 	])
-	def off(WorkflowContext context) {
+	def close(WorkflowContext context) {
 		if (device.metadata("timeout")?.value) {
 			device.command = "on"
 			device.value = "1"
-			return context.withTimer("on", [:])
 		} else {
 			device.command = "off"
 			device.value = "0"
-			return context.withTimer("on", [:])
 		}
+		
+		return context.withTimer("open", [:])
 	}
 	
 	
@@ -72,16 +72,16 @@ class PorteGarage extends AbstractDeviceType {
 		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
 		@WorkflowEventParameter(name=WorkflowContext.TIMER_PARAM, label="Timer (min)", type="number", minValue="0", required=false)
 	])
-	def onOff(WorkflowContext context) {
+	def openOrClose(WorkflowContext context) {
 		if (device.metadata("timeout")?.value) {
 			device.command = "on"
 			device.value = "1"
-			return context.withTimer("on", [:])
 		} else {
 			device.value = DeviceValue.parseDoubleValue(device.value) == 1 ? "0" : "1"
 			device.command = (device.value == "1" ? "on" : "off")
-			return context.withTimer(device.value == "1" ? "off" : "on", [:])
 		}
+		
+		return context.withTimer("openOrClose", [:])
 	}
 	
 	

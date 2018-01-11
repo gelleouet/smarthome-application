@@ -18,6 +18,8 @@ import grails.validation.Validateable
 @Validateable
 class GoogleActionAuthCommand {
 	String applicationId
+	String applicationName
+	
 	String client_id
 	String redirect_uri
 	String state

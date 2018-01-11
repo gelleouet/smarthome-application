@@ -8,7 +8,7 @@
     
      <h3 class="separator">Réinitialisation du mot de passe</h3>
           
-	<g:form controller="register" action="confirmResetPassword" class="aui" autocomplete='off'>
+	<g:form controller="register" action="confirmResetPassword" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
 	
 		<g:hiddenField name="token" value="${ command.token }"/>
 		<g:hiddenField name="username" value="${ command.username }"/>

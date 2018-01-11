@@ -3,6 +3,8 @@ package smarthome.security
 import java.io.Serializable;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import smarthome.core.SmartHomeCoreConstantes;
 import grails.validation.Validateable
 
@@ -22,13 +24,7 @@ class UserApplication implements Serializable {
 	String applicationId
 	String token
 	String name
-	
-	
-	static transients = ['publicToken']
-	
-	// le token est encodé, on utilise cette propriété pour stocker la valeur non encodée
-	// pour la retourner au service appelant
-	String publicToken 
+	Date dateAuth
 	
 	
 	static constraints = {
@@ -43,4 +39,14 @@ class UserApplication implements Serializable {
 		token index: "UserApplication_Token_Idx"
 	}
 
+	
+	/**
+	 * Template impl
+	 * 
+	 * @return
+	 */
+	String view() {
+		String templateName = StringUtils.uncapitalize(name.replace(" ", ""))
+		"/userApplication/impl/${templateName}"	
+	}
 }

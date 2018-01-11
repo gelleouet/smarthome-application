@@ -10,7 +10,7 @@
       
     <h3 class="separator">Veuillez saisir vos identifiants</h3>
           
-	<form action="${postUrl}" method="post" id="d" class="aui" autocomplete='off'>
+	<form action="${postUrl}" method="post" id="d" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>

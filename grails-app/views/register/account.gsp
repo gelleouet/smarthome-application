@@ -8,7 +8,7 @@
     
     <h3 class="separator">Création d'un compte <g:meta name="app.code"/></h3>
           
-	<g:form action="createAccount" class="aui" autocomplete='off'>
+	<g:form action="createAccount" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
 		<fieldset>
 	        <div class="field-group">
 	            <label for="prenom">Prénom<span class="aui-icon icon-required"> required</span></label>

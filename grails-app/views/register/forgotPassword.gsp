@@ -8,7 +8,7 @@
     
      <h3 class="separator">Mot de passe oublié</h3>
           
-	<g:form controller="register" action="confirmForgotPassword" class="aui" autocomplete='off'>
+	<g:form controller="register" action="confirmForgotPassword" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
 		<fieldset>
 	        <div class="field-group">
 	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>

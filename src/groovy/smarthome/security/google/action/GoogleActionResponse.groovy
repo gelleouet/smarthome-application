@@ -41,4 +41,15 @@ class GoogleActionResponse {
 		payload = new GoogleActionQueryResponsePayload()
 		return payload	
 	}
+	
+	
+	/**
+	 * Injecte le payload pour la response Execute
+	 * 
+	 * @return
+	 */
+	GoogleActionExecuteResponsePayload setExecutePayload() {
+		payload = new GoogleActionExecuteResponsePayload()
+		return payload	
+	}
 }

@@ -24,7 +24,7 @@ import smarthome.core.chart.GoogleChart;
 import smarthome.core.chart.GoogleChartProcessor;
 import smarthome.core.chart.GoogleDataTableCol;
 
-abstract class AbstractDeviceType {
+abstract class AbstractDeviceType implements Serializable {
 	Device device
 	String name = simpleName()
 	protected DeviceTypeProvider fournisseurCache

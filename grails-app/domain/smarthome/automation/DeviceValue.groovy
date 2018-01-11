@@ -333,4 +333,12 @@ class DeviceValue implements Serializable {
 		return doubleValue
 	}
 	
+	
+	static String toStringValue(def value) {
+		if (value instanceof Boolean) {
+			return value ? "1" : "0"
+		} 
+		
+		return value?.toString()
+	}
 }

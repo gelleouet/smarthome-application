@@ -8,7 +8,7 @@
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
 		<g:formRemote class="aui" name="form-device-${ device.id }" url="[action: 'invokeAction', controller: 'device']">
-			<g:hiddenField name="actionName" value="onOff"/>
+			<g:hiddenField name="actionName" value="openOrClose"/>
 			<g:hiddenField name="id" value="${ device.id }"/>
 			
 			<div style="display:table">

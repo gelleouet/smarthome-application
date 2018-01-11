@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1515705091113-1">
+        <createTable tableName="device_type_config">
+            <column name="device_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-2">
+        <addColumn tableName="user_application">
+            <column name="date_auth" type="timestamp(29, 6)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-3">
+        <addColumn tableName="user_application">
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-4">
+        <addPrimaryKey columnNames="device_type_id" constraintName="device_type_config_pkey" tableName="device_type_config"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-5">
+        <addForeignKeyConstraint baseColumnNames="device_type_id" baseTableName="device_type_config" constraintName="fk_lcyq6drc08gyf6r47h48osj6d" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device_type"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-6">
+        <dropForeignKeyConstraint baseTableName="user_conversation" constraintName="fk_lmkeb7h15k5xr3610w95p7ghm"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1515705091113-7">
+        <dropTable tableName="user_conversation"/>
+    </changeSet>
+</databaseChangeLog>

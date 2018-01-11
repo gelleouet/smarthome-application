@@ -37,8 +37,8 @@ class GoogleActionController extends AbstractController {
 	 * La demande est faite systématiquement pour éviter toute tentative d'intrusion 
 	 */
 	def auth(GoogleActionAuthCommand command) {
-		render view: '/login/google/action/oauth', model: [command: command,
-			linkApp: grailsApplication.config.google.action.appName]
+		command.applicationName = grailsApplication.config.google.action.appName
+		render view: '/login/google/action/oauth', model: [command: command]
 	}
 	
 	
@@ -50,6 +50,7 @@ class GoogleActionController extends AbstractController {
 	 */
 	def authenticate(GoogleActionAuthCommand command) {
 		def model = [command: command]
+		command.applicationName = grailsApplication.config.google.action.appName
 		
 		try {
 			Authentication authenticate = authenticationManager.authenticate(
@@ -57,7 +58,7 @@ class GoogleActionController extends AbstractController {
 			
 			if (authenticate.isAuthenticated()) {
 				UserApplication userApp = googleActionService.auth(command, User.read(authenticate.principal.id))
-				redirect url: command.redirectUrl(userApp.publicToken)
+				redirect url: command.redirectUrl(userApp.token)
 				return
 			} else {
 				command.error = "L'authentification a échoué !"
@@ -66,8 +67,8 @@ class GoogleActionController extends AbstractController {
 			command.error = "L'authentification a échoué ! [$ex.message]"
 		}
 		
-		render status: HttpServletResponse.SC_FORBIDDEN, view: '/login/google/action/oauth', model: [command: command,
-			linkApp: grailsApplication.config.google.action.appName]
+		render status: HttpServletResponse.SC_FORBIDDEN, view: '/login/google/action/oauth',
+			model: [command: command]
 	}
 	
 	
@@ -86,5 +87,16 @@ class GoogleActionController extends AbstractController {
 			log.error("Google Action Conversation : ${ex.message}")
 			render(status: HttpServletResponse.SC_FORBIDDEN, text: ex.message)
 		}
+	}
+	
+	
+	/**
+	 * Demande de synchronisation des devices
+	 * 
+	 * @return
+	 */
+	def requestSync(UserApplication userApplication) {
+		googleActionService.triggerRequestSync(userApplication)
+		redirect(controller: 'userApplication', action: 'userApplications')	
 	}
 }
