@@ -10,7 +10,12 @@
     	<g:render template="/templates/messageError" model="[message: command.error]"/>
     </g:if>
     
-    <h3 class="separator">Associer ${command.applicationName} à votre compte <g:meta name="app.code"/></h3>
+    <g:if test="${ mobileAgent }">
+    	<h3 class="separator">Associer ${command.applicationName}</h3>
+    </g:if>
+    <g:else>
+    	<h3 class="separator">Associer ${command.applicationName} à votre compte <g:meta name="app.code"/></h3>
+    </g:else>
     
 	<g:form action="authenticate" controller="googleAction" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete="off">
 	

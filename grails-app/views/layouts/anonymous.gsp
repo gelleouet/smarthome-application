@@ -13,7 +13,17 @@
 		<asset:javascript src="application.js"/>
 		<g:layoutHead/>
 	</head>
-	<body class="aui-page-focused ${pageProperty(name: 'body.data-page-size') ?: 'aui-page-size-large'}" onload="${pageProperty(name: 'body.onload')}">
+	
+	
+	<g:if test="${ mobileAgent }">
+		<g:set var="bodyClass" value=""/>
+	</g:if>
+	<g:else>
+		<g:set var="bodyClass" value="aui-page-focused ${pageProperty(name: 'body.data-page-size') ?: 'aui-page-size-large'}"/>
+	</g:else>
+	
+	
+	<body class="${ bodyClass }" onload="${pageProperty(name: 'body.onload')}">
 		<g:include view="/layouts/headerAnonymous.gsp"/>
 		<section id="content" role="main">
 			<g:layoutBody/>

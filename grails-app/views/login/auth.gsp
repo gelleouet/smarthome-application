@@ -6,7 +6,12 @@
 <body>
 	<g:applyLayout name="applicationContent">
     
-    <h1>Bienvenue sur l'application <g:meta name="app.code"/></h1>
+    <g:if test="${ mobileAgent }">
+    	<h1><g:meta name="app.code"/></h1>
+    </g:if>
+    <g:else>
+    	<h1>Bienvenue sur l'application <g:meta name="app.code"/></h1>
+    </g:else>
       
     <h3 class="separator">Veuillez saisir vos identifiants</h3>
           
@@ -39,7 +44,13 @@
 	
 	
 	<h2 class="separator"></h2>
-	<h3>Ou se connecter avec d'autres applications</h3>
+	
+	<g:if test="${ mobileAgent }">
+    	<h3>Autres applications</h3>
+    </g:if>
+    <g:else>
+    	<h3>Ou se connecter avec d'autres applications</h3>
+    </g:else>
 	
 	<div class="buttons-container" style="padding-top:20px">
         <div class="buttons">

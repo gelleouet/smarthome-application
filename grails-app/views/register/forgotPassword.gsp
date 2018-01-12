@@ -3,7 +3,7 @@
 	<meta name='layout' content='anonymous'/>
 </head>
 
-<body>
+<body data-page-size="aui-page-size-medium">
 	<g:applyLayout name="applicationContent">
     
      <h3 class="separator">Mot de passe oublié</h3>
