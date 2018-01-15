@@ -83,6 +83,7 @@ class DeviceController extends AbstractController {
 		
 		def devices = deviceService.listByUser(new DeviceSearchCommand(
 			userId: friend.id, userSharedId: user.id))
+		deviceService.prepareForView(devices)
 		
 		render(template: 'deviceShareGrid', model: [devices: devices, user: user])
 	}
