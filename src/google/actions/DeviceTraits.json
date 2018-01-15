@@ -2,11 +2,10 @@
 {
   googleAssistant: {
 	type: 'action.devices.types.LIGHT',
-	traits: ['action.devices.traits.OnOff', 'action.devices.traits.Brightness'],
+	traits: ['action.devices.traits.OnOff'],
 	willReportState: false,
 	states: [
-		{name: 'on', type: 'Boolean'},
-		{name: 'brightness', type: 'Integer', min: 0, max: 100},
+		{name: 'on', type: 'Boolean'}
 	],
 	commands: {
 		'action.devices.commands.OnOff': {
@@ -15,10 +14,6 @@
 				{value: true, action: 'on'},
 				{value: false, action: 'off'}
 			]
-		},
-		'action.devices.commands.BrightnessAbsolute': {
-			param: 'brightness',
-			action: ''
 		}		
 	}
   }

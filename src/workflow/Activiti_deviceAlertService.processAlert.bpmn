@@ -20,7 +20,7 @@ execution.setVariable("event", event)</script>
       <script>eventService.execute(event, [device: device, alert: alert, alertLevel: alertLevel])</script>
     </scriptTask>
     <sequenceFlow id="flow2" name="Evénement associé ?" sourceRef="scripttask1" targetRef="scripttask2">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${event != null}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${event != null && event.actif}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow3" sourceRef="scripttask2" targetRef="endevent1"></sequenceFlow>

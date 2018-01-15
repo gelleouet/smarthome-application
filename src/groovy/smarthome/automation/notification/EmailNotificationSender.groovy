@@ -29,7 +29,7 @@ class EmailNotificationSender extends AbstractNotificationSender {
 		
 		if (notification.convertMessage) {
 			email.message = notification.convertMessage.replaceAll("[\r|\n]", "<br/>")
-			email.message = StringEscapeUtils.escapeHtml(email.message)
+			//email.message = StringEscapeUtils.escapeHtml(email.message)
 		}
 		
 		// l'objet est en script

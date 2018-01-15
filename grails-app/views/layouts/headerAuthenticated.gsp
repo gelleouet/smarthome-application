@@ -89,7 +89,7 @@
                     	<ul>
 		                    <li>
 		                    	<g:link controller="profil" action="profil">Paramètres</g:link>
-		                    	<g:link controller="deviceAlert" action="deviceAlerts">Alertes</g:link>
+		                    	<g:link controller="deviceAlert" action="deviceAlerts" params="[open:true]">Alertes</g:link>
 		                    </li>
                     	</ul>
                     </div>
