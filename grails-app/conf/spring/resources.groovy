@@ -28,12 +28,14 @@ beans = {
 	// seconde | minute | heure | jour du mois (1-31) | mois | jour semaine (1-7) | année 
 	smarthomeScheduler(SmarthomeScheduler) {
 		jobs = [
-			// monitoring des devices
+			// monitoring des devices toutes les minutes
 			'smarthome.automation.scheduler.DeviceAlertMonitoringCronMainJob' : "0 * * * * ?",
 			// déclenchement des events planifiés toutes les minutes
 			'smarthome.automation.scheduler.EventCronMainJob' : "0 * * * * ?",
 			// calcul des consos maison tous les soirs juste avant minuit
-			'smarthome.automation.scheduler.HouseConsoCronMainJob' : "59 59 23 * * ?"
+			'smarthome.automation.scheduler.HouseConsoCronMainJob' : "59 59 23 * * ?",
+			// calcul des prévisions météo tous les soirs juste après minuit
+			'smarthome.automation.scheduler.HouseWeatherCronMainJob' : "0 1 0 * * ?"
 		]
 	}
 	

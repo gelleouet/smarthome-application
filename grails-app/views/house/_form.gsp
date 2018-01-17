@@ -4,6 +4,15 @@
 
 <fieldset>
 	<div class="field-group">
+		<label>Ville</label>
+		<g:textField name="house.location" value="${house?.location}" class="text long-field" />
+		<div class="description">Utilisé pour les prévisions météo sous la forme "ville et/ou code postal, pays". Ex : Lorient, France. Calculé tous les jours à minuit.
+			<sec:ifAllGranted roles="ROLE_ADMIN">
+				<g:remoteLink action="calculWeather" controller="houseWeather" id="${ house.id }" onSuccess="alert('Calcul terminé')" onFailure="alert('Erreur calcul')">Calcul manuel</g:remoteLink>
+			</sec:ifAllGranted>
+		</div>
+	</div>
+	<div class="field-group">
 		<label>Surface (en m²)</label>
 		<g:field name="house.surface" type="number" value="${house?.surface}" class="text medium-field" />
 		<div class="description">Utilisé pour le calcul du classement énergétique</div>
@@ -24,7 +33,7 @@
 		<div class="description">Utilisé pour le calcul du classement énergétique et la synthèse générale<br/>
 		Vos consommations sont calculées tous les soirs à minuit.
 		<g:if test="${ house?.id }">
-			Vous pouvez lancer un <g:remoteLink action="calculConso" controller="house" id="${ house.id }" onComplete="alert('Calcul terminée')">calcul manuel</g:remoteLink>
+			Vous pouvez lancer un <g:remoteLink action="calculConso" controller="house" id="${ house.id }" onComplete="alert('Calcul terminé')">calcul manuel</g:remoteLink>
 		</g:if>
 		</div>
 	</div>

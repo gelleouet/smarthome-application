@@ -437,6 +437,30 @@ class EventService extends AbstractService {
 	
 	
 	/**
+	 * Créé ou met à jour un event
+	 * 
+	 * @param eventName
+	 * @param user
+	 * @param cron
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Event createOrUpdateEvent(String libelle, User user, String cron) throws SmartHomeException {
+		Event event = Event.findByLibelleAndUser(libelle, user)
+		
+		if (!event) {
+			event = new Event(user: user, libelle: libelle, actif: true)
+		}	
+		
+		// met à jour le cron
+		event.cron = cron
+		
+		return this.save(event)
+	}
+	
+	
+	/**
 	 * Calcule les dates sur une année complète d'une planif solsticiale
 	 * 
 	 * @param event

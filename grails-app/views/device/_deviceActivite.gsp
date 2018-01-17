@@ -11,7 +11,7 @@
 	</div>
 </div>
 
-
+<div style="overflow-x:auto;">
 <app:datatable datatableId="datatable-last-devices" recordsTotal="0" cssStyle="margin-top:10px">
 	<thead>
 		<tr>
@@ -32,7 +32,7 @@
 		</g:each>
 	</tbody>
 </app:datatable>
-
+</div>
 
 <div class="aui-group aui-group-split">
 	<div class="aui-item">

@@ -33,6 +33,10 @@
 						<g:render template="/house/changeMode" model="[house: house, user: user, modes: modes]"></g:render>
 					</div>
 				</div>
+				<br/>
+				<div class="filActualite" style="padding:15px;">
+					<div id="divWidgetWeather" async-url="${ g.createLink(controller: 'houseWeather', action: 'widgetWeather', id: house?.id) }"></div>
+				</div>
 			</div>
 			<div class="aui-item responsive">
 				<div class="filActualite" style="padding:15px;">

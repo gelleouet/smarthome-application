@@ -16,8 +16,6 @@ import smarthome.automation.DeviceAlertService;
  * et de créer des sous jobs distribués (DeviceAlertMonitoringCronPaginateSubJob) en paginant les devices 
  * pour répartir le travail entre plusieurs consumers
  * 
- * Le job créé des pages de 1000 objets
- * 
  * @see DeviceAlertMonitoringCronPaginateSubJob
  * @author Gregory
  *

@@ -18,10 +18,10 @@ import grails.validation.Validateable;
  */
 @Validateable
 class House implements Serializable {
-	static belongsTo = [user: User]
-	
-	static hasMany = [modes: HouseMode, consos: HouseConso]
-	
+	User user
+	Set modes = []
+	Set consos = []
+	Set weathers = []
 	String name
 	boolean defaut
 	Double surface
@@ -29,7 +29,14 @@ class House implements Serializable {
 	Device temperature
 	Device humidite
 	Chauffage chauffage
+	String location
+	String latitude
+	String longitude
 	
+	
+	static belongsTo = [user: User]
+	
+	static hasMany = [modes: HouseMode, consos: HouseConso, weathers: HouseWeather]
 	
     static constraints = {
 		surface nullable: true
@@ -37,6 +44,9 @@ class House implements Serializable {
 		temperature nullable: true
 		humidite nullable: true
 		chauffage nullable: true
+		location nullable: true
+		latitude nullable: true
+		longitude nullable: true
     }
 	
 	static mapping = {
@@ -44,6 +54,9 @@ class House implements Serializable {
 		user index: "House_User_Idx"
 		modes cascade: 'all-delete-orphan'
 		consos cascade: 'all-delete-orphan'
+		weathers cascade: 'all-delete-orphan'
+		latitude length: 32
+		longitude length: 32
 	}
 	
 	
@@ -116,5 +129,15 @@ class House implements Serializable {
 		}
 		
 		return null	
+	}
+	
+	
+	/**
+	 * Service météo d'une maison
+	 * 
+	 * @return
+	 */
+	HouseWeather weather() {
+		weathers?.size() ? weathers[0] : null	
 	}
 }

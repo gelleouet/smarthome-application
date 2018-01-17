@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import grails.async.Promises;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
@@ -22,6 +23,7 @@ class HouseService extends AbstractService {
 	HouseSyntheseRuleService houseSyntheseRuleService
 	HouseEstimationConsoRuleService houseEstimationConsoRuleService
 	DeviceShareService deviceShareService
+	GeocodingService geocodingService
 	
 	
 	/**
@@ -89,6 +91,54 @@ class HouseService extends AbstractService {
 		}
 		
 		return super.save(house)
+	}
+	
+	
+	/**
+	 * Synchro des positions GPS en fonction location
+	 * 
+	 * @param house
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	House geocode(House house) throws SmartHomeException {
+		Map coords
+		
+		if (house.location) {
+			try {
+				coords = geocodingService.geocode(house.location)
+			} catch (Exception e) {
+				log.error "Geocoding ${house.location} : ${e.message}"
+			}
+		}
+		
+		if (coords) {
+			house.latitude = coords.latitude
+			house.longitude = coords.longitude
+		} else {
+			house.latitude = null
+			house.longitude = null
+		}
+		
+		return this.save(house)
+	}
+	
+	
+	/**
+	 * Calcul position gps en mode asynchrone
+	 * 
+	 * @param house
+	 * @throws SmartHomeException
+	 */
+	void asyncGeocode(House house) throws SmartHomeException {
+		def promise = Promises.task {
+			geocode(house)
+		}
+		
+		promise.onComplete { result ->
+			
+		}
 	}
 	
 	

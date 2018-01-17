@@ -18,8 +18,6 @@ import smarthome.automation.EventService;
  * et de créer des sous jobs distribués (EventCronPaginateSubJob) en paginant les event 
  * pour répartir le travail entre plusieurs consumers
  * 
- * Le job créé des pages de 1000 events
- * 
  * @see EventCronPaginateSubJob
  * @author Gregory
  *

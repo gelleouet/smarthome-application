@@ -242,4 +242,18 @@ class DateUtils {
 		calendar.set(Calendar.MONTH, Calendar.DECEMBER)
 		return calendar.getTime().clearTime()
 	}
+	
+	
+	/**
+	 * Tronque une date à l'heure
+	 *  
+	 * @param date
+	 * @return
+	 */
+	static Date truncHour(Date date) {
+		int hour = date[Calendar.HOUR_OF_DAY]
+		date.clearTime()
+		date[Calendar.HOUR_OF_DAY] = hour
+		return date
+	}
 }

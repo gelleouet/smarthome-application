@@ -13,6 +13,8 @@
 *= require jquery-picklist
 *= require jquery.datetimepicker
 *= require jquery-ui.min-1.11.3
+*= require weather-icons-wind.min
+*= require weather-icons.min
 *= require main
 *= require mobile
 *= require_self

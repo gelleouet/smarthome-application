@@ -64,13 +64,18 @@ class ProfilController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "profil", modelName = "user")
 	def saveProfil(ProfilCommand command) {
 		checkErrors(this, command.user)
-
-		// on ne mappe que les infos "non sensibles" (ie pas le mot de passe)
-		// @see constraint bindable User
-		userService.save(command.user, false)
+		boolean syncCoords = command.house.isDirty('location')
 		
 		command.house.user = command.user
 		houseService.save(command.house)
+		
+		if (syncCoords) {
+			houseService.asyncGeocode(command.house)
+		}
+		
+		// on ne mappe que les infos "non sensibles" (ie pas le mot de passe)
+		// @see constraint bindable User
+		userService.save(command.user, false)
 		
 		modeService.saveModes(command.modes, command.user)
 		
