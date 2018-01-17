@@ -113,7 +113,7 @@ class DeviceAlertService extends AbstractService {
 			// aucune alerte détectée :
 			// si la dernière alerte est toujours en cours, on la cloture
 			// seulement si c'était une alerte monitoring
-			doUpdateCloseDeviceAlert(alert, LevelAlertEnum.monitoring)
+			doUpdateCloseDeviceAlert(alert, levelAlert)
 		}
 		
 		return null
