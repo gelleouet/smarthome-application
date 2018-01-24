@@ -24,7 +24,7 @@
 		    </div><!-- .aui-toolbar-inner -->
 		</div>
 
-		<g:form method="post" class="aui">
+		<g:form method="post" class="aui ${ mobileAgent ? 'top-label' : '' }">
 			<g:hiddenField name="username" value="${command.username}" />
 			<g:hiddenField name="nom" value="${command.nom}" />
 			<g:hiddenField name="prenom" value="${command.prenom}" />

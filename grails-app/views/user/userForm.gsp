@@ -1,5 +1,5 @@
 
-<g:form controller="user" method="post" class="aui">
+<g:form controller="user" method="post" class="aui ${ mobileAgent ? 'top-label' : '' }">
 	<g:hiddenField name="id" value="${user.id}" />
 
 	<h4>Profil</h4>

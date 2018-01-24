@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		
-		<g:form controller="device" method="post" class="aui" name="device-form">
+		<g:form controller="device" method="post" class="aui ${ mobileAgent ? 'top-label' : '' }" name="device-form">
 			<g:hiddenField name="id" value="${device.id}" />
 	
 	

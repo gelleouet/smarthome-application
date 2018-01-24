@@ -13,19 +13,26 @@
 
 
 
+<div class="aui-sidebar" data-aui-responsive="true">
+	<div class="aui-sidebar-wrapper">
+		<div class="aui-sidebar-body">
+		    <nav class="aui-navgroup aui-navgroup-vertical">
+		        <div class="aui-navgroup-inner">
+		        	<g:render template="/templates/navItem" model="[items: app.navigationItems(category: 'configuration')?.subitems ]"/>
+		        </div>
+		    </nav>
+	    </div>
+	    <div class="aui-sidebar-footer">
+            <a class="aui-button aui-button-subtle aui-sidebar-toggle aui-sidebar-footer-tipsy">
+                <span class="aui-icon aui-icon-small"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
 <div class="aui-page-panel">
 	<div class="aui-page-panel-inner">
-	
-		<g:if test="${ !mobileAgent }">
-			<div class="aui-page-panel-nav">
-			    <nav class="aui-navgroup aui-navgroup-vertical">
-			        <div class="aui-navgroup-inner">
-			        	<g:render template="/templates/navItem" model="[items: app.navigationItems(category: 'configuration')?.subitems ]"/>
-			        </div>
-			    </nav>
-			</div>
-		</g:if>
-	
 		<section class="aui-page-panel-content" >
 			<g:applyLayout name="applicationError"/>
 			<g:layoutBody/>

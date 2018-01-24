@@ -44,6 +44,7 @@
 		<div id="xterm-color" data-endpoint-url="${ EndPointUtils.httpToWs(g.createLink(uri: ShellEndPoint.URL, absolute: true)) }">
 		</div>
 		
+		<div style="overflow-x:auto;">
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
@@ -107,6 +108,7 @@
 		        </g:each>
 		    </tbody>
 		</app:datatable>
+		</div>
 		
 	</g:applyLayout>
 	

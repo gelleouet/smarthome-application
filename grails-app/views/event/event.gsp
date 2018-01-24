@@ -8,7 +8,7 @@
 	<g:applyLayout name="applicationConfigure">
 		<h3>${ event.id ? 'Evénément : ' + event.libelle : 'Nouvel événement' } <span id="ajaxSpinner" class="spinner"/></h3>
 		
-		<g:form controller="event" method="post" class="aui" name="device-event-form">
+		<g:form controller="event" method="post" class="aui ${ mobileAgent ? 'top-label' : '' }" name="device-event-form">
 			<g:hiddenField name="id" value="${event.id}" />
 	
 			<div class="aui-tabs horizontal-tabs">

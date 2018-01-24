@@ -9,7 +9,7 @@
 	
 <br/>
 	
-<g:form class="aui">
+<g:form class="aui ${ mobileAgent ? 'top-label' : '' }">
 	<g:hiddenField name="sid" value="${user.username}" />
     <label for="className">Sélectionner une classe d'objet<span
 				class="aui-icon icon-required"> required</span></label>

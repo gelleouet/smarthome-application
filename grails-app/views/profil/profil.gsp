@@ -6,7 +6,7 @@
 <body>
 	<g:applyLayout name="applicationConfigure">
 	
-		<g:form name="profil-form" controller="profil" method="post" class="aui">
+		<g:form name="profil-form" controller="profil" method="post" class="aui ${ mobileAgent ? 'top-label' : '' }">
 			<g:hiddenField name="user.id" value="${user.id}" />
 	
 			<h4>Général</h4>

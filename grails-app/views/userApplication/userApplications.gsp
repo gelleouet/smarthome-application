@@ -35,6 +35,8 @@
 		
 		<br/>
 		
+		
+		<div style="overflow-x:auto;">
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
@@ -61,6 +63,7 @@
 		        </g:each>
 		    </tbody>
 		</app:datatable>
+		</div>
 		
 	</g:applyLayout>
 	
