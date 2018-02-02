@@ -330,13 +330,8 @@ class EventService extends AbstractService {
 		// construction du contexte pour l'exécution de l'événement et des triggers
 		// on inject les variables prédéfinies (même null) pour éviter des plantages dans les scripts user
 		// elles seront écrasées par le contexte hérité si présent
-		Map context = [devices: [:], event: event, device: null, alert: null, alertLevel: null]
+		Map context = [event: event, device: null, alert: null, alertLevel: null]
 		context.putAll(heritedContext)
-		
-		// charge tous les devices et les met dans la map indexés par leurs MAC
-		deviceService.listByUser(new DeviceSearchCommand(userId: event.user.id))?.each { 
-			context.devices[(it.mac)] = it
-		}
 		
 		// exécute la condition si présente
 		// IMPORTANT : la condition est exécutée dans une transaction à part et surtout en lecture seule

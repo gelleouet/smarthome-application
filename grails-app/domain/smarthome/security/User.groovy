@@ -27,6 +27,7 @@ class User implements Serializable {
 	String telephoneMobile
 	
 	Date lastActivation
+	Date lastConnexion
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked
@@ -46,6 +47,7 @@ class User implements Serializable {
 		prenom blank: false
 		roles bindable: true
 		telephoneMobile nullable: true
+		lastConnexion nullable: true
 	}
 
 	static mapping = {

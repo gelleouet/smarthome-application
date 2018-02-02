@@ -14,6 +14,10 @@
 		            </div>		            
 		        </div>
 		        <div class="aui-toolbar2-secondary">
+		        	<div class="aui-buttons">
+		        		<g:remoteLink url="[action: 'geocodeDefaultHouse', controller: 'house', id: user.id]" class="aui-button">GPS</g:remoteLink>
+		        		<g:remoteLink url="[action: 'calculDefaultWeather', controller: 'houseWeather', id: user.id]" class="aui-button">Météo</g:remoteLink>
+		        	</div>
 		        </div>
 		    </div><!-- .aui-toolbar-inner -->
 		</div>

@@ -92,4 +92,22 @@ class HouseController extends AbstractController {
 		render(template: 'syntheseConsommation', model: [house: house, houseSynthese: houseSynthese,
 			secUser: user])
 	}
+	
+	
+	/**
+	 * Calcul les coordonnées GPS de la maison principale
+	 *
+	 * @param user
+	 * @return
+	 */
+	@Secured("hasRole('ROLE_ADMIN')")
+	def geocodeDefaultHouse(User user) {
+		House house = houseService.findDefaultByUser(user)
+		
+		if (house) {
+			houseService.geocode(house)
+		}
+		
+		nop()
+	}
 }

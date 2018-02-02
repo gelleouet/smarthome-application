@@ -26,6 +26,9 @@ class VoletRoulant extends AbstractDeviceType {
 	 * @return
 	 */
 	@WorkflowEvent
+	@WorkflowEventParameters([
+		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
+	])
 	def open(WorkflowContext context) {
 		this.device.command = "on"
 		this.device.value = 99
@@ -39,6 +42,9 @@ class VoletRoulant extends AbstractDeviceType {
 	 * @return
 	 */
 	@WorkflowEvent
+	@WorkflowEventParameters([
+		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
+	])
 	def close(WorkflowContext context) {
 		this.device.command = "off"
 		this.device.value = 0
@@ -66,7 +72,8 @@ class VoletRoulant extends AbstractDeviceType {
 	 */
 	@WorkflowEvent
 	@WorkflowEventParameters([
-		@WorkflowEventParameter(name="level", label="Level", type="number", minValue="0", maxValue="100")
+		@WorkflowEventParameter(name="level", label="Level", type="number", minValue="0", maxValue="100"),
+		@WorkflowEventParameter(name=WorkflowContext.DELAY_PARAM, label="Delay (min)", type="number", minValue="0", required=false),
 	])
 	def level(WorkflowContext context) {
 		this.device.command = "level"

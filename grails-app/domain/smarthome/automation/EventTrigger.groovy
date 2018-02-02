@@ -46,6 +46,7 @@ class EventTrigger implements Serializable, Comparable<EventTrigger> {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		event index: "EventTrigger_Event_Idx"
 		parameters type: 'text'
+		version false
 	}
 
 	@Override

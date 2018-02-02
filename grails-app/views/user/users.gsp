@@ -39,20 +39,22 @@
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
-		            <th id="id-nom">Nom</th>
-		            <th id="id-email">Email</th>
-		            <th id="id-activation">Dernière activation</th>
-		            <th id="id-statut">Statuts</th>
+		            <th>Nom</th>
+		            <th>Email</th>
+		            <th>Activation</th>
+		            <th>Connexion</th>
+		            <th>Statuts</th>
 		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="user" in="${ userInstanceList }">
 			        <tr>
-			            <td headers="id-nom"><g:link action="edit" id="${user.id }">${user.prenomNom }</g:link></td>
-			            <td headers="id-email">${user.username }</td>
-			            <td headers="id-activation"><app:formatUser date="${user.lastActivation }"/></td>
-			            <td headers="id-statut"><g:render template="/user/userStatut" model="[user: user]"/></td>
+			            <td><g:link action="edit" id="${user.id }">${user.prenomNom }</g:link></td>
+			            <td>${user.username }</td>
+			            <td><app:formatUser date="${user.lastActivation }"/></td>
+			            <td><app:formatTimeAgo date="${user.lastConnexion }"/></td>
+			            <td><g:render template="/user/userStatut" model="[user: user]"/></td>
 			            <td class="column-1-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Basculer vers l'utilisateur" action="switchUser" id="${ user.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-group"></span>

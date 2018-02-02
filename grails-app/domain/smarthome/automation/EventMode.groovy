@@ -20,5 +20,6 @@ class EventMode implements Serializable  {
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		event index: "EventMode_Event_Idx"
+		version false
 	}
 }

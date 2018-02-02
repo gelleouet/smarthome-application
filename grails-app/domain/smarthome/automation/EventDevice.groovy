@@ -21,5 +21,6 @@ class EventDevice implements Serializable  {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		event index: "EventDevice_Event_Idx"
 		device index: "EventDevice_Device_Idx"
+		version false
 	}
 }

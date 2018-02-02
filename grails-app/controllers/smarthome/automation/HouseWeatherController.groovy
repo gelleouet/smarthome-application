@@ -1,13 +1,16 @@
 package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured;
+
 import smarthome.core.AbstractController;
+import smarthome.security.User;
 
 
 @Secured("isAuthenticated()")
 class HouseWeatherController extends AbstractController {
 
 	HouseWeatherService houseWeatherService
+	HouseService houseService
 	DeviceService deviceService
 	
 	
@@ -25,13 +28,28 @@ class HouseWeatherController extends AbstractController {
 	
 	
 	/**
-	 * Rendu de la synthese confort de la maison
+	 * Calcul info météo
 	 * 
 	 * @return
 	 */
 	@Secured("hasRole('ROLE_ADMIN')")
 	def calculWeather(House house) {
 		houseWeatherService.calculWeather(house)
+		nop()
+	}
+	
+	
+	/**
+	 * Calcul info météo maison principale
+	 * 
+	 * @return
+	 */
+	@Secured("hasRole('ROLE_ADMIN')")
+	def calculDefaultWeather(User user) {
+		House house = houseService.findDefaultByUser(user)
+		if (house) {
+			houseWeatherService.calculWeather(house)
+		}
 		nop()
 	}
 	
@@ -62,4 +80,6 @@ class HouseWeatherController extends AbstractController {
 		render(view: 'dailyForecast', model: [tableauBords: tableauBords, house: house,
 			dailyForecasts: dailyForecasts])
 	}
+	
+	
 }

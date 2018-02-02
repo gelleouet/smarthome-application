@@ -82,6 +82,7 @@ class DeviceAlertService extends AbstractService {
 	List<DeviceLevelAlert> listDeviceLevelAlertValue(Device device) {
 		List<DeviceLevelAlert> levelAlerts = DeviceLevelAlert.createCriteria().list() {
 			eq 'device', device
+			ne 'level', LevelAlertEnum.monitoring
 			join 'device'
 		}
 		

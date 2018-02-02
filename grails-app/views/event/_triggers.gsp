@@ -39,7 +39,7 @@
 							</label>
 							<g:field type="${ field.type() }" name="triggers[${status}].jsonParameters.${field.name()}"
 								value="${bean.jsonParameters[(field.name())]}" class="text medium-field" min="${ field.minValue() }"
-								max="${ field.maxValue() }" required="${ field.required() }"/>
+								max="${ field.maxValue() }" required="${ field.required() ? 'true' : null }"/>
 						</div>
 	            	</g:each>
 	            </td>

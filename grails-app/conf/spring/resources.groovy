@@ -39,6 +39,8 @@ beans = {
 		]
 	}
 	
+	userDetailsService(smarthome.security.SmartHomeUserDetailsService)
+	
 	permissionEvaluator(smarthome.security.SmartHomePermissionEvaluator) {
 		permissionFactory = ref('aclPermissionFactory')
 	}

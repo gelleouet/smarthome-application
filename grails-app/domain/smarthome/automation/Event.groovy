@@ -68,6 +68,7 @@ class Event implements Serializable, EventTriggerPreparable {
 		lastHeureDecalage length: 8
 		solstice length: 8
 		cron length: 128
+		version false
 	}
 	
 	
