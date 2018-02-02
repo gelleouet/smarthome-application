@@ -4,6 +4,7 @@ import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.engine.impl.history.HistoryLevel;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.plugin.NavigationItemUtils;
+import smarthome.security.SmartHomeUserDetailsService;
 
 
 // Place your Spring DSL code here
@@ -39,7 +40,7 @@ beans = {
 		]
 	}
 	
-	userDetailsService(smarthome.security.SmartHomeUserDetailsService)
+	userDetailsService(SmartHomeUserDetailsService)
 	
 	permissionEvaluator(smarthome.security.SmartHomePermissionEvaluator) {
 		permissionFactory = ref('aclPermissionFactory')
