@@ -55,7 +55,7 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 			DeviceValue lastHC = DeviceValue.lastValueInPeriod(house.compteur, debutMois, finMois + 1, 'hchc')
 			
 			// on ne continue le calcul que si les 4 values sont trouvées
-			if (firstHP && lastHP && firstHC && lastHC) {
+			if (firstHP && lastHP) {
 				def nbJour = (lastHP.dateValue - firstHP.dateValue) + 1
 				
 				// pour extrapoller sur le mois, il nous faut au moins 1 jour complet
@@ -65,7 +65,12 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 					// produit en croix pour extrapoller sur le mois complet
 					consoMois[mois] = [:]
 					consoMois[mois].kwhp = (((lastHP.value - firstHP.value) / 1000) * maxJour / nbJour) as Integer
-					consoMois[mois].kwhc = (((lastHC.value - firstHC.value) / 1000) * maxJour / nbJour) as Integer
+					
+					if (firstHC && lastHC) {
+						consoMois[mois].kwhc = (((lastHC.value - firstHC.value) / 1000) * maxJour / nbJour) as Integer
+					} else {
+						consoMois[mois].kwhc = 0
+					}
 				}
 			}
 		}
