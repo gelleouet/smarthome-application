@@ -166,31 +166,35 @@ class TeleInformation extends AbstractDeviceType {
 	 */
 	@Override
 	def prepareMetaValuesForSave() {
-		// calcul conso heure creuse sur la période
-		def hc = device.metavalue("hchc")
-		device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses (Wh)", trace: true])
-		
-		if (hc) {
-			// récupère la dernière valeur hchc
-			def lastHC = DeviceValue.findAllByDeviceAndName(device, "hchc", [sort: "dateValue", order: "desc", max: 1])
+		// si le device n'existe pas encore, il n'y a donc pas d'anciennes valeurs
+		// pour calculer la dernière conso
+		if (device.id) {
+			// calcul conso heure creuse sur la période
+			def hc = device.metavalue("hchc")
+			device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses (Wh)", trace: true])
 			
-			if (lastHC) {
-				def conso = hc.value.toLong() - lastHC[0].value.toLong()
-				device.addMetavalue("hcinst", [value: conso.toString()])
+			if (hc) {
+				// récupère la dernière valeur hchc
+				def lastHC = DeviceValue.findAllByDeviceAndName(device, "hchc", [sort: "dateValue", order: "desc", max: 1])
+				
+				if (lastHC) {
+					def conso = hc.value.toLong() - lastHC[0].value.toLong()
+					device.addMetavalue("hcinst", [value: conso.toString()])
+				}
 			}
-		}
-
-		// calcul conso heure pleine sur la période
-		def hp = device.metavalue("hchp")
-		device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines (Wh)", trace: true])
-		
-		if (hp) {
-			// récupère la dernièer valeur hchc
-			def lastHP = DeviceValue.findAllByDeviceAndName(device, "hchp", [sort: "dateValue", order: "desc", max: 1])
-					
-			if (lastHP) {
-				def conso = hp.value.toLong() - lastHP[0].value.toLong()
-				device.addMetavalue("hpinst", [value: conso.toString()])
+	
+			// calcul conso heure pleine sur la période
+			def hp = device.metavalue("hchp")
+			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines (Wh)", trace: true])
+			
+			if (hp) {
+				// récupère la dernièer valeur hchc
+				def lastHP = DeviceValue.findAllByDeviceAndName(device, "hchp", [sort: "dateValue", order: "desc", max: 1])
+						
+				if (lastHP) {
+					def conso = hp.value.toLong() - lastHP[0].value.toLong()
+					device.addMetavalue("hpinst", [value: conso.toString()])
+				}
 			}
 		}
 	}
