@@ -4,6 +4,7 @@ import groovy.lang.GroovyClassLoader;
 
 import java.lang.reflect.Method;
 
+import org.apache.camel.model.FinallyDefinition;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -25,19 +26,23 @@ class ScriptUtils {
 			throw new SmartHomeException("Can't run script : empty source !")
 		}
 		
+		GroovyShell groovyShell
+		def result
+		
 		try {
-			GroovyShell groovyShell = new GroovyShell()
+			groovyShell = new GroovyShell(ScriptUtils.getClassLoader())
 			Script script = groovyShell.parse(scriptText)
 			if (params) {
 				script.setBinding(new Binding(params))
 			}
-			
-			def result = script.run()
-			groovyShell.resetLoadedClasses()
-			return result
+			result = script.run()
 		} catch (Exception e) {
 			throw new SmartHomeException(e)
+		} finally {
+			groovyShell?.resetLoadedClasses()
 		}
+		
+		return result
 	}
 	
 }
