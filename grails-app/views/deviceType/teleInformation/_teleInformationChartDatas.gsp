@@ -35,7 +35,11 @@
 	          },
 		      'chartArea': {
 		      	width: '90%'
-		      }
+		      },
+		      'explorer': {
+				'axis': 'horizontal',
+				'actions': ['dragToZoom', 'rightClickToReset']
+			  }
 	  	};
 	  	
 	  	chartType = 'LineChart';
