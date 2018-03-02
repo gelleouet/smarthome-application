@@ -10,10 +10,9 @@ import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.transaction.annotation.Transactional;
-
 import grails.converters.JSON;
 import grails.plugin.springsecurity.SpringSecurityService;
-import grails.transaction.NotTransactional;
+
 
 /**
  * Classe de base pour tous les services :
