@@ -43,7 +43,7 @@ class SmarthomeScheduler implements InitializingBean, ApplicationContextAware {
 	@Autowired
 	GrailsApplication grailsApplication
 	
-	Map<String, String> jobs
+	Map<String, String> jobs
 
 	public void setJobs(Map<String, String> jobs) {
 		this.jobs = jobs;

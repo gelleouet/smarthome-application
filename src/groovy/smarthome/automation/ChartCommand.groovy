@@ -13,7 +13,7 @@ class ChartCommand extends AbstractChartCommand<ChartCommand> {
 		groupe nullable: true
 		chart nullable: true
 		navigation nullable: true
-	}
+	}
 
 
 	@Override

@@ -47,7 +47,7 @@ class EventTrigger implements Serializable, Comparable<EventTrigger> {
 		event index: "EventTrigger_Event_Idx"
 		parameters type: 'text'
 		version false
-	}
+	}
 
 	@Override
 	int compareTo(EventTrigger o) {

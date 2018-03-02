@@ -41,7 +41,7 @@ class Notification implements Serializable, EventTriggerPreparable {
 		user index: "Notification_User_Idx"
 		message type: 'text'
 		parameters type: 'text'
-	}
+	}
 
 	void parametersToJson() {
 		jsonParameters = parameters ? JSON.parse(parameters) : [:]
