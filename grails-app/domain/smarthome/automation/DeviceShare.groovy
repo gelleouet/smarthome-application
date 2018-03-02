@@ -17,12 +17,14 @@ class DeviceShare implements Serializable {
 	Device device
 	User sharedUser
 	
+	
 	static belongsTo = [device: Device]
 	
 	
     static constraints = {
-		
+		device unique: 'sharedUser' 	
     }
+	
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
