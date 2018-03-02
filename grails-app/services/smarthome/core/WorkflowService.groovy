@@ -87,8 +87,6 @@ class WorkflowService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Workflow execute(Workflow workflow, def context) throws SmartHomeException {
-		Chronometre chrono = new Chronometre()
-		
 		// recherche du workflow dans le repo
 		def deployment = this.findAndCreateDeployment(workflow)
 		
@@ -99,8 +97,6 @@ class WorkflowService extends AbstractService {
 		// on démarre une instance du workflow sur le contexte donné
 		ProcessInstance processInstance = runtimeService.startProcessInstanceById(processDefinition.getId(),
 			[context: context])
-		
-		log.info "Execute workflow ${workflow.libelle} : ${chrono.stop()}ms"
 		
 		return workflow
 	}

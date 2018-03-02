@@ -135,7 +135,6 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	 */
     private O executeRule(Rule rule, I object, Map parameters) throws SmartHomeException {
 		injectParameters(rule, parameters)
-		log.info "Exécution rule ${rule.class.simpleName}"
 		return rule.execute(object)
 	}
 }
