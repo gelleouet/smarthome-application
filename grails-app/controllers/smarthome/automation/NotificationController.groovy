@@ -49,6 +49,20 @@ class NotificationController extends AbstractController {
 		notificationService.edit(notification)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editNotification]))
 	}
+	
+	
+	/**
+	 * Exécution pour test
+	 * 
+	 * @param notification
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "notifications", modelName = "")
+	def executeTest(Notification notification) {
+		notificationService.edit(notification)
+		notificationService.executeTest(notification)
+		redirect(action: COMMAND_NAME + 's')
+	}
 
 
 	/**
@@ -93,7 +107,7 @@ class NotificationController extends AbstractController {
 	 * @param notification
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "notifications")
+	@ExceptionNavigationHandler(actionName = "notifications", modelName = "")
 	def delete(Notification notification) {
 		notificationService.delete(notification)
 		redirect(action: COMMAND_NAME + 's')

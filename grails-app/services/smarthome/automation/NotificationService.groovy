@@ -101,6 +101,24 @@ class NotificationService extends AbstractService {
 	
 	
 	/**
+	 * Exécution sur un contexte test
+	 * 
+	 * @param notification
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Notification executeTest(Notification notification) throws SmartHomeException {
+		Event event = new Event(libelle: "Event_Label")
+		Device device = new Device(label: "Device_Label", value: "device_value", dateValue: new Date())
+		DeviceAlert alert = new DeviceAlert(device: device, level: LevelAlertEnum.error, dateDebut: new Date())
+		DeviceLevelAlert alertLevel = new DeviceLevelAlert(device: device, level: alert.level, mode: ModeAlertEnum.max,
+			value: 0d)
+		
+		return execute(notification, [device: device, alert: alert, alertLevel: alertLevel, event: event])	
+	}
+	
+	
+	/**
 	 * Envoi asynchrone d'un email
 	 * Méthode utilitaire pour rediriger vers le bus AMQP
 	 * 

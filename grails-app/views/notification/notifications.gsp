@@ -42,7 +42,7 @@
 		        <tr>
 		            <th>ID</th>
 		            <th>Service</th>
-		            <th class="column-1-buttons"></th>
+		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -50,9 +50,13 @@
 			        <tr>
 			            <td><g:link action="edit" id="${bean.id }">${ bean.description }</g:link></td>
 			            <td>${ bean.notificationAccount.notificationAccountSender.libelle }</td>
-			            <td class="column-1-buttons command-column">
+			            <td class="column-2-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<span class="aui-icon aui-icon-small aui-iconfont-delete">
+			            	</g:link>
+			            	
+			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Tester" action="executeTest" id="${ bean.id }">
+			            		<span class="aui-icon aui-icon-small aui-iconfont-build"></span>
 			            	</g:link>
 			            </td>
 			        </tr>
