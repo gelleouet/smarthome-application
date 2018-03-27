@@ -36,11 +36,7 @@ class BoutonPoussoir extends AbstractDeviceType {
 	
 	
 	@Override
-	public Object icon() {
+	String icon() {
 		"/deviceType/boutonOnOff.png"
 	}
-	
-	def isQualitatif() {
-		return false
-	} 
 }

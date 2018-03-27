@@ -17,6 +17,7 @@ class DeviceType implements Serializable {
 	String libelle
 	String implClass
 	Set config = []
+	boolean qualitatif
 	
 	
 	static hasMany = [config: DeviceTypeConfig]
@@ -31,6 +32,13 @@ class DeviceType implements Serializable {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'libelle'
 		config cascade: 'all-delete-orphan'
+	}
+	
+	
+	static {
+		grails.converters.JSON.registerObjectMarshaller(DeviceType) {
+			[id: it.id, implClass: it.implClass, libelle: it.libelle, qualitatif: it.qualitatif]
+		}
 	}
 	
 	

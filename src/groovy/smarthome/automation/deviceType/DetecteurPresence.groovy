@@ -10,7 +10,5 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class DetecteurPresence extends AbstractDeviceType {
-	def isQualitatif() {
-		return false
-	} 
+
 }

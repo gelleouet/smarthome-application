@@ -89,9 +89,16 @@ class VoletRoulant extends AbstractDeviceType {
 			this.device.value = 99
 		}
 	}
-	
-	
-	def isQualitatif() {
-		return false
-	} 
+
+
+	/** 
+	 * Le volet est quantitatif mais on trace quand même les valeurs à 0 car elles correspondent
+	 * à la fermeture du volet et cet événement est aussi important que l'ouverture pour les stats
+	 * 
+	 * @see smarthome.automation.deviceType.AbstractDeviceType#isTraceValue(java.lang.Double)
+	 */
+	@Override
+	boolean isTraceValue(Double value) {
+		return value != null
+	}
 }

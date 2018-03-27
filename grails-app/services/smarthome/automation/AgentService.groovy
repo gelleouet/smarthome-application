@@ -20,6 +20,7 @@ import smarthome.core.SmartHomeException;
 import smarthome.endpoint.AgentEndPoint;
 import smarthome.endpoint.AgentEndPointMessage;
 import smarthome.endpoint.ShellEndPoint;
+import smarthome.endpoint.TeleinfoEndPoint;
 import smarthome.security.User;
 import smarthome.security.UserService;
 
@@ -376,12 +377,6 @@ class AgentService extends AbstractService {
 			throw new SmartHomeException("Websocket not bind !")
 		}
 		
-		// IMPORTANT : ne pas bloquer message si token expired car on peut perdre des messages
-		// l'expiration d'un token est géré à la réception d'un message
-//		if (token.hasExpired()) {
-//			throw new SmartHomeException("Token has expired !")
-//		}
-		
 		// prépare le message avec les infos de connexion pour permette aussi à l'agent d'authentifier les messages recus
 		AgentEndPointMessage message = new AgentEndPointMessage(mac: agent.mac, token: token.token, 
 			username: agent.user.username, applicationKey: agent.user.applicationKey, data: data, 
@@ -419,6 +414,17 @@ class AgentService extends AbstractService {
 	 */
 	void shellMessage(Agent agent, def datas) {
 		ShellEndPoint endPoint = EndPointUtils.newEndPoint(ShellEndPoint)
+		endPoint.sendMessage(agent, datas)
+	}
+	
+	
+	/**
+	 * Envoi d'un message à tous les websockets liés au téléinfo pour la remontée des datas de l'agent
+	 * 
+	 * @param datas
+	 */
+	void teleinfoMessage(Agent agent, def datas) {
+		TeleinfoEndPoint endPoint = EndPointUtils.newEndPoint(TeleinfoEndPoint)
 		endPoint.sendMessage(agent, datas)
 	}
 	

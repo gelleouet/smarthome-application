@@ -20,7 +20,6 @@ import smarthome.automation.AgentService;
 import smarthome.core.EndPointUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.security.User;
-import smarthome.security.UserService;
 
 
 /**
@@ -34,6 +33,8 @@ import smarthome.security.UserService;
  * IMPORTANT : rajouter instruction dans boostrap pour enregister le endoint en mode DEV
  * EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
  *
+ * IMPORTANT : rajouter une règle Spring Security URL pour autoriser l'accès
+ * 
  * @author gregory
  *
  */
@@ -49,9 +50,6 @@ class ShellEndPoint {
 	@Autowired
 	AgentService agentService
 
-	@Autowired
-	UserService userService
-	
 	
 	/**
 	 * Authentification à la connexion du websocket via le applicationId et le agentId
@@ -73,10 +71,11 @@ class ShellEndPoint {
 		
 		Agent agent = agentService.authorize(session.userPrincipal.principal.id, agentId as Long)
 		
+		agentService.sendMessage(agent, [header: 'shell', data: 'connect-shell'])
+		
 		// si pas d'erreur, on stocke les infos dans properties
 		session.userProperties.agentId = agent.id
 		sessions.put(agent.id, session)
-		agentService.sendMessage(agent, [header: 'shell', data: 'connect-shell'])
 		
 		log.info "Shell connexion for agent ${agent.mac} / ${agent.libelle}"
 	}

@@ -48,7 +48,6 @@ class Device implements Serializable, EventTriggerPreparable {
 	
     static constraints = {
 		agent nullable: true
-		mac unique: ['agent']
 		groupe nullable: true
 		value nullable: true
 		dateValue nullable: true
@@ -241,7 +240,7 @@ class Device implements Serializable, EventTriggerPreparable {
 	 * Lance la préparation des metavalues depuis l'implémentation du device
 	 * Applique la formule si présente
 	 * 
-	 * @return
+	 * @return this
 	 */
 	Device processValue() {
 		def deviceImpl = newDeviceImpl()

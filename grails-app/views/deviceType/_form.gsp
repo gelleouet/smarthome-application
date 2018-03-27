@@ -18,6 +18,13 @@
 </div>
 
 <div class="field-group">
+	<label for="actif">
+		Qualitatif ?
+	</label>
+	<g:checkBox name="qualitatif" value="${deviceType?.qualitatif}" class="checkbox"/>
+</div>
+
+<div class="field-group">
 	<label for="script">
 		Configuration
 	</label>

@@ -10,6 +10,7 @@ class BootStrap {
 		if (Environment.current == Environment.DEVELOPMENT) {
 			EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
 			EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
+			EndPointUtils.register(servletContext, smarthome.endpoint.TeleinfoEndPoint)
 		}
 		
 		// démarre le gestionnaire de cron

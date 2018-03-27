@@ -15,17 +15,17 @@ import org.springframework.stereotype.Component;
 import smarthome.core.SmartHomeException;
 
 /**
- * Recoit les messages des shell des agents et les oriente au bon service
+ * REcoit les messages de tracage du teleinfo et les oriente au bon service
  * 
  * @author gregory
  *
  */
-class ShellMessageRouteBuilder extends RouteBuilder {
+class TeleinfoMessageRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
 	
-	final String EXCHANGE = "smarthome.automation.agentService.shellMessage"
-	final String QUEUE = "smarthome.automation.agentService.shellMessageConsole"
+	final String EXCHANGE = "smarthome.automation.agentService.teleinfoMessage"
+	final String QUEUE = "smarthome.automation.agentService.teleinfoMessageConsole"
 	
 	
 	@Autowired
@@ -61,6 +61,6 @@ class ShellMessageRouteBuilder extends RouteBuilder {
 		.setProperty("datas").groovy('body.arg0.data')
 		.setProperty("agentId").groovy('body.result.id')
 		.setProperty("agent").method("agentService", "findById(property.agentId)")
-		.to("bean:agentService?method=shellMessage(property.agent, property.datas)")
+		.to("bean:agentService?method=teleinfoMessage(property.agent, property.datas)")
 	}
 }

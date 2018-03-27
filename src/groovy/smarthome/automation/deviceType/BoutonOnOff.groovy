@@ -71,9 +71,4 @@ class BoutonOnOff extends AbstractDeviceType {
 		device.command = (device.value == "1" ? "on" : "off")
 		return context.withTimer(device.value == "1" ? "off" : "on", [:])
 	}
-	
-	
-	def isQualitatif() {
-		return false
-	} 
 }

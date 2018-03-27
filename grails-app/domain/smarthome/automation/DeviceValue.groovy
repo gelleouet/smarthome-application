@@ -16,21 +16,16 @@ import groovy.time.TimeCategory;
  */
 @Validateable
 class DeviceValue implements Serializable {
-	static belongsTo = [device: Device]
-	
+	Device device
 	Double value
 	Date dateValue
 	LevelAlertEnum alertLevel
-	
 	// permet d'avoir plusieurs types de valeur pour un device
 	// si un seul type, ne rien mettre
 	String name 
 	
-	// Infos sur la date pour effectuer des regroupempents en base
-	Integer monthOfYear
-	Integer hourOfDay
-	Integer year
-	Date day
+	
+	static belongsTo = [device: Device]
 	
 	
     static constraints = {
@@ -38,17 +33,13 @@ class DeviceValue implements Serializable {
 		alertLevel nullable: true
     }
 	
+	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		name index: "DeviceValue_DeviceName_Idx", length: 64
 		device index: "DeviceValue_DeviceName_Idx"
 		dateValue index: "DeviceValue_DeviceName_Idx"
 		alertLevel length: 16
-		
-		hourOfDay formula: 'extract(hour from date_value)'
-		monthOfYear formula: 'extract(month from date_value)'
-		year formula: 'extract(year from date_value)'
-		day formula: "date_trunc('day', date_value)"
 	}
 	
 	
@@ -291,12 +282,15 @@ class DeviceValue implements Serializable {
 			between 'dateValue', dateDebut, dateFin
 			
 			if (metaName) {
-				or {
-					for (String token : metaName.split(",")) {
-						if (token == "null" || !token) {
-							isNull "name"	
-						} else {
-							eq "name", token
+				// * active toutes les metaNames
+				if (metaName != "*") {
+					or {
+						for (String token : metaName.split(",")) {
+							if (token == "null" || !token) {
+								isNull "name"	
+							} else {
+								eq "name", token
+							}
 						}
 					}
 				}

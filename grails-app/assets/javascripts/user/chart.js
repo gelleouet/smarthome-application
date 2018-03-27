@@ -21,7 +21,7 @@ $(window).on('load', function() {
 
 
 function onLoadGoogleChart() {
-	google.load("visualization", "1.0", {packages:["corechart"]});
+	google.load("visualization", "1.0", {packages:["corechart","gauge"]});
 	google.setOnLoadCallback(buildGoogleCharts);
 }
 
@@ -31,9 +31,16 @@ function onLoadGoogleChart() {
  */
 function buildGoogleCharts() {
 	$('div[data-chart-type]').each(function(index, divChart) {
-		buildGoogleChart(divChart);
+		if ($(divChart).attr('data-delegate-chart')) {
+			var delegateFunction = window[$(divChart).attr('data-delegate-chart')]
+			delegateFunction(divChart)
+			$(divChart).removeAttr('data-chart-type')
+		} else {
+			buildGoogleChart(divChart);
+		}
 	});
 }
+
 
 /**
  * Construction des charts sur les div
@@ -48,7 +55,7 @@ function buildGoogleChart(divChart) {
 		var chartData = $divData.html();
 		
 		if (chartData) {
-			var chartDatas, chartJoinDatas, chartOldDatas, chartOptions, chartType, chart;
+			var chartDatas, chartJoinDatas, chartOldDatas, chartOptions, chartType, chart, chartSelectFunction;
 			eval(chartData);
 			
 			if (!chartType) {
@@ -71,6 +78,10 @@ function buildGoogleChart(divChart) {
 				chart.draw(joinDatas, chartOptions);
 			} else {
 				chart.draw(chartDatas, chartOptions);
+			}
+			
+			if (chartSelectFunction) {
+				google.visualization.events.addListener(chart, 'select', chartSelectFunction)
 			}
 	      	
 	      	// nettoie les éléments de contruction du chart
@@ -144,10 +155,45 @@ function onBuildQualitatifChart(divData, chart, chartDatas) {
 }
 
 
+function chartSelectionInterval(chart) {
+	var selection = chart.getSelection()
+	var interval = {}
+  	
+	if (selection.length == 2) {
+		var minRow = 999999
+		var maxRow = -1
+		
+		for (var idx=0; idx<selection.length; idx++) {
+			if (selection[idx].column == selection[0].column) {
+				if (selection[idx].row < minRow) {
+					minRow = selection[idx].row
+				}
+				if (selection[idx].row > maxRow) {
+					maxRow = selection[idx].row
+				}
+			}
+		}
+		
+		if (maxRow != -1 && minRow != 999999) {
+			interval.column = selection[0].column
+			interval.minRow = minRow
+			interval.maxRow = maxRow
+		}
+	}
+	
+	return interval
+}
 
 
-
-
-
-
-
+function chartSelectionSumInterval(chartDatas, interval) {
+	var sum
+	
+	if (interval.column != undefined) {
+		sum = 0
+		for (var idx=interval.minRow; idx<=interval.maxRow; idx++) {
+			sum += chartDatas.getValue(idx, interval.column)
+		}
+	}
+	
+	return sum
+}

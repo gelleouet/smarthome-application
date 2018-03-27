@@ -12,6 +12,10 @@ import smarthome.automation.DeviceMetadata;
 import smarthome.automation.DeviceTypeProvider;
 import smarthome.automation.DeviceTypeProviderPrix;
 import smarthome.automation.DeviceValue;
+import smarthome.automation.DeviceValueDay;
+import smarthome.automation.DeviceValueMonth;
+import smarthome.core.DateUtils;
+import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;
 import smarthome.core.chart.GoogleDataTableCol;
 
@@ -42,18 +46,22 @@ class TeleInformation extends AbstractDeviceType {
 	}
 
 
-
-	/** 
+	/**
 	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#chartMetaNames()
+	 * @see smarthome.automation.deviceType.AbstractDeviceType#values()
 	 */
 	@Override
-	public String chartMetaNames(DeviceChartCommand command) {
+	List values(DeviceChartCommand command) throws SmartHomeException {
+		def values = []
+		
 		if (command.viewMode == ChartViewEnum.day) {
-			return "null,hcinst,hpinst"
+			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
+				"null,hcinst,hpinst")
 		} else {
-			return "null,hchc,hchp"
+			values = super.values(command)
 		}
+		
+		return values
 	}
 
 
@@ -64,9 +72,51 @@ class TeleInformation extends AbstractDeviceType {
 	 * @see smarthome.automation.deviceType.AbstractDeviceType#googleChart(smarthome.automation.DeviceChartCommand, java.util.List)
 	 */
 	@Override
-	GoogleChart googleChart(DeviceChartCommand command, List<DeviceValue> values) {
+	GoogleChart googleChart(DeviceChartCommand command, List values) {
 		GoogleChart chart = new GoogleChart()
-		chart.values = values
+		
+		if (command.viewMode == ChartViewEnum.day) {
+			chart.values = values.groupBy { it.dateValue }
+			
+			chart.colonnes = [
+				new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
+				new GoogleDataTableCol(label: "Heures creuses (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ it.name == "hcinst" }?.value
+				}),
+				new GoogleDataTableCol(label: "Heures pleines (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ it.name == "hpinst" }?.value
+				}),
+				new GoogleDataTableCol(label: "Intensité (A)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ !it.name }?.value
+				}),
+			]
+		} else {
+			chart.values = values
+			
+			chart.colonnes = [
+				new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
+				new GoogleDataTableCol(label: "Heures creuses (kWh)", type: "number", value: { deviceValue, index, currentChart -> 
+					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
+					if (value != null) {
+						return (value / 1000d).round(1) 
+					} else {
+						return null
+					}
+				}),
+				new GoogleDataTableCol(label: "Heures pleines (kWh)", type: "number", value: { deviceValue, index, currentChart ->
+					def value = deviceValue.value.find{ it.name == "hchpsum" }?.value 
+					if (value != null) {
+						return (value / 1000d).round(1)
+					} else {
+						return null
+					}
+				}),
+				new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ it.name == "max" }?.value 
+				}),
+			]
+		}
+		
 		return chart
 	}
 	
@@ -78,80 +128,66 @@ class TeleInformation extends AbstractDeviceType {
 	 * @param values
 	 * @return
 	 */
-	GoogleChart googleChartTarif(DeviceChartCommand command, List<DeviceValue> values) {
+	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
-		chart.values = []
 		
 		if (command.viewMode == ChartViewEnum.day) {
-			chart.chartType = "LineChart"
+			chart.chartType = "SteppedAreaChart"
 			
-			chart.aggregateValues = values.findAll { it.name == 'hcinst' || it.name == 'hpinst' }.collect {
-				def kwh = it.value / 1000.0
-				def prix = command.deviceImpl.calculTarif(it.name.substring(0, 2), kwh, it.dateValue[Calendar.YEAR])
-				
-				return [name: it.name == 'hcinst' ? 'HC' : 'HP', dateValue: it.dateValue, prix: prix, kwh: kwh]
+			chart.values = values.collectEntries { entry ->
+				Map resultValues = [:]
+				entry.value.each { deviceValue ->
+					if (deviceValue.name == 'hcinst' || deviceValue.name == 'hpinst') {
+						def name = deviceValue.name == 'hcinst' ? 'HC' : 'HP'
+						def kwh = deviceValue.value / 1000.0
+						resultValues["kwh${name}"] = kwh
+						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
+					}
+				}
+				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
+				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
+				[(entry.key): resultValues]
 			}
-			chart.values = chart.aggregateValues.groupBy { it.dateValue }
 			
 			chart.colonnes = [
 				new GoogleDataTableCol(label: "Date", type: "datetime", value: { deviceValue, index, currentChart ->
 					deviceValue.key
 				}),
 				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HC' }?.prix
+					deviceValue.value["prixHC"]
 				}),
 				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HP' }?.prix
+					deviceValue.value["prixHP"]
 				})
 			]
-		} else if (command.viewMode == ChartViewEnum.month) {
-			chart.aggregateValues = values.findAll { it.name == 'hchc' || it.name == 'hchp' }.collect {
-				def kwh = (it.max - it.min) / 1000.0
-				def prix = command.deviceImpl.calculTarif(it.name.substring(0, 2), kwh, it.day[Calendar.YEAR])
-				
-				return [name: it.name == 'hchc' ? 'HC' : 'HP', dateValue: it.day, prix: prix, kwh: kwh]
+		} else {
+			chart.values = values.collectEntries { entry ->
+				Map resultValues = [:]
+				entry.value.each { deviceValue ->
+					if (deviceValue.name == 'hchcsum' || deviceValue.name == 'hchpsum') {
+						def name = deviceValue.name == 'hchcsum' ? 'HC' : 'HP'
+						def kwh = deviceValue.value / 1000.0
+						resultValues["kwh${name}"] = kwh
+						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
+					}
+				}
+				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
+				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
+				[(entry.key): resultValues]
 			}
-			chart.values = chart.aggregateValues.groupBy { it.dateValue }
 			
 			chart.colonnes = [
 				new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
 					deviceValue.key
 				}),
 				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HC' }?.prix
+					deviceValue.value["prixHC"]
 				}),
 				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HP' }?.prix
+					deviceValue.value["prixHP"]
 				}),
 				new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.sum { it.prix ?: 0d }
-				})
-			]
-		} else if (command.viewMode == ChartViewEnum.year) {
-			chart.aggregateValues = values.findAll { it.name == 'hchc' || it.name == 'hchp' }.collect {
-				Date dateValue = new Date().clearTime()
-				dateValue[Calendar.DAY_OF_MONTH] = 1
-				dateValue[Calendar.MONTH] = it.month - 1
-				dateValue[Calendar.YEAR] = it.year
-				def kwh = (it.max - it.min) / 1000.0
-				def prix = command.deviceImpl.calculTarif(it.name.substring(0, 2), kwh, it.year)
-				
-				return [name: it.name == 'hchc' ? 'HC' : 'HP', dateValue: dateValue, prix: prix, kwh: kwh]
-			}
-			chart.values = chart.aggregateValues.groupBy { it.dateValue }
-			
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
-					deviceValue.key
-				}),
-				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HC' }?.prix
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find { it.name == 'HP' }?.prix
-				}),
-				new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.sum { it.prix ?: 0d }
+					deviceValue.value["prix"]
 				})
 			]
 		}
@@ -241,5 +277,77 @@ class TeleInformation extends AbstractDeviceType {
 		}
 		
 		return null
+	}
+
+
+
+	/**
+	 * (non-Javadoc)
+	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueDay(java.util.Date)
+	 */
+	@Override
+	List aggregateValueDay(Date dateReference) {
+		def values = []
+		
+		// traite d'abord l'intensité max
+		values.addAll(DeviceValue.executeQuery("""\
+			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+			max(deviceValue.value) as max)
+			FROM DeviceValue deviceValue
+			WHERE deviceValue.device = :device
+			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+			AND deviceValue.name is null
+			GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
+				dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)]))
+		
+		// traite ensuite les index
+		values.addAll(DeviceValue.executeQuery("""\
+			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+			(max(deviceValue.value) - min(deviceValue.value)) as sum)
+			FROM DeviceValue deviceValue
+			WHERE deviceValue.device = :device
+			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+			AND deviceValue.name in (:metaNames)
+			GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
+				dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference),
+				metaNames: ['hchp', 'hchc']]))
+		
+		return values
+	}
+
+
+
+	/**
+	 * (non-Javadoc)
+	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueMonth(java.util.Date)
+	 */
+	@Override
+	List aggregateValueMonth(Date dateReference) {
+		def values = []
+		
+		// traite d'abord l'intensité max
+		values.addAll(DeviceValue.executeQuery("""\
+			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+			max(deviceValue.value) as max)
+			FROM DeviceValue deviceValue
+			WHERE deviceValue.device = :device
+			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+			AND deviceValue.name is null
+			GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
+				dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))]))
+		
+		// traite ensuite les index
+		values.addAll(DeviceValue.executeQuery("""\
+			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+			(max(deviceValue.value) - min(deviceValue.value)) as sum)
+			FROM DeviceValue deviceValue
+			WHERE deviceValue.device = :device
+			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+			AND deviceValue.name in (:metaNames)
+			GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
+				dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
+				metaNames: ['hchp', 'hchc']]))
+		
+		return values
 	}
 }

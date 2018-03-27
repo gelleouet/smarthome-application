@@ -2,6 +2,7 @@ package smarthome.security.google
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.groovy.grails.test.support.ControllerNameExtractor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -95,6 +96,7 @@ class GoogleActionController extends AbstractController {
 	 * 
 	 * @return
 	 */
+	@ExceptionNavigationHandler(actionName = "userApplications", controllerName = "userApplication")
 	def requestSync(UserApplication userApplication) {
 		googleActionService.triggerRequestSync(userApplication)
 		redirect(controller: 'userApplication', action: 'userApplications')	

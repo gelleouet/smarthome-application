@@ -28,6 +28,7 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 	
 	final String EXCHANGE = SmartHomeCoreConstantes.DIRECT_EXCHANGE
 	final String SHELL = "smarthome.automation.agentService.shellMessage"
+	final String TELEINFO = "smarthome.automation.agentService.teleinfoMessage"
 	final String RECEIVE = "smarthome.automation.agentService.receiveMessage"
 	
 	
@@ -61,5 +62,8 @@ class AgentReceiveMessageRouteBuilder extends RouteBuilder {
 		.when(simple('${property.header} == "shell"'))
 			.marshal().json(JsonLibrary.Gson)
 			.to("rabbitmq://$rabbitHostname/${SHELL}?username=$rabbitUsername&password=$rabbitPassword&automaticRecoveryEnabled=true&declare=false&exchangeType=fanout&bridgeEndpoint=true")
+		.when(simple('${property.header} == "teleinfo-trace" || ${property.header} == "teleinfo-trace-stop"'))
+			.marshal().json(JsonLibrary.Gson)
+			.to("rabbitmq://$rabbitHostname/${TELEINFO}?username=$rabbitUsername&password=$rabbitPassword&automaticRecoveryEnabled=true&declare=false&exchangeType=fanout&bridgeEndpoint=true")
 	}
 }

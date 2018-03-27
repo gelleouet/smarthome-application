@@ -17,6 +17,7 @@
 	<body onload="${pageProperty(name: 'body.onload')}">
 	
 		<g:include view="/layouts/headerAuthenticated.gsp"/>
+		
 		<section id="content" role="main" <%= app.stateInsertAttr()  %>>
 			<g:layoutBody/>
 		</section>

@@ -2,6 +2,8 @@ package smarthome.automation.deviceType
 
 import org.apache.commons.lang.StringUtils;
 
+import groovy.time.TimeCategory;
+
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -13,6 +15,8 @@ import smarthome.automation.DeviceChartCommand;
 import smarthome.automation.DeviceTypeProvider;
 import smarthome.automation.DeviceTypeProviderPrix;
 import smarthome.automation.DeviceValue;
+import smarthome.automation.DeviceValueDay;
+import smarthome.automation.DeviceValueMonth;
 import smarthome.automation.LevelAlertEnum;
 import smarthome.automation.SeriesTypeEnum;
 import smarthome.automation.WorkflowEvent;
@@ -20,6 +24,8 @@ import smarthome.automation.WorkflowEventParameter;
 import smarthome.automation.WorkflowEventParameters;
 import smarthome.core.ApplicationUtils;
 import smarthome.core.ClassUtils;
+import smarthome.core.DateUtils;
+import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;
 import smarthome.core.chart.GoogleChartProcessor;
 import smarthome.core.chart.GoogleDataTableCol;
@@ -64,16 +70,6 @@ abstract class AbstractDeviceType implements Serializable {
 	
 	
 	/**
-	 * Les values à charger pour le graphe
-	 * 
-	 * @return
-	 */
-	String chartMetaNames(DeviceChartCommand command) {
-		
-	}
-	
-	
-	/**
 	 * Nom de la vue pour saisie des options
 	 * 
 	 * @return
@@ -99,14 +95,36 @@ abstract class AbstractDeviceType implements Serializable {
 	 * 
 	 * @return
 	 */
-	def icon() {
+	String icon() {
 		"/deviceType/${name}.png"
 	}
 	
 	
-	def isQualitatif() {
-		return true
+	/**
+	 * Indique si device qualitatif ou quantitatif
+	 * 
+	 * @return
+	 */
+	boolean isQualitatif() {
+		return device.deviceType.qualitatif
 	} 
+	
+	
+	/**
+	 * Indique s'il faut historiser la valeur
+	 * Par défaut, historise tout le temps si device qualitatif, sinon
+	 * pour les quantitatif, seulement les positifs
+	 * 
+	 * @param value
+	 * @return
+	 */
+	boolean isTraceValue(Double value) {
+		if (isQualitatif()) {
+			return value != null
+		} else {
+			return value
+		}
+	}
 	
 	
 	/**
@@ -200,77 +218,84 @@ abstract class AbstractDeviceType implements Serializable {
 	 * @param values
 	 * @return
 	 */
-	GoogleChart googleChart(DeviceChartCommand command, List<DeviceValue> values) {
+	GoogleChart googleChart(DeviceChartCommand command, List values) {
 		GoogleChart chart = new GoogleChart()
 		command.device.extrasToJson()
-		chart.values = values
 		
-		if (!isQualitatif()) {
-			return chart
-		}
-		
-		if (command.viewMode == ChartViewEnum.day) {
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime"),
-				new GoogleDataTableCol(label: "Valeur", property: "value", type: "number"),
-				new GoogleDataTableCol(type: "boolean", role: "scope", value: { deviceValue, index, currentChart ->
-					deviceValue.alertLevel ? false : true}),
-			]
+		/**
+		 * Graphe qualitatif : valeur importante
+		 */
+		if (isQualitatif()) {
+			chart.values = values
 			
-			// série par défaut en bleu
-			chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
-			
-			// affichage des alertes
-			command.device.levelAlerts?.findAll({ it.level != LevelAlertEnum.monitoring })?.sort({ it.level })?.each {
-				chart.colonnes << new GoogleDataTableCol(label: "${it.mode} ${it.value}°", staticValue: it.value, type: "number")
-				chart.series << [color: (it.level == LevelAlertEnum.warning ? '#ff9f00' : '#dc3912'), lineStyle: "dash"]
+			if (command.viewMode == ChartViewEnum.day) {
+				chart.colonnes = [
+					new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime"),
+					new GoogleDataTableCol(label: "Valeur", property: "value", type: "number"),
+					new GoogleDataTableCol(type: "boolean", role: "scope", value: { deviceValue, index, currentChart ->
+						deviceValue.alertLevel ? false : true}),
+				]
+				
+				// série par défaut en bleu
+				chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
+				
+				// affichage des alertes
+				command.device.levelAlerts?.findAll({ it.level != LevelAlertEnum.monitoring })?.sort({ it.level })?.each {
+					chart.colonnes << new GoogleDataTableCol(label: "${it.mode} ${it.value}°", staticValue: it.value, type: "number")
+					chart.series << [color: (it.level == LevelAlertEnum.warning ? '#ff9f00' : '#dc3912'), lineStyle: "dash"]
+				}
+			} else {
+				chart.colonnes = [
+					new GoogleDataTableCol(label: "Date", type: "date", property: "key"),
+					new GoogleDataTableCol(label: "Min", type: "number", value: { deviceValue, index, currentChart -> deviceValue.value.find{ it.name == "min" }?.value }),
+					new GoogleDataTableCol(label: "Max", type: "number", value: { deviceValue, index, currentChart -> deviceValue.value.find{ it.name == "max" }?.value }),
+					new GoogleDataTableCol(label: "Moyenne", type: "number", value: { deviceValue, index, currentChart -> deviceValue.value.find{ it.name == "avg" }?.value }),
+				]
+				
+				chart.series = [
+				    [color: '#ff9f00'],					// min
+				    [color: '#dc3912'],					// max
+					[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
+				]
 			}
-		} else if (command.viewMode == ChartViewEnum.month) {
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", property: "day", type: "date"),
-				new GoogleDataTableCol(label: "Min", property: "min", type: "number"),
-				new GoogleDataTableCol(label: "Max", property: "max", type: "number"),
-				new GoogleDataTableCol(label: "Moyenne", property: "avg", type: "number"),
-			]
-			
-			command.compareDevices?.eachWithIndex { compareDevice, idx ->
-				chart.colonnes << new GoogleDataTableCol(label: "Min ${compareDevice.user.prenomNom}", type: "number",
-					value: { deviceValue, index, currentChart ->
-						command.compareValues[idx].find { deviceValue.date == it.date }?.min
-					}
-				)
-				chart.colonnes << new GoogleDataTableCol(label: "Max ${compareDevice.user.prenomNom}", type: "number",
-					value: { deviceValue, index, currentChart ->
-						command.compareValues[idx].find { deviceValue.date == it.date }?.max
-					}
-				)
-				chart.colonnes << new GoogleDataTableCol(label: "Moyenne ${compareDevice.user.prenomNom}", type: "number",
-					value: { deviceValue, index, currentChart ->
-						command.compareValues[idx].find { deviceValue.date == it.date }?.avg
-					}
-				)
+		} 
+		/**
+		 * Graphe quantitatif : nombre d'évévement
+		 */
+		else {
+			if (command.viewMode == ChartViewEnum.day) {
+				// regroupement des valeurs sur l'heure de la journée
+				chart.values = values.groupBy { DateUtils.copyTruncHour(it.dateValue) }
+				
+				chart.colonnes = [
+				    new GoogleDataTableCol(label: "ID", type: "string", staticValue: ""),
+					new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
+					new GoogleDataTableCol(label: "Heure", type: "number", value: { deviceValue, index, currentChart -> 
+						deviceValue.key[Calendar.HOUR_OF_DAY]
+					}),
+					new GoogleDataTableCol(label: "Objet", type: "string", staticValue: command.device.label),
+					new GoogleDataTableCol(label: "Quantité", type: "number", value: { deviceValue, index, currentChart ->
+						deviceValue.value.size()
+					})
+				]
+			} else {
+				// les données sont déjà regroupées comme il faut
+				chart.values = values
+				
+				chart.colonnes = [
+					new GoogleDataTableCol(label: "ID", type: "string", staticValue: ""),
+					new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
+						DateUtils.copyTruncDay(deviceValue.key)
+					}),
+					new GoogleDataTableCol(label: "Heure", type: "number", value: { deviceValue, index, currentChart ->
+						deviceValue.key[Calendar.HOUR_OF_DAY]
+					}),
+					new GoogleDataTableCol(label: "Objet", type: "string", staticValue: command.device.label),
+					new GoogleDataTableCol(label: "Quantité", type: "number", value: { deviceValue, index, currentChart ->
+						deviceValue.value.find{ it.name == "count" }?.value
+					})
+				]
 			}
-			
-			chart.series = [
-			    [color: '#ff9f00'],					// min
-			    [color: '#dc3912'],					// max
-				[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
-			]
-		} else if (command.viewMode == ChartViewEnum.year) {
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
-					new Date().clearTime().copyWith([date: 1, month: deviceValue.month-1, year: deviceValue.year])	
-				}),
-				new GoogleDataTableCol(label: "Min", property: "min", type: "number"),
-				new GoogleDataTableCol(label: "Max", property: "max", type: "number"),
-				new GoogleDataTableCol(label: "Moyenne", property: "avg", type: "number"),
-			]
-			
-			chart.series = [
-				[color: '#ff9f00'],					// min
-				[color: '#dc3912'],					// max
-				[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
-			]
 		}
 		
 		if (command.device.extrasJson.googleChartProcessor) {
@@ -363,7 +388,114 @@ abstract class AbstractDeviceType implements Serializable {
 	}
 	
 	
+	/**
+	 * Implémentation prepareForView à surcharger par les impl deviceType
+	 */
 	void implPrepareForView() {
 		
 	}
-}
+	
+	
+	/**
+	 * Charge les données sur une période donnée (en général pour les graphes)
+	 * C'est défini dans chaque impl car les données ne sont pas forcément les mêmes
+	 * et la représentatin non plus
+	 * 
+	 * @param command
+	 * @return List ou Map
+	 * 
+	 * @throws SmartHomeException
+	 */
+	def values(DeviceChartCommand command) throws SmartHomeException {
+		def values = []
+		
+		if (command.viewMode == ChartViewEnum.day) {
+			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin())
+		} else if (command.viewMode == ChartViewEnum.month) {
+			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin()).groupBy {
+				it.dateValue
+			}.collect { it }
+		} else if (command.viewMode == ChartViewEnum.year) {
+			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin()).groupBy {
+				it.dateValue
+			}.collect { it }
+		}
+		
+		return values
+	}
+	
+	
+	/**
+	 * Aggrège les données du device d'un jour 
+	 * Uniquement la valeur principale
+	 * 
+	 * @param dateReference
+	 */
+	List aggregateValueDay(Date dateReference) {
+		def values
+		
+		if (isQualitatif()) {
+			// qualitatif : min, max, avg par date (sans heure)
+			values = DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+				min(deviceValue.value) as min, max(deviceValue.value) as max, avg(deviceValue.value) as avg)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device AND deviceValue.name is null
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
+					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
+		} else {
+			// quantitatif : count par heure de la journée
+			values = DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('hour', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+				count(deviceValue.value) as count)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device AND deviceValue.name is null
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				GROUP BY deviceValue.name, date_trunc('hour', deviceValue.dateValue)""", [device: device,
+					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
+		}
+		
+		return values
+	}
+	
+	
+	/**
+	 * Aggrège les données du device d'un mois
+	 * Uniquement la valeur principale
+	 *
+	 * @param dateReference
+	 */
+	List aggregateValueMonth(Date dateReference) {
+		def values
+		
+		if (isQualitatif()) {
+			// qualitatif : min, max, avg  par date (sans heure)
+			values = DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+				min(deviceValue.value) as min, max(deviceValue.value) as max, avg(deviceValue.value) as avg)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device AND deviceValue.name is null
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
+					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
+		} else {
+			// quantitatif : count par heure de la journée
+			values = DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, extract('hour' from deviceValue.dateValue) as hourOfDay,
+				count(deviceValue.value) as count, deviceValue.name as name)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device AND deviceValue.name is null
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue), extract('hour' from deviceValue.dateValue)""", [device: device,
+					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
+			.collect { deviceValue ->
+				use (TimeCategory) {
+					[dateValue: deviceValue.dateValue + deviceValue.hourOfDay.hours, name: deviceValue.name, count: deviceValue.count]
+				}
+			}
+		}
+		
+		return values
+	}
+ }

@@ -50,7 +50,7 @@ class AgentToken implements Serializable {
 	 * @return
 	 */
 	boolean hasExpired() {
-		!dateExpiration || dateExpiration < new Date()
+		!dateExpiration //|| dateExpiration < new Date()
 	}
 	
 	

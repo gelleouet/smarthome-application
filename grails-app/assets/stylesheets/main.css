@@ -770,3 +770,15 @@ h5.device-grid-label {
 	ms-grid-row: span 2;
 	ms-grid-column: span 2;
 }
+
+.teleinfo-gauge {
+	margin-left: auto;
+	margin-right: auto;
+	width: 225px;
+}
+
+.teleinfo-gauge-container {
+	display: table-cell;
+	width: 300px;
+	padding: 20px;
+}

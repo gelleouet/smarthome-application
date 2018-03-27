@@ -83,9 +83,4 @@ class Lumiere extends AbstractDeviceType {
 			return context.withTimer(device.value == "1" ? "off" : "on", [:])
 		}
 	}
-	
-	
-	def isQualitatif() {
-		return false
-	} 
 }

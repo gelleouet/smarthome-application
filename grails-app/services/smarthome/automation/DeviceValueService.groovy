@@ -14,6 +14,7 @@ import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.AbstractService;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.Chronometre;
+import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;
 import smarthome.security.User;
@@ -122,126 +123,14 @@ class DeviceValueService extends AbstractService {
 	 * Charge les valeurs du device sur une période
 	 *
 	 * @param command
-	 * @return
+	 * @return List ou Map
+	 * 
 	 * @throws SmartHomeException
 	 */
-	List values(DeviceChartCommand command) throws SmartHomeException {
-		def values
-		
-		// projections automatiques pour les longues périodes (> 1 jour)
-		// pour éviter trop de volumes de données
-		if (command.viewMode != ChartViewEnum.day) {
-			values = projectionValues(command)
-		} else {
-			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-				command.metaName)
-		}
-		
-		log.info "Load values ${command.device.mac} at ${command.dateChart} (${command.viewMode}) : ${values?.size()} values"
-		
+	def values(DeviceChartCommand command) throws SmartHomeException {
+		def values = command.deviceImpl.values(command)
+		log.info "Load values ${command.device.mac} (${command.viewMode}) : ${values?.size()}"
 		return values
-	}
-	
-	
-	/**
-	 * Chargement des valeurs avec projections automatiques (sur une longue période) ou imposées
-	 *
-	 * @param command
-	 * @return
-	 */
-	List projectionValues(DeviceChartCommand command) {
-		return DeviceValue.createCriteria().list({
-			eq 'device', command.device
-			between 'dateValue', command.dateDebut(), command.dateFin()
-			
-			if (command.metaName) {
-				or {
-					for (String token : command.metaName.split(",")) {
-						if (token == "null" || !token) {
-							isNull "name"
-						} else {
-							eq "name", token
-						}
-					}
-				}
-			} else {
-				isNull 'name'
-			}
-			
-			projections {
-				// ne pas mélanger les différents types de valeurs
-				groupProperty("name")
-				
-				// pour les devices qualitatifs, on veut une représentation de la valeur (min, max, avg)
-				if (command.deviceImpl.isQualitatif()) {
-					max("value")
-					min("value")
-					avg("value")
-					sum("value")
-					
-					if (command.viewMode == ChartViewEnum.year) {
-						groupProperty("year")
-						groupProperty("monthOfYear")
-						order "year"
-						order "monthOfYear"
-					} else {
-						groupProperty("day")
-						order "day"
-					}
-				}
-				// pour les devices quantitatifs, la valeur n'est pas importante mais c'est le nombre
-				// qui importe et quand dans la journée
-				else {
-					count("value")
-					
-					if (command.viewMode == ChartViewEnum.year) {
-						groupProperty("year")
-						groupProperty("monthOfYear")
-						groupProperty("hourOfDay")
-						order "year"
-						order "monthOfYear"
-						order "hourOfDay"
-					} else {
-						groupProperty("day")
-						groupProperty("hourOfDay")
-						order "day"
-						order "hourOfDay"
-					}
-				}
-				
-				
-			}
-		})?.collect {
-			// suivre l'ordre des projections
-			def map = ['name': it[0]]
-			
-			if (command.deviceImpl.isQualitatif()) {
-				map.max = it[1]
-				map.min = it[2]
-				map.avg = it[3]
-				map.sum = it[4]
-				
-				if (command.viewMode == ChartViewEnum.year) {
-					map.year = it[5]
-					map.month = it[6]
-				} else {
-					map.day = it[5]
-				}
-			} else {
-				map.count = it[1]
-				
-				if (command.viewMode == ChartViewEnum.year) {
-					map.year = it[2]
-					map.month = it[3]
-					map.hour = it[4]
-				} else {
-					map.day = it[2]
-					map.hour = it[3]
-				}
-			}
-			
-			return map
-		}
 	}
 	
 	
@@ -261,33 +150,33 @@ class DeviceValueService extends AbstractService {
 			device.attach()
 		}
 		
-		def deviceType = device.newDeviceImpl()
+		AbstractDeviceType deviceType = device.newDeviceImpl()
 		doubleValue = DeviceValue.parseDoubleValue(device.value)
 		
 		// trace la valeur principale du device
-		if (doubleValue != null) {
+		if (deviceType.isTraceValue(doubleValue)) {
 			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
 			
 			if (!defaultValue.save()) {
 				throw new SmartHomeException("Erreur trace valeur !", defaultValue)
 			}
-		}
-		
-		// trace les metavalues
-		device.metavalues?.each {
-			if (it.value) {
-				// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
-				// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
-				// sinon on regarde si activée au niveau meta
-				if (it.trace && !it.main && !it.virtualDevice) {
-					doubleValue = DeviceValue.parseDoubleValue(it.value)
-					
-					if (doubleValue != null) {
-						value = new DeviceValue(device: device, name: it.name, value: doubleValue,
-							dateValue: device.dateValue)
+			
+			// trace les metavalues
+			device.metavalues?.each {
+				if (it.value) {
+					// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
+					// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
+					// sinon on regarde si activée au niveau meta
+					if (it.trace && !it.main && !it.virtualDevice) {
+						doubleValue = DeviceValue.parseDoubleValue(it.value)
 						
-						if (!value.save()) {
-							throw new SmartHomeException("Erreur trace meta valeur !", value)
+						if (doubleValue != null) {
+							value = new DeviceValue(device: device, name: it.name, value: doubleValue,
+								dateValue: device.dateValue)
+							
+							if (!value.save()) {
+								throw new SmartHomeException("Erreur trace meta valeur !", value)
+							}
 						}
 					}
 				}
@@ -308,7 +197,6 @@ class DeviceValueService extends AbstractService {
 	GoogleChart createChart(DeviceChartCommand command) throws SmartHomeException {
 		command.navigation()
 		command.deviceImpl = command.device.newDeviceImpl()
-		command.metaName = command.deviceImpl.chartMetaNames(command)
 		def datas = []
 		
 		// on va threader le chargement des values. utile si plusieurs devices
@@ -331,5 +219,99 @@ class DeviceValueService extends AbstractService {
 		GoogleChart chart = command.deviceImpl.googleChart(command, datas)
 		
 		return chart
+	}
+	
+	
+	/**
+	 * Aggrège les données du device par jour sur la période de référence
+	 * 
+	 * @param device
+	 * @param dateReference
+	 * 
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void aggregateValueDay(Device device, Date dateReference) throws SmartHomeException {
+		AbstractDeviceType deviceImpl = device.deviceImpl
+		
+		// calcul des données par jour
+		deviceImpl.aggregateValueDay(dateReference).each { mapValue ->
+			for (key in mapValue.keySet()) {
+				if (! (key in ['dateValue', 'name'])) {
+					addDeviceValueDay(device, mapValue.dateValue, "${mapValue.name?:''}${key}", mapValue[key])
+				}
+			}	
+		}
+	}
+	
+	
+	/**
+	 * Aggrège les données du device par mois sur la période de référence
+	 *
+	 * @param device
+	 * @param dateReference
+	 *
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void aggregateValueMonth(Device device, Date dateReference) throws SmartHomeException {
+		AbstractDeviceType deviceImpl = device.deviceImpl
+		
+		// calcul des données par mois
+		deviceImpl.aggregateValueMonth(dateReference).each { mapValue ->
+			for (key in mapValue.keySet()) {
+				if (! (key in ['dateValue', 'name'])) {
+					addDeviceValueMonth(device, mapValue.dateValue, "${mapValue.name?:''}${key}", mapValue[key])
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * Ajoute une nouvelle valeur aggrégée par jour
+	 * 
+	 * @param device
+	 * @param dateValue
+	 * @param name
+	 * @param value
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValueDay addDeviceValueDay(Device device, Date dateValue, String name, double value) throws SmartHomeException {
+		DeviceValueDay dayValue = DeviceValueDay.findByDeviceAndDateValueAndName(device, dateValue, name)
+		
+		if (!dayValue) {
+			dayValue = new DeviceValueDay(device: device, dateValue: dateValue, name: name)
+		}
+		
+		dayValue.value = value.round(2)
+		
+		return super.save(dayValue)
+	}
+	
+	
+	/**
+	 * Ajoute une nouvelle valeur aggrégée par mois
+	 * 
+	 * @param device
+	 * @param dateValue
+	 * @param name
+	 * @param value
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValueMonth addDeviceValueMonth(Device device, Date dateValue, String name, double value) throws SmartHomeException {
+		DeviceValueMonth monthValue = DeviceValueMonth.findByDeviceAndDateValueAndName(device, dateValue, name)
+				
+		if (!monthValue) {
+			monthValue = new DeviceValueMonth(device: device, dateValue: dateValue, name: name)
+		}
+		
+		monthValue.value = value.round(2)
+				
+		return super.save(monthValue)
 	}
 }

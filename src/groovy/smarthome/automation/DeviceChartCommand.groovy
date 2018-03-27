@@ -8,14 +8,12 @@ import grails.validation.Validateable;
 class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 	Device device
 	AbstractDeviceType deviceImpl
-	String metaName
 	List<Device> compareDevices = []
 	List<List> compareValues = []
 	
 	
 	static constraints = {
 		deviceImpl nullable: true
-		metaName nullable: true
 		navigation nullable: true
 		dateDebutUser nullable: true
 	}
@@ -38,7 +36,6 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 		DeviceChartCommand command = super.cloneForLastYear()
 		command.deviceImpl = deviceImpl
 		command.device = device
-		command.metaName = metaName
 		return command
 	}
 	
@@ -48,7 +45,6 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 		DeviceChartCommand command = super.clone()
 		command.deviceImpl = deviceImpl
 		command.device = device
-		command.metaName = metaName
 		return command
 	}
 }

@@ -113,6 +113,25 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
+	 * Vérifie si l'utilisateur est le proprio du device
+	 * 
+	 * @param device
+	 * @param userId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Device assertOwnerAccess(long deviceId, long userId) throws SmartHomeException {
+		Device device = Device.read(deviceId)
+		
+		if (device?.user?.id != userId) {
+			throw new SmartHomeException("Accès refusé !")
+		}
+		
+		return device
+	}
+	
+	
+	/**
 	 * Changement d'une métadata et envoit à l'agent
 	 * 
 	 * @param device
@@ -149,12 +168,15 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def delete(Device device) throws SmartHomeException {
 		// IMPORTANT : suppression des associations en batch sinon une requete delete par value (trop long)
-		DeviceValue.where({ device == device }).deleteAll()
-		DeviceMetadata.where({ device == device }).deleteAll()
-		DeviceMetavalue.where({ device == device }).deleteAll()
-		DeviceShare.where({ device == device }).deleteAll()
-		
-		device.delete();
+		DeviceValue.executeUpdate("DELETE FROM DeviceValue deviceValue WHERE deviceValue.device = :device", [device: device])
+		DeviceValueDay.executeUpdate("DELETE FROM DeviceValueDay deviceValue WHERE deviceValue.device = :device", [device: device])
+		DeviceValueMonth.executeUpdate("DELETE FROM DeviceValueMonth deviceValue WHERE deviceValue.device = :device", [device: device])
+		DeviceMetadata.executeUpdate("DELETE FROM DeviceMetadata deviceMeta WHERE deviceMeta.device = :device", [device: device])
+		DeviceMetavalue.executeUpdate("DELETE FROM DeviceMetavalue deviceMetaValue WHERE deviceMetaValue.device = :device", [device: device])
+		DeviceShare.executeUpdate("DELETE FROM DeviceShare deviceShare WHERE deviceShare.device = :device", [device: device])
+		DeviceLevelAlert.executeUpdate("DELETE FROM DeviceLevelAlert deviceAlert WHERE deviceAlert.device = :device", [device: device])
+		EventDevice.executeUpdate("DELETE FROM EventDevice deviceEvent WHERE deviceEvent.device = :device", [device: device])
+		Device.executeUpdate("DELETE FROM Device device WHERE device = :device", [device: device])
 		return device
 	}
 	
@@ -212,7 +234,6 @@ class DeviceService extends AbstractService {
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
 			device.value = datas.value
 			device.dateValue = dateValue
-			device.processValue()
 			resultDevice = device
 		}
 		
@@ -220,7 +241,7 @@ class DeviceService extends AbstractService {
 		// même si elles sont virtuelles
 		this.save(device)
 		
-		// retourner null désactive le déclenchement des historisations sur le device
+		// retourner null désactive le déclenchement du workflow avec historisation et trigger
 		return resultDevice
 	}
 	
@@ -448,8 +469,12 @@ class DeviceService extends AbstractService {
 	 * @param id
 	 * @return
 	 */
-	def findById(Serializable id) {
-		Device.get(id)
+	Device findById(Serializable id) {
+		return Device.createCriteria().get {
+			idEq id as Long
+			join 'deviceType'
+		}
+		//Device.get(id)
 	}
 	
 	

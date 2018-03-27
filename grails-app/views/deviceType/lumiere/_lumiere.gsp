@@ -21,7 +21,7 @@
 			<label>
 				Timer 
 			</label>
-			<g:field type="number" name="params.timer" value="${ defaulttimer?.value }" class="text short-field" placeholder="min"/>
+			<g:field type="number" name="params.timer" value="${ value == 0 ? defaulttimer?.value : '' }" class="text short-field" placeholder="min"/>
 		</div>
 		
 		<div style="display:table-cell; padding-left:5px">

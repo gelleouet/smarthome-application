@@ -22,7 +22,7 @@ function connectAgent(agentId) {
 	})
 	var $xterm = $('#xterm-color')
 	var url = $xterm.attr('data-endpoint-url').replace("{agentId}", agentId)
-	console.log("Try connecting...", url)
+	console.log("Try connecting shell websocket...", url)
 	xtermWebsocket = new WebSocket(url)
 	
 	xterm.open($xterm[0])

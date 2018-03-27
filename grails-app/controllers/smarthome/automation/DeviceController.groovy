@@ -25,6 +25,7 @@ class DeviceController extends AbstractController {
 	EventService eventService
 	UserFriendService userFriendService
 	HouseService houseService
+	DeviceUtilService deviceUtilService
 	
 	
 	/**
@@ -100,8 +101,8 @@ class DeviceController extends AbstractController {
 		editDevice = deviceService.edit(editDevice)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDevice]))
 	}
-
-
+	
+	
 	/**
 	 * Création
 	 *
@@ -190,6 +191,15 @@ class DeviceController extends AbstractController {
 		
 		render(view: 'deviceChart', model: [command: command, tableauBords: tableauBords,
 			chart: chart, secUser: user])
+	}
+	
+	
+	/**
+	 * Lance le calcul des données aggrégées
+	 */
+	def aggregateValues(DeviceChartCommand command) {
+		deviceUtilService.aggregateWholeDevice(command.device.id)
+		deviceChart(command)
 	}
 	
 	

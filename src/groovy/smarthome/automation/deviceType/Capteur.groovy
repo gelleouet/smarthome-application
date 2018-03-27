@@ -12,12 +12,7 @@ import smarthome.automation.WorkflowEvent;
 class Capteur extends AbstractDeviceType {
 	
 	@Override
-	public Object icon() {
+	String icon() {
 		"/deviceType/signal.png"
 	}
-	
-	
-	def isQualitatif() {
-		return true
-	} 
 }

@@ -22,6 +22,7 @@
         'tooltip': {
 			'isHtml': true
 		},
+		selectionMode: 'multiple',
 		'explorer': {
 			'axis': 'horizontal',
 			'actions': ['dragToZoom', 'rightClickToReset']
@@ -41,6 +42,13 @@
 	    'interpolateNulls': true,
 	    </g:if>
 	}
+	
+	chartSelectFunction = function(event) {
+		$('#selectionCout').val('')
+  		var interval = chartSelectionInterval(chart)
+  		var sum = chartSelectionSumInterval(chartDatas, interval)
+  		$('#selectionCout').val(sum ? sum : '')
+  	}
 	
 	<g:if test="${ chart?.chartType }">
 		chartType = '${ chart.chartType }'

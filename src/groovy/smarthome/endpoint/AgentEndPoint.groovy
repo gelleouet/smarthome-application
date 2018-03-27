@@ -37,6 +37,8 @@ import smarthome.core.SmartHomeException;
  * IMPORTANT : rajouter instruction dans boostrap pour enregister le endoint en mode DEV
  * EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
  * 
+ * IMPORTANT : rajouter une règle Spring Security URL pour autoriser l'accès
+ * 
  * @author gregory
  *
  */
@@ -157,13 +159,13 @@ class AgentEndPoint {
 	
 	
 	private def closeSession(Session session) {
-		try {
-			session.close()
-		} catch (Exception e) {}
-		
 		def entry = sessions.find {
 			it.value == session
 		}
+		
+		try {
+			session.close()
+		} catch (Exception e) {}
 		
 		// supprime la session de la liste et déassocie le token
 		if (entry) {

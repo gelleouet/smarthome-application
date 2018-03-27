@@ -75,8 +75,8 @@ class NavigationItemTagLib {
 	def navigationItems = { attrs, body ->
 		def sections
 		
-		if (request.navigationItems) {
-			sections = request.navigationItems
+		if (session.navigationItems != null) {
+			sections = session.navigationItems
 		} else {
 			sections = [:]
 	
@@ -95,11 +95,11 @@ class NavigationItemTagLib {
 			}
 			
 			// met le résultat dans la request pour d'autres appels
-			request.navigationsItems = sections
+			session.navigationItems = sections
 		}
 		
 		// renvoit les items de la catégory demandée
-		return sections[(attrs.category)]
+		return sections[(attrs.category)] ?: new NavigationItem()
 	}
 	
 	

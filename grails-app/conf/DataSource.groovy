@@ -20,7 +20,7 @@ environments {
 			password = "18fhk6vf4d"
 			properties {
 				validationQuery = "SELECT 1"
-				maxActive = 2
+				maxActive = 10
 				removeAbandoned = true
 				logAbandoned = true
 			}

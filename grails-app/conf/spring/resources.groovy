@@ -53,6 +53,9 @@ beans = {
 		history = HistoryLevel.NONE.getKey()
 		dbHistoryUsed = false
 		createDiagramOnDeploy = true
+		asyncExecutorActivate = true
+		asyncExecutorEnabled = true
+		jobExecutorActivate = false
 		
 		// configuration SMTP
 		mailServerHost = application.config.smtp.hostname

@@ -10,7 +10,4 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class DetecteurFumee extends AbstractDeviceType {
-	def isQualitatif() {
-		return false
-	} 
 }

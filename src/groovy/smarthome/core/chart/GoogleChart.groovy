@@ -8,7 +8,6 @@ import java.util.List;
 class GoogleChart {
 	String chartType
 	def values
-	def aggregateValues
 	List<GoogleDataTableCol> colonnes = []
 	List<Map> series = []
 	List<Map> metaValues = []

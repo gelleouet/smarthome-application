@@ -256,4 +256,57 @@ class DateUtils {
 		date[Calendar.HOUR_OF_DAY] = hour
 		return date
 	}
+	
+	
+	/**
+	 * Tronque une date à l'heure
+	 *  
+	 * @param date
+	 * @return
+	 */
+	static Date copyTruncHour(Date date) {
+		int hour = date[Calendar.HOUR_OF_DAY]
+		Date newDate = date.clone().clearTime()
+		newDate[Calendar.HOUR_OF_DAY] = hour
+		return newDate
+	}
+	
+	
+	/**
+	 * Tronque une date au jour
+	 *  
+	 * @param date
+	 * @return
+	 */
+	static Date copyTruncDay(Date date) {
+		return date.clone().clearTime()
+	}
+	
+	
+	/**
+	 * Début du jour
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date firstTimeInDay(Date date) {
+		return date.clone().clearTime()	
+	}
+	
+	
+	/**
+	 * Fin du jour
+	 * 
+	 * @param date
+	 * @return
+	 */
+	static Date lastTimeInDay(Date date) {
+		Date endDate
+		
+		use(TimeCategory) {
+			endDate = firstTimeInDay(date) + 23.hours + 59.minutes + 59.seconds
+		}
+		
+		return endDate
+	}
 }

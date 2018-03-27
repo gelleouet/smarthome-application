@@ -84,8 +84,4 @@ class PorteGarage extends AbstractDeviceType {
 		return context.withTimer("openOrClose", [:])
 	}
 	
-	
-	def isQualitatif() {
-		return false
-	} 
 }

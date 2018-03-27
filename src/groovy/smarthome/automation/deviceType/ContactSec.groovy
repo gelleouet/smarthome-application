@@ -11,8 +11,4 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class ContactSec extends AbstractDeviceType {
-	
-	def isQualitatif() {
-		return false
-	} 
 }
