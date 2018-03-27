@@ -9,7 +9,7 @@ import smarthome.plugin.NavigationItem;
  * @author gregory
  *
  */
-class NavigationItem {
+class NavigationItem implements Serializable {
 
 	// le label à afficher
 	String label
