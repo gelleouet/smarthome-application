@@ -35,6 +35,7 @@ class DeviceValueDay implements Serializable {
 		dateValue index: "DeviceValueDay_Idx"
 		device index: "DeviceValueDay_Idx"
 		name index: "DeviceValueDay_Idx", length: 64
+		version false
 	}
 	
 	

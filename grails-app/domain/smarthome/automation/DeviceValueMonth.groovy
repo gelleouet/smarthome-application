@@ -36,6 +36,7 @@ class DeviceValueMonth implements Serializable {
 		dateValue index: "DeviceValueMonth_Idx"
 		device index: "DeviceValueMonth_Idx"
 		name index: "DeviceValueMonth_Idx", length: 64
+		version false
 	}
 	
 	
