@@ -58,8 +58,8 @@ class GoogleActionService extends AbstractService {
 		command.applicationId = grailsApplication.config.google.action.applicationId
 		command.applicationName = grailsApplication.config.google.action.appName
 		
-		if (command.redirect_uri != "${grailsApplication.config.google.action.redirectUri}${grailsApplication.config.google.action.applicationId}" ||
-			command.redirect_uri == "https://developers.google.com/oauthplayground") {
+		if (command.redirect_uri != "${grailsApplication.config.google.action.redirectUri}${grailsApplication.config.google.action.applicationId}" &&
+			command.redirect_uri != "https://developers.google.com/oauthplayground") {
 			log.error("Google auth redirectUri: ${command.redirect_uri}")
 			throw new SmartHomeException("redirectUri or projectId not valid !")
 		}
