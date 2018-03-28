@@ -234,6 +234,7 @@ class DeviceService extends AbstractService {
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
 			device.value = datas.value
 			device.dateValue = dateValue
+			device.processValue()
 			resultDevice = device
 		}
 		
