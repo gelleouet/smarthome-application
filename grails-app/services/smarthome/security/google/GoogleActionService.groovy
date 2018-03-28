@@ -51,13 +51,16 @@ class GoogleActionService extends AbstractService {
 	UserApplication auth(GoogleActionAuthCommand command, User user) throws SmartHomeException {
 		// Vérifie les infos de connexion
 		if (command.client_id != grailsApplication.config.google.action.clientId) {
+			log.error("Google auth clientId: ${command.command.client_id}")
 			throw new SmartHomeException("clientId not valid !")
 		}
 		
 		command.applicationId = grailsApplication.config.google.action.applicationId
 		command.applicationName = grailsApplication.config.google.action.appName
 		
-		if (command.redirect_uri != "${grailsApplication.config.google.action.redirectUri}${grailsApplication.config.google.action.applicationId}") {
+		if (command.redirect_uri != "${grailsApplication.config.google.action.redirectUri}${grailsApplication.config.google.action.applicationId}" ||
+			command.redirect_uri == "https://developers.google.com/oauthplayground") {
+			log.error("Google auth redirectUri: ${command.redirect_uri}")
 			throw new SmartHomeException("redirectUri or projectId not valid !")
 		}
 		

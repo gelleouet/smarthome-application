@@ -64,7 +64,7 @@ class GoogleActionController extends AbstractController {
 			} else {
 				command.error = "L'authentification a échoué !"
 			}
-		} catch (AuthenticationException ex) {
+		} catch (Exception ex) {
 			command.error = "L'authentification a échoué ! [$ex.message]"
 		}
 		
