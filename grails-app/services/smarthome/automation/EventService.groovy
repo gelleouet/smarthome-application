@@ -323,7 +323,7 @@ class EventService extends AbstractService {
 		
 		// annule l'exécution si les modes sélectionnés sur event ne sont pas activés
 		if (!modeService.matchModes(event.modes*.mode, houseModes)) {
-			log.info "Cancel event ${event.libelle} : mode not match [${event.modes.collect{it.mode.name}}] !"
+			log.info "Cancel event ${event.libelle} : mode not match !"
 			return event
 		}
 		

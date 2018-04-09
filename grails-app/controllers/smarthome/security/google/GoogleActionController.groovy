@@ -2,7 +2,6 @@ package smarthome.security.google
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.groovy.grails.test.support.ControllerNameExtractor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +17,7 @@ import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.JSONUtils;
 
 
 /**
@@ -82,7 +82,8 @@ class GoogleActionController extends AbstractController {
 		try {
 			def gactionResponse = googleActionService.conversation(new GoogleActionRequest(request.JSON),
 				request.getHeader('Authorization'))
-			render gactionResponse as JSON
+			
+			JSONUtils.write(response, gactionResponse)
 			return
 		} catch (Exception ex) {
 			log.error("Google Action Conversation : ${ex.message}")

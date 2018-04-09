@@ -59,7 +59,7 @@ class GoogleActionDevice {
 	 * (e.g. 'broken firmware version X of light Y requires adjusting color', 
 	 * or 'security ﬂaw requires notifying all users of firmware Z').
 	 */
-	GoogleActionDeviceInfo deviceInfo = new GoogleActionDeviceInfo()
+	GoogleActionDeviceInfo deviceInfo
 	
 	
 	/**

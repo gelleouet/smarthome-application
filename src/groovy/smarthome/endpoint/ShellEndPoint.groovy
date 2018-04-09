@@ -115,7 +115,7 @@ class ShellEndPoint {
 
 	@OnError
 	void onError(Session session, Throwable throwable) {
-		log.error "Session error : ${throwable?.cause?.target?.message}"
+		log.error "Session error : ${throwable}"
 	}
 	
 	

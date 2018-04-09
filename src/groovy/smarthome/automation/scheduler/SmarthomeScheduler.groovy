@@ -29,6 +29,8 @@ import org.springframework.stereotype.Component;
 /**
  * Le gestionnaire de cron
  * 
+ * Il est démarré en mode production seulement depuis BootStrap
+ * 
  * @author Gregory
  *
  */
@@ -43,7 +45,7 @@ class SmarthomeScheduler implements InitializingBean, ApplicationContextAware {
 	@Autowired
 	GrailsApplication grailsApplication
 	
-	Map<String, String> jobs
+	Map<String, String> jobs
 
 	public void setJobs(Map<String, String> jobs) {
 		this.jobs = jobs;

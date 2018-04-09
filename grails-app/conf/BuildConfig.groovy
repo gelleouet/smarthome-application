@@ -72,6 +72,8 @@ grails.project.dependency.resolution = {
 			export = false
 		  }
 		
+		//compile "com.fasterxml.jackson.core:jackson-core:2.9.5"
+		
 		compile "$camel.groupId:camel-core:$camel.version"
 		compile "$camel.groupId:camel-groovy:$camel.version"
 		compile "$camel.groupId:camel-spring:$camel.version"

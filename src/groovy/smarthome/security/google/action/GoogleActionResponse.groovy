@@ -9,6 +9,7 @@ class GoogleActionResponse {
 	GoogleActionResponsePayload payload = new GoogleActionResponsePayload()
 	
 	
+	
 	/**
 	 * Injecte un message d'erreur
 	 * 
