@@ -1,0 +1,17 @@
+googleAssistant: {
+	type: 'action.devices.types.BLINDS',
+	traits: ['action.devices.traits.OpenClose'],
+	willReportState: true,
+	attributes: {
+		openDirection: ["UP"]
+	},
+	states: [
+		{name: 'openPercent'}
+	],
+	commands: {
+		'action.devices.commands.OpenClose': {
+			param: 'openPercent',
+			action: 'level'
+		}
+	}
+}

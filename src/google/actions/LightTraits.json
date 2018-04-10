@@ -1,0 +1,17 @@
+googleAssistant: {
+	type: 'action.devices.types.LIGHT',
+	traits: ['action.devices.traits.OnOff'],
+	willReportState: true,
+	states: [
+		{name: 'on', type: 'Boolean'}
+	],
+	commands: {
+		'action.devices.commands.OnOff': {
+			param: 'on',
+			actions: [
+				{value: true, action: 'on'},
+				{value: false, action: 'off'}
+			]
+		}		
+	}
+ }

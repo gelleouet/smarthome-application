@@ -190,6 +190,7 @@ class GoogleActionService extends AbstractService {
 			gdevice.name.name = device.label
 			gdevice.type = gconfig.type
 			gdevice.traits = gconfig.traits
+			gdevice.attributes = gconfig.attributes
 			gdevice.willReportState = gconfig.willReportState
 			
 			payload.devices << gdevice
