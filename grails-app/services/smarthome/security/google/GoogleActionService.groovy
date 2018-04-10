@@ -328,7 +328,7 @@ class GoogleActionService extends AbstractService {
 					stateValue = value
 				}
 				
-				gstate[(state.name)] = true
+				gstate[(state.name)] = stateValue
 			}
 		}
 		
