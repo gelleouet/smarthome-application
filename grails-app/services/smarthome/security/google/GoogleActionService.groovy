@@ -150,6 +150,7 @@ class GoogleActionService extends AbstractService {
 				throw new SmartHomeException("Request Sync return ${response.statusLine.statusCode} code !")
 			}
 		} catch (Exception ex) {
+			log.error "Trigger request sync : ${ex.message}"
 			throw new SmartHomeException(ex)
 		}
 	}

@@ -97,7 +97,7 @@ class GoogleActionController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "userApplications", controllerName = "userApplication")
+	@ExceptionNavigationHandler(modelName = "", actionName = "userApplications", controllerName = "userApplication")
 	def requestSync(UserApplication userApplication) {
 		googleActionService.triggerRequestSync(userApplication)
 		redirect(controller: 'userApplication', action: 'userApplications')	
