@@ -112,7 +112,7 @@ class AgentEndPoint {
 					session.userProperties.token = agentToken.token
 					sessions.put(agentToken.token, session)
 					
-					log.find("Find ${sessions.size()} opened websockets")
+					log.info("Find ${sessions.size()} opened websockets")
 				} else {
 					// vérifie que le message correspond bien à la session
 					if (message.token != session.userProperties.token) {
@@ -182,7 +182,7 @@ class AgentEndPoint {
 		if (token) {
 			sessions.remove(token)
 			agentService.unbindWebsocket(token)
-			log.find("Find ${sessions.size()} opened websockets")
+			log.info("Find ${sessions.size()} opened websockets")
 		}
 	}
 }
