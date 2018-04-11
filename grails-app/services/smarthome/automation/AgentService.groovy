@@ -247,17 +247,15 @@ class AgentService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def bindWebsocket(String websocketId, AgentEndPointMessage message) throws SmartHomeException {
-		log.info "Bind websocket ${message.username}"
-		
+	AgentToken bindWebsocket(String websocketId, AgentEndPointMessage message) throws SmartHomeException {
 		// recherche utilisateur avec paire username, applicationKey
-		def user = User.findByUsernameAndApplicationKey(message.username, message.applicationKey)
+		User user = User.findByUsernameAndApplicationKey(message.username, message.applicationKey)
 		
 		if (!user) {
 			throw new SmartHomeException("Utilisateur non valide !")
 		}
 		
-		def agent = Agent.findByMacAndUser(message.mac, user)
+		Agent agent = Agent.findByMacAndUser(message.mac, user)
 		
 		if (!agent) {
 			throw new SmartHomeException("Agent non valide !")
@@ -268,30 +266,28 @@ class AgentService extends AbstractService {
 		}
 		
 		// recherche token
-		def token = AgentToken.find {
-			token == message.token && agent == agent 
-		}
+		AgentToken agentToken = AgentToken.findByTokenAndAgent(message.token, agent)
 		
-		if (!token) {
+		if (!agentToken) {
 			throw new SmartHomeException("Token non valide !")
 		}
 		
-		if (token.hasExpired()) {
+		if (agentToken.hasExpired()) {
 			throw new SmartHomeException("Token has expired !")
 		}
 		
 		// associe le websocket au token et rend l'agent online
-		token.websocketKey = websocketId
+		agentToken.websocketKey = websocketId
 		def serverId = grailsApplication.config.smarthome.cluster.serverId
 		
 		if (!serverId) {
 			throw new SmartHomeException("smarthome.cluster.serverId property must be set !")
 		}
 		
-		token.serverId = serverId
+		agentToken.serverId = serverId
 		
-		if (!token.save()) {
-			throw new SmartHomeException("Can't bind websocket : ${token.errors}")
+		if (!agentToken.save()) {
+			throw new SmartHomeException("Can't bind websocket : ${agentToken.errors}")
 		}
 		
 		agent.online = true
@@ -300,7 +296,9 @@ class AgentService extends AbstractService {
 			throw new SmartHomeException("Can't bind websocket : ${agent.errors}")
 		}
 		
-		return token
+		log.info "Bind websocket ${message.username}"
+		
+		return agentToken
 	}
 	
 	
@@ -312,20 +310,20 @@ class AgentService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def unbindWebsocket(String token) throws SmartHomeException {
+	void unbindWebsocket(String token) throws SmartHomeException {
 		log.info "Unbind websocket ${token}"
 		
-		def agentToken = AgentToken.findByToken(token)
+		AgentToken agentToken = this.findAgentToken(token) 
 		
 		if (!agentToken) {
 			throw new SmartHomeException("Token not found !")
 		}
 		
-		agentToken.delete()
-		
-		def agent = agentToken.agent
+		Agent agent = agentToken.agent
 		agent.online = false
 		agent.save()
+		
+		agentToken.delete()
 	}
 	
 	
@@ -343,6 +341,10 @@ class AgentService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousMessage()
 	Agent receiveMessage(AgentEndPointMessage message, AgentToken agentToken) throws SmartHomeException {
+		if (!agentToken.attached) {
+			agentToken.attach()	
+		}
+		
 		if (! message.data) {
 			throw new SmartHomeException("Data is empty !")
 		}
@@ -436,8 +438,19 @@ class AgentService extends AbstractService {
 	 * @param id
 	 * @return
 	 */
-	def findById(Serializable id) {
+	Agent findById(Serializable id) {
 		Agent.get(id)
+	}
+	
+	
+	/**
+	 * Retrouve le token d'un agent
+	 * 
+	 * @param token
+	 * @return
+	 */
+	AgentToken findAgentToken(String token) {
+		AgentToken.findByToken(token)	
 	}
 	
 	

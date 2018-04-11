@@ -50,7 +50,7 @@ class AgentToken implements Serializable {
 	 * @return
 	 */
 	boolean hasExpired() {
-		!dateExpiration //|| dateExpiration < new Date()
+		!dateExpiration || dateExpiration < new Date()
 	}
 	
 	
@@ -61,7 +61,7 @@ class AgentToken implements Serializable {
 	 */
 	def refreshToken() {
 		use(TimeCategory) {
-			dateExpiration = new Date() + 4.hours
+			dateExpiration = new Date() + 7.days
 		}
 		
 		token = UUID.randomUUID()

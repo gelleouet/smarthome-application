@@ -105,23 +105,27 @@ class AgentEndPoint {
 			if (message.token) {
 				// 1ere connexion, on bind le websocket à l'agent
 				if (! session.userProperties.token) {
-					def token = agentService.bindWebsocket(session.getId(), message)
-					session.userProperties.token = token
-					sessions.put(token.token, session)
-					log.info "Bind ${sessions.size()} websockets"
+					AgentToken agentToken = agentService.bindWebsocket(session.getId(), message)
+					
+					// on conserve le token dans la session et il sert d'index
+					// dans la map des sessions
+					session.userProperties.token = agentToken.token
+					sessions.put(agentToken.token, session)
 				} else {
-					// tout est ok pour traiter le message.
-					// on vérifie quand même le token envoyé avec celui de la session
-					AgentToken agentToken = session.userProperties.token
-					
-					def entry = sessions.find {
-						it.value == session
+					// vérifie que le message correspond bien à la session
+					if (message.token != session.userProperties.token) {
+						throw new Exception("Session incompatible avec le token !")
 					}
 					
-					if (entry?.key != agentToken.token || message.token != agentToken.token) {
-						throw new Exception("Session incompatible avec le token !");
-					}
+					// Vérifie que la session n'a pas expirée ou fantôme : elle est rattachée
+					// à un token qui n'existe plus
+					AgentToken agentToken = agentService.findAgentToken(session.userProperties.token)
 					
+					if (!agentToken) {
+						throw new Exception("Session expirée : token n'existe plus !")
+					}
+
+					// tout est ok pour traiter le message					
 					agentService.receiveMessage(message, agentToken)
 					
 					// ferme la session si le token a expiré
@@ -157,22 +161,25 @@ class AgentEndPoint {
 	}
 	
 	
-	
-	private def closeSession(Session session) {
-		def entry = sessions.find {
-			it.value == session
-		}
+	/**
+	 * Fermeture d'une session : ferme la connexion
+	 * La supprime de la liste globale des sessions
+	 * et marque l'agent comme déconnecté
+	 * 
+	 * @param session
+	 */
+	private void closeSession(Session session) {
+		String token = session.userProperties.token
 		
 		try {
 			session.close()
 		} catch (Exception e) {}
 		
 		// supprime la session de la liste et déassocie le token
-		if (entry) {
-			def object = sessions.remove(entry.key)
-			agentService.unbindWebsocket(entry.key)
-			
-			log.info "Closing websocket... ${object != null}. Found ${sessions.size()} connected websocket."
+		// s'il existe (seulement si la connexion avait été acceptée à l'ouverture)
+		if (token) {
+			sessions.remove(token)
+			agentService.unbindWebsocket(token)
 		}
 	}
 }
