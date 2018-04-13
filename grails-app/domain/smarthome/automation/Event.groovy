@@ -30,6 +30,7 @@ class Event implements Serializable, EventTriggerPreparable {
 	boolean heureEte
 	String heureDecalage // heure du décalage max au format HH:mm
 	String lastHeureDecalage // heure du dernier décalage au format HH:mm
+	boolean inverseMode // inverse la gestion des modes
 	
 	
 	static belongsTo = [user: User]

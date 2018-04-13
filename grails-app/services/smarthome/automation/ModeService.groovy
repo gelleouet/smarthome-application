@@ -102,27 +102,49 @@ class ModeService extends AbstractService {
 	 * Match si au moins 1 mode sélectionné est présent dans les modes actifs
 	 * Si aucun mode sélectionné, ca matche aussi
 	 * 
+	 * Le mode peut être inversé : dans ce cas matche si tous les modes ne sont pas sélectionnés
+	 * 
 	 * @param selectModes
 	 * @param actifModes
+	 * @param inverse
+	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	boolean matchModes(def selectModes, def actifModes) throws SmartHomeException {
+	boolean matchModes(def selectModes, def actifModes, boolean inverse) throws SmartHomeException {
 		if (!selectModes) {
 			return true
 		}
 		
-		// faut vérifier que au moins 1 mode est activé dans liste
+		boolean defaultValue
+		boolean ifFoundValue
+		
+		if (inverse) {
+			// si aucun mode actif, alors par défaut c'est bon
+			defaultValue = true
+			// si au moins 1 mode est activé dans liste
+			// alors c'est pas bon
+			ifFoundValue = false
+			
+		} else {
+			// si aucun mode sélectionné, alors par défaut c'est pas bon
+			defaultValue = false
+			// si au moins 1 mode est activé dans liste
+			// alors c'est bon
+			ifFoundValue = true
+		}
+		
+		// check les modes actifs
 		for (Mode mode : selectModes) {
 			Mode found = actifModes.find {
 				it.id == mode.id
 			}
 			
 			if (found) {
-				return true
+				return ifFoundValue
 			}
 		}
 		
-		return false
+		return defaultValue
 	}
 }

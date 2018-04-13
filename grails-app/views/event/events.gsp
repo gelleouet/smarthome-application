@@ -55,9 +55,11 @@
 			            <td>${ app.formatTimeAgo(date: bean.lastEvent) }</td>
 			            <td>${ bean.actif ? 'X' : '' }</td>
 			            <td>
+			            	<g:if test="${ bean.inverseMode }">not (</g:if>
 			            	<g:each var="mode" in="${ bean.modes }">
 			            		<span class="aui-lozenge aui-lozenge-complete">${ mode.mode.name }</span>
 			            	</g:each>
+			            	<g:if test="${ bean.inverseMode }">)</g:if>
 						</td>
 			            <td class="column-2-buttons command-column">
 			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Suppimer" action="delete" id="${ bean.id }">

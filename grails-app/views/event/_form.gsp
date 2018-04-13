@@ -23,7 +23,14 @@
 	</label>
 	<g:select name="modeList" from="${ modes }" value="${ event?.modes*.mode }" 
 		optionKey="id" optionValue="name" class="select combobox long-field" multiple="true"/>
-	<div class="description">Déclenche l'événement si au moins un mode est activé</div>
+	<div class="description">
+		<ul>
+			<g:radioGroup name="inverseMode" value="${ event?.inverseMode }" values="[false,true]"
+				labels="['Déclenche l\'événement si au moins un mode sélectionné est activé', 'Déclenche l\'événement si aucun mode sélectionné n\'est activé']">
+				<li>${ it.radio} ${ it.label } </li>
+			</g:radioGroup>
+		</ul>
+	</div>
 </div>
 
 <div class="field-group">
