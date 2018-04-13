@@ -92,7 +92,7 @@ class AgentEndPoint {
 
 	@OnOpen
 	void onOpen(Session session, EndpointConfig config) {
-		log.info "websocket onopen" 
+		
 	}
 	
 	
@@ -105,6 +105,15 @@ class AgentEndPoint {
 			if (message.token) {
 				// 1ere connexion, on bind le websocket à l'agent
 				if (! session.userProperties.token) {
+					// vérifie d'abord si une ancienne connexion n'existe pas
+					// (connexion perdue)
+					// A faire avant le bind session car le close peut déclencher un unbind
+					Session oldSession = sessions.get(message.token)
+					
+					if (oldSession) {
+						closeSession(session)
+					}
+					
 					AgentToken agentToken = agentService.bindWebsocket(session.getId(), message)
 					
 					// on conserve le token dans la session et il sert d'index
@@ -127,8 +136,14 @@ class AgentEndPoint {
 						throw new Exception("Session expirée : token n'existe plus !")
 					}
 
-					// tout est ok pour traiter le message					
-					agentService.receiveMessage(message, agentToken)
+					// tout est ok pour traiter le message		
+					// cas spécial du ping-pong traité directement en retour du message
+					if (message.data && message.data.header == "ping") {
+						message.data.header = "pong"
+						session.getBasicRemote().sendText((message as JSON).toString())
+					} else {		
+						agentService.receiveMessage(message, agentToken)
+					}
 					
 					// ferme la session si le token a expiré
 					// On traite quand même le message (sinon perte info) donc on lance l'erreur
