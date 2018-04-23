@@ -22,6 +22,7 @@ grails.project.fork = [
 ]
 
 
+poi.version = "3.17"
 activiti.version = "5.18.0"
 camel.version = "2.14.0"
 camel.groupId = "org.apache.camel"
@@ -73,6 +74,8 @@ grails.project.dependency.resolution = {
 		  }
 		
 		//compile "com.fasterxml.jackson.core:jackson-core:2.9.5"
+		
+		compile "org.apache.poi:poi:$poi.version"
 		
 		compile "$camel.groupId:camel-core:$camel.version"
 		compile "$camel.groupId:camel-groovy:$camel.version"

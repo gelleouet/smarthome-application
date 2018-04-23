@@ -105,6 +105,18 @@ class Device implements Serializable, EventTriggerPreparable {
 		}
 	}
 	
+	def metavalueByLabelStrict(String label) {
+		metavalues?.find {
+			it.label?.toLowerCase() == label.toLowerCase()
+		}
+	}
+	
+	def metavalueByLabelStrictNotNull(String label) {
+		metavalues?.find {
+			it.label?.toLowerCase() == label.toLowerCase() && DeviceValue.parseDoubleValue(it.value)
+		}
+	}
+	
 	
 	/**
 	 * Ajout d'une métavalue

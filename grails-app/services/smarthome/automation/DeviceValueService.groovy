@@ -314,4 +314,17 @@ class DeviceValueService extends AbstractService {
 				
 		return super.save(monthValue)
 	}
+	
+	
+	/**
+	 * Export des données d'un device au format Excel
+	 * 
+	 * @param command
+	 * @param outStream
+	 * 
+	 * @throws SmartHomeException
+	 */
+	void exportExcel(DeviceChartCommand command, OutputStream outStream) throws SmartHomeException {
+		
+	}
 }
