@@ -1,5 +1,9 @@
 package smarthome.core
 
+import java.util.Map;
+
+import org.hibernate.Query;
+
 class QueryUtils {
 	
 	public static final String MATH_ALL_PATTERN = "%";
@@ -18,7 +22,7 @@ class QueryUtils {
 	
 	
 	/**
-	 * PArse une date au format SQL
+	 * Parse une date au format SQL
 	 * 
 	 * @param date
 	 * @return
@@ -29,7 +33,8 @@ class QueryUtils {
 	
 	
 	/**
-	 * D�core la valeur avec le pattern � gauche
+	 * Décore la valeur avec le pattern à gauche
+	 * 
 	 * @param value
 	 * @param pattern
 	 * @return
@@ -39,7 +44,8 @@ class QueryUtils {
 	}
 	
 	/**
-	 * D�core la valeur avec le pattern � droite
+	 * Décore la valeur avec le pattern à droite
+	 * 
 	 * @param value
 	 * @param pattern
 	 * @return
@@ -49,7 +55,8 @@ class QueryUtils {
 	}
 	
 	/**
-	 * D�core la valeur avec le pattern � gauche et � droite
+	 * Décore la valeur avec le pattern à gauche et à droite
+	 * 
 	 * @param value
 	 * @param pattern
 	 * @return
@@ -60,12 +67,34 @@ class QueryUtils {
 	
 	
 	/**
-	 * D�core la valeur avec le pattern � gauche et � droite
+	 * Décore la valeur avec le pattern à gauche et à droite
 	 * @param value
 	 * @param pattern
 	 * @return
 	 */
 	static String decorateMatchAll(String value) {
 		decoratePatternRight(decoratePatternLeft(value, MATH_ALL_PATTERN), MATH_ALL_PATTERN)
+	}
+	
+	
+	/**
+	 * Binding des paramètres de la query
+	 *
+	 * @param query
+	 * @param parameters
+	 * @return
+	 */
+	static Query bindParameters(Query query, Map parameters) {
+		if (parameters) {
+			parameters.each { key, value ->
+				if (value instanceof Collection) {
+					query.setParameterList(key, (Collection) value)
+				} else {
+					query.setParameter(key, value)
+				}
+			}
+		}
+		
+		return query
 	}
 }

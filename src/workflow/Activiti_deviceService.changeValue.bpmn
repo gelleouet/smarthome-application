@@ -5,23 +5,29 @@
     <sequenceFlow id="flow1" name="Device ?" sourceRef="startevent1" targetRef="scripttask1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${context.result != null}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow2" sourceRef="inclusivegateway1" targetRef="scripttask2"></sequenceFlow>
+    <sequenceFlow id="flow2" name="Value online ?" sourceRef="inclusivegateway1" targetRef="scripttask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ !offline }]]></conditionExpression>
+    </sequenceFlow>
     <scriptTask id="scripttask1" name="Préparation des données" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>def device = deviceService.findById(context.result.id)
 device.actionName = context.result.actionName
-execution.setVariable("device", device)</script>
+
+execution.setVariable("device", device)
+
+if (context.arg1 instanceof Map &amp;&amp; context.arg1.offline) {
+	execution.setVariable("offline", true)
+} else {
+	execution.setVariable("offline", false)
+}</script>
     </scriptTask>
     <sequenceFlow id="flow3" sourceRef="scripttask1" targetRef="inclusivegateway1"></sequenceFlow>
     <serviceTask id="servicetask2" name="Envoi message agent" activiti:expression="${agentService.sendMessage(device.agent, deviceService.createMessage(device, context.arg1))}"></serviceTask>
-    <sequenceFlow id="flow4" name="Action utilisateur ?" sourceRef="inclusivegateway1" targetRef="servicetask2">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${device.agent != null && context.serviceMethodName == "deviceService.execute"}]]></conditionExpression>
+    <sequenceFlow id="flow4" name="Action utilisateur et value online ?" sourceRef="inclusivegateway1" targetRef="servicetask2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${device.agent != null && context.serviceMethodName == "deviceService.execute" && !offline}]]></conditionExpression>
     </sequenceFlow>
     <serviceTask id="servicetask3" name="Historisation valeur" activiti:expression="${deviceValueService.traceValue(device)}" activiti:resultVariableName="deviceValue"></serviceTask>
     <sequenceFlow id="flow5" sourceRef="inclusivegateway1" targetRef="servicetask3"></sequenceFlow>
     <serviceTask id="servicetask4" name="Gestion des alertes valeur" activiti:expression="${deviceAlertService.processDeviceValue(deviceValue)}"></serviceTask>
-    <sequenceFlow id="flow6" name="Nouvelle valeur ?" sourceRef="servicetask3" targetRef="servicetask4">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${deviceValue != null}]]></conditionExpression>
-    </sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow7" sourceRef="scripttask2" targetRef="endevent1"></sequenceFlow>
     <endEvent id="endevent2" name="End"></endEvent>
@@ -36,9 +42,18 @@ events?.each { event -&gt;
 </script>
     </scriptTask>
     <serviceTask id="servicetask5" name="Aggrégation des données" activiti:expression="${deviceUtilService.aggregateSingleDay(device.id, device.dateValue)}"></serviceTask>
-    <sequenceFlow id="flow9" sourceRef="servicetask4" targetRef="servicetask5"></sequenceFlow>
     <endEvent id="endevent3" name="End"></endEvent>
     <sequenceFlow id="flow11" sourceRef="servicetask5" targetRef="endevent3"></sequenceFlow>
+    <inclusiveGateway id="inclusivegateway2" name="Inclusive Gateway"></inclusiveGateway>
+    <sequenceFlow id="flow12" name="Nouvelle valeur ?" sourceRef="servicetask3" targetRef="inclusivegateway2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${deviceValue != null}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="inclusivegateway2" targetRef="servicetask5"></sequenceFlow>
+    <sequenceFlow id="flow14" name="Value online ?" sourceRef="inclusivegateway2" targetRef="servicetask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ !offline }]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent4" name="End"></endEvent>
+    <sequenceFlow id="flow15" sourceRef="servicetask4" targetRef="endevent4"></sequenceFlow>
     <textAnnotation id="textannotation1">
       <text>Workflow : Device Change Value</text>
     </textAnnotation>
@@ -58,7 +73,7 @@ events?.each { event -&gt;
         <omgdc:Bounds height="65.0" width="151.0" x="470.0" y="330.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="servicetask4" id="BPMNShape_servicetask4">
-        <omgdc:Bounds height="55.0" width="151.0" x="470.0" y="430.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="151.0" x="640.0" y="520.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="168.0" y="440.0"></omgdc:Bounds>
@@ -78,6 +93,12 @@ events?.each { event -&gt;
       <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
         <omgdc:Bounds height="35.0" width="35.0" x="528.0" y="610.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inclusivegateway2" id="BPMNShape_inclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="525.0" y="440.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+        <omgdc:Bounds height="35.0" width="35.0" x="698.0" y="610.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
         <omgdc:Bounds height="50.0" width="631.0" x="10.0" y="10.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
@@ -92,6 +113,9 @@ events?.each { event -&gt;
         <omgdi:waypoint x="340.0" y="273.0"></omgdi:waypoint>
         <omgdi:waypoint x="185.0" y="273.0"></omgdi:waypoint>
         <omgdi:waypoint x="185.0" y="330.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="68.0" x="186.0" y="293.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
         <omgdi:waypoint x="360.0" y="225.0"></omgdi:waypoint>
@@ -101,20 +125,13 @@ events?.each { event -&gt;
         <omgdi:waypoint x="360.0" y="293.0"></omgdi:waypoint>
         <omgdi:waypoint x="361.0" y="330.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="89.0" x="364.0" y="292.0"></omgdc:Bounds>
+          <omgdc:Bounds height="42.0" width="100.0" x="364.0" y="292.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
         <omgdi:waypoint x="380.0" y="273.0"></omgdi:waypoint>
         <omgdi:waypoint x="545.0" y="273.0"></omgdi:waypoint>
         <omgdi:waypoint x="545.0" y="330.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
-        <omgdi:waypoint x="545.0" y="395.0"></omgdi:waypoint>
-        <omgdi:waypoint x="545.0" y="430.0"></omgdi:waypoint>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="83.0" x="550.0" y="399.0"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
         <omgdi:waypoint x="185.0" y="395.0"></omgdi:waypoint>
@@ -124,13 +141,32 @@ events?.each { event -&gt;
         <omgdi:waypoint x="361.0" y="395.0"></omgdi:waypoint>
         <omgdi:waypoint x="360.0" y="440.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
-        <omgdi:waypoint x="545.0" y="485.0"></omgdi:waypoint>
-        <omgdi:waypoint x="545.0" y="520.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
         <omgdi:waypoint x="545.0" y="575.0"></omgdi:waypoint>
         <omgdi:waypoint x="545.0" y="610.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="545.0" y="395.0"></omgdi:waypoint>
+        <omgdi:waypoint x="545.0" y="440.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="83.0" x="550.0" y="409.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="545.0" y="480.0"></omgdi:waypoint>
+        <omgdi:waypoint x="545.0" y="520.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="565.0" y="460.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0" y="460.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0" y="520.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="68.0" x="719.0" y="481.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="715.0" y="575.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0" y="610.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

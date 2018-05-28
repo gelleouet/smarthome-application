@@ -87,21 +87,46 @@ function ajaxPagination() {
 	var divParent = $("div[ajax='true']");
 	
 	if (divParent) {
+		// supprime les anciens listener
+		divParent.off('click', '.pagination a');
+		
 		divParent.on('click', '.pagination a', function(event) {
 			var link = $(event.target);
 			var urlLink = link.attr('href');
+			var div = link.parents("div[ajax='true']").eq(0);
+			var form = div.attr('data-form-id') ? $('#' + div.attr('data-form-id')) : link.parents('form:first')
 			
 			jQuery.ajax({
 				type: 'POST',
-				data: jQuery(this).parents('form:first').serialize(),
+				data: form.serialize(),
 				url: urlLink,
 				success: function(data, textStatus){
-					divParent.html(data);
+					div.html(data);
 				}
 			});
 			
 			return false;
 		});
+	}
+	
+	var ajaxPaginations = $(".pagination[data-form-id != '']")
+	
+	if (ajaxPaginations) {
+		ajaxPaginations.each(function() {
+			var form = $('#' + $(this).attr('data-form-id'))
+			
+			// supprime les anciens listener
+			$(this).off('click', 'a');
+			
+			$(this).on('click', 'a', function(event) {
+				var link = $(event.target);
+				var urlLink = link.attr('href');
+				// change l'action par défaut du formulaire en lui mettant l'action de pagination
+				form.attr('action', urlLink)
+				form.submit();
+				return false;
+			});
+		}) 
 	}
 }
 

@@ -154,4 +154,29 @@ class UserService extends AbstractService {
 		
 		return user
 	}
+	
+	
+	/**
+	 * L'utilisateur est-il un administrateur de plusieurs utilisateurs
+	 * 
+	 * @param user
+	 * @return
+	 */
+	boolean isAdminUsers(User user) {
+		return UserAdmin.findByAdmin(user)	
+	}
+	
+	
+	/**
+	 * Liste les users d'un admin
+	 *  
+	 * @param admin
+	 * @return
+	 */
+	List listByAdmin(User admin) {
+		return UserAdmin.executeQuery("""SELECT user FROM UserAdmin userAdmin
+			JOIN userAdmin.user user
+			WHERE userAdmin.admin.id = :adminId
+			ORDER BY user.prenom, user.nom""", [adminId: admin.id])	
+	}
 }

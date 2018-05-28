@@ -73,6 +73,7 @@ class Device implements Serializable, EventTriggerPreparable {
 		formula type: 'text'
 		extras type: 'text'
 		sort 'label'
+		version false
 	}
 	
 	

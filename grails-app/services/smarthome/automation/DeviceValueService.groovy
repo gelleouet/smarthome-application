@@ -11,7 +11,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
 import smarthome.automation.deviceType.AbstractDeviceType;
+import smarthome.automation.export.DeviceValueExport;
+import smarthome.automation.export.DulceExcelDeviceValueExport;
+import smarthome.automation.export.ExportTypeEnum;
 import smarthome.core.AbstractService;
+import smarthome.core.ApplicationUtils;
 import smarthome.core.AsynchronousMessage;
 import smarthome.core.Chronometre;
 import smarthome.core.DateUtils;
@@ -317,14 +321,48 @@ class DeviceValueService extends AbstractService {
 	
 	
 	/**
-	 * Export des données d'un device au format Excel
+	 * Export des données d'un device pour un profil administrateur
 	 * 
 	 * @param command
+	 * @param exportType
 	 * @param outStream
 	 * 
 	 * @throws SmartHomeException
 	 */
-	void exportExcel(DeviceChartCommand command, OutputStream outStream) throws SmartHomeException {
+	void export(ExportCommand command, ExportTypeEnum exportType, OutputStream outStream) throws SmartHomeException {
+		// Vérifs communes avant de lancer une impl
+		if (!command.dateDebut || !command.dateFin) {
+			throw new SmartHomeException("Veuillez renseigner les dates d'export !", command)
+		}
 		
+		if (!command.adminId) {
+			throw new SmartHomeException("L'administrateur doit être renseigné !", command)
+		}
+		
+		if (command.dateFin < command.dateDebut) {
+			throw new SmartHomeException("Date fin incorrecte !", command)
+		}
+		
+		// pour des raison de perf, on n'autorise pas d'export > 1 mois
+		if (command.dateFin - command.dateDebut > 32) {
+			throw new SmartHomeException("Export limité à maximum 1 mois !", command)
+		}
+		
+		
+		
+		
+		// TODO : changer imlémentation en fonction utilisateur
+		// provisoire le temps de créer d'autres impls
+		DeviceValueExport deviceValueExport = new DulceExcelDeviceValueExport()	
+		ApplicationUtils.autowireBean(deviceValueExport)
+		
+		// on s'assure que le stream est bien fermé à la fin de l'export et en cas d'erreur
+		outStream.withStream {
+			if (exportType == ExportTypeEnum.admin) {
+				deviceValueExport.exportAdmin(command, it)
+			} else if (exportType == ExportTypeEnum.user) {
+				deviceValueExport.exportUser(command, it)
+			}
+		}
 	}
 }

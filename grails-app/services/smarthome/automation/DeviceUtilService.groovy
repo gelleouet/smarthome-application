@@ -90,6 +90,8 @@ class DeviceUtilService extends AbstractService {
 			}	
 		}
 		
+		dateDebut.clearTime()
+		
 		// calcul des jours et des mois
 		List days = []
 		List months = []

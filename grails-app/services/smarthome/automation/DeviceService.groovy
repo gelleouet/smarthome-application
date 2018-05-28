@@ -27,8 +27,10 @@ import smarthome.core.SmartHomeException;
 import smarthome.core.TransactionUtils;
 import smarthome.core.WorkflowService;
 import smarthome.core.chart.GoogleChart;
+import smarthome.core.query.HQL;
 import smarthome.rule.DeviceTypeDetectRuleService;
 import smarthome.security.User;
+import smarthome.security.UserAdmin;
 
 
 class DeviceService extends AbstractService {
@@ -105,6 +107,13 @@ class DeviceService extends AbstractService {
 		}
 		
 		if (share) {
+			return device
+		}
+		
+		// si le user est admin du device
+		def admin = UserAdmin.findByAdminAndUser(user, device.user)
+		
+		if (admin) {
 			return device
 		}
 		
@@ -191,8 +200,6 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	@AsynchronousWorkflow(DeviceService.CHANGE_VALUE_WORKFLOW)
 	Device changeValueFromAgent(Agent agent, def datas) throws SmartHomeException {
-		log.info "change value ${datas.mac} : ${datas.value}"
-		
 		if (!datas.mac) {
 			throw new SmartHomeException("Mac is empty !")
 		}
@@ -201,10 +208,18 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("Value is empty !")
 		}
 		
+		boolean offline = datas.offline ? true : false
+		
+		if (offline) {
+			log.info "change [offline] value ${datas.mac} : ${datas.value}"
+		} else {
+			log.info "change value ${datas.mac} : ${datas.value}"
+		}
+		
 		String implClass = deviceTypeDetectRuleService.execute(datas, true)
 		
 		def virtualMetas = []
-		def fetchAgent = Agent.get(agent.id)
+		def fetchAgent = Agent.read(agent.id)
 		def device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
 		def resultDevice = null  
 		
@@ -227,7 +242,7 @@ class DeviceService extends AbstractService {
 		}
 		
 		// gestion des devices virtuels associés aux metas virtuels
-		processVirtualMetas(device, virtualMetas, dateValue)
+		processVirtualMetas(device, virtualMetas, dateValue, offline)
 		
 		// si toutes les valeurs envoyées dans metavalue sont des  virtuelMeta
 		// alors on ne touche pas au device principal mais on met à jour seulement les devices virtuels
@@ -249,6 +264,8 @@ class DeviceService extends AbstractService {
 	
 	/**
 	 * Recherche ou création d'un device
+	 * Si le device est trouvé, un verrou (en base) est actionné sur l'objet pour éviter des accès
+	 * concurrents
 	 */
 	private Device findOrCreateDevice(Agent agent, String mac, String label, String implClass) throws SmartHomeException {
 		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
@@ -275,7 +292,7 @@ class DeviceService extends AbstractService {
 	 * avec sa propre valeur
 	 * 
 	 */
-	private void processVirtualMetas(Device device, List metas, Date dateValue) throws SmartHomeException {
+	private void processVirtualMetas(Device device, List metas, Date dateValue, boolean offline) throws SmartHomeException {
 		metas?.each {
 			def virtualDevice = findOrCreateDevice(device.agent, "${device.mac}-${it.name}",
 				"${it.label}  -> ${device.label}",
@@ -288,7 +305,10 @@ class DeviceService extends AbstractService {
 			this.save(virtualDevice)
 			
 			// Exécute le workflow dédié au changement de valeur
-			workflowService.asyncExecute(CHANGE_VALUE_WORKFLOW, [result: virtualDevice])
+			// dans les params du workflow, reprennent les mêmes paramètres que la fonction principale
+			// ie changeValueFromAgent(agent, datas)
+			workflowService.asyncExecute(CHANGE_VALUE_WORKFLOW, [result: virtualDevice,
+				arg0: device.agent, arg1: {offline: offline}])
 		}	
 	}
 	
@@ -388,6 +408,38 @@ class DeviceService extends AbstractService {
 		}
 		
 		return results
+	}
+	
+	
+	/**
+	 * Liste les 
+	 * @param command
+	 * @return
+	 */
+	List listByAdmin(DeviceSearchCommand command) throws SmartHomeException {
+		if (!command.adminId) {
+			throw new SmartHomeException("adminId must be fill !", command)
+		}
+		
+		HQL hql = new HQL("device",	""" 
+			FROM Device device JOIN FETCH device.deviceType deviceType""")
+		
+		hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
+			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		
+		if (command.deviceTypeClass) {
+			hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
+		}
+		
+		if (command.userId) {
+			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
+		}
+		
+		hql.addOrder("device.label")
+		
+		return Device.withSession { session ->
+			hql.list(session, command.pagination)	
+		}
 	}
 	
 	

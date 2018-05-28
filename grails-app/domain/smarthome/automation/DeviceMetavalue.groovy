@@ -45,5 +45,6 @@ class DeviceMetavalue implements Serializable {
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceMetavalue_Device_Idx"
+		version false
 	}
 }

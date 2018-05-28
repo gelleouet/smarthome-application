@@ -10,6 +10,7 @@ class DeviceSearchCommand {
 	String search
 	String deviceTypeClass
 	long userId
+	long adminId
 	String searchGroupe
 	String tableauBord
 	boolean favori

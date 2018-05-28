@@ -14,6 +14,7 @@ class DataTableTagLib {
 	 * @attr recordsTotal REQUIRED le nombre total d'items
 	 * @attr cssClass par défaut aui
 	 * @attr cssStyle
+	 * @attr paginateForm
 	 */
 	def datatable = { attrs, body ->
 		def paginateDebut = 0

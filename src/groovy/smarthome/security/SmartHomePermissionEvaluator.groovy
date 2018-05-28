@@ -35,7 +35,17 @@ class SmartHomePermissionEvaluator implements PermissionEvaluator {
 		if (domainObject && domainObject.properties['id'] == null) {
 			return true
 		} else if (domainObject && domainObject['user']?.id && authentication && authentication['principal']?.id) {
-			return domainObject['user'].id == authentication.principal.id
+			// propriétaire direct de l'objet
+			if (domainObject['user'].id == authentication.principal.id) {
+				return true
+			} else {
+				// le suer connecté est peut être un admin d'un groupe d'utilisateur
+				// dans ce cas, il a accès à tous les objets des utilisateurs du groupe
+				return UserAdmin.createCriteria().list {
+					eq 'admin.id', authentication.principal.id 
+					eq 'user.id', domainObject['user'].id
+				}
+			}
 		}
 		
 		return false

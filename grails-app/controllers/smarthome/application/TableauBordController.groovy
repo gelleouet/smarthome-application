@@ -1,7 +1,9 @@
 package smarthome.application
 
 import smarthome.automation.Device;
+import smarthome.automation.DeviceSearchCommand;
 import smarthome.automation.DeviceService;
+import smarthome.automation.DeviceType;
 import smarthome.automation.Mode;
 import smarthome.automation.HouseService;
 import smarthome.automation.ModeService;
@@ -34,12 +36,43 @@ class TableauBordController extends AbstractController {
 	 */
 	def index() {
 		def user = authenticatedUser
-		def house = houseService.findDefaultByUser(user)
-		def modes = modeService.listModesByUser(user)
-		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		
-		render(view: 'tableauBord', model: [user: user, house: house,
-			modes: modes, tableauBords: tableauBords, secUser: user])
+		if (userService.isAdminUsers(user)) {
+			tableauBordAdmin(new DeviceSearchCommand())
+		} else {
+			def house = houseService.findDefaultByUser(user)
+			def modes = modeService.listModesByUser(user)
+			def tableauBords = deviceService.groupByTableauBord(principal.id)
+			
+			render(view: 'tableauBord', model: [user: user, house: house,
+				modes: modes, tableauBords: tableauBords, secUser: user])
+		}
+		
+	}
+	
+	
+	/**
+	 * Tableau de bord pour les profils type admin de plusieurs utilisateurs
+	 * Affiche les devices de chaque utilisateur
+	 * avec des états de contrôles (batterie, graphe, etc)
+	 * 
+	 * @param command
+	 * 
+	 * @return
+	 */
+	def tableauBordAdmin(DeviceSearchCommand command) {
+		def user = authenticatedUser
+		command.adminId = user.id
+		command.pagination = this.getPagination([:])
+		
+		def devices = deviceService.listByAdmin(command)
+		def tableauBords = deviceService.groupByTableauBord(principal.id)
+		def users = userService.listByAdmin(user)
+		def deviceImpls = DeviceType.list()
+		
+		render(view: 'tableauBordAdmin', model: [user: user, secUser: user,
+			devices: devices, tableauBords: tableauBords, recordsTotal: devices.totalCount,
+			users: users, deviceImpls: deviceImpls, command: command])
 	}
 	
 	

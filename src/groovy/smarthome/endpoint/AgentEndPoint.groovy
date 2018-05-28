@@ -108,11 +108,11 @@ class AgentEndPoint {
 					// vérifie d'abord si une ancienne connexion n'existe pas
 					// (connexion perdue)
 					// A faire avant le bind session car le close peut déclencher un unbind
-					Session oldSession = sessions.get(message.token)
+					/*Session oldSession = sessions.get(message.token)
 					
-					if (oldSession) {
+					if (oldSession && oldSession != session) {
 						closeSession(session)
-					}
+					}*/
 					
 					AgentToken agentToken = agentService.bindWebsocket(session.getId(), message)
 					

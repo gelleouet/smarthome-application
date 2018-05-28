@@ -34,5 +34,6 @@ class DeviceMetadata implements Serializable {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceMetadata_Device_Idx"
 		values type: 'text'
+		version false
 	}
 }
