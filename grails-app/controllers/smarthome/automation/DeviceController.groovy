@@ -7,11 +7,13 @@ import smarthome.core.ChartUtils;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
+import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 import smarthome.security.User;
 import smarthome.security.UserFriendService;
+import smarthome.security.UserService;
 
 
 @Secured("isAuthenticated()")
@@ -26,6 +28,7 @@ class DeviceController extends AbstractController {
 	UserFriendService userFriendService
 	HouseService houseService
 	DeviceUtilService deviceUtilService
+	
 	
 	
 	/**

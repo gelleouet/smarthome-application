@@ -76,6 +76,7 @@ grails.project.dependency.resolution = {
 		//compile "com.fasterxml.jackson.core:jackson-core:2.9.5"
 		
 		compile "org.apache.poi:poi:$poi.version"
+		compile "org.apache.poi:poi-ooxml:$poi.version"
 		
 		compile "$camel.groupId:camel-core:$camel.version"
 		compile "$camel.groupId:camel-groovy:$camel.version"

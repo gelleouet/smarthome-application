@@ -424,15 +424,15 @@ class DeviceService extends AbstractService {
 		HQL hql = new HQL("device",	""" 
 			FROM Device device JOIN FETCH device.deviceType deviceType""")
 		
-		hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		if (command.userId) {
+			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
+		} else {
+			hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
+				where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		}
 		
 		if (command.deviceTypeClass) {
 			hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
-		}
-		
-		if (command.userId) {
-			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
 		}
 		
 		hql.addOrder("device.label")

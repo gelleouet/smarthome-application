@@ -22,23 +22,36 @@
 
 
 	<g:applyLayout name="applicationHeader">
-		<g:form action="tableauBordAdmin" controller="tableauBord" class="aui" name="tableauBordAdmin-form">
+		<g:form action="supervision" class="aui" name="supervision-form">
 			<h3>Supervision multi-utilisateurs</h3>
 			
-			<fieldset>
-				<g:select name="deviceTypeClass" value="${ command?.deviceTypeClass }" from="${ deviceImpls }"
-					optionKey="implClass" optionValue="libelle" class="select" noSelection="['': '']"/>
-				<g:select name="userId" value="${ command?.userId }" from="${ users }"
-					optionKey="id" optionValue="prenomNom" class="select" noSelection="['': '']"/>
-				<button class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
-			</fieldset>
+			<div class="aui-group aui-group-split">
+				<div class="aui-item">
+					<fieldset>
+						<g:select name="deviceTypeClass" value="${ command?.deviceTypeClass }" from="${ deviceImpls }"
+							optionKey="implClass" optionValue="libelle" class="select" noSelection="['': '']"/>
+						<g:select name="userId" value="${ command?.userId }" from="${ users }"
+							optionKey="id" optionValue="prenomNom" class="select" noSelection="['': '']"/>
+						<button class="aui-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
+						
+						<button id="export-admin-button" value="Exporter" name="_action_exportAdmin" class="hidden"></button>
+					</fieldset>
+				</div>
+				<div class="aui-item">
+					<fieldset>
+						<g:field type="date" name="dateDebut" class="text medium-field" value="${ app.formatPicker(date: command?.dateDebut) }"/>
+						<g:field type="date" name="dateFin" class="text medium-field" value="${ app.formatPicker(date: command?.dateFin) }"/>
+						<a class="aui-button" onclick="$('#export-admin-button').click(); return false;" title="Exporter"><span class="aui-icon aui-icon-small aui-iconfont-export"></span> Exporter</a>
+					</fieldset>
+				</div>
+			</div>	
 		</g:form>
 	</g:applyLayout>
 
 
 	<g:applyLayout name="applicationContent" >
 		<div style="overflow-x:auto;">
-			<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="tableauBordAdmin-form">
+			<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="supervision-form">
 			    <thead>
 			        <tr>
 			            <th></th>

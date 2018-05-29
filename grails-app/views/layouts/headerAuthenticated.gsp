@@ -90,6 +90,9 @@
 		                    <li>
 		                    	<g:link controller="profil" action="profil">Paramètres</g:link>
 		                    	<g:link controller="deviceAlert" action="deviceAlerts" params="[open:true]">Alertes</g:link>
+		                    	<sec:ifAllGranted roles="ROLE_SUPERVISION">
+		                    		<g:link controller="supervision" action="supervision">Supervision</g:link>	
+		                    	</sec:ifAllGranted>
 		                    </li>
                     	</ul>
                     </div>

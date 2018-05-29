@@ -2,6 +2,8 @@ package smarthome.automation
 
 import java.util.Date;
 
+import javax.servlet.ServletResponse;
+
 import grails.async.PromiseList;
 import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
@@ -325,11 +327,11 @@ class DeviceValueService extends AbstractService {
 	 * 
 	 * @param command
 	 * @param exportType
-	 * @param outStream
+	 * @param response
 	 * 
 	 * @throws SmartHomeException
 	 */
-	void export(ExportCommand command, ExportTypeEnum exportType, OutputStream outStream) throws SmartHomeException {
+	void export(ExportCommand command, ExportTypeEnum exportType, ServletResponse response) throws SmartHomeException {
 		// Vérifs communes avant de lancer une impl
 		if (!command.dateDebut || !command.dateFin) {
 			throw new SmartHomeException("Veuillez renseigner les dates d'export !", command)
@@ -349,20 +351,61 @@ class DeviceValueService extends AbstractService {
 		}
 		
 		
-		
-		
 		// TODO : changer imlémentation en fonction utilisateur
 		// provisoire le temps de créer d'autres impls
 		DeviceValueExport deviceValueExport = new DulceExcelDeviceValueExport()	
 		ApplicationUtils.autowireBean(deviceValueExport)
 		
 		// on s'assure que le stream est bien fermé à la fin de l'export et en cas d'erreur
-		outStream.withStream {
-			if (exportType == ExportTypeEnum.admin) {
-				deviceValueExport.exportAdmin(command, it)
-			} else if (exportType == ExportTypeEnum.user) {
-				deviceValueExport.exportUser(command, it)
+		response.outputStream.withStream {
+			try {
+				if (exportType == ExportTypeEnum.admin) {
+					command.userIdsExport = this.calculUserExportAdmin(command)
+					
+					// si aucun utilisateur pas la peine de lancer l'export : aucune donnée
+					if (command.userIdsExport) {
+						log.info("Export admin")
+						deviceValueExport.initExportAdmin(command, response)
+						deviceValueExport.exportAdmin(command, it)
+					}
+				} else if (exportType == ExportTypeEnum.user) {
+					log.info("Export user ")
+					deviceValueExport.initExportUser(command, response)
+					deviceValueExport.exportUser(command, it)
+				}
+			} catch (Exception ex) {
+				log.error("Export ${exportType} : ${ex.message}")
+				throw new SmartHomeException(ex.message, command)
 			}
+			
 		}
+	}
+	
+	
+	/**
+	 * Calcule la liste des ID utilisateurs pour un export admin
+	 * 
+	 * @param command
+	 * @return
+	 */
+	List calculUserExportAdmin(ExportCommand command) {
+		List ids
+		
+		if (command.userId) {
+			ids = [[command.userId, User.read(command.userId).username]]
+		} else {
+			ids = DeviceValue.executeQuery("""SELECT user.id, user.username
+				FROM DeviceValue deviceValue JOIN deviceValue.device device
+				JOIN device.user user
+				WHERE deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				AND device.user.id IN (SELECT userAdmin.user.id FROM UserAdmin userAdmin
+					WHERE userAdmin.admin.id = :adminId)
+				AND deviceValue.name is null
+				GROUP BY user.id, user.username
+				ORDER BY user.username""", [adminId: command.adminId, dateDebut: command.datetimeDebut(),
+					dateFin: command.datetimeFin()])	
+		}
+		
+		return ids
 	}
 }

@@ -15,6 +15,8 @@ class DeviceSearchCommand {
 	String tableauBord
 	boolean favori
 	Long userSharedId
+	Date dateDebut = new Date()
+	Date dateFin = new Date()
 	
 	
 	static constraints = {

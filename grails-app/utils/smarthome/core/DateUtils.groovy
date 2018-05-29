@@ -259,6 +259,21 @@ class DateUtils {
 	
 	
 	/**
+	 * Tronque une date à la 10e minute (Ex : 10h53 => 10h50)
+	 *
+	 * @param date
+	 * @return
+	 */
+	static Date truncMinute10(Date date) {
+		int minute = Math.floor(date[Calendar.MINUTE] / 10.0) * 10
+		date[Calendar.SECOND] = 0
+		date[Calendar.MILLISECOND] = 0
+		date[Calendar.MINUTE] = minute
+		return date
+	}
+	
+	
+	/**
 	 * Tronque une date à l'heure
 	 *  
 	 * @param date
