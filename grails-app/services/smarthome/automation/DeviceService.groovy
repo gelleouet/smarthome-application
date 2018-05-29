@@ -308,7 +308,7 @@ class DeviceService extends AbstractService {
 			// dans les params du workflow, reprennent les mêmes paramètres que la fonction principale
 			// ie changeValueFromAgent(agent, datas)
 			workflowService.asyncExecute(CHANGE_VALUE_WORKFLOW, [result: virtualDevice,
-				arg0: device.agent, arg1: {offline: offline}])
+				arg0: device.agent, arg1: [offline: offline]])
 		}	
 	}
 	
