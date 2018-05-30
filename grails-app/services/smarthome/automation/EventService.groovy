@@ -389,7 +389,9 @@ class EventService extends AbstractService {
 			
 			// trace l'exécution de l'event
 			event.lastEvent = dateEvent
-			event.save()
+			// passe un flush pour "batcher" les modifs qu'il y a eu pendant les exécutions
+			// des triggers
+			event.save(flush: true)
 		}
 		
 		return event

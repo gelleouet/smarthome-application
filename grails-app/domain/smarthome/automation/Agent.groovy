@@ -37,7 +37,6 @@ class Agent implements Serializable {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "Agent_User_Idx"
 		sort 'mac'
-		version false
 	}
 	
 	
