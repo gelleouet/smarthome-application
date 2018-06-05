@@ -29,11 +29,11 @@ class AgentController extends AbstractController {
 	 * @return
 	 */
 	@Secured("permitAll()")
-	def subscribe(String mac, String username, String applicationKey, String privateIp, String agentModel) {
-		def agent = new Agent(mac: mac, privateIp: privateIp, publicIp: request.remoteAddr, agentModel: agentModel)
+	def subscribe(MessageAgentCommand command) {
+		command.publicIp = request.remoteAddr
 		
 		try {
-			def agentToken = agentService.subscribe(agent, username, applicationKey)
+			def agentToken = agentService.subscribe(command)
 			
 			if (agentToken) {
 				render agentToken as JSON

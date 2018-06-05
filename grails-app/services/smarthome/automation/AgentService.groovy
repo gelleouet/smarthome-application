@@ -172,19 +172,25 @@ class AgentService extends AbstractService {
 	/**
 	 * Demande connexion au websocket
 	 * 
-	 * @param mac
-	 * @param username
+	 * @param command
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def subscribe(Agent agent, String username, String applicationKey) throws SmartHomeException {
-		log.info("agent subscribe for user ${username}")
+	def subscribe(MessageAgentCommand command) throws SmartHomeException {
+		log.info("agent subscribe for user ${command.username}")
 		
-		def user = userService.authenticateApplication(username, applicationKey)
+		// suppression des erreurs d'un 1er binding car certaines propriétées sont injectée manuel
+		command.clearErrors()
+		
+		if (!command.validate()) {
+			throw new SmartHomeException("Subscribe message incomplete !")
+		}
+		
+		def user = userService.authenticateApplication(command.username, command.applicationKey)
 		
 		// recherche d'un agent en fonction mac
-		def domainAgent = Agent.findByMacAndUser(agent.mac, user)
+		Agent domainAgent = Agent.findByMacAndUser(command.mac, user, [lock: true])
 		def agentToken = null
 		
 		if (domainAgent) {
@@ -210,8 +216,8 @@ class AgentService extends AbstractService {
 			
 			// mise à jour dernière connexion et des IP
 			domainAgent.lastConnexion = new Date()
-			domainAgent.privateIp = agent.privateIp
-			domainAgent.publicIp = agent.publicIp
+			domainAgent.privateIp = command.privateIp
+			domainAgent.publicIp = command.publicIp
 			
 			if (!domainAgent.save()) {
 				throw new SmartHomeException("Erreur subscribe agent !")
@@ -219,11 +225,16 @@ class AgentService extends AbstractService {
 		} else {
 			// pas d'agent mais les identifiants sont bons donc on le créé auto mais 
 			//en mode bloqué le temps de l'activation par le user
-			agent.lastConnexion = new Date()
-			agent.locked = true
-			agent.user = user
+			domainAgent = new Agent()
+			domainAgent.mac = command.mac
+			domainAgent.agentModel = command.agentModel
+			domainAgent.privateIp = command.privateIp
+			domainAgent.publicIp = command.publicIp
+			domainAgent.lastConnexion = new Date()
+			domainAgent.locked = true
+			domainAgent.user = user
 			
-			if (!agent.save()) {
+			if (!domainAgent.save()) {
 				throw new SmartHomeException("Auto-created agent not activated !")
 			}
 			

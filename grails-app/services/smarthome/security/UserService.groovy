@@ -66,6 +66,10 @@ class UserService extends AbstractService {
 	 * @return
 	 */
 	User authenticateApplication(String userName, String applicationId) throws SmartHomeException {
+		if (!userName || !applicationId) {
+			throw new SmartHomeException("Invalid username or applicationId !")
+		} 
+		
 		// recherche user
 		User user = User.findByUsername(userName)
 		

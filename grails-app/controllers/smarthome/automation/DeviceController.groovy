@@ -21,6 +21,7 @@ class DeviceController extends AbstractController {
 
     private static final String COMMAND_NAME = 'device'
 	
+	AgentService agentService
 	DeviceService deviceService
 	DeviceValueService deviceValueService
 	DeviceAlertService deviceAlertService
@@ -270,6 +271,35 @@ class DeviceController extends AbstractController {
 		deviceService.assertSharedAccess(device, user)
 		deviceService.execute(device, actionName, device.params)
 		redirect(action: 'devicesGrid')
+	}
+	
+	
+	/**
+	 * Voie de secours pour un agent pour envoyer des nouvelles valeurs
+	 * sans passer par le websocket
+	 * 
+	 * @param device
+	 * @param actionName
+	 * @param applicationKey
+	 * @return
+	 */
+	@Secured("permitAll()")
+	def publicChangeValueFromAgent(MessageAgentCommand command) {
+		command.publicIp = request.remoteAddr
+		
+		try {
+			def agentToken = agentService.subscribe(command)
+			
+			if (agentToken) {
+				deviceService.changeValueFromAgent(agentToken.agent, command.data)
+				nop()
+			} else {
+				render(status: 400, text: 'No token !')
+			}
+		} catch (Exception ex) {
+			log.error("Public change value : ${ex.message}")
+			render(status: 400, text: ex.message)
+		}
 	}
 	
 	
