@@ -220,7 +220,18 @@ class DeviceService extends AbstractService {
 		
 		def virtualMetas = []
 		def fetchAgent = Agent.read(agent.id)
-		def device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
+		Device device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
+		
+		// la création de nouveaux device n'est possible qu'en mode association
+		// donc ce mode n'est pas activé, on refuse les nouveaux
+		if (!device.id) {
+			// compatiblité avec l'ancienne version Raspberry qui n'envoit pas l'info association
+			if (datas.association != null && !datas.association) {
+				log.warn("Refuse device ${datas.mac} : no association mode")
+				return null
+			}
+		}
+		
 		def resultDevice = null  
 		
 		// bien metre à jour la date avant toutes les autres instructions
