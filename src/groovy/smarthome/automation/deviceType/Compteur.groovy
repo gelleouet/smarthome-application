@@ -231,4 +231,27 @@ class Compteur extends AbstractDeviceType {
 		
 		return values
 	}
+	
+	
+	/**
+	 * @see smarthome.automation.deviceType.AbstractDeviceType.prepateMetaValuesForSave()
+	 */
+	@Override
+	def prepareMetaValuesForSave() {
+		Date dateInf = device.dateValue - 1
+		
+		// si le device n'existe pas encore, il n'y a donc pas d'anciennes valeurs
+		// pour calculer la dernière conso
+		if (device.id) {
+			device.addMetavalue("conso", [value: "0", label: "Période consommation", trace: true])
+			
+			// récupère la dernière valeur principale (le dernier index)
+			def lastIndex = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue)
+			
+			if (lastIndex) {
+				def conso = device.value.toLong() - lastIndex.value.toLong()
+				device.addMetavalue("conso", [value: conso.toString()])
+			}
+		}
+	}
 }

@@ -1,5 +1,7 @@
 package smarthome.automation.deviceType
 
+import groovy.time.TimeCategory;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,7 @@ import java.util.Map;
 import smarthome.automation.ChartTypeEnum;
 import smarthome.automation.ChartViewEnum;
 import smarthome.automation.DataModifierEnum;
+import smarthome.automation.Device;
 import smarthome.automation.DeviceChartCommand;
 import smarthome.automation.DeviceMetadata;
 import smarthome.automation.DeviceTypeProvider;
@@ -202,6 +205,12 @@ class TeleInformation extends AbstractDeviceType {
 	 */
 	@Override
 	def prepareMetaValuesForSave() {
+		Date dateInf
+		
+		use (TimeCategory) {
+			dateInf = device.dateValue - 30.minutes
+		}
+		
 		// si le device n'existe pas encore, il n'y a donc pas d'anciennes valeurs
 		// pour calculer la dernière conso
 		if (device.id) {
@@ -211,10 +220,10 @@ class TeleInformation extends AbstractDeviceType {
 			
 			if (hc) {
 				// récupère la dernière valeur hchc
-				def lastHC = DeviceValue.findAllByDeviceAndName(device, "hchc", [sort: "dateValue", order: "desc", max: 1])
+				def lastHC = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue, "hchc") 
 				
 				if (lastHC) {
-					def conso = hc.value.toLong() - lastHC[0].value.toLong()
+					def conso = hc.value.toLong() - lastHC.value.toLong()
 					device.addMetavalue("hcinst", [value: conso.toString()])
 				}
 			}
@@ -224,18 +233,18 @@ class TeleInformation extends AbstractDeviceType {
 			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines (Wh)", trace: true])
 			
 			if (hp) {
-				// récupère la dernièer valeur hchc
-				def lastHP = DeviceValue.findAllByDeviceAndName(device, "hchp", [sort: "dateValue", order: "desc", max: 1])
+				// récupère la dernière valeur hchp
+				def lastHP = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue, "hchp")  
 						
 				if (lastHP) {
-					def conso = hp.value.toLong() - lastHP[0].value.toLong()
+					def conso = hp.value.toLong() - lastHP.value.toLong()
 					device.addMetavalue("hpinst", [value: conso.toString()])
 				}
 			}
 		}
 	}
-
-
+	
+	
 	/**
 	 * Retourne le fournisseur du contrat
 	 *

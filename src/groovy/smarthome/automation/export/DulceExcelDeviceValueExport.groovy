@@ -24,6 +24,10 @@ import org.hibernate.ScrollMode;
 
 import smarthome.automation.DeviceValue;
 import smarthome.automation.ExportCommand;
+import smarthome.automation.deviceType.Compteur;
+import smarthome.automation.deviceType.Humidite;
+import smarthome.automation.deviceType.TeleInformation;
+import smarthome.automation.deviceType.Temperature;
 import smarthome.core.DateUtils;
 import smarthome.core.MimeTypeEnum;
 import smarthome.core.QueryUtils;
@@ -79,7 +83,8 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 			row = null
 			
 			HQL hql = new HQL("""new map(deviceValue.dateValue as dateValue,
-				device.label as label, deviceValue.value as value, deviceValue.name as metaname)""",
+				deviceType.implClass as implClass,
+				device.mac as mac, deviceValue.value as value, deviceValue.name as metaname)""",
 				"""FROM DeviceValue deviceValue JOIN deviceValue.device device
 				JOIN device.deviceType deviceType""")
 			
@@ -88,8 +93,6 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 			hql.addCriterion("device.user.id = :userId", [userId: user[0]])
 			hql.addCriterion("deviceValue.name is null OR deviceValue.name in (:metanames)",
 				[metanames: ['conso', 'hcinst', 'hpinst']])
-			hql.addCriterion("device.label in (:labels)", [labels: ["Compteur gaz", "Compteur électrique",
-				"Tint1", "Hint1", "Tint2", "Hint2", "Text", "Hext"]])
 			
 			if (command.deviceTypeClass) {
 				hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
@@ -104,7 +107,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 				// sachant qu'on ne charge que 3 valeurs (date, device, valeur)
 				// 3 sondes = 24 x 3
 				// 2 TIC = 144 x 2
-				query.setFetchSize(250)	
+				query.setFetchSize(500)	
 				query.setReadOnly(true)
 				
 				def scrollResults = query.scroll(ScrollMode.FORWARD_ONLY)
@@ -123,8 +126,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 					}	
 					
 					if (deviceValue.value != null) {
-						createCellDeviceValue(row, deviceValue.label, deviceValue.value,
-							deviceValue.metaname)
+						createCellDeviceValue(row, deviceValue)
 					}
 				}
 			}
@@ -182,25 +184,38 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	}
 	
 	
-	private Cell createCellDeviceValue(Row row, String label, Double value, String metaname) {
+	private Cell createCellDeviceValue(Row row, Map rowMap) {
 		int cellIndex = -1
 		Cell cell
+		double value = rowMap.value
+		// si plusieurs valeurs pour le même intervalle (10min), indique si on écrase la valeur présente
+		// ou si on doit ajouter les valeurs.
+		// pour les compteurs, on ajoute les valeurs
+		boolean ajouterValeur = false
 		
-		if (label == "Compteur gaz" && metaname == "conso" && value) {
+		if (rowMap.implClass == Compteur.name && rowMap.metaname == "conso") {
 			cellIndex = 2
-		} else if (label == "Compteur électrique" && metaname in ['hcinst', 'hpinst'] && value) {
+			ajouterValeur = true
+			
+			// compteur gaz : la valeur enregistrée est en nombre d'impulsion
+			// il faut la convertir en Wh en passant par m3 en utilisant coef de conversion gaz
+			// la plupart des compteurs : 1 impulsion = 10dm3 = 0,01m3
+			// coef conversion = 11.29 = valeur moyenne sur montreuil le gast = kWh pour 1m3
+			value = rowMap.value * 0.01 * 11.29 * 1000
+		} else if (rowMap.implClass == TeleInformation.name && rowMap.metaname in ['hcinst', 'hpinst']) {
 			cellIndex = 3
-		} else if (label == "Tint1") {
+			ajouterValeur = true
+		} else if (rowMap.implClass == Temperature.name && rowMap.mac.endsWith("_1")) {
 			cellIndex = 4
-		} else if (label == "Hint1") {
+		} else if (rowMap.implClass == Humidite.name && rowMap.mac.endsWith("_1")) {
 			cellIndex = 5
-		} else if (label == "Tint2") {
+		} else if (rowMap.implClass == Temperature.name && rowMap.mac.endsWith("_2")) {
 			cellIndex = 6
-		} else if (label == "Hint2") {
+		} else if (rowMap.implClass == Humidite.name && rowMap.mac.endsWith("_2")) {
 			cellIndex = 7
-		} else if (label == "Text") {
+		} else if (rowMap.implClass == Temperature.name && rowMap.mac.endsWith("_3")) {
 			cellIndex = 8
-		} else if (label == "Hext") {
+		} else if (rowMap.implClass == Humidite.name && rowMap.mac.endsWith("_3")) {
 			cellIndex = 9
 		}
 		
@@ -209,6 +224,12 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 			
 			if (!cell) {
 				cell = row.createCell(cellIndex)
+			} else {
+				// la cellule existe déjà, on regarde si on écrase la valeur
+				// ou si on cumule les valeurs
+				if (ajouterValeur) {
+					value += cell.getNumericCellValue()
+				}
 			}
 			
 			cell.setCellValue(value)

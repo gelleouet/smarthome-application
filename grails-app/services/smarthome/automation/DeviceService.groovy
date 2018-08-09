@@ -433,7 +433,8 @@ class DeviceService extends AbstractService {
 		}
 		
 		HQL hql = new HQL("device",	""" 
-			FROM Device device JOIN FETCH device.deviceType deviceType""")
+			FROM Device device JOIN FETCH device.deviceType deviceType
+			LEFT JOIN FETCH device.agent agent""")
 		
 		if (command.userId) {
 			hql.addCriterion("device.user.id = :userId", [userId: command.userId])

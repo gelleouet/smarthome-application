@@ -68,7 +68,9 @@
 			    	<g:each var="device" in="${ devices }">
 				        <tr>
 				        	<td><asset:image src="${ device.newDeviceImpl().icon() }" class="device-icon-list"/></td>
-				            <td><g:link controller="device" action="edit" id="${ device.id }">${ device.label }</g:link></td>
+				            <td>
+				            	<g:link controller="device" action="edit" id="${ device.id }">${ device.label }</g:link>
+				            </td>
 				            <td>${ device.deviceType.libelle }</td>
 				            <td>${ device.user.prenomNom }</td>
 				            <td><app:formatTimeAgo date="${ device.dateValue }"/></td>
@@ -77,6 +79,12 @@
 				            	<g:set var="battery" value="${ device.metavalue('battery') }"/>
 				            	<g:set var="signal" value="${ device.metavalue('signal') }"/>
 				            	
+				            	<g:if test="${ device.agent.online }">
+				            		<span class="aui-lozenge aui-lozenge-success">online</span>
+				            	</g:if>
+				            	<g:else>
+				            		<span class="aui-lozenge">offline</span>
+				            	</g:else>
 				            	<g:if test="${ battery?.value }">
 				            		<g:if test="${ battery.value.isDouble() && battery.value.toDouble() <= 2.0 }">
 				            			<span class="aui-lozenge aui-lozenge-error">Batterie ${ battery.value }</span>
