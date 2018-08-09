@@ -121,7 +121,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 					if (valueDate != lastDate) {
 						row = sheet.createRow(rowIdx++)
 						createDatetimeCell(row, 0, valueDate)
-						row.createCell(1).setCellValue(user[1])
+						row.createCell(1).setCellValue(user[2])
 						lastDate = valueDate 
 					}	
 					

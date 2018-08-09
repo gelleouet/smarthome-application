@@ -392,17 +392,18 @@ class DeviceValueService extends AbstractService {
 		List ids
 		
 		if (command.userId) {
-			ids = [[command.userId, User.read(command.userId).username]]
+			User user = User.read(command.userId)
+			ids = [[command.userId, user.username, user.prenom, user.nom]]
 		} else {
-			ids = DeviceValue.executeQuery("""SELECT user.id, user.username
+			ids = DeviceValue.executeQuery("""SELECT user.id, user.username, user.prenom, user.nom
 				FROM DeviceValue deviceValue JOIN deviceValue.device device
 				JOIN device.user user
 				WHERE deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
 				AND device.user.id IN (SELECT userAdmin.user.id FROM UserAdmin userAdmin
 					WHERE userAdmin.admin.id = :adminId)
 				AND deviceValue.name is null
-				GROUP BY user.id, user.username
-				ORDER BY user.username""", [adminId: command.adminId, dateDebut: command.datetimeDebut(),
+				GROUP BY user.id, user.username, user.prenom, user.nom
+				ORDER BY user.prenom, user.nom""", [adminId: command.adminId, dateDebut: command.datetimeDebut(),
 					dateFin: command.datetimeFin()])	
 		}
 		
