@@ -79,9 +79,17 @@ class Device implements Serializable, EventTriggerPreparable {
 	static {
 		grails.converters.JSON.registerObjectMarshaller(Device) {
 			it.fetchParams()
-			[id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, 
-				deviceType: it.deviceType, params: it.params, command: it.command,
-				actionName: it.actionName]
+			def map = [id: it.id, mac: it.mac, label: it.label, groupe: it.groupe, value: it.value, dateValue: it.dateValue, 
+				deviceType: [id: it.deviceType?.id], params: it.params, command: it.command,
+				actionName: it.actionName, jsonDateValue: it.dateValue?.format(DateUtils.JSON_FORMAT),
+				metavalues: []]
+			
+			it.metavalues.each { meta ->
+				map.metavalues << [id: meta.id, value: meta.value, main: meta.main, trace: meta.trace,
+					virtualDevice: meta.virtualDevice, name: meta.name]
+			}
+			
+			return map
 		}
 	}
 	
@@ -140,6 +148,9 @@ class Device implements Serializable, EventTriggerPreparable {
 			}
 			if (values.virtualDevice) {
 				meta.virtualDevice = values.virtualDevice
+			}
+			if (values.unite) {
+				meta.unite = values.unite
 			}
 			
 			this.addToMetavalues(meta)
@@ -252,11 +263,13 @@ class Device implements Serializable, EventTriggerPreparable {
 	 * Lance la préparation des metavalues depuis l'implémentation du device
 	 * Applique la formule si présente
 	 * 
+	 * @param datas original datas
+	 * 
 	 * @return this
 	 */
-	Device processValue() {
+	Device processValue(def datas) {
 		def deviceImpl = newDeviceImpl()
-		deviceImpl.prepareMetaValuesForSave()
+		deviceImpl.prepareMetaValuesForSave(datas)
 		
 		def metaValue = metavalues?.find {
 			it.main

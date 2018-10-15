@@ -398,7 +398,7 @@ class AgentService extends AbstractService {
 		// il faut envoyer le message au bon serveur dans la bonne Queue 
 		// on se sert du serverId qu'on passe en routingKey
 		// Seul le bon serveur ayant le websocket va recevoir le message à traiter
-		this.asyncSendMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
+		this.sendAsynchronousMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
 			ClassUtils.prefixAMQ(this) + '.sendMessage.' + token.serverId, message, ExchangeType.DIRECT)
 	}
 	

@@ -92,7 +92,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 				command.datetimeDebut(), dateFin: command.datetimeFin()])
 			hql.addCriterion("device.user.id = :userId", [userId: user[0]])
 			hql.addCriterion("deviceValue.name is null OR deviceValue.name in (:metanames)",
-				[metanames: ['conso', 'hcinst', 'hpinst']])
+				[metanames: ['conso', 'hcinst', 'hpinst', 'baseinst']])
 			
 			if (command.deviceTypeClass) {
 				hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
@@ -202,7 +202,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 			// la plupart des compteurs : 1 impulsion = 10dm3 = 0,01m3
 			// coef conversion = 11.29 = valeur moyenne sur montreuil le gast = kWh pour 1m3
 			value = rowMap.value * 0.01 * 11.29 * 1000
-		} else if (rowMap.implClass == TeleInformation.name && rowMap.metaname in ['hcinst', 'hpinst']) {
+		} else if (rowMap.implClass == TeleInformation.name && rowMap.metaname in ['hcinst', 'hpinst', 'baseinst']) {
 			cellIndex = 3
 			ajouterValeur = true
 		} else if (rowMap.implClass == Temperature.name && rowMap.mac.endsWith("_1")) {

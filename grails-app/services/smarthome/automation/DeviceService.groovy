@@ -237,7 +237,7 @@ class DeviceService extends AbstractService {
 		// bien metre à jour la date avant toutes les autres instructions
 		Date dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
 		
-		// ajout des métavalues
+		// bind des métavalues
 		datas.metavalues?.each { key, values ->
 			def meta = device.addMetavalue(key, values)
 			
@@ -247,7 +247,7 @@ class DeviceService extends AbstractService {
 			}
 		}
 		
-		// gestion des metadatas
+		// bind des metadatas
 		datas.metadatas?.each { key, values ->
 			device.addMetadata(key, values)
 		}
@@ -260,7 +260,7 @@ class DeviceService extends AbstractService {
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
 			device.value = datas.value
 			device.dateValue = dateValue
-			device.processValue()
+			device.processValue(datas)
 			resultDevice = device
 		}
 		

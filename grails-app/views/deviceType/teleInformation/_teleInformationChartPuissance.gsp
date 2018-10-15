@@ -1,8 +1,6 @@
 <%@ page import="smarthome.endpoint.TeleinfoEndPoint" %>
 <%@ page import="smarthome.core.EndPointUtils" %>
 
-<p class="separator" style="text-align:center; font-weight:bold; font-size: medium;">Puissance instantanée</p>
-
 <h6>
 	<p>Cet outil vous permet de suivre en temps réel la puissance totale consommée par votre installation électrique. 
 	Les données reçues ne seront pas historisées sur les graphiques classiques mais l'écran ci-dessous sera 

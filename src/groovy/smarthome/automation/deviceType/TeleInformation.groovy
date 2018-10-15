@@ -17,6 +17,7 @@ import smarthome.automation.DeviceTypeProviderPrix;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.DeviceValueDay;
 import smarthome.automation.DeviceValueMonth;
+import smarthome.automation.HouseConso;
 import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;
@@ -59,7 +60,7 @@ class TeleInformation extends AbstractDeviceType {
 		
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-				"null,hcinst,hpinst")
+				"null,hcinst,hpinst,baseinst")
 		} else {
 			values = super.values(command)
 		}
@@ -77,47 +78,69 @@ class TeleInformation extends AbstractDeviceType {
 	@Override
 	GoogleChart googleChart(DeviceChartCommand command, List values) {
 		GoogleChart chart = new GoogleChart()
+		def opttarif = command.device.metavalue("opttarif")?.value
 		
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.values = values.groupBy { it.dateValue }
 			
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
-				new GoogleDataTableCol(label: "Heures creuses (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes = []
+			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
+			
+			if (opttarif in ["HC", "EJP"]) {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hcinst" }?.value
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+				})
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hpinst" }?.value
-				}),
-				new GoogleDataTableCol(label: "Intensité (A)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find{ !it.name }?.value
-				}),
-			]
+				})
+			} else {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ it.name == "baseinst" }?.value
+				})
+			}
+			
+			chart.colonnes << new GoogleDataTableCol(label: "Intensité (A)", type: "number", value: { deviceValue, index, currentChart ->
+				deviceValue.value.find{ !it.name }?.value
+			})
+			
 		} else {
 			chart.values = values
 			
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
-				new GoogleDataTableCol(label: "Heures creuses (kWh)", type: "number", value: { deviceValue, index, currentChart -> 
+			chart.colonnes = []
+			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
+			
+			if (opttarif in ["HC", "EJP"]) {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart -> 
 					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1) 
 					} else {
 						return null
 					}
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (kWh)", type: "number", value: { deviceValue, index, currentChart ->
+				})
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchpsum" }?.value 
 					if (value != null) {
 						return (value / 1000d).round(1)
 					} else {
 						return null
 					}
-				}),
-				new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find{ it.name == "max" }?.value 
-				}),
-			]
+				})
+			} else {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases", type: "number", value: { deviceValue, index, currentChart ->
+					def value = deviceValue.value.find{ it.name == "basesum" }?.value
+					if (value != null) {
+						return (value / 1000d).round(1)
+					} else {
+						return null
+					}
+				})
+			}
+			
+			chart.colonnes << new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
+				deviceValue.value.find{ it.name == "max" }?.value 
+			})
+			
 		}
 		
 		return chart
@@ -204,7 +227,7 @@ class TeleInformation extends AbstractDeviceType {
 	 * @see smarthome.automation.deviceType.AbstractDeviceType.prepateMetaValuesForSave()
 	 */
 	@Override
-	def prepareMetaValuesForSave() {
+	def prepareMetaValuesForSave(def datas) {
 		Date dateInf
 		
 		use (TimeCategory) {
@@ -216,9 +239,12 @@ class TeleInformation extends AbstractDeviceType {
 		if (device.id) {
 			// calcul conso heure creuse sur la période
 			def hc = device.metavalue("hchc")
-			device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses (Wh)", trace: true])
 			
-			if (hc) {
+			// les metavalues sur la période sont désormais gérées par le controller (à cause du offline)
+			// mais pour les anciennes versions, il faut les ajouter ici manuellement
+			if (hc && !datas.metavalues?.hcinst) {
+				device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses",
+					trace: true, unite: "Wh"])
 				// récupère la dernière valeur hchc
 				def lastHC = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue, "hchc") 
 				
@@ -230,15 +256,31 @@ class TeleInformation extends AbstractDeviceType {
 	
 			// calcul conso heure pleine sur la période
 			def hp = device.metavalue("hchp")
-			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines (Wh)", trace: true])
 			
-			if (hp) {
+			if (hp && !datas.metavalues?.hpinst) {
+				device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines",
+					trace: true, unite: "Wh"])
 				// récupère la dernière valeur hchp
 				def lastHP = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue, "hchp")  
 						
 				if (lastHP) {
 					def conso = hp.value.toLong() - lastHP.value.toLong()
 					device.addMetavalue("hpinst", [value: conso.toString()])
+				}
+			}
+			
+			// calcul conso toute heure sur la période
+			def base = device.metavalue("base")
+			
+			if (base && !datas.metavalues?.baseinst) {
+				device.addMetavalue("baseinst", [value: "0", label: "Période toutes heures",
+					trace: true, unite: "Wh"])
+				// récupère la dernière valeur base
+				def lastBase = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue, "base")
+						
+				if (lastBase) {
+					def conso = base.value.toLong() - lastBase.value.toLong()
+					device.addMetavalue("baseinst", [value: conso.toString()])
 				}
 			}
 		}
@@ -278,16 +320,95 @@ class TeleInformation extends AbstractDeviceType {
 		}
 		
 		String optionTarifaire = device.metavalue("opttarif")?.value // base, hc, ...
-		String intensiteSouscrite = device.metavalue("isousc")?.value // 60A, 45A, ...
 		
-		if (optionTarifaire && intensiteSouscrite) {
-			contratCache = "${optionTarifaire}_${intensiteSouscrite}".toUpperCase() // ex : HC_60
+		if (optionTarifaire) {
+			// le isousc n'est pas toujours fourni (ie module sans fil TIC)
+			String intensiteSouscrite = device.metavalue("isousc")?.value // 60A, 45A, ...
+			
+			if (intensiteSouscrite) {
+				contratCache = "${optionTarifaire}_${intensiteSouscrite}".toUpperCase() // ex : HC_60
+			} else {
+				contratCache = "${optionTarifaire}".toUpperCase() // ex : HC_60
+			}
+			
 			return contratCache
 		}
 		
 		return null
 	}
-
+	
+	
+	/**
+	 * Option tarifaire
+	 * 
+	 * @return
+	 */
+	String getOptTarif() {
+		return device.metavalue("opttarif")?.value // base, hc, ...
+	}
+	
+	
+	/**
+	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 * 
+	 * @return
+	 */
+	Map consosJour() {
+		def consos = [optTarif: getOptTarif()]
+		def currentDate = new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		
+		if (consos.optTarif in ['HC', 'EJP']) {
+			def first_hchp = DeviceValue.firstValueByDay(device, 'hchp')
+			def last_hchp = DeviceValue.lastValueByDay(device, 'hchp') 
+			def first_hchc = DeviceValue.firstValueByDay(device, 'hchc')
+			def last_hchc = DeviceValue.lastValueByDay(device, 'hchc')
+			consos.hchp = first_hchp?.value && last_hchp?.value ? (last_hchp.value - first_hchp.value) / 1000.0 : 0.0
+			consos.hchc = first_hchc?.value && last_hchc?.value ? (last_hchc.value - first_hchc.value) / 1000.0 : 0.0
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+			
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			def first_base = DeviceValue.firstValueByDay(device, 'base')
+			def last_base = DeviceValue.lastValueByDay(device, 'base')
+			consos.base = first_base?.value && last_base?.value ? (last_base.value - first_base.value) / 1000.0 : 0.0
+			consos.total = (consos.base as Double).round(1)
+			
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+		
+		return consos	
+	}
+	
+	
+	/**
+	 * Les consos annuelles en fonction synthèse maison
+	 * 
+	 * @param houseConso
+	 * @return
+	 */
+	Map consosAnnuelle(HouseConso houseConso) {
+		def consos = [optTarif: getOptTarif()]
+		
+		if (consos.optTarif == 'HC') {
+			consos.tarifHP = calculTarif('HP', houseConso.kwHP, houseConso.year())
+			consos.tarifHC = calculTarif('HC', houseConso.kwHC, houseConso.year())
+			consos.tarifTotal = consos.tarifHP != null || consos.tarifHC != null ? (consos.tarifHP ?: 0) + (consos.tarifHC ?: 0) : null
+		} else if (consos.optTarif == 'EJP') {
+			consos.tarifHP = calculTarif('PM', houseConso.kwHP, houseConso.year())
+			consos.tarifHC = calculTarif('HN', houseConso.kwHC, houseConso.year())
+			consos.tarifTotal = consos.tarifHP != null || consos.tarifHC != null ? (consos.tarifHP ?: 0) + (consos.tarifHC ?: 0) : null
+		} else {
+			consos.tarifHC = calculTarif('BASE', houseConso.kwHC, houseConso.year())
+			consos.tarifTotal = consos.tarifBASE
+		}
+		
+		
+		return consos
+	}
 
 
 	/**
@@ -319,7 +440,7 @@ class TeleInformation extends AbstractDeviceType {
 			AND deviceValue.name in (:metaNames)
 			GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
 				dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference),
-				metaNames: ['hchp', 'hchc']]))
+				metaNames: ['hchp', 'hchc', 'base']]))
 		
 		return values
 	}
@@ -355,7 +476,7 @@ class TeleInformation extends AbstractDeviceType {
 			AND deviceValue.name in (:metaNames)
 			GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
 				dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
-				metaNames: ['hchp', 'hchc']]))
+				metaNames: ['hchp', 'hchc', 'base']]))
 		
 		return values
 	}

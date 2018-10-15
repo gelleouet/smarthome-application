@@ -1,26 +1,14 @@
 <%@ page import="smarthome.automation.DeviceValue" %>
 
 <g:set var="currentDate" value="${ new Date() }"/>
-<g:set var="currentYear" value="${ currentDate[Calendar.YEAR] }"/>
 
 <h3>Synthèse consommations</h3>
 
 <g:if test="${ house?.compteur }">
 	<g:set var="compteurElectrique" value="${ house.compteurElectriqueImpl() }"/>
-					
+	<g:set var="consos" value="${ compteurElectrique.consosJour() }"/>
 	<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.compteur.id] }"/>
-	<g:set var="first_hchp" value="${ DeviceValue.firstValueByDay(house?.compteur, 'hchp') }"/>
-	<g:set var="last_hchp" value="${ DeviceValue.lastValueByDay(house?.compteur, 'hchp') }"/>
-	<g:set var="first_hchc" value="${ DeviceValue.firstValueByDay(house?.compteur, 'hchc') }"/>
-	<g:set var="last_hchc" value="${ DeviceValue.lastValueByDay(house?.compteur, 'hchc') }"/>
-	<g:set var="hchp" value="${ first_hchp?.value && last_hchp?.value ? (last_hchp.value - first_hchp.value) / 1000.0 : 0.0 }"/>
-	<g:set var="hchc" value="${ first_hchc?.value && last_hchc?.value ? (last_hchc.value - first_hchc.value) / 1000.0 : 0.0 }"/>
-	<g:set var="hctotal" value="${ (hchp + hchc as Double).round(1) }"/>
 	
-	<g:set var="tarifHP" value="${ compteurElectrique.calculTarif('HP', hchp, currentYear) }"/>
-	<g:set var="tarifHC" value="${ compteurElectrique.calculTarif('HC', hchc, currentYear) }"/>
-	<g:set var="tarifTotal" value="${ (tarifHP != null || tarifHC != null) ? (tarifHP ?: 0.0) + (tarifHC ?: 0.0) : null }"/>
-
 
 	<div class="aui-group">
 		<div class="aui-item responsive" style="width: 33.3%">
@@ -32,7 +20,7 @@
 							<h4>${ app.formatUser(date: currentDate) }</h4>
 						</div>
 						<div class="aui-item">
-							<h4><span class="link">${ tarifTotal != null ? (tarifTotal as Double).round(1) : '-' }€</span>
+							<h4><span class="link">${ consos.tarifTotal != null ? (consos.tarifTotal as Double).round(1) : '-' }€</span>
 								<g:if test="${ params.compare }">
 									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
 								</g:if>
@@ -45,7 +33,7 @@
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ hctotal }kWh
+							${ consos.total }kWh
 						</div>
 					</g:link>
 					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
@@ -53,22 +41,31 @@
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
 							<tr>
-								<th></th>
+								<th>${ consos.optTarif }</th>
 								<th>kWh</th>
 								<th>€</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>HP</td>
-								<td><span class="link">${ (hchp as Double)?.round(1) }</span></td>
-								<td><span class="link">${ (tarifHP as Double)?.round(1) }</span></td>
-							</tr>
-							<tr>
-								<td>HC</td>
-								<td><span class="link">${ (hchc as Double)?.round(1) }</span></td>
-								<td><span class="link">${ (tarifHC as Double)?.round(1) }</span></td>
-							</tr>
+							<g:if test="${ consos.optTarif in ['HC', 'EJP'] }">
+								<tr>
+									<td>${ consos.optTarif == 'HC' ? 'Heures creuses' : 'Heures normales' }</td>
+									<td><span class="link">${ (consos.hchc as Double)?.round(1) }</span></td>
+									<td><span class="link">${ (consos.tarifHC as Double)?.round(1) }</span></td>
+								</tr>
+								<tr>
+									<td>${ consos.optTarif == 'HC' ? 'Heures pleines' : 'Heures pointe mobile' }</td>
+									<td><span class="link">${ (consos.hchp as Double)?.round(1) }</span></td>
+									<td><span class="link">${ (consos.tarifHP as Double)?.round(1) }</span></td>
+								</tr>
+							</g:if>
+							<g:else>
+								<tr>
+									<td>Toutes heures</td>
+									<td><span class="link">${ (consos.base as Double)?.round(1) }</span></td>
+									<td><span class="link">${ (consos.tarifBASE as Double)?.round(1) }</span></td>
+								</tr>
+							</g:else>
 						</tbody>
 					</table>
 					

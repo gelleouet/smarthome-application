@@ -3,6 +3,7 @@
 		<tr>
 			<th>Principale?</th>
 			<th>Nom</th>
+			<th>Unité</th>
 			<th>Valeur</th>
 			<th>Type</th>
 			<th>Historisation</th>
@@ -19,6 +20,7 @@
 					<g:checkBox name="metavalues[${ status }].main" value="${ metadata.main }"/>
 				</td>
 				<td><label title="API : device.metavalue('${ metadata.name }')?.value">${ metadata.label }</label></td>
+				<td><g:textField name="metavalues[${ status }].unite" value="${ metadata.unite }" class="text short-field"/></td>
 				<td><g:textField name="metavalues[${ status }].value" value="${ metadata.value }" class="text medium-field" disabled="true"/></td>
 				<td>
 					<g:if test="${ metadata.type }">

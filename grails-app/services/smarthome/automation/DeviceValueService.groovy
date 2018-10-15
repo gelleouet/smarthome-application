@@ -143,32 +143,41 @@ class DeviceValueService extends AbstractService {
 	/**
 	 * Trace le changement de valeur pour garder un historique
 	 *
-	 * @param device
+	 * @param deviceDatas les données device au format json au moment où il a changé. ne pas passer
+	 * 	le device en domain, sinon il a peut-être été modifié entre temps
+	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	DeviceValue traceValue(Device device) throws SmartHomeException {
-		DeviceValue value, defaultValue
-		Double doubleValue
-		
-		if (!device.attached) {
-			device.attach()
+	DeviceValue traceValue(def deviceDatas) throws SmartHomeException {
+		if (! (deviceDatas?.id instanceof Number)) {
+			log.error "Cannot trace value : no device id"
+			return null
 		}
 		
+		DeviceValue value, defaultValue
+		Double doubleValue
+		Device device = Device.read(deviceDatas.id as Long)
 		AbstractDeviceType deviceType = device.newDeviceImpl()
-		doubleValue = DeviceValue.parseDoubleValue(device.value)
+		
+		// On récupère la valeur du device depuis les données brutes
+		doubleValue = DeviceValue.parseDoubleValue(deviceDatas.value)
+		Date dateDeviceValue = DateUtils.parseJson(deviceDatas.jsonDateValue, 0)
 		
 		// trace la valeur principale du device
 		if (deviceType.isTraceValue(doubleValue)) {
-			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: device.dateValue)
+			defaultValue = new DeviceValue(device: device, value: doubleValue, dateValue: dateDeviceValue)
 			
 			if (!defaultValue.save()) {
 				throw new SmartHomeException("Erreur trace valeur !", defaultValue)
 			}
 			
-			// trace les metavalues
-			device.metavalues?.each {
+			// trace les metavalues depuis encore les données brutes
+			// sinon si on récupère depuis le device attaché à la session, les données
+			// ont pu changées par une autre action asynchrone et l'on va historiser les nouvelles valeurs
+			// à la place des anciennes
+			deviceDatas.metavalues?.each {
 				if (it.value) {
 					// si la meta est principale, pas besoin de tracer car déjà fait au niveau device
 					// si meta virtuelle, pas besoin non car ca sera fait au niveau du device virtuel
@@ -178,7 +187,7 @@ class DeviceValueService extends AbstractService {
 						
 						if (doubleValue != null) {
 							value = new DeviceValue(device: device, name: it.name, value: doubleValue,
-								dateValue: device.dateValue)
+								dateValue: dateDeviceValue)
 							
 							if (!value.save()) {
 								throw new SmartHomeException("Erreur trace meta valeur !", value)

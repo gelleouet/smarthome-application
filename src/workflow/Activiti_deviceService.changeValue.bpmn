@@ -13,19 +13,27 @@
 device.actionName = context.result.actionName
 
 execution.setVariable("device", device)
+execution.setVariable("dateValue", smarthome.core.DateUtils.parseJson(context.result.jsonDateValue, 0))
 
 if (context.arg1 instanceof Map &amp;&amp; context.arg1.offline) {
 	execution.setVariable("offline", true)
 } else {
 	execution.setVariable("offline", false)
-}</script>
+}
+
+if (context.arg1 instanceof Map) {
+	execution.setVariable("originalDatas", context.arg1)
+} else {
+	execution.setVariable("originalDatas", null)
+}
+</script>
     </scriptTask>
     <sequenceFlow id="flow3" sourceRef="scripttask1" targetRef="inclusivegateway1"></sequenceFlow>
     <serviceTask id="servicetask2" name="Envoi message agent" activiti:expression="${agentService.sendMessage(device.agent, deviceService.createMessage(device, context.arg1))}"></serviceTask>
     <sequenceFlow id="flow4" name="Action utilisateur et value online ?" sourceRef="inclusivegateway1" targetRef="servicetask2">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${device.agent != null && context.serviceMethodName == "deviceService.execute" && !offline}]]></conditionExpression>
     </sequenceFlow>
-    <serviceTask id="servicetask3" name="Historisation valeur" activiti:expression="${deviceValueService.traceValue(device)}" activiti:resultVariableName="deviceValue"></serviceTask>
+    <serviceTask id="servicetask3" name="Historisation valeur" activiti:async="true" activiti:expression="${deviceValueService.traceValue(context.result)}" activiti:resultVariableName="deviceValue"></serviceTask>
     <sequenceFlow id="flow5" sourceRef="inclusivegateway1" targetRef="servicetask3"></sequenceFlow>
     <serviceTask id="servicetask4" name="Gestion des alertes valeur" activiti:expression="${deviceAlertService.processDeviceValue(deviceValue)}"></serviceTask>
     <endEvent id="endevent1" name="End"></endEvent>
@@ -41,7 +49,7 @@ events?.each { event -&gt;
 }
 </script>
     </scriptTask>
-    <serviceTask id="servicetask5" name="Aggrégation des données" activiti:expression="${deviceUtilService.aggregateSingleDay(device.id, device.dateValue)}"></serviceTask>
+    <serviceTask id="servicetask5" name="Aggrégation des données" activiti:expression="${deviceUtilService.aggregateSingleDay(device.id, dateValue)}"></serviceTask>
     <endEvent id="endevent3" name="End"></endEvent>
     <sequenceFlow id="flow11" sourceRef="servicetask5" targetRef="endevent3"></sequenceFlow>
     <inclusiveGateway id="inclusivegateway2" name="Inclusive Gateway"></inclusiveGateway>

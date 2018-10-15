@@ -20,6 +20,7 @@ class DeviceMetavalue implements Serializable {
 	String label
 	String value
 	String type
+	String unite
 	
 	/*
 	 * sa valeur sera la valeur principale du device
@@ -40,11 +41,13 @@ class DeviceMetavalue implements Serializable {
 		value nullable: true;
 		label nullable: true;
 		type nullable: true;
+		unite nullable: true;
     }
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		device index: "DeviceMetavalue_Device_Idx"
+		unite length: 32
 		version false
 	}
 }

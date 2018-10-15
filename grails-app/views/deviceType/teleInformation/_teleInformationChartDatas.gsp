@@ -13,9 +13,7 @@
 	          selectionMode: 'multiple',
 	          seriesType: 'steppedArea',
 	          series: {
-	          	0: {targetAxisIndex: 0},
-	          	1: {targetAxisIndex: 0},
-	          	2: {targetAxisIndex: 1, type: 'line', pointsVisible: false},
+	          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line', pointsVisible: false},
 	          },
 	          vAxes: {
 	          	0: {title: 'Index (Wh)'},
@@ -37,19 +35,13 @@
 		chartDatas = new google.visualization.DataView(chartDatas)
       	
       	chartDatas.setColumns([0,
-			1,{ calc: "stringify",
-                sourceColumn: 1,
+      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
+			${col},{ calc: "stringify",
+                sourceColumn: ${col},
                 type: "string",
                 role: "annotation" },
-            2,{ calc: "stringify",
-                sourceColumn: 2,
-                type: "string",
-                role: "annotation" },
-            3,{ calc: "stringify",
-                sourceColumn: 3,
-                type: "string",
-                role: "annotation" }]
-        )
+            </g:each>
+        ])
 	    	
 		chartOptions = {
 			  'title': '${label }',
@@ -62,9 +54,7 @@
 		      },
 		      selectionMode: 'multiple',
 		      'series': {
-	          	0: {targetAxisIndex: 0},
-	          	1: {targetAxisIndex: 0},
-	          	2: {targetAxisIndex: 1, type: 'line'},
+	          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line'},
 	          },
 	          vAxes: {
 	          	0: {title: 'Index (kWh)'},

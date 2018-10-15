@@ -176,9 +176,11 @@ abstract class AbstractDeviceType implements Serializable {
 	 * meta données calculées par exemple. Les nouvelles metadonnées doivent quand
 	 * même être définies dans "metaValuesName" pour être utilisées 
 	 * 
+	 * @param datas original datas
+	 * 
 	 * @return
 	 */
-	def prepareMetaValuesForSave() {
+	def prepareMetaValuesForSave(def datas) {
 		
 	}
 	
