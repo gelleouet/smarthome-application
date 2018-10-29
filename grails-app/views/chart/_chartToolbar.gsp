@@ -24,15 +24,15 @@
         		<button id="navigation-chart-day-button" class="aui-button ${ command.viewMode == ChartViewEnum.day ? 'aui-button-primary' : '' }">jour</button>
         		<button id="navigation-chart-month-button" class="aui-button ${ command.viewMode == ChartViewEnum.month ? 'aui-button-primary' : '' }">mois</button>
         		<button id="navigation-chart-year-button" class="aui-button ${ command.viewMode == ChartViewEnum.year ? 'aui-button-primary' : '' }">année</button>
-        		<%--<button class="aui-button aui-dropdown2-trigger aui-button-split-more" aria-haspopup="true" aria-owns="split-navigation-chart-dropdown">More</button>
+        		<button class="aui-button aui-dropdown2-trigger aui-button-split-more" aria-haspopup="true" aria-owns="split-navigation-chart-dropdown">More</button>
         		<div id="split-navigation-chart-dropdown" class="aui-dropdown2 aui-style-default" role="menu" aria-hidden="true">
-			        <ul class="aui-list-truncate">
+			        <ul>
 			            <li>
 			            	<g:checkBox name="comparePreviousYear" value="${ command.comparePreviousYear }"/>
-			            	<label for="comparePreviousYear">Comparer avec l'année précédente</label>
+			            	<label for="comparePreviousYear">Comparer année précédente &nbsp;</label>
 			            </li>
 			        </ul>
-			    </div>--%>
+			    </div>
             </div>
         </div>
         

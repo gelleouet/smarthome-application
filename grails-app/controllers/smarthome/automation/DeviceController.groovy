@@ -192,9 +192,14 @@ class DeviceController extends AbstractController {
 		
 		def tableauBords = deviceService.groupByTableauBord(user.id)
 		GoogleChart chart = deviceValueService.createChart(command)
+		GoogleChart compareChart
+		
+		if (command.comparePreviousYear) {
+			compareChart = deviceValueService.createChart(command.cloneForLastYear())
+		}
 		
 		render(view: 'deviceChart', model: [command: command, tableauBords: tableauBords,
-			chart: chart, secUser: user])
+			chart: chart, secUser: user, compareChart: compareChart])
 	}
 	
 	

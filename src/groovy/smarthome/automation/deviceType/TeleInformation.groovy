@@ -137,9 +137,11 @@ class TeleInformation extends AbstractDeviceType {
 				})
 			}
 			
-			chart.colonnes << new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
-				deviceValue.value.find{ it.name == "max" }?.value 
-			})
+			if (!command.comparePreviousYear) {
+				chart.colonnes << new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value.find{ it.name == "max" }?.value 
+				})
+			}
 			
 		}
 		

@@ -10,6 +10,7 @@ class DeviceChartCommand extends AbstractChartCommand<DeviceChartCommand> {
 	AbstractDeviceType deviceImpl
 	List<Device> compareDevices = []
 	List<List> compareValues = []
+	String metaName
 	
 	
 	static constraints = {

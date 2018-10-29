@@ -412,13 +412,13 @@ abstract class AbstractDeviceType implements Serializable {
 		def values = []
 		
 		if (command.viewMode == ChartViewEnum.day) {
-			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin())
+			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(), command.metaName)
 		} else if (command.viewMode == ChartViewEnum.month) {
-			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin()).groupBy {
+			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
 				it.dateValue
 			}.collect { it }
 		} else if (command.viewMode == ChartViewEnum.year) {
-			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin()).groupBy {
+			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
 				it.dateValue
 			}.collect { it }
 		}

@@ -2,6 +2,10 @@
 
 <div data-chart-datas="true" class="hidden">
 	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) })
+
+	<g:if test="${ compareChart }">
+		chartOldDatas = new google.visualization.DataTable(${ raw(compareChart.toJsonDataTable().toString(false)) })
+	</g:if>
 	
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		chartOptions = {
@@ -34,34 +38,50 @@
 	<g:else>
 		chartDatas = new google.visualization.DataView(chartDatas)
       	
-      	chartDatas.setColumns([0,
-      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
-			${col},{ calc: "stringify",
-                sourceColumn: ${col},
-                type: "string",
-                role: "annotation" },
-            </g:each>
-        ])
-	    	
-		chartOptions = {
-			  'title': '${label }',
-		      'width': '${ params.chartWidth ?: '100%' }',
-	          'height': '${ params.chartHeight ?: '600' }',
-	          legend: {position: 'top'},
-	          isStacked: true,
-	          'chartArea': {
-		      	width: '90%'
-		      },
-		      selectionMode: 'multiple',
-		      'series': {
-	          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line'},
-	          },
-	          vAxes: {
-	          	0: {title: 'Index (kWh)'},
-	          	1: {title: 'Intensité (A)'}
-	          },
-	          'seriesType': 'bars',
-	  	};
+      	<g:if test="${ !compareChart }">
+	      	chartDatas.setColumns([0,
+	      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
+				${col},{ calc: "stringify",
+	                sourceColumn: ${col},
+	                type: "string",
+	                role: "annotation" },
+	            </g:each>
+	        ])
+		    	
+			chartOptions = {
+				  'title': '${label }',
+			      'width': '${ params.chartWidth ?: '100%' }',
+		          'height': '${ params.chartHeight ?: '600' }',
+		          legend: {position: 'top'},
+		          isStacked: true,
+		          'chartArea': {
+			      	width: '90%'
+			      },
+			      selectionMode: 'multiple',
+			      'series': {
+		          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line'},
+		          },
+		          vAxes: {
+		          	0: {title: 'Index (kWh)'},
+		          	1: {title: 'Intensité (A)'}
+		          },
+		          'seriesType': 'bars',
+		  	};
+	  	</g:if>
+	  	<g:else>
+			chartOptions = {
+				  'title': '${label }',
+			      'width': '${ params.chartWidth ?: '100%' }',
+		          'height': '${ params.chartHeight ?: '600' }',
+		          legend: {position: 'top'},
+		          isStacked: true,
+		          'chartArea': {
+			      	width: '90%'
+			      },
+			      selectionMode: 'multiple',
+		          'seriesType': 'bars'
+		  	};
+	  	</g:else>
 	  	
 	  	chartType = 'ColumnChart';
 	</g:else>
