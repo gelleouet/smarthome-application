@@ -30,7 +30,7 @@
 				axis: 'horizontal',
 				keepInBounds: true,
 				actions: ['dragToZoom', 'rightClickToReset']
-			  },
+			  }
 	  	};
 	  	
 	  	chartType = 'ComboChart';
@@ -79,7 +79,19 @@
 			      	width: '90%'
 			      },
 			      selectionMode: 'multiple',
-		          'seriesType': 'bars'
+		          'seriesType': 'bars',
+		          diff: {
+				  	oldData: {
+				  		tooltip: {
+				  			prefix: null
+				  		}
+				  	},
+				  	newData: {
+				  		tooltip: {
+				  			prefix: null
+				  		}
+				  	},
+				  }
 		  	};
 	  	</g:else>
 	  	
