@@ -79,7 +79,7 @@ class RegisterService extends AbstractService {
 			applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic)
 		
 		if (!user.save()) {
-			throw new SmartHomeException("Erreur création nouveau compte !", account)
+			throw new SmartHomeException("Erreur création nouveau compte !", account, user.errors)
 		}
 		
 		return registrationCode

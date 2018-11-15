@@ -8,7 +8,7 @@
 </g:if>
 
 <g:if test="${error || exception}">
-	<g:render template="/templates/messageError" model="[title: error ?: 'Erreur !', errors: errors]"/>
+	<g:render template="/templates/messageError" model="[title: error ?: 'Erreur !', errors: errors ?: exception?.errors]"/>
 </g:if>
 
 <span id="ajaxError"></span>
