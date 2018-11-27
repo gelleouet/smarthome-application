@@ -10,4 +10,12 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class DetecteurFumee extends AbstractDeviceType {
+	
+	/**
+	 * Le détecteur est-il en alerte fumée
+	 * @return
+	 */
+	boolean isSmoke() {
+		(device.value?.isDouble() && device.value?.toDouble() > 0) || "true".equals(device.value)		
+	}
 }

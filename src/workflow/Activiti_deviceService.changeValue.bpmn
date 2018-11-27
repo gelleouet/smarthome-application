@@ -11,6 +11,7 @@
     <scriptTask id="scripttask1" name="Préparation des données" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>def device = deviceService.findById(context.result.id)
 device.actionName = context.result.actionName
+device.newDeviceImpl()
 
 execution.setVariable("device", device)
 execution.setVariable("dateValue", smarthome.core.DateUtils.parseJson(context.result.jsonDateValue, 0))

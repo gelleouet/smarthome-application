@@ -49,29 +49,24 @@
 		    <thead>
 		        <tr>
 		            <th>Agents</th>
+		            <th>Status</th>
 		        </tr>
 		    </thead>
 		    <tbody>
 		    	<g:each var="bean" in="${ agentInstanceList }">
 			        <tr>
 			            <td>
-			            	<h5><g:link action="edit" id="${ bean.id }">${ bean.agentModel } / ${ bean.mac } </g:link> [${ bean.libelle }]
-			            		<g:if test="${ bean.locked }">
-			            		<span class="aui-lozenge">verrouillé</span>
-			            	</g:if>
-			            	<g:else>
-			            		<span class="aui-lozenge aui-lozenge-success">activé</span>
-			            	</g:else>
-			            	<g:if test="${ bean.online }">
-			            		<span class="aui-lozenge aui-lozenge-success">online</span>
-			            	</g:if>
-			            	<g:else>
-			            		<span class="aui-lozenge">offline</span>
-			            	</g:else>
+			            	<h5>
+			            		<g:link action="edit" id="${ bean.id }">${ bean.agentModel } / ${ bean.mac } </g:link>
+			            		<g:if test="${ bean.libelle }">
+				            		${ bean.libelle }
+				            	</g:if>
 			            	</h5>
-			            	<p style="font-size:small"><label><strong>IP privée :</strong> ${ bean.privateIp }
-			            	<strong>IP publique :</strong> ${ bean.publicIp }
-			            	<strong>Dernière connexion :</strong> ${ app.formatTimeAgo(date: bean.lastConnexion) }</label></p>
+			            	<ul style="font-size:small">
+			            		<li><label><strong>IP privée :</strong> ${ bean.privateIp }</label></li>
+			            		<li><label><strong>IP publique :</strong> ${ bean.publicIp }</label></li>
+			            		<li><label><strong>Dernière connexion :</strong> ${ app.formatTimeAgo(date: bean.lastConnexion) }</label></li>
+			            	</ul>
 			            	
 			            	<div class="buttons-container" style="padding-top:10px">
 								<div class="buttons">
@@ -103,6 +98,20 @@
 					            	</a>
 								</div>
 							</div>
+			            </td>
+			            <td>
+			            	<g:if test="${ bean.locked }">
+			            		<span class="aui-lozenge">verrouillé</span>
+			            	</g:if>
+			            	<g:else>
+			            		<span class="aui-lozenge aui-lozenge-success">activé</span>
+			            	</g:else>
+			            	<g:if test="${ bean.online }">
+			            		<span class="aui-lozenge aui-lozenge-success">online</span>
+			            	</g:if>
+			            	<g:else>
+			            		<span class="aui-lozenge">offline</span>
+			            	</g:else>
 			            </td>
 			        </tr>
 		        </g:each>

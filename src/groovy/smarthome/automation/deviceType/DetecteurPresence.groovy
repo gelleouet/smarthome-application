@@ -10,5 +10,12 @@ import smarthome.automation.ChartTypeEnum;
  *
  */
 class DetecteurPresence extends AbstractDeviceType {
-
+	/**
+	 * Le détecteur a t'il détecté un mouvement
+	 * 
+	 * @return
+	 */
+	boolean isMovement() {
+		(device.value?.isDouble() && device.value?.toDouble() > 0) || "true".equals(device.value)
+	}
 }

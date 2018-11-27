@@ -5,7 +5,7 @@
 <div style="display:table;">
 	<div style="display:table-cell; padding-right:10px;">
 		<!--  gestion d'une valeur numérique ou boolean -->
-		<g:if test="${ (device.value?.isDouble() && device.value?.toDouble() > 0) || device.value == 'true' }">
+		<g:if test="${ device.deviceImpl.isSmoke() }">
 			<h2><span class="aui-lozenge aui-lozenge-error" style="font-size: large;">FUMEE</span></h2>
 		</g:if>
 		<g:else>
