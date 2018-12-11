@@ -19,7 +19,7 @@ email.message = """
 	&lt;p&gt;Veuillez cliquer sur le lien suivant : &lt;a style="text-decoration:none;" href="$context.result.serverUrl"&gt;-- activation de votre compte --&lt;/a&gt;&lt;/p&gt;
 	&lt;p&gt;Vous serez alors redirigés vers l'application Web et vous pourrez vous connecter avec vos identifiants.&lt;/p&gt;
 	&lt;br/&gt;
-	&lt;p&gt;Pour installer votre agent Raspberry, veuillez suivre la notice d'installation suivante : https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome&lt;/p&gt;
+	&lt;p&gt;Pour installer votre agent Raspberry, veuillez suivre la notice d'installation sur le wiki https://github.com/gelleouet/smarthome-raspberry/wiki&lt;/p&gt;
 """
 
 notificationService.sendEmail(email)</script>

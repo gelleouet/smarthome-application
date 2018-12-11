@@ -2,6 +2,7 @@ package smarthome.automation.deviceType
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import smarthome.automation.ChartViewEnum;
 import smarthome.automation.DeviceChartCommand;
@@ -9,6 +10,7 @@ import smarthome.automation.DeviceTypeProvider;
 import smarthome.automation.DeviceValue;
 import smarthome.automation.DeviceValueDay;
 import smarthome.automation.DeviceValueMonth;
+import smarthome.automation.HouseConso;
 import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeException;
 import smarthome.core.chart.GoogleChart;

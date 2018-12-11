@@ -39,9 +39,6 @@
 						<h1 style="color:#333;font-size:32px;font-weight:400;line-height:1.25;text-transform:none;">$body.title</h1>
 					
 						<p>$body.message</p>
-						
-						<br/>
-						<p>$body.appCode</p>
 					</div>
 				</div>
 			</div>

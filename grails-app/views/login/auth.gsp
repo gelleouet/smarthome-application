@@ -45,18 +45,14 @@
 	
 	<h2 class="separator"></h2>
 	
-	<g:if test="${ mobileAgent }">
-    	<h3>Autres applications</h3>
-    </g:if>
-    <g:else>
-    	<h3>Ou se connecter avec d'autres applications</h3>
-    </g:else>
+    <h3>Liens utiles</h3>
 	
 	<div class="buttons-container" style="padding-top:20px">
         <div class="buttons">
-            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Google</button>
-            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Facebook</button>
-            <button class="aui-button" aria-disabled="true" disabled><span class="aui-icon aui-icon-small aui-iconfont-user">View </span> Twitter</button>
+            <a class="aui-button" href="https://github.com/gelleouet/smarthome-application" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Github application</a>
+            <a class="aui-button" href="https://github.com/gelleouet/smarthome-application/wiki" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Wiki application</a>
+            <a class="aui-button" href="https://github.com/gelleouet/smarthome-raspberry" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Github agent</a>
+            <a class="aui-button" href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Wiki agent</a>
         </div>
     </div>
 	</g:applyLayout>

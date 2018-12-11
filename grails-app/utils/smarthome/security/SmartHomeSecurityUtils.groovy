@@ -31,7 +31,7 @@ class SmartHomeSecurityUtils {
 			return "Adresse email non valide !"
 		}
 		
-		if (emailMatcher.group(1).length() < 4) {
+		if (emailMatcher.group(1).length() < 2) {
 			return "Utilisateur email non valide !"
 		}
 		

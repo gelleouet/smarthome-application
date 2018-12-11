@@ -5,11 +5,9 @@
 <g:set var="dpe" value="${ houseService.classementDPE(house, conso) }"/>
 
 <p>
-	<label class="label">
-		<strong>Classement : ${ dpe?.note ?: '-'} <g:if test="${ dpe }">(${ dpe.kwParAn }kWh/an/m²)</g:if></strong>
-		<br/>
-		Surface : ${ house?.surface}m²,
-		Chauffage : ${ house?.chauffage?.libelle ?: '-' }, 
-		Consommation annuelle : ${ conso ? (conso.kwHC + conso.kwHP) as Integer : '-'}kWh
-	</label>
+	<label class="label"><strong>Classement : ${ dpe?.note ?: '-'} <g:if test="${ dpe }">(${ dpe.kwParAn }kWh/an/m²)</g:if></strong></label>
+	<ul>
+		<li>Chauffage : <span class=link>${ house?.chauffage?.libelle ?: '-' }</span></li>
+		<li>Consommation annuelle : <span class=link>${ conso ? (conso.kwHC + conso.kwHP) as Integer : '-'}kWh</span></li>
+	</ul>
 </p>

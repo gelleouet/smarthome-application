@@ -20,8 +20,14 @@ class HouseWeatherController extends AbstractController {
 	 * @return
 	 */
 	def widgetWeather(House house) {
-		def forecast = houseWeatherService.currentHourlyForecast(house)
-		def dailyForecast = houseWeatherService.currentDailyForecast(house)
+		def forecast
+		def dailyForecast
+		
+		if (house) {
+			forecast = houseWeatherService.currentHourlyForecast(house)
+			dailyForecast = houseWeatherService.currentDailyForecast(house)
+		}
+		
 		render (template: 'widgetWeather', model: [house: house, forecast: forecast,
 			dailyForecast: dailyForecast])	
 	}

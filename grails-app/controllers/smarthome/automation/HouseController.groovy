@@ -3,6 +3,7 @@ package smarthome.automation
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import smarthome.automation.deviceType.Compteur;
 import smarthome.automation.deviceType.Humidite;
 import smarthome.automation.deviceType.TeleInformation;
 import smarthome.automation.deviceType.Temperature;
@@ -29,13 +30,15 @@ class HouseController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: TeleInformation.name]))
+		def compteursGaz = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
+			deviceTypeClass: Compteur.name]))
 		def temperatures = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: Temperature.name]))
 		def humidites = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: Humidite.name]))
 		
 		render(template: 'form', model: [house: house, compteurs: compteurs, user: user,
-			temperatures: temperatures, humidites: humidites])
+			temperatures: temperatures, humidites: humidites, compteursGaz: compteursGaz])
 	}
 	
 	
@@ -82,14 +85,14 @@ class HouseController extends AbstractController {
 	
 	
 	/**
-	 * Rendu de la synthese confort de la maison
+	 * Rendu de la synthese consmmation elec de la maison
 	 * 
 	 * @return
 	 */
-	def syntheseConsommation(House house) {
+	def syntheseConsommationElec(House house) {
 		def user = authenticatedUser
 		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'syntheseConsommation', model: [house: house, houseSynthese: houseSynthese,
+		render(template: 'syntheseConsommationElec', model: [house: house, houseSynthese: houseSynthese,
 			secUser: user])
 	}
 	

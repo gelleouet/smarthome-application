@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1544535647431-1">
+        <addColumn tableName="house">
+            <column name="compteur_gaz_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1544535647431-2">
+        <addColumn tableName="house_conso">
+            <column defaultValue="0" defaultValueNumeric="0.0" name="kwbase" type="float8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1544535647431-3">
+        <addColumn tableName="house_conso">
+            <column defaultValue="0" defaultValueNumeric="0.0" name="kwgaz" type="float8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1544535647431-4">
+        <addForeignKeyConstraint baseColumnNames="compteur_gaz_id" baseTableName="house" constraintName="fk_pjh6ue6njvdkm0wpgsfpp5b06" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+</databaseChangeLog>

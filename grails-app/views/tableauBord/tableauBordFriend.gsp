@@ -22,11 +22,7 @@
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConsommation" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommation', id: house?.id, params: [compare: true]) }"></div>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="divDeviceShareGrid" async-url="${ g.createLink(controller: 'device', action: 'deviceShareGrid', id: user.id) }"></div>
+					<div id="divHouseSyntheseConsommationElec" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommationElec', id: house?.id, params: [compare: true]) }"></div>
 				</div>
 			</div>
 		</div>

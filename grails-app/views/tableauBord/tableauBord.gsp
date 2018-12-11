@@ -44,11 +44,7 @@
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConsommation" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommation', id: house?.id) }"></div>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="divDeviceSynthese" async-url="${ g.createLink(controller: 'device', action: 'synthese') }"></div>
+					<div id="divHouseSyntheseConsommationElec" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommationElec', id: house?.id) }"></div>
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">

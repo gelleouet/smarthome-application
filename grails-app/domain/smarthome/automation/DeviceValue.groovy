@@ -313,9 +313,9 @@ class DeviceValue implements Serializable {
 		def doubleValue = null
 		
 		if (value != null) {
-			if (value == 'true') {
+			if (value == 'true' || value == 'on') {
 				doubleValue = 1
-			} else if (value == 'false') {
+			} else if (value == 'false' || value == 'off') {
 				doubleValue = 0
 			} else {
 				try {

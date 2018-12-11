@@ -59,9 +59,10 @@
                     		Liens utiles	
                     	</div>
                         <ul>
-                            <li><a href="https://www.facebook.com/bemyhomesmart/" target="blank"><g:meta name="app.code"/> Facebook</a></li>
-                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki/Bienvenue-sur-le-Wiki-SmartHome" target="blank">Wiki Github</a></li>
-                            <li><a href="https://github.com/gelleouet/smarthome-application" target="blank">Dépôt Github</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-application" target="blank">Github application</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-application/wiki" target="blank">Wiki application</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-raspberry" target="blank">Github agent</a></li>
+                            <li><a href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank">Wiki agent</a></li>
                         </ul>
                     </div>
                 </div>

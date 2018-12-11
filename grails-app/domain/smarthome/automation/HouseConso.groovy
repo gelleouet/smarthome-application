@@ -1,7 +1,9 @@
 package smarthome.automation
 
 import java.io.Serializable;
+import java.util.Map;
 
+import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
@@ -19,6 +21,8 @@ class HouseConso implements Serializable {
 	
 	Double kwHC
 	Double kwHP
+	Double kwGaz
+	Double kwBASE
 	Date dateConso
 	
 	
@@ -29,6 +33,7 @@ class HouseConso implements Serializable {
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		house index: "HouseConso_Idx"
+		kwGaz column: 'kwgaz'
 	}
 	
 	
@@ -58,7 +63,7 @@ class HouseConso implements Serializable {
 	 * @return
 	 */
 	int consoTotale() {
-		return 	(kwHC + kwHP) as Integer
+		return 	(kwHC + kwHP + kwGaz + kwBASE) as Integer
 	}
 	
 	
@@ -78,7 +83,7 @@ class HouseConso implements Serializable {
 	 * @param conso
 	 * @return
 	 */
-	int comparePercentTotal(HouseConso consoCompare) {
+	double comparePercentTotal(HouseConso consoCompare) {
 		int totalCompare = consoCompare.consoTotale()
 		return (consoTotale() - totalCompare) * 100 / totalCompare
 	}
@@ -90,7 +95,7 @@ class HouseConso implements Serializable {
 	 * @param conso
 	 * @return
 	 */
-	int comparePercentHP(HouseConso consoCompare) {
+	double comparePercentHP(HouseConso consoCompare) {
 		return (kwHP - consoCompare.kwHP) * 100 / consoCompare.kwHP
 	}
 	
@@ -101,8 +106,55 @@ class HouseConso implements Serializable {
 	 * @param conso
 	 * @return
 	 */
-	int comparePercentHC(HouseConso consoCompare) {
+	double comparePercentHC(HouseConso consoCompare) {
 		return (kwHC - consoCompare.kwHC) * 100 / consoCompare.kwHC
+	}
+	
+	
+	/**
+	 * Comparaison en pourcentage sur la conso BASE
+	 *
+	 * @param conso
+	 * @return
+	 */
+	double comparePercentBASE(HouseConso consoCompare) {
+		return (kwBASE - consoCompare.kwBASE) * 100 / consoCompare.kwBASE
+	}
+	
+	
+	/**
+	 * Comparaison en pourcentage sur la conso Gaz
+	 *
+	 * @param conso
+	 * @return
+	 */
+	double comparePercentGaz(HouseConso consoCompare) {
+		return (kwGaz - consoCompare.kwGaz) * 100 / consoCompare.kwGaz
+	}
+	
+	
+	/**
+	 * Nombre de champ ayant une conso non nulle
+	 * 
+	 * @return
+	 */
+	int countFieldConso() {
+		int count = 0
+		
+		if (kwHC) {
+			count++
+		}
+		if (kwHP) {
+			count++
+		}
+		if (kwGaz) {
+			count++
+		}
+		if (kwBASE) {
+			count++
+		}
+		
+		return count
 	}
 	
 	
@@ -114,5 +166,48 @@ class HouseConso implements Serializable {
 	 */
 	static Date dateConsoForYear(int year) {
 		return DateUtils.firstDayInYear(year)
+	}
+	
+	
+	/**
+	 * Calcul les tarifs des consos en fonction des types de compteur
+	 *
+	 * @param compteurElec 
+	 * @param compteurGaz (optionel)
+	 * 
+	 * @return
+	 */
+	Map calculTarif(AbstractDeviceType compteurElec, AbstractDeviceType compteurGaz) {
+		def consos = [optTarifElec: compteurElec.getOptTarif()]
+		consos.tarifTotal = 0
+		
+		if (consos.optTarifElec == 'HC') {
+			consos.tarifHP = compteurElec.calculTarif('HP', kwHP, year())
+			consos.tarifHC = compteurElec.calculTarif('HC', kwHC, year())
+		} else if (consos.optTarifElec == 'EJP') {
+			consos.tarifHP = compteurElec.calculTarif('PM', kwHP, year())
+			consos.tarifHC = compteurElec.calculTarif('HN', kwHC, year())
+		} else {
+			consos.tarifBASE = compteurElec.calculTarif('BASE', kwBASE, year())
+		}
+		
+		if (compteurGaz) {
+			consos.tarifGaz = compteurGaz.calculTarif('BASE', kwGaz, year())
+		}
+		
+		if (consos.tarifHP) {
+			consos.tarifTotal += consos.tarifHP
+		}
+		if (consos.tarifHC) {
+			consos.tarifTotal += consos.tarifHC
+		}
+		if (consos.tarifBASE) {
+			consos.tarifTotal += consos.tarifBASE
+		}
+		if (consos.tarifGaz) {
+			consos.tarifTotal += consos.tarifGaz
+		}
+		
+		return consos
 	}
 }

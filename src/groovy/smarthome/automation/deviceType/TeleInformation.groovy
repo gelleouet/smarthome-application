@@ -387,33 +387,6 @@ class TeleInformation extends AbstractDeviceType {
 	
 	
 	/**
-	 * Les consos annuelles en fonction synthèse maison
-	 * 
-	 * @param houseConso
-	 * @return
-	 */
-	Map consosAnnuelle(HouseConso houseConso) {
-		def consos = [optTarif: getOptTarif()]
-		
-		if (consos.optTarif == 'HC') {
-			consos.tarifHP = calculTarif('HP', houseConso.kwHP, houseConso.year())
-			consos.tarifHC = calculTarif('HC', houseConso.kwHC, houseConso.year())
-			consos.tarifTotal = consos.tarifHP != null || consos.tarifHC != null ? (consos.tarifHP ?: 0) + (consos.tarifHC ?: 0) : null
-		} else if (consos.optTarif == 'EJP') {
-			consos.tarifHP = calculTarif('PM', houseConso.kwHP, houseConso.year())
-			consos.tarifHC = calculTarif('HN', houseConso.kwHC, houseConso.year())
-			consos.tarifTotal = consos.tarifHP != null || consos.tarifHC != null ? (consos.tarifHP ?: 0) + (consos.tarifHC ?: 0) : null
-		} else {
-			consos.tarifHC = calculTarif('BASE', houseConso.kwHC, houseConso.year())
-			consos.tarifTotal = consos.tarifBASE
-		}
-		
-		
-		return consos
-	}
-
-
-	/**
 	 * (non-Javadoc)
 	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueDay(java.util.Date)
 	 */

@@ -3,10 +3,12 @@ package smarthome.automation
 import java.io.Serializable;
 
 import smarthome.automation.deviceType.AbstractDeviceType;
+import smarthome.automation.deviceType.Compteur;
 import smarthome.automation.deviceType.Humidite;
 import smarthome.automation.deviceType.TeleInformation;
 import smarthome.automation.deviceType.Temperature;
 import smarthome.core.SmartHomeCoreConstantes;
+import smarthome.core.chart.GoogleChart;
 import smarthome.security.User;
 import grails.validation.Validateable;
 
@@ -26,6 +28,7 @@ class House implements Serializable {
 	boolean defaut
 	Double surface
 	Device compteur
+	Device compteurGaz
 	Device temperature
 	Device humidite
 	Chauffage chauffage
@@ -41,6 +44,7 @@ class House implements Serializable {
     static constraints = {
 		surface nullable: true
 		compteur nullable: true
+		compteurGaz nullable: true
 		temperature nullable: true
 		humidite nullable: true
 		chauffage nullable: true
@@ -112,6 +116,19 @@ class House implements Serializable {
 	
 	
 	/**
+	 * Retourne une instance du compteur gaz principal
+	 *
+	 * @return
+	 */
+	AbstractDeviceType compteurGazImpl() {
+		if (compteurGaz) {
+			return compteurGaz.newDeviceImpl()
+		}
+		return null
+	}
+	
+	
+	/**
 	 * Retrouve le device équivalent dans ceux associés à la maison
 	 * 
 	 * @param device
@@ -126,6 +143,8 @@ class House implements Serializable {
 			return this.humidite
 		} else if (deviceImpl instanceof TeleInformation) {
 			return this.compteur
+		} else if (deviceImpl instanceof Compteur) {
+			return this.compteurGaz
 		}
 		
 		return null	
@@ -140,4 +159,15 @@ class House implements Serializable {
 	HouseWeather weather() {
 		weathers?.size() ? weathers[0] : null	
 	}
+	
+	
+	/**
+	 * Création d'un chart global sur les consommations d'énergie d'une maison
+	 * 
+	 * @param command
+	 * @return
+	 */
+	GoogleChart chartConsommationEnergie(ChartCommand command) {
+		
+	} 
 }
