@@ -42,6 +42,7 @@
 		            <th>Libellé</th>
 		            <th>Implémentation</th>
 		            <th>Qualitatif?</th>
+		            <th>Planning?</th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -53,6 +54,7 @@
 			            </g:link></td>
 			            <td>${ bean.implClass }</td>
 			            <td>${ bean.qualitatif ? 'X' : '' }</td>
+			            <td>${ bean.planning ? 'X' : '' }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

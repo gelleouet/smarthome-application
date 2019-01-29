@@ -1,32 +1,4 @@
 $(window).on('load', function() {
-	$(document).on('change', '#deviceType\\.id', function() {
-		var url = $(this).attr('metadata-url');
-		var datas = {
-				id:  $(this).find('option:selected').val()
-		}
-		
-		ajaxRerender(url, datas, '#deviceMetadatas')
-	});
-});
-
-
-$(window).on('load', function() {
-	$(document).on('click', '#commit-metadata-button', function() {
-		if (confirm('Voulez-vous changer la configuration sur le périphérique ?')) {
-			ajaxSubmitForm($(this), 'data-url', '#device-form');
-		}
-	});
-});
-
-
-$(window).on('load', function() {
-	$(document).on('click', '#level-alert-delete-button', function() {
-		ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxAlerts');
-	});
-});
-
-
-$(window).on('load', function() {
 	$(document).on('click', '.ajax-invoke-action-button', function() {
 		if (confirm('Voulez-vous continuer ?')) {
 			var form = $('#' + $(this).attr('data-form-id'))
@@ -124,4 +96,63 @@ function closeAddDeviceValueDialog(refreshChart) {
 
 function onLoadDeviceChart() {
 	onLoadChart()
+}
+
+/**
+ * Init page edit device
+ */
+function onLoadDeviceEdit() {
+	initPlanningUI();
+	initPlanningEvent();
+	
+	$(document).on('change', '#deviceType\\.id', function() {
+		var url = $(this).attr('metadata-url');
+		var datas = {
+				id:  $(this).find('option:selected').val()
+		}
+		
+		ajaxRerender(url, datas, '#deviceMetadatas')
+	});
+	
+	$(document).on('click', '#commit-metadata-button', function() {
+		if (confirm('Voulez-vous changer la configuration sur le périphérique ?')) {
+			ajaxSubmitForm($(this), 'data-url', '#device-form');
+		}
+	});
+	
+	$(document).on('click', '#level-alert-delete-button', function() {
+		ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxAlerts');
+	});
+	
+	$(document).on('click', '#planning-device-add-button', function(event) {
+		// sauvegarde les modifs manuellement car l'event "submit" n'est pas déclenché
+		bindPlanningToData()
+		
+    	ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxDevicePlannings', function(data) {
+    		initPlanningUI()
+    	});
+    })
+    
+    $(document).on('click', '#planning-device-delete-button', function(event) {
+    	// sauvegarde les modifs manuellement car l'event "submit" n'est pas déclenché
+    	bindPlanningToData()
+		
+    	ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxDevicePlannings', function(data) {
+    		initPlanningUI()
+    	});
+    })
+    
+    $(document).on('click', '#planning-device-copy-button', function(event) {
+    	// sauvegarde les modifs manuellement car l'event "submit" n'est pas déclenché
+    	bindPlanningToData()
+    	
+    	ajaxSubmitForm($(this), 'data-url', '#device-form', '#ajaxDevicePlannings', function(data) {
+    		initPlanningUI()
+    	});
+    })
+    
+    $(document).on("submit", "#device-form", function(event) {
+    	bindPlanningToData()
+    	return true
+    })
 }

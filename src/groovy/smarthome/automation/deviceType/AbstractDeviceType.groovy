@@ -500,4 +500,25 @@ abstract class AbstractDeviceType implements Serializable {
 		
 		return values
 	}
+	
+	
+	/**
+	 * Renvoit les clés disponibles pour la construction d'un plannning
+	 * 
+	 * @return
+	 */
+	List<String> planningKeys() {
+		return []	
+	}
+	
+	
+	/**
+	 * Renvoit les valeurs possibles sur le planning
+	 * Map indexée sur la valeur avec les infos associées (label, couleur, etc)
+	 * 
+	 * @return
+	 */
+	Map planningValues() {
+		return [:]
+	}
  }

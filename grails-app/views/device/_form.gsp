@@ -35,6 +35,11 @@
 		Agent
 	</label>
 	<g:select name="agent.id" from="${agents}" optionKey="id" optionValue="${{ it.mac + (it.libelle ? (' (' + it.libelle + ')') : '') }}" required="true" value="${device?.agent?.id}" class="select" noSelection="[null: '']"/>
+	<g:if test="${ device?.agent }">
+		<div>
+			<g:render template="/agent/status" model="[agent: device?.agent]"/>
+		</div>
+	</g:if>
 </div>
 
 <div class="field-group">

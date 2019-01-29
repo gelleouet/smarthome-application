@@ -10,7 +10,7 @@
 </div>
 
 <div class="field-group">
-	<label for="libelle">
+	<label for="implClass">
 		Implémentation
 		<span class="aui-icon icon-required">*</span>
 	</label>
@@ -18,14 +18,21 @@
 </div>
 
 <div class="field-group">
-	<label for="actif">
+	<label for="qualitatif">
 		Qualitatif ?
 	</label>
 	<g:checkBox name="qualitatif" value="${deviceType?.qualitatif}" class="checkbox"/>
 </div>
 
 <div class="field-group">
-	<label for="script">
+	<label for="planning">
+		Planning ?
+	</label>
+	<g:checkBox name="planning" value="${deviceType?.planning}" class="checkbox"/>
+</div>
+
+<div class="field-group">
+	<label for="configuration">
 		Configuration
 	</label>
 	<g:textArea name="configuration" value="${deviceTypeConfig?.data}" class="script textarea text long-field"/>

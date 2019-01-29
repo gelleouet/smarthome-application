@@ -100,18 +100,7 @@
 							</div>
 			            </td>
 			            <td>
-			            	<g:if test="${ bean.locked }">
-			            		<span class="aui-lozenge">verrouillé</span>
-			            	</g:if>
-			            	<g:else>
-			            		<span class="aui-lozenge aui-lozenge-success">activé</span>
-			            	</g:else>
-			            	<g:if test="${ bean.online }">
-			            		<span class="aui-lozenge aui-lozenge-success">online</span>
-			            	</g:if>
-			            	<g:else>
-			            		<span class="aui-lozenge">offline</span>
-			            	</g:else>
+			            	<g:render template="status" model="[agent: bean]"/>
 			            </td>
 			        </tr>
 		        </g:each>

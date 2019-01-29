@@ -29,6 +29,7 @@ class DeviceController extends AbstractController {
 	UserFriendService userFriendService
 	HouseService houseService
 	DeviceUtilService deviceUtilService
+	DevicePlanningService devicePlanningService
 	
 	
 	
@@ -131,6 +132,11 @@ class DeviceController extends AbstractController {
 		model.agents = Agent.findAllByUser(model.user)
 		model.deviceTypes = DeviceType.list()
 		model.deviceEvents = eventService.listByUser(null, model.user.id, [:])
+		if (userModel.device.id) {
+			model.devicePlannings = devicePlanningService.listByDevice(userModel.device)
+		} else {
+			model.devicePlannings = []
+		}
 		
 		// on remplit avec les infos du user
 		model << userModel
@@ -147,7 +153,7 @@ class DeviceController extends AbstractController {
 	 */
 	def saveEdit(Device device) {
 		checkErrors(this, device)
-		deviceService.saveWithLevelAlerts(device)
+		deviceService.saveWithAssociations(device)
 		edit(device)
 	}
 
@@ -161,8 +167,22 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
 	def changeMetadata(Device device, String metadataName) {
 		checkErrors(this, device)
-		deviceService.changeMetadata(device, metadataName)
+		deviceService.syncMetadata(device, metadataName)
 		nop()
+	}
+	
+	
+	/**
+	 * Synchronise les plannigs vers l'agent
+	 *
+	 * @param device
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceController.COMMAND_NAME)
+	def syncPlannings(Device device) {
+		checkErrors(this, device)
+		deviceService.syncPlannings(device)
+		edit(device)
 	}
 
 
@@ -176,7 +196,7 @@ class DeviceController extends AbstractController {
 		device.user = authenticatedUser
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
-		deviceService.saveWithLevelAlerts(device)
+		deviceService.saveWithAssociations(device)
 		edit(device)
 	}
 	

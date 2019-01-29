@@ -109,6 +109,8 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 		
 		conso.kwHP = allConsos.sum { it.kwhp }
 		conso.kwHC = allConsos.sum { it.kwhc }
+		conso.kwBASE = 0
+		conso.kwGaz = 0
 		conso.save()
 		
 		return house

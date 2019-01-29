@@ -18,6 +18,7 @@ class DeviceType implements Serializable {
 	String implClass
 	Set config = []
 	boolean qualitatif
+	boolean planning
 	
 	
 	static hasMany = [config: DeviceTypeConfig]
@@ -37,7 +38,8 @@ class DeviceType implements Serializable {
 	
 	static {
 		grails.converters.JSON.registerObjectMarshaller(DeviceType) {
-			[id: it.id, implClass: it.implClass, libelle: it.libelle, qualitatif: it.qualitatif]
+			[id: it.id, implClass: it.implClass, libelle: it.libelle, qualitatif: it.qualitatif,
+				planning: it.planning]
 		}
 	}
 	

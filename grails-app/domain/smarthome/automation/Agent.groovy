@@ -15,7 +15,7 @@ import grails.validation.Validateable;
 @Validateable
 class Agent implements Serializable {
 	static belongsTo = [user: User]
-	static hasMany = [devices: Device, tokens: AgentToken]
+	static hasMany = [devices: Device, tokens: AgentToken, configs: AgentConfig]
 	
 	String mac
 	String privateIp

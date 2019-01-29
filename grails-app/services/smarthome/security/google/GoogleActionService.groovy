@@ -134,7 +134,7 @@ class GoogleActionService extends AbstractService {
 		log.info "Trigger Google Action Request Sync..."
 		
 		try {
-			URI homeGraphUri = new URIBuilder(grailsApplication.config.google.action.homeGraphUrl)
+			URI homeGraphUri = new URIBuilder("${grailsApplication.config.google.action.homeGraphUrl}:requestSync")
 				.setParameter("key", grailsApplication.config.google.action.homeGraphAPIKey)
 				.build()
 				

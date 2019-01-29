@@ -782,3 +782,49 @@ h5.device-grid-label {
 	width: 300px;
 	padding: 20px;
 }
+
+.planning td.ui-selecting {
+	opacity: 0.33;
+	border: 2px groove grey;
+}
+
+.planning td.ui-selected {
+	opacity: 0.33;
+	border: 2px groove grey;
+}
+
+.planning-cell {
+	border: 1px solid grey;
+}
+
+tr.planning-day-row td {
+	border-top: 1px solid grey;
+	border-left: 1px solid grey;
+	border-right: 1px solid grey;
+	border-bottom: 2px solid grey;
+}
+
+.planning-header-cell {
+	border:1px solid grey;
+	background-color: #e9e9e9;
+	font-weight: bold;
+	text-align: left;
+}
+
+.planning-day-cell {
+	border-top: 1px solid grey;
+	border-left: 1px solid grey;
+	border-right: 1px solid grey;
+	border-bottom: 2px solid grey;
+	background-color: #e9e9e9;
+	font-weight: bold;
+	text-align: left;
+}
+
+.device-planning:not(:last-child) {
+	margin-bottom: 20px;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: lightgrey;
+	padding-bottom: 10px;
+}

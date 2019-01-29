@@ -1,9 +1,11 @@
+<%@ page import="smarthome.automation.DevicePlanning" %>
+
 <html>
 <head>
 <meta name='layout' content='authenticated' />
 </head>
 
-<body>
+<body onload="onLoadDeviceEdit()">
 	<g:applyLayout name="applicationConfigure">
 		<div class="aui-group aui-group-split">
 			<div class="aui-item">
@@ -38,6 +40,11 @@
 			        <li class="menu-item">
 			            <a href="#tabs-device-alerts">Alertes</a>
 			        </li>
+			        <g:if test="${ device.deviceType?.planning }">
+			        	<li class="menu-item">
+				            <a href="#tabs-device-planning">Plannings</a>
+				        </li>
+			        </g:if>
 			    </ul>
 			    <div class="tabs-pane active-pane" id="tabs-device-general">
 			    	<div class="smart-tabs-content">
@@ -73,6 +80,15 @@
 						</g:if>				
 					</div>
 			    </div>
+			    <g:if test="${ device.deviceType?.planning }">
+			    	<div class="tabs-pane" id="tabs-device-planning">
+				        <div id="plannings" class="smart-tabs-content">
+				        	<div id="ajaxDevicePlannings">
+								<g:render template="/devicePlanning/devicePlannings" model="[device: device, devicePlannings: devicePlannings]"/>
+							</div>
+						</div>
+				    </div>
+			    </g:if>
 			</div>
 			
 			<br/>
@@ -80,7 +96,7 @@
 			<div class="buttons-container">
 				<div class="buttons">
 					<g:if test="${device.id }">
-						<g:actionSubmit value="Mettre à jour" action="saveEdit" class="aui-button aui-button-primary" />
+						<g:actionSubmit value="Enregistrer" action="saveEdit" class="aui-button aui-button-primary" />
 					</g:if>
 					<g:else>
 						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />

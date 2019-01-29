@@ -24,7 +24,8 @@ import grails.validation.Validateable;
 class Device implements Serializable, EventTriggerPreparable {
 	static belongsTo = [agent: Agent, user: User]
 	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
-		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert]
+		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert,
+		devicePlannings: DevicePlanning]
 	
 	String label
 	String groupe
@@ -69,6 +70,7 @@ class Device implements Serializable, EventTriggerPreparable {
 		metadatas cascade: 'all-delete-orphan', batchSize: 25
 		metavalues cascade: 'all-delete-orphan', batchSize: 25
 		events cascade: 'all-delete-orphan'
+		devicePlannings cascade: 'all-delete-orphan'
 		shares cascade: 'all-delete-orphan', batchSize: 25
 		formula type: 'text'
 		extras type: 'text'
@@ -300,6 +302,20 @@ class Device implements Serializable, EventTriggerPreparable {
 		}
 		
 		return this	
+	}
+	
+	
+	/**
+	 * Supprime plannings non bindés
+	 *
+	 * @return
+	 */
+	Device clearNotBindingPlanning() {
+		devicePlannings?.removeAll {
+			it.status == null
+		}
+		
+		return this
 	}
 	
 	

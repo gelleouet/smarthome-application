@@ -1,6 +1,7 @@
 package smarthome.automation
 
 import java.io.Serializable;
+import java.util.List;
 
 import grails.async.PromiseList;
 import grails.converters.JSON;
@@ -16,7 +17,6 @@ import smarthome.automation.deviceType.AbstractDeviceType;
 import smarthome.automation.scheduler.SmarthomeScheduler;
 import smarthome.automation.scheduler.WorkflowContextJob;
 import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
 import smarthome.core.AsynchronousWorkflow;
 import smarthome.core.Chronometre;
 import smarthome.core.DateUtils;
@@ -41,6 +41,8 @@ class DeviceService extends AbstractService {
 	DeviceTypeDetectRuleService deviceTypeDetectRuleService
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
+	DevicePlanningService devicePlanningService
+	PlanningService planningService
 	
 	
 	/**
@@ -62,7 +64,7 @@ class DeviceService extends AbstractService {
 	
 	
 	/**
-	 * Enregistrement d"un device avec la config des alertes
+	 * Enregistrement d"un device avec toutes les associations bindées
 	 * 
 	 * @param device
 	 * @return
@@ -70,8 +72,20 @@ class DeviceService extends AbstractService {
 	 */
 	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def saveWithLevelAlerts(Device device) throws SmartHomeException {
+	def saveWithAssociations(Device device) throws SmartHomeException {
 		device.clearNotBindingLevelAlert()
+		device.clearNotBindingPlanning()
+		
+		device.devicePlannings.each { devicePlanning ->
+			// association forcée sur le user du device
+			// et on revalide l'objet pour supprimer l'erreur sur la propriété user qui était nulle
+			devicePlanning.planning.user = device.user
+			devicePlanning.planning.validate()
+			planningService.save(devicePlanning.planning)
+			
+			devicePlanning.save()
+		}
+		
 		return this.save(device)
 	}
 	
@@ -147,22 +161,54 @@ class DeviceService extends AbstractService {
 	 * @return
 	 * @throws SmartHomeException
 	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def changeMetadata(Device device, String metadataName) throws SmartHomeException {
+	def syncMetadata(Device device, String metadataName) throws SmartHomeException {
 		this.save(device)
 		
 		if (device.agent) {
-			def data = [header: 'config', deviceMac: device.mac, metadataName: metadataName,
-				metadataValue: device.metadata(metadataName)?.value]
-			
-			try {
+			if (device.agent.online) {
+				def data = [header: 'config', deviceMac: device.mac, metadataName: metadataName,
+					metadataValue: device.metadata(metadataName)?.value]
 				agentService.sendMessage(device.agent, data)
-			} catch (Exception e) {
-				log.error("Can't send configuration change to agent : ${e.message}")
+			} else {
+				throw new SmartHomeException("Agent not connected !", device)
 			}
 		}
 		
 		return device
+	}
+	
+	
+	/**
+	 * Synchronise les plannings vers l'agent
+	 *
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@PreAuthorize("hasPermission(#device, 'OWNER')")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void syncPlannings(Device device) throws SmartHomeException {
+		if (device.agent) {
+			if (device.agent.online) {
+				def data = []
+				
+				List<DevicePlanning> devicePlannings = devicePlanningService.listByDevice(device)
+				
+				devicePlannings.each { devicePlanning ->
+					devicePlanning.planning.loadJsonData()
+					data << [title: devicePlanning.planning.title, rule: devicePlanning.planning.rule,
+						data: devicePlanning.planning.jsonData]
+				}
+				
+				def message = [header: 'config', deviceMac: device.mac, metadataName: '_plannings',
+					metadataValue: data]
+				agentService.sendMessage(device.agent, message)
+			} else {
+				throw new SmartHomeException("Agent not connected !", device)
+			}
+		}
 	}
 
 	

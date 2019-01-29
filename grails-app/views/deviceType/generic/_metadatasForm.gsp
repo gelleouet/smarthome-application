@@ -1,4 +1,4 @@
-<g:each var="metadata" in="${ device.metadatas?.findAll({ !(it.name in (exclude ?: [])) })?.sort{ (it.type ?: '') + it.label } }" status="status">
+<g:each var="metadata" in="${ device?.metadatas?.findAll({ !(it.name in (exclude ?: [])) })?.sort{ (it.type ?: '') + it.label } }" status="status">
 
 	<g:set var="index" value="${ status + (startStatus ?: 0) }"/>
 
@@ -19,7 +19,7 @@
 		<g:if test="${ commitButton && device.agent }">
 			<a id="commit-metadata-button" class="aui-button aui-button-subtle" title="Envoyer au périphérique"
 				data-url="${ g.createLink(action: 'changeMetadata', params: [metadataName: metadata.name]) }">
-           		<span class="aui-icon aui-icon-small aui-iconfont-share-list">
+           		<span class="aui-icon aui-icon-small aui-iconfont-share-list"></span>
            	</a>
 		</g:if>
 		
