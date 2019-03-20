@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="LIQUIBASE_HOME" value="C:\Users\Gregory\Documents\java\liquibase-3.3.5"/>
+<mapEntry key="LIQUIBASE_HOME" value="${liquibase_home}"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/smarthome-application/grails-app/migrations/smarthome-update.bat}"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="6.11"/>

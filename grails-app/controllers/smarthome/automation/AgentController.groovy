@@ -38,9 +38,10 @@ class AgentController extends AbstractController {
 			if (agentToken) {
 				render agentToken as JSON
 			} else {
-			render(status: 400, text: 'Error no token')
+				render(status: 400, text: 'Error no token')
 			}
 		} catch (SmartHomeException ex) {
+			log.error "Cannot subscribe : $ex.message"
 			render(status: 400, text: ex.message)
 		}
 	}
