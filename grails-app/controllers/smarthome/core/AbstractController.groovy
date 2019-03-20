@@ -254,6 +254,29 @@ abstract class AbstractController {
 	 * @return
 	 */
 	def nop() {
-		render(text: '')
+		render(status: 200, text: '')
+	}
+	
+	
+	/**
+	 * Retour simple avec message d'erreur et code http
+	 * 
+	 * @param error
+	 * @param status
+	 * @return
+	 */
+	def nopError(String error, int status) {
+		render(status: status, text: error)
+	}
+	
+	/**
+	 * Retour simple avec message d'erreur et code http par défaut 400
+	 *
+	 * @param error
+	 * @param status
+	 * @return
+	 */
+	def nopError400(String error) {
+		nopError(error, 400)	
 	}
 }

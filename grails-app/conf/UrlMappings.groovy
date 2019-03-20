@@ -8,5 +8,12 @@ class UrlMappings {
 		"/"(controller: 'tableauBord', action: 'index')
 		"500"(view:'/error')
 		"404"(view:'/error')
+		
+		/**
+		 * Les accès à l'API
+		 */
+		group "/api", {
+			"/device/push"(controller: "deviceApi", action: "push", method: "POST")
+		}
 	}
 }

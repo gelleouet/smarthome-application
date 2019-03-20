@@ -1,5 +1,7 @@
 package smarthome.security
 
+import grails.plugin.springsecurity.authentication.GrailsAnonymousAuthenticationToken;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,15 +33,19 @@ class SmartHomePermissionEvaluator implements PermissionEvaluator {
 	
 	
 	protected boolean hasOwnerPermission(Authentication authentication, Object domainObject) {
+		// pas d'évaluation sur sur authentification anonyme (logiquement depuis accès API contrôlé par token)
+		if (authentication['principal']?.username == GrailsAnonymousAuthenticationToken.USERNAME) {
+			return true
+		}
 		// pas d'évaluation sur les nouveaux objets
-		if (domainObject && domainObject.properties['id'] == null) {
+		else if (domainObject && domainObject.properties['id'] == null) {
 			return true
 		} else if (domainObject && domainObject['user']?.id && authentication && authentication['principal']?.id) {
 			// propriétaire direct de l'objet
 			if (domainObject['user'].id == authentication.principal.id) {
 				return true
 			} else {
-				// le suer connecté est peut être un admin d'un groupe d'utilisateur
+				// le user connecté est peut être un admin d'un groupe d'utilisateur
 				// dans ce cas, il a accès à tous les objets des utilisateurs du groupe
 				return UserAdmin.createCriteria().list {
 					eq 'admin.id', authentication.principal.id 

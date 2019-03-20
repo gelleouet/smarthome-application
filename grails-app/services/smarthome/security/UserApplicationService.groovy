@@ -88,4 +88,27 @@ class UserApplicationService extends AbstractService {
 	UserApplication findByUserAndApplicationId(User user, String applicationId) {
 		return UserApplication.findByUserAndApplicationId(user, applicationId)	
 	}
+	
+	
+	/**
+	 * Authentification par token et vérification si application correspond
+	 * 
+	 * @param token
+	 * @param applicationId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	UserApplication authenticateToken(String token, String applicationId) throws SmartHomeException {
+		UserApplication userApplication = UserApplication.findByToken(token, [fetch:['user':'join']])
+		
+		if (!userApplication) {
+			throw new SmartHomeException("Invalid token !")
+		}
+		
+		if (userApplication.applicationId != applicationId) {
+			throw new SmartHomeException("Invalid application !")
+		}
+		
+		return userApplication
+	}
 }
