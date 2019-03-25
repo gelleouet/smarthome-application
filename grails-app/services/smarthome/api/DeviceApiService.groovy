@@ -42,7 +42,7 @@ class DeviceApiService extends AbstractService {
 			throw new SmartHomeException("datas are required !")
 		}
 		
-		UserApplication userApplication = userApplicationService.authenticateToken(token, command.from)
+		UserApplication userApplication = userApplicationService.authenticateToken(token, command.application)
 		
 		// recherche du device
 		Device device = Device.findByMacAndUser(command.name, userApplication.user, [lock: true])

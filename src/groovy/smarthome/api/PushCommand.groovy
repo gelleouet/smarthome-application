@@ -14,7 +14,7 @@ import grails.validation.Validateable;
  */
 @Validateable
 class PushCommand {
-	String from
+	String application
 	String name
 	String unite
 	String metaname

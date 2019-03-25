@@ -99,7 +99,8 @@ class UserApplicationService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	UserApplication authenticateToken(String token, String applicationId) throws SmartHomeException {
-		UserApplication userApplication = UserApplication.findByToken(token, [fetch:['user':'join']])
+		UserApplication userApplication = UserApplication.findByToken(token.replace("Basic", "").trim(),
+			[fetch:['user':'join']])
 		
 		if (!userApplication) {
 			throw new SmartHomeException("Invalid token !")
