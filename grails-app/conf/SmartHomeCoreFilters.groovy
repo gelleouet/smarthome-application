@@ -30,7 +30,7 @@ class SmartHomeCoreFilters {
 		 * Trace le temps d'exécution de certaines actions
 		 * Les plus demandées et les plus importantes
 		 */
-		traceTimeRequest(controller: 'device|tableauBord', action: '*') {
+		traceTimeRequest(controller: 'device|tableauBord|house|houseWeather|profil', action: '*') {
 			
 			before = {
 				long start = System.currentTimeMillis()

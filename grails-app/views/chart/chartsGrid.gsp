@@ -1,7 +1,6 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<meta name='layout' content='authenticated-chart' />
 </head>
 
 <body onload="onLoadChart();">
@@ -63,10 +62,5 @@
 		</div>
 	
 	</g:applyLayout>
-	
-	
-	<asset:script type="text/javascript">
-		google.load("visualization", "1.0", {packages:["corechart"]});
-	</asset:script>
 </body>
 </html>

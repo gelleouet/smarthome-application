@@ -15,13 +15,17 @@ class HouseWeatherController extends AbstractController {
 	
 	
 	/**
+	 * Widget weather
 	 * 
-	 * @param house
 	 * @return
 	 */
-	def widgetWeather(House house) {
+	def widgetWeather() {
 		def forecast
 		def dailyForecast
+		
+		// plugin spring security add authenticatedUser property
+		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
 		
 		if (house) {
 			forecast = houseWeatherService.currentHourlyForecast(house)

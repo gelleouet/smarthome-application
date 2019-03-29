@@ -200,4 +200,17 @@ class ChartController extends AbstractController {
 		def model = fetchModelEdit([chart: chart])
 		render(template: 'chartDevice', model: model)
 	}
+	
+	
+	/**
+	 * Widget chart
+	 * 
+	 * @param Ch
+	 * @return
+	 */
+	def widgetChart(Chart chart) {
+		ChartCommand command = new ChartCommand(chart: chart)
+		def datas = chartService.values(command)
+		render(template: 'widgetChart', model: [chart: chart, command: command, datas: datas])
+	}
 }

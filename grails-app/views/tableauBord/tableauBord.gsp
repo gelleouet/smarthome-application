@@ -3,57 +3,51 @@
 <meta name='layout' content='authenticated-chart' />
 </head>
 
-<body>
-
-	<nav class="aui-navgroup aui-navgroup-horizontal">
-	    <div class="aui-navgroup-inner">
-	        <div class="aui-navgroup-primary">
-	            <ul class="aui-nav">
-	                <li><g:link action="devicesGrid" controller="device" params="[favori: true]">Favoris</g:link></li>
-	                <g:each var="tableauBord" in="${ tableauBords }">
-						<li>
-							<g:link action="devicesGrid" controller="device" params="[tableauBord: tableauBord]">${ tableauBord }</g:link>
-						</li>	                
-	                </g:each>
-	            </ul>
-	        </div><!-- .aui-navgroup-primary -->
-	    </div><!-- .aui-navgroup-inner -->
-	</nav>
-
+<body onload="onLoadTableauBord()">
 
 	<g:applyLayout name="applicationContent" params="[panelContentClass: 'panelContentGrey']">
-		<div class="aui-group">
-			<div class="aui-item responsive" style="width:350px">
-				<div class="filActualite" style="padding:15px;">
-					<g:render template="/profil/profilPublic"></g:render>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="ajaxHouseModeChange">
-						<g:render template="/house/changeMode" model="[house: house, user: user, modes: modes]"></g:render>
-					</div>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="divWidgetWeather" async-url="${ g.createLink(controller: 'houseWeather', action: 'widgetWeather', id: house?.id) }"></div>
-				</div>
-			</div>
-			<div class="aui-item responsive">
-				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConfort" async-url="${ g.createLink(controller: 'house', action: 'syntheseConfort', id: house?.id) }"></div>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConsommationElec" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommationElec', id: house?.id) }"></div>
-				</div>
-				<br/>
-				<div class="filActualite" style="padding:15px;">
-					<div id="divEventSynthese" async-url="${ g.createLink(controller: 'event', action: 'synthese') }"></div>
-				</div>
-				
-			</div>
+	
+		<div class="aui-toolbar2">
+		    <div class="aui-toolbar2-inner">
+		        <div class="aui-toolbar2-primary">
+		            <div>
+		               <h2>Tableau de bord</h2>
+		            </div>		            
+		        </div>
+		        <div class="aui-toolbar2-secondary">
+		            <div class="aui-buttons">
+		            	<a id="layout-1-col-button" class="aui-button aui-button-subtle" title="1 colonne" data-layout="layout-1-col" data-layout-for="tableau-bord-widget-container">
+		            		<span class="aui-icon aui-icon-small aui-iconfont-layout-1col-large"></span>
+		            	</a>
+		            	<a id="layout-2-col-button" class="aui-button aui-button-subtle" title="2 colonnes" data-layout="layout-2-col" data-layout-for="tableau-bord-widget-container">
+		            		<span class="aui-icon aui-icon-small aui-iconfont-layout-2col-large"></span>
+		            	</a>
+		            	<a id="layout-2-col-menu-button" class="aui-button aui-button-subtle" title="2 colonnes menu" data-layout="layout-2-col-menu" data-layout-for="tableau-bord-widget-container">
+		            		<span class="aui-icon aui-icon-small aui-iconfont-layout-2col-right-large"></span>
+		            	</a>
+		            </div>
+		            
+		            <div class="aui-buttons">
+		            	<g:remoteLink class="aui-button aui-button-subtle" url="[controller: 'widget', action: 'dialogAddWidget']" update="ajaxDialog"
+		            			onSuccess="showDialog('add-widget-dialog')">
+		            		<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter widget
+		            	</g:remoteLink>
+		            </div>
+		        </div>
+		    </div><!-- .aui-toolbar-inner -->
 		</div>
 	
+		<g:set var="layout" value="${ app.stateDataUser(name: 'layout-css', page: 'tableauBord.index') }"/>
+	
+		<div id="tableau-bord-widget-container" data-state-page="tableauBord.index" data-state-name="layout-css" class="widget-container ${ layout }" data-immediate="true"
+				data-url-move="${ g.createLink(controller: 'widget', action: 'moveWidgetUser') }">
+			<g:if test="${ layout?.startsWith('layout-1-col') }">
+				<g:render template="layout/1collayout"/>
+			</g:if>
+			<g:elseif test="${ layout?.startsWith('layout-2-col') }">
+				<g:render template="layout/2collayout"/>
+			</g:elseif>
+		</div>
 	</g:applyLayout>
 	
 </body>

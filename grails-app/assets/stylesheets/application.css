@@ -15,7 +15,6 @@
 *= require jquery-ui.min-1.11.3
 *= require weather-icons-wind.min
 *= require weather-icons.min
-*= require main
-*= require mobile
+*= require_full_tree ./user
 *= require_self
 */

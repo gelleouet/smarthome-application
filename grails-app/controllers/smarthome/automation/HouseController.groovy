@@ -76,8 +76,9 @@ class HouseController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def syntheseConfort(House house) {
+	def syntheseConfort() {
 		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
 		def houseSynthese = houseService.calculSynthese(house)
 		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese,
 			secUser: user])
@@ -89,8 +90,9 @@ class HouseController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def syntheseConsommationElec(House house) {
+	def syntheseConsommationElec() {
 		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
 		def houseSynthese = houseService.calculSynthese(house)
 		render(template: 'syntheseConsommationElec', model: [house: house, houseSynthese: houseSynthese,
 			secUser: user])

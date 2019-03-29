@@ -1,35 +1,11 @@
-
-
-/**
- * Réduit ou affiche le panel sidebar
- * Enregistre l'état du composant pour l'utilisateur connecté
- */
-$(document).on('click', '#aside-hide', function () {
-	$('.page-panel-sidebar').toggleClass('page-panel-sidebar-slide');
-	
-	if ($('.page-panel-sidebar').hasClass('page-panel-sidebar-slide')) {
-		$('.page-panel-sidebar div').hide();
-	} else {
-		$('.page-panel-sidebar div').show();
-	}
-	
-	//sauvegarde l'état du composant
-	saveStateUser('page-panel-sidebar', 'class',
-			$('.page-panel-sidebar').hasClass('page-panel-sidebar-slide') ? 'page-panel-sidebar-slide' : '');
-});
-
-
-
 /**
  * Enregistre l'état d'un composant
  * 
  * @param url
  * @param name
- * @param dataName
- * @param dataValue
+ * @param data
  */
-function saveStateUser(name, dataName, dataValue) {
-	var statePage = $('#content[role=main]').attr('state-page');
+function saveStateUser(name, page, data) {
 	var stateUrl = $('#content[role=main]').attr('state-url');
 	
 	jQuery.ajax({
@@ -37,29 +13,61 @@ function saveStateUser(name, dataName, dataValue) {
 		url: stateUrl,
 		data: {
 			name: name,
-			page: statePage,
-			dataName: dataName,
-			dataValue: dataValue
+			page: page,
+			data: data
 		}
 	});
 }
 
 
+/**
+ * 
+ * @returns
+ */
+function initLayoutButton() {
+	$(document).on('click', '#layout-1-col-button', function() {
+		setLayout(this)
+	})
+	$(document).on('click', '#layout-2-col-button', function() {
+		setLayout(this)
+	})
+	$(document).on('click', '#layout-2-col-menu-button', function() {
+		setLayout(this)
+	})
+}
+
 
 /**
- * Gestion personnalisation des widgets
+ * 
+ * @param element
+ * @returns
  */
-$(window).on('load', function() {
-	$('.widget-panel').sortable({
-		connectWith: '.widget-panel',
-		handle: '.widget-header',
-		placeholder: "widget-placeholder",
-		
-		stop: function(event, ui) {
-			console.log(ui.item.attr('id'));
-		},
-	});
-});
+function setLayout(button) {
+	var $button = $(button)
+	var layout = $button.attr('data-layout')
+	var layoutFor = $button.attr('data-layout-for')
+	
+	var $element = $('#' + layoutFor)
+	var stateName = $element.attr('data-state-name')
+	var statePage = $element.attr('data-state-page')
+	
+	// supprime ancien layout
+	/*var tokens = $element.attr('class').split(" ")
+	
+	for (var idx=0; idx<tokens.length; idx++) {
+		if (tokens[idx].startsWith("layout-")) {
+			$element.removeClass(tokens[idx])
+		}
+	}
+	
+	// rajoute nouveau layout
+	$element.addClass(layout)*/
+	
+	// enregistrement user
+	saveStateUser(stateName, statePage, layout);
+	
+	window.location.reload()
+}
 
 
 

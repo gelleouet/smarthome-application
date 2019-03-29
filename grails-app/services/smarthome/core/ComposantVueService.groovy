@@ -1,34 +1,12 @@
 package smarthome.core
 
-import grails.converters.JSON;
-import grails.plugin.cache.CachePut;
-import grails.plugin.cache.Cacheable;
-
 import org.springframework.transaction.annotation.Transactional;
-
 import smarthome.core.AbstractService;
 import smarthome.core.SmartHomeException;
 
 
 class ComposantVueService extends AbstractService {
 
-	/**
-	 * Enregistrement d'un ComposantVue
-	 * 
-	 * @param composantVue
-	 * 
-	 * @return ComposantVue
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-    ComposantVue save(ComposantVue composantVue) throws SmartHomeException {
-		if (!composantVue.save()) {
-			throw new SmartHomeException("Erreur enregistrement composantVue", composantVue);
-		}
-		
-		return composantVue
-	}
-	
-	
 	
 	/**
 	 * Recherche d'un composant vue pour un user
@@ -41,59 +19,40 @@ class ComposantVueService extends AbstractService {
 	ComposantVue find(String name, String page, long userId) {
 		// Création d"un composant exemple pour la recherche
 		ComposantVue exemple = new ComposantVue(name: name, page: page, userId: userId)
-		
 		return ComposantVue.find(exemple)
+	}
+	
+	
+	/**
+	 * Renvoit un composant pour le user connecté
+	 * 
+	 * @param name
+	 * @param page
+	 * @return
+	 */
+	ComposantVue findPrincipal(String name, String page) {
+		return find(name, page, springSecurityService.principal.id)	
 	}
 	
 	
 	
 	/**
-	 * Changement d'un data sur un composant Vue. Si le composant n'existe pas, il est créé
-	 * Seul le data concerné est changé
+	 * Changement d'un data sur un composant Vue.
+	 * Si le composant n'existe pas, il est créé
 	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	@CachePut(value = 'grailsServiceCache', key = "#name + '' + #page + '' + #userId + '' + #dataName")
-	String setData(String name, String page, long userId, String dataName, String dataValue) throws SmartHomeException {
+	ComposantVue saveData(String name, String page, long userId, String data) throws SmartHomeException {
 		ComposantVue composantVue = find(name, page, userId)
 		 
 		if (! composantVue) {
 			composantVue = new ComposantVue(name: name, page: page, userId: userId)
 		}
 		
-		// recherche du data concerné après transformation en JSON
-		def json = composantVue.data ? JSON.parse(composantVue.data) : [:];
-		json[dataName] = dataValue
-		composantVue.data = new JSON(json).toString(false)
-				
+		composantVue.data = data
 		
-		if (!composantVue.save()) {
-			throw new SmartHomeException("Erreur enregistrement composantVue", composantVue);
-		}
-		
-		return dataValue
+		return this.save(composantVue)
 	}
-	
-	
-	/**
-	 * Recherche la valeur d'un data
-	 * 
-	 * @param name
-	 * @param page
-	 * @param userId
-	 * @return
-	 */
-	@Cacheable(value = 'grailsServiceCache', key = "#name + '' + #page + '' + #userId + '' + #dataName")
-	String getData(String name, String page, long userId, String dataName) {
-		ComposantVue composantVue = find(name, page, userId)
-		
-		if (! composantVue) {
-			return null
-		}
-		
-		def json = JSON.parse(composantVue.data)
-		return json[dataName]
-	} 
 }

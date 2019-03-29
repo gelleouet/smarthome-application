@@ -1,0 +1,99 @@
+.widget-container {
+	margin: 10px 0 0 0;	
+}
+
+.widget-header {
+	border-top-right-radius: 5px;
+	padding: 6px;
+	background-color: #205081;
+	cursor: move;
+}
+
+.widget-header h4 {
+	color: #fff;
+	font-size: 12px;
+}
+
+.widget-content {
+	padding: 10px
+}
+
+.widget-content-table {
+	margin: 10px;
+	display: table;
+	width: 98%;
+}
+
+.widget {
+	border-radius: 5px;
+	border: 1px solid #ddd;
+	background-color: #ffffff;	
+}
+
+.widget-draggable {
+	
+}
+
+.widget-sortable {
+	min-height: 125px;	
+}
+
+.widget-container.layout-2-col,
+.widget-container.layout-2-col-menu  {
+	display: table;
+}
+
+.widget-container.layout-2-col .widget-sortable,
+.widget-container.layout-2-col-menu .widget-sortable {
+	display: table-cell;
+	vertical-align: top;
+}
+
+.widget-container.layout-2-col .widget-sortable:first-child,
+.widget-container.layout-2-col-menu .widget-sortable:first-child {
+	padding-right: 10px;
+}
+
+.widget-container.layout-2-col .widget-sortable:first-child {
+	width: 50%;
+}
+
+.widget-container.layout-2-col-menu .widget-sortable:first-child {
+	width: 350px;	
+}
+
+.widget-container.layout-2-col .widget-sortable:last-child,
+.widget-container.layout-2-col-menu .widget-sortable:last-child {
+	padding-left: 10px;
+}
+
+div.widget-sortable div.widget:not(:last-child) {
+	margin-bottom: 20px;	
+}
+
+.widget-droppable-active {
+	
+}
+
+.widget-sortable-placeholder {
+	border: 2px dashed lightgrey;
+	height: 75px;
+	margin: 15px;
+	background-color: #f9f9f9;
+}
+
+.widget-panel-col {
+	display: table-cell;
+	width: 50%;
+}
+
+.widget-panel-col-border:not(:last-child){
+	border-right-color: #205081;
+	border-right-style: solid;
+	border-right-width: 4px;
+}
+
+.widget-panel-2col {
+	width: 50%;	
+	float: left;
+}

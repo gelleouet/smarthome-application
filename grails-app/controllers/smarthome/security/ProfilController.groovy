@@ -39,6 +39,19 @@ class ProfilController extends AbstractController {
 	}
 	
 	
+	/**
+	 * Widget profil
+	 * 
+	 * @return
+	 */
+	def widgetProfil() {
+		// plugin spring security add authenticatedUser property
+		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
+		render(template: 'widgetProfil', model: [user: user, house: house])
+	}
+	
+	
 	
 	/**
 	 * Dialog profil publique d'un user

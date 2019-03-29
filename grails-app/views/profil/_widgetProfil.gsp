@@ -8,12 +8,7 @@
 	    </span>
 	</span>
 
-	<g:if test="${ viewOnly }">
-		<g:link action="tableauBordFriend" controller="tableauBord" style="color:black;" id="${ user.id }">${ user.prenomNom }</g:link>
-	</g:if>
-	<g:else>
-		<g:link action="profil" controller="profil" style="color:black;">${ user.prenomNom }</g:link>
-	</g:else>
+	<g:link action="profil" controller="profil" style="color:black;">${ user.prenomNom }</g:link>
 </h3>
 
 <g:set var="currentConso" value="${ house?.currentConso() }"/>

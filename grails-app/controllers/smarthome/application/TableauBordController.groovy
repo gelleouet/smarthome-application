@@ -1,17 +1,10 @@
 package smarthome.application
 
-import smarthome.automation.Device;
-import smarthome.automation.DeviceSearchCommand;
-import smarthome.automation.DeviceService;
-import smarthome.automation.DeviceType;
-import smarthome.automation.Mode;
-import smarthome.automation.HouseService;
-import smarthome.automation.ModeService;
 import smarthome.core.AbstractController;
+import smarthome.core.WidgetService;
 import smarthome.security.User;
 import smarthome.security.UserFriend;
 import smarthome.security.UserFriendService;
-import smarthome.security.UserService;
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -25,10 +18,8 @@ import grails.plugin.springsecurity.annotation.Secured
 class TableauBordController extends AbstractController {
 
 	UserFriendService userFriendService
-	DeviceService deviceService
-	UserService userService
-	HouseService houseService
-	ModeService modeService
+	WidgetService widgetService
+	
 	
 	/**
 	 * 
@@ -36,13 +27,8 @@ class TableauBordController extends AbstractController {
 	 */
 	def index() {
 		def user = authenticatedUser
-		def house = houseService.findDefaultByUser(user)
-		def modes = modeService.listModesByUser(user)
-		def tableauBords = deviceService.groupByTableauBord(principal.id)
-		
-		render(view: 'tableauBord', model: [user: user, house: house,
-			modes: modes, tableauBords: tableauBords, secUser: user])
-		
+		def widgetUsers = widgetService.findAllByUserId(principal.id)
+		render(view: 'tableauBord', model: [user: user, widgetUsers: widgetUsers, secUser: user])
 	}
 	
 	

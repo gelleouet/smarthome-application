@@ -78,6 +78,28 @@ function initDragAndDrop() {
 }
 
 
+function initSortable() {
+	$( ".widget-sortable" ).sortable({
+		connectWith: ".widget-sortable",
+		cursor: "move",
+		placeholder: "widget-sortable-placeholder",
+		stop: onStopSortable
+	}).disableSelection();
+}
+
+
+function onStopSortable(event, ui) {
+	var $container = $('.widget-container')
+	var datas = {
+		id: ui.item.attr('data-widget-id'),
+		row: ui.item.index(),
+		col: ui.item.parents(".widget-sortable").index()
+	}
+	
+	ajaxGet($container, 'data-url-move', datas)
+}
+
+
 /**
  * Recherche des paginations en mode Ajax.
  * 
@@ -236,3 +258,15 @@ function favoriteStar(starId, star) {
 		$(starId).removeClass("aui-iconfont-star").removeClass("star").addClass('aui-iconfont-unstar')
 	}
 }
+
+
+function showDialog(dialogId) {
+	AJS.dialog2('#' + dialogId).show();
+}
+
+
+function hideDialog(dialogId) {
+	AJS.dialog2('#' + dialogId).hide();
+}
+
+

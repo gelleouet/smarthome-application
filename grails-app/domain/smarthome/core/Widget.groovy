@@ -11,18 +11,20 @@ import grails.validation.Validateable;
  */
 @Validateable
 class Widget {
+	
 	String libelle
 	String description
-	String gsp
+	Integer refreshPeriod // nombre de minutes pour rafraichissement auto
+	String controllerName
+	String actionName
 	
 	
     static constraints = {
-		
+		refreshPeriod nullable: true
     }
 	
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
-		sort 'libelle'
 	}
 }
