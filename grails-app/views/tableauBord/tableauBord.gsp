@@ -42,10 +42,10 @@
 		<div id="tableau-bord-widget-container" data-state-page="tableauBord.index" data-state-name="layout-css" class="widget-container ${ layout }" data-immediate="true"
 				data-url-move="${ g.createLink(controller: 'widget', action: 'moveWidgetUser') }">
 			<g:if test="${ layout?.startsWith('layout-1-col') }">
-				<g:render template="layout/1collayout"/>
+				<g:render template="/widget/layout/1collayout"/>
 			</g:if>
 			<g:elseif test="${ layout?.startsWith('layout-2-col') }">
-				<g:render template="layout/2collayout"/>
+				<g:render template="/widget/layout/2collayout"/>
 			</g:elseif>
 		</div>
 	</g:applyLayout>

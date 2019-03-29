@@ -119,6 +119,14 @@
 		display: table-row;
 	}
 	
+	div.widget-container > div.widget-sortable.responsive {
+		display: table-row;
+	}
+	
+	div.widget-container > div.widget-sortable.responsive > div.widget {
+		margin-bottom: 20px;	
+	}
+	
 	div.aui-group > div.aui-item.responsive > div {
 		margin-top: 20px;
 	}

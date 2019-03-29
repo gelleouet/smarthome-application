@@ -1,6 +1,7 @@
 package smarthome.core
 
 import smarthome.core.AbstractController;
+
 import org.springframework.security.access.annotation.Secured;
 
 
@@ -54,6 +55,18 @@ class WidgetController extends AbstractController {
 	 */
 	def addWidgetUser(Widget widget) {
 		widgetService.addWidgetUser(widget, principal.id)
+		redirect(uri: '/')
+	}
+	
+	
+	/**
+	 * Supprime un widget d'un utilisateur
+	 *
+	 * @param widget
+	 * @return
+	 */
+	def removeWidgetUser(WidgetUser widgetUser) {
+		widgetService.delete(widgetUser)
 		redirect(uri: '/')
 	}
 }

@@ -781,3 +781,10 @@ tr.planning-day-row td {
 	border-bottom-color: lightgrey;
 	padding-bottom: 10px;
 }
+
+.close-corner-button {
+	position:absolute;
+	top:0;
+	text-align:right;
+	width:100%;
+}

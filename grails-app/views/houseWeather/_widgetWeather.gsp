@@ -1,6 +1,10 @@
 <g:if test="${ house?.location }">
 	<g:if test="${ forecast }">
-		<h3>${ house.location } <span class="h6"><g:formatDate date="${ forecast.date }" format="EEEE dd/MM/yyyy H'h'"/></span></h3>
+		<h3>${ house.location }</h3>
+		
+		<div>
+			<span class="h6"><g:formatDate date="${ forecast.date }" format="EEEE dd/MM/yyyy H'h'"/></span>
+		</div>
 		
 		<div class="aui-buttons" style="margin-top:10px;">
 			<g:link class="aui-button" action="hourlyForecast" controller="houseWeather" id="${ house.id }">48 heures</g:link>
