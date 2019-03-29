@@ -42,11 +42,13 @@
 				<div class="aui-item">
 					<g:if test="${ command.device.user.id == secUser.id }">
 						<div class="aui-buttons">
-							<g:remoteLink class="aui-button" url="[action: 'dialogAddDeviceValue', id: command.device.id]" update="ajaxDialog"
-								onSuccess="showAddDeviceValueDialog()">
-								<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter valeur
-							</g:remoteLink>
-							<g:actionSubmit value="Tout aggréger" class="aui-button confirm-button" action="aggregateValues"/>
+							<sec:ifAllGranted roles="ROLE_ADMIN">
+								<g:remoteLink class="aui-button" url="[action: 'dialogAddDeviceValue', id: command.device.id]" update="ajaxDialog"
+									onSuccess="showAddDeviceValueDialog()">
+									<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter valeur
+								</g:remoteLink>
+								<g:actionSubmit value="Tout aggréger" class="aui-button confirm-button" action="aggregateValues"/>
+							</sec:ifAllGranted>
 						</div>
 					</g:if>
 				</div>
