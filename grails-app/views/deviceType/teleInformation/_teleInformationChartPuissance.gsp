@@ -12,7 +12,7 @@
 <br/>
 
 <div class="aui-buttons">
-	<a id="teleinfo-start-trace-button" class="aui-button aui-button-primary" onclick="onStartTraceTeleinfo(this, ${command.device.id})" data-endpoint-url="${ EndPointUtils.httpToWs(g.createLink(uri: TeleinfoEndPoint.URL, absolute: true)) }">Démarrer</a>
+	<a id="teleinfo-start-trace-button" class="aui-button aui-button-primary" onclick="onStartTraceTeleinfo(this, ${device.id})" data-endpoint-url="${ EndPointUtils.httpToWs(g.createLink(uri: TeleinfoEndPoint.URL, absolute: true)) }">Démarrer</a>
 	<a id="teleinfo-stop-trace-button" class="aui-button" onclick="onStopTraceTeleinfo()">Arrêter</a>
 </div>
 
@@ -21,7 +21,7 @@
 
 <br/>
 
-<g:set var="isousc" value="${ command.device?.metavalue('isousc')?.value }"/>
+<g:set var="isousc" value="${ device?.metavalue('isousc')?.value }"/>
 
 
 <form class="aui">

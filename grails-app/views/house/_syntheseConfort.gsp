@@ -26,6 +26,7 @@
 						<g:link controller="device" action="deviceChart" params="['device.id': house.temperature.id]">
 							<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 								${ house.temperature.value }°C
+								<span class="aui-icon aui-icon-small aui-iconfont-priority-high"></span>
 							</div>
 						</g:link>
 						<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.temperature.dateValue) }</h6>
@@ -60,6 +61,7 @@
 						<g:link controller="device" action="deviceChart" params="['device.id': house.humidite.id]">
 							<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 								${ house.humidite.value }%
+								<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
 							</div>
 						</g:link>
 						<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.humidite.dateValue) }</h6>

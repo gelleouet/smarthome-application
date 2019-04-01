@@ -13,16 +13,16 @@
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<div id="divWidgetWeather" async-url="${ g.createLink(controller: 'houseWeather', action: 'widgetWeather', id: house?.id) }"></div>
+					<div id="divWidgetWeather" async-url="${ g.createLink(controller: 'houseWeather', action: 'widgetWeatherHouse', id: house?.id) }"></div>
 				</div>
 			</div>
 			<div class="aui-item responsive">
 				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConfort" async-url="${ g.createLink(controller: 'house', action: 'syntheseConfort', id: house?.id, params: [compare: true]) }"></div>
+					<div id="divHouseSyntheseConfort" async-url="${ g.createLink(controller: 'house', action: 'syntheseConfortHouse', id: house?.id, params: [compare: true]) }"></div>
 				</div>
 				<br/>
 				<div class="filActualite" style="padding:15px;">
-					<div id="divHouseSyntheseConsommationElec" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommationElec', id: house?.id, params: [compare: true]) }"></div>
+					<div id="divHouseSyntheseConsommationDay" async-url="${ g.createLink(controller: 'house', action: 'syntheseConsommationAll', id: house?.id, params: [compare: true]) }"></div>
 				</div>
 			</div>
 		</div>

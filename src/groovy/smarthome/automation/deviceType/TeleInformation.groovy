@@ -99,8 +99,8 @@ class TeleInformation extends AbstractDeviceType {
 				})
 			}
 			
-			chart.colonnes << new GoogleDataTableCol(label: "Intensité (A)", type: "number", value: { deviceValue, index, currentChart ->
-				deviceValue.value.find{ !it.name }?.value
+			chart.colonnes << new GoogleDataTableCol(label: "Puissance (W)", type: "number", value: { deviceValue, index, currentChart ->
+				(deviceValue.value.find{ !it.name }?.value ?: 0) * 220
 			})
 			
 		} else {
@@ -138,8 +138,8 @@ class TeleInformation extends AbstractDeviceType {
 			}
 			
 			if (!command.comparePreviousYear) {
-				chart.colonnes << new GoogleDataTableCol(label: "Intensité max (A)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value.find{ it.name == "max" }?.value 
+				chart.colonnes << new GoogleDataTableCol(label: "Puissance (W)", type: "number", value: { deviceValue, index, currentChart ->
+					(deviceValue.value.find{ it.name == "max" }?.value ?:0) * 220
 				})
 			}
 			
@@ -158,6 +158,7 @@ class TeleInformation extends AbstractDeviceType {
 	 */
 	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
+		def opttarif = command.device.metavalue("opttarif")?.value
 		
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.chartType = "SteppedAreaChart"
@@ -165,59 +166,87 @@ class TeleInformation extends AbstractDeviceType {
 			chart.values = values.collectEntries { entry ->
 				Map resultValues = [:]
 				entry.value.each { deviceValue ->
-					if (deviceValue.name == 'hcinst' || deviceValue.name == 'hpinst') {
-						def name = deviceValue.name == 'hcinst' ? 'HC' : 'HP'
+					if (deviceValue.name in ['hcinst', 'hpinst', 'baseinst']) {
+						def name
+						
+						if (deviceValue.name == 'hcinst') {
+							name = 'HC'
+						} else if (deviceValue.name == 'hpinst') {
+							name = 'HP'
+						} else {
+							name = 'BASE'
+						}
 						def kwh = deviceValue.value / 1000.0
 						resultValues["kwh${name}"] = kwh
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
 				}
-				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
-				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
+				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d) + (resultValues["kwhBASE"]?:0d)
+				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d) + (resultValues["prixBASE"]?:0d)
 				[(entry.key): resultValues]
 			}
 			
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "datetime", value: { deviceValue, index, currentChart ->
-					deviceValue.key
-				}),
-				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes = []
+			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", value: { deviceValue, index, currentChart ->
+				deviceValue.key
+			})
+			
+			if (opttarif in ["HC", "EJP"]) {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
+				})
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
 				})
-			]
+			} else {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value["prixBASE"]
+				})
+			}
 		} else {
 			chart.values = values.collectEntries { entry ->
 				Map resultValues = [:]
 				entry.value.each { deviceValue ->
-					if (deviceValue.name == 'hchcsum' || deviceValue.name == 'hchpsum') {
-						def name = deviceValue.name == 'hchcsum' ? 'HC' : 'HP'
+					if (deviceValue.name in ['hchcsum', 'hchpsum', 'basesum']) {
+						def name
+						
+						if (deviceValue.name == 'hchcsum') {
+							name = 'HC'
+						} else if (deviceValue.name == 'hchpsum') {
+							name = 'HP'
+						} else {
+							name = 'BASE'
+						}
 						def kwh = deviceValue.value / 1000.0
 						resultValues["kwh${name}"] = kwh
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
 				}
-				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
-				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
+				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d) + (resultValues["kwhBASE"]?:0d)
+				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d) + (resultValues["prixBASE"]?:0d)
 				[(entry.key): resultValues]
 			}
 			
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
-					deviceValue.key
-				}),
-				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes = []
+			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
+				deviceValue.key
+			})
+				
+			if (opttarif in ["HC", "EJP"]) {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
+				})
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
-				}),
-				new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
+				})
+				chart.colonnes <<  new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prix"]
 				})
-			]
+			} else {
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", value: { deviceValue, index, currentChart ->
+					deviceValue.value["prixBASE"]
+				})
+			}
 		}
 		
 		return chart
@@ -383,6 +412,78 @@ class TeleInformation extends AbstractDeviceType {
 		}
 		
 		return consos	
+	}
+	
+	
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	Map consosMois() {
+		def consos = [optTarif: getOptTarif()]
+		def currentDate = new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		
+		if (consos.optTarif in ['HC', 'EJP']) {
+			def first_hchp = DeviceValue.firstValueByMonth(device, 'hchp')
+			def last_hchp = DeviceValue.lastValueByMonth(device, 'hchp')
+			def first_hchc = DeviceValue.firstValueByMonth(device, 'hchc')
+			def last_hchc = DeviceValue.lastValueByMonth(device, 'hchc')
+			consos.hchp = first_hchp?.value && last_hchp?.value ? (last_hchp.value - first_hchp.value) / 1000.0 : 0.0
+			consos.hchc = first_hchc?.value && last_hchc?.value ? (last_hchc.value - first_hchc.value) / 1000.0 : 0.0
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+			
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			def first_base = DeviceValue.firstValueByMonth(device, 'base')
+			def last_base = DeviceValue.lastValueByMonth(device, 'base')
+			consos.base = first_base?.value && last_base?.value ? (last_base.value - first_base.value) / 1000.0 : 0.0
+			consos.total = (consos.base as Double).round(1)
+			
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+		
+		return consos
+	}
+	
+	
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	Map consosAnnee() {
+		def consos = [optTarif: getOptTarif()]
+		def currentDate = new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		
+		if (consos.optTarif in ['HC', 'EJP']) {
+			def first_hchp = DeviceValue.firstValueByYear(device, 'hchp')
+			def last_hchp = DeviceValue.lastValueByYear(device, 'hchp')
+			def first_hchc = DeviceValue.firstValueByYear(device, 'hchc')
+			def last_hchc = DeviceValue.lastValueByYear(device, 'hchc')
+			consos.hchp = first_hchp?.value && last_hchp?.value ? (last_hchp.value - first_hchp.value) / 1000.0 : 0.0
+			consos.hchc = first_hchc?.value && last_hchc?.value ? (last_hchc.value - first_hchc.value) / 1000.0 : 0.0
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+			
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			def first_base = DeviceValue.firstValueByYear(device, 'base')
+			def last_base = DeviceValue.lastValueByYear(device, 'base')
+			consos.base = first_base?.value && last_base?.value ? (last_base.value - first_base.value) / 1000.0 : 0.0
+			consos.total = (consos.base as Double).round(1)
+			
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+		
+		return consos
 	}
 	
 	

@@ -1,5 +1,6 @@
 package smarthome.application
 
+import smarthome.automation.HouseService;
 import smarthome.core.AbstractController;
 import smarthome.core.WidgetService;
 import smarthome.security.User;
@@ -19,6 +20,7 @@ class TableauBordController extends AbstractController {
 
 	UserFriendService userFriendService
 	WidgetService widgetService
+	HouseService houseService
 	
 	
 	/**

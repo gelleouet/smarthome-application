@@ -71,6 +71,14 @@ class HouseController extends AbstractController {
 	}
 	
 	
+	def calculConsoForUser(User user) {
+		Date now = new Date()
+		def house = houseService.findDefaultByUser(user)
+		houseService.calculConsoAnnuelle(house, now[Calendar.YEAR])
+		nop()
+	}
+	
+	
 	/**
 	 * Rendu de la synthese confort de la maison
 	 * 
@@ -79,23 +87,76 @@ class HouseController extends AbstractController {
 	def syntheseConfort() {
 		def user = authenticatedUser
 		def house = houseService.findDefaultByUser(user)
-		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese,
-			secUser: user])
+		internSyntheseConfort(house)
 	}
 	
 	
 	/**
-	 * Rendu de la synthese consmmation elec de la maison
 	 * 
 	 * @return
 	 */
-	def syntheseConsommationElec() {
+	def syntheseConfortHouse(House house) {
+		internSyntheseConfort(house)
+	}
+	
+	
+	private def internSyntheseConfort(house) {
+		def houseSynthese = houseService.calculSynthese(house)
+		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese])
+	} 
+	
+	
+	/**
+	 * Rendu de la synthese consommation du jour
+	 * 
+	 * @return
+	 */
+	def syntheseConsommationDay(House house) {
+		def user = authenticatedUser
+		
+		if (!house?.id) {
+			house = houseService.findDefaultByUser(user)
+		}
+		render(template: 'syntheseConsommationDay', model: [house: house])
+	}
+	
+	
+	/**
+	 * Rendu de la synthese consommation du mois
+	 * 
+	 * @return
+	 */
+	def syntheseConsommationMonth() {
 		def user = authenticatedUser
 		def house = houseService.findDefaultByUser(user)
-		def houseSynthese = houseService.calculSynthese(house)
-		render(template: 'syntheseConsommationElec', model: [house: house, houseSynthese: houseSynthese,
-			secUser: user])
+		render(template: 'syntheseConsommationMonth', model: [house: house])
+	}
+	
+	
+	/**
+	 * Rendu de la synthese consommation de l'année
+	 *
+	 * @return
+	 */
+	def syntheseConsommationYear() {
+		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
+		render(template: 'syntheseConsommationYear', model: [house: house])
+	}
+	
+	
+	/**
+	 * Rendu de la synthese consommation jour/mois/année
+	 *
+	 * @return
+	 */
+	def syntheseConsommationAll(House house) {
+		def user = authenticatedUser
+		
+		if (!house?.id) {
+			house = houseService.findDefaultByUser(user)
+		}
+		render(template: 'syntheseConsommationAll', model: [house: house])
 	}
 	
 	

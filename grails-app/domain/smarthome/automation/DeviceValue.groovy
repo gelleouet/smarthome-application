@@ -3,6 +3,7 @@ package smarthome.automation
 import java.io.Serializable;
 import java.util.Date;
 
+import smarthome.core.DateUtils;
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -155,6 +156,62 @@ class DeviceValue implements Serializable {
 		}
 		
 		return values ? values[0] : null
+	}
+	
+	
+	/**
+	 * La 1ere valeur du mois
+	 *
+	 * @param device
+	 * @param metaName
+	 * @param last
+	 */
+	static def firstValueByMonth(Device device, String metaName = null) {
+		Date now = new Date().clearTime()
+		return firstValueInPeriod(device, DateUtils.firstDayInMonth(now),
+			DateUtils.lastDayInMonth(now)+1, metaName)
+	}
+	
+	
+	/**
+	 * La dernière valeur du mois
+	 *
+	 * @param device
+	 * @param metaName
+	 * @param last
+	 */
+	static def lastValueByMonth(Device device, String metaName = null) {
+		Date now = new Date().clearTime()
+		return lastValueInPeriod(device, DateUtils.firstDayInMonth(now),
+			DateUtils.lastDayInMonth(now)+1, metaName)
+	}
+	
+	
+	/**
+	 * La 1ere valeur de l'année
+	 *
+	 * @param device
+	 * @param metaName
+	 * @param last
+	 */
+	static def firstValueByYear(Device device, String metaName = null) {
+		Date now = new Date().clearTime()
+		return firstValueInPeriod(device, DateUtils.firstDayInYear(now),
+			DateUtils.lastDayInYear(now)+1, metaName)
+	}
+	
+	
+	/**
+	 * La dernière valeur de l'année
+	 *
+	 * @param device
+	 * @param metaName
+	 * @param last
+	 */
+	static def lastValueByYear(Device device, String metaName = null) {
+		Date now = new Date().clearTime()
+		return lastValueInPeriod(device, DateUtils.firstDayInYear(now),
+			DateUtils.lastDayInYear(now)+1, metaName)
 	}
 	
 	

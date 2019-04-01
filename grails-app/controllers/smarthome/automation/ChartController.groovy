@@ -24,7 +24,6 @@ class ChartController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Graphiques", navigation = NavigationEnum.navbarPrimary)
 	def chartsGrid(ChartCommand command) {
 		command.navigation()
 		def groupes = chartService.listGroupes(principal.id)

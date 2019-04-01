@@ -11,23 +11,6 @@
 
 <g:set var="googleChartTarif" value="${ command.deviceImpl.googleChartTarif(command, chart.values) }" scope="request"/>
 
-<g:if test="${ !mobileAgent }">
-	<h6>
-		Vous pouvez zoomer sur les graphiques en glissant la souris avec le clic gauche sur une zone. Pour revenir en arrière, faites un clic droit.
-		Vous pouvez aussi calculer le coût total sur une période en sélectionnant 2 points sur une série. Cette option ne fonctionne que sur une seule série 
-		à la fois.
-	</h6>
-	
-	<form class="aui">
-		<div class="field-group">
-			<label for="label">
-				Coût sur la sélection
-			</label>
-			<g:textField name="selectionCout" class="text medium-field" readonly="true"/> €
-		</div>
-	</form>
-</g:if>
-
 <div id="chartDivTarif" data-chart-type="ColumnChart">
 	<br/>
 	<h6 class="h6">Loading chart...</h6>
@@ -37,3 +20,17 @@
 	
 	<g:render template="/chart/datas/chartTarifDatas" model="[chart: googleChartTarif]"/>
 </div>  
+
+<g:if test="${ !mobileAgent }">
+	<form class="aui">
+		<div class="field-group">
+			<label for="label">
+				Coût sur la sélection
+			</label>
+			<g:textField name="selectionCout" class="text medium-field" readonly="true"/> €
+			<div class="description">Vous pouvez zoomer sur les graphiques en glissant la souris avec le clic gauche sur une zone. Pour revenir en arrière, faites un clic droit.
+		Vous pouvez aussi calculer la consommation totale sur une période en sélectionnant 2 points sur une série. Cette option ne fonctionne que sur une seule série 
+		à la fois.</div>
+		</div>
+	</form>
+</g:if>

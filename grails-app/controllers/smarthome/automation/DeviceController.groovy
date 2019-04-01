@@ -56,7 +56,7 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Objets", navigation = NavigationEnum.navbarPrimary)
+	@NavigableAction(label = "Pilotage", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(DeviceSearchCommand search) {
 		search.userId = principal.id
 		def user = authenticatedUser
@@ -210,7 +210,6 @@ class DeviceController extends AbstractController {
 		def user = authenticatedUser
 		deviceService.assertSharedAccess(command.device, user)
 		
-		def tableauBords = deviceService.groupByTableauBord(user.id)
 		GoogleChart chart = deviceValueService.createChart(command)
 		GoogleChart compareChart
 		
@@ -218,8 +217,8 @@ class DeviceController extends AbstractController {
 			compareChart = deviceValueService.createChart(command.cloneForLastYear())
 		}
 		
-		render(view: 'deviceChart', model: [command: command, tableauBords: tableauBords,
-			chart: chart, secUser: user, compareChart: compareChart])
+		render(view: 'deviceChart', model: [command: command, chart: chart, secUser: user,
+			compareChart: compareChart])
 	}
 	
 	
@@ -262,7 +261,8 @@ class DeviceController extends AbstractController {
 		
 		GoogleChart chart = deviceValueService.createChart(command)
 		
-		render(template: 'deviceChart', model: [command: command, chart: chart, secUser: user])
+		render(template: 'deviceChart', model: [command: command, chart: chart, secUser: user,
+			suffixId: params.suffixId])
 	}
 	
 	

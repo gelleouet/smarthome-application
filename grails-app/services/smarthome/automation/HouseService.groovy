@@ -278,7 +278,7 @@ class HouseService extends AbstractService {
 		}
 		
 		DPE dpe = new DPE()
-		dpe.kwParAn = ((conso.kwHC + conso.kwHP) / house.surface) as Integer
+		dpe.kwParAn = ((conso.kwHC + conso.kwHP + conso.kwBASE + conso.kwGaz) / house.surface) as Integer
 		
 		if (dpe.kwParAn <= 50) {
 			dpe.note = "A"

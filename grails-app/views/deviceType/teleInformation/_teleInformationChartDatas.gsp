@@ -21,7 +21,7 @@
 	          },
 	          vAxes: {
 	          	0: {title: 'Index (Wh)'},
-	          	1: {title: 'Intensité (A)'}
+	          	1: {title: 'Puissance (W)'}
 	          },
 		      chartArea: {
 		      	width: '90%'
@@ -63,7 +63,7 @@
 		          },
 		          vAxes: {
 		          	0: {title: 'Index (kWh)'},
-		          	1: {title: 'Intensité (A)'}
+		          	1: {title: 'Puissance (W)'}
 		          },
 		          'seriesType': 'bars',
 		  	};

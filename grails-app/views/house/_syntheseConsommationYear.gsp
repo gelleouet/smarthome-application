@@ -1,13 +1,14 @@
 <%@ page import="smarthome.automation.DeviceValue" %>
+<%@ page import="smarthome.core.DateUtils" %>
 
 <g:set var="currentDate" value="${ new Date() }"/>
 
-<h3>Synthèse consommations</h3>
+<h3>Synthèse consommations année</h3>
 
 <g:if test="${ house?.compteur }">
 	<g:set var="compteurElectrique" value="${ house.compteurElectriqueImpl() }"/>
-	<g:set var="consos" value="${ compteurElectrique.consosJour() }"/>
-	<g:set var="interpretation" value="${ houseSynthese?.interpretations[house.compteur.id] }"/>
+	<g:set var="consos" value="${ compteurElectrique.consosAnnee() }"/>
+	<g:set var="interpretation" value="${ [pourcentage:100] }"/>
 	
 
 	<div class="aui-group">
@@ -16,8 +17,8 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item" style="width:25%">
-							<h4>${ app.formatUser(date: currentDate) }</h4>
+						<div class="aui-item" style="width:30%">
+							<h4><g:formatDate date="${ currentDate }" format="yyyy"/></h4>
 						</div>
 						<div class="aui-item">
 							<h4><span class="link">${ consos.tarifTotal != null ? (consos.tarifTotal as Double).round(1) : '-' }€</span>
@@ -31,12 +32,13 @@
 				
 				<div class="synthese-content">
 						
-					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
+					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consos.total }kWh
+							${ consos.total }
+							<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
 						</div>
 					</g:link>
-					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+					<h6 class="h6">(kWh) - Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 					
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
@@ -68,16 +70,14 @@
 							</g:else>
 						</tbody>
 					</table>
-					
-					<p style="text-align:left"><strong>Interprétation :</strong></p>
 				</div>
 			</div>
 		</div>
 		<div class="aui-item responsive">
 			<div>
-				<g:include action="templateDeviceChart" controller="device" params="[viewMode: 'month',
-					dateChart: app.formatPicker(date: new Date()), dateDebutUser: app.formatPicker(date: new Date() - 7),
-					'device.id': house.compteur.id, chartHeight: '350']"/>	
+				<g:include action="templateDeviceChart" controller="device" params="[viewMode: 'year',
+					dateChart: app.formatPicker(date: new Date()), dateDebutUser: app.formatPicker(date: DateUtils.firstDayInYear(currentDate)),
+					'device.id': house.compteur.id, chartHeight: '350', suffixId: 'synthese-year']"/>	
 			</div>
 		</div>
 	</div>

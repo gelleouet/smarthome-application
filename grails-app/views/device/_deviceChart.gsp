@@ -1,4 +1,4 @@
-<div id="chartDiv" data-chart-type="${ command.deviceImpl.defaultChartType().factory }">
+<div id="chartDiv-${ command.device.id }-${ suffixId }" data-chart-type="${ command.deviceImpl.defaultChartType().factory }">
 	<br/>
 	<h6 class="h6">Loading chart...</h6>
 	<div class="aui-progress-indicator">

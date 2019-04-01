@@ -8,7 +8,12 @@
 	    </span>
 	</span>
 
-	<g:link action="profil" controller="profil" style="color:black;">${ user.prenomNom }</g:link>
+	<g:if test="${ viewOnly }">
+		<g:link action="tableauBordFriend" controller="tableauBord" style="color:black;" id="${ user.id }">${ user.prenomNom }</g:link>
+	</g:if>
+	<g:else>
+		<g:link action="profil" controller="profil" style="color:black;">${ user.prenomNom }</g:link>
+	</g:else>
 </h3>
 
 <g:set var="currentConso" value="${ house?.currentConso() }"/>
@@ -138,18 +143,11 @@
 	
 	<g:set var="dpe" value="${ houseService.classementDPE(house, currentConso) }"/>
 	
-	<li>Classement énergétique (*) :</li>
+	<li>Classement énergétique :</li>
 	<li><div style="position:relative">
 		<asset:image src="dpe.jpg" width="200px"/>
 		<g:if test="${ dpe?.note }">
 			<div class="vignettedpe" style="top:${ 14 + (dpe.index * 22) }px">${ dpe.kwParAn }</div>
 		</g:if>
 	</div></li>
-	<li style="font-size:xx-small">(*) Ce calcul prend en compte l'ensemble des consommations remontées au site donc également l'électricité spécifique</li>
 </ul>
-
-<g:if test="${ !house?.compteur && !viewOnly }">
-	<h6 class="h6">
-	Pour calculer votre consommation annuelle et le classement énergétique de votre maison, <g:link action="profil" controller="profil">veuillez compléter votre profil</g:link>
-	</h6>
-</g:if>
