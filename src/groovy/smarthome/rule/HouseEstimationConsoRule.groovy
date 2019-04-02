@@ -21,11 +21,23 @@ import smarthome.core.SmartHomeException;
 class HouseEstimationConsoRule implements Rule<House, House> {
 
 	// Rapport des consos pour chaque mois
-	private static final Map RAPPORT_CONSO_MOIS = [
+	private static final Map RAPPORT_CONSO_MOIS_ELEC = [
 		(Calendar.JANUARY): 1, (Calendar.FEBRUARY): 1, (Calendar.MARCH): 0.75,
 		(Calendar.APRIL): 0.5, (Calendar.MAY): 0.25, (Calendar.JUNE): 0.25,
 		(Calendar.JULY): 0.25, (Calendar.AUGUST): 0.25, (Calendar.SEPTEMBER): 0.25,
-		(Calendar.OCTOBER): 0.3, (Calendar.NOVEMBER): 1, (Calendar.DECEMBER): 1,
+		(Calendar.OCTOBER): 0.5, (Calendar.NOVEMBER): 1, (Calendar.DECEMBER): 1,
+	]
+	private static final Map RAPPORT_CONSO_MOIS_POMPE = [
+		(Calendar.JANUARY): 1, (Calendar.FEBRUARY): 1, (Calendar.MARCH): 0.75,
+		(Calendar.APRIL): 0.5, (Calendar.MAY): 0.5, (Calendar.JUNE): 0.5,
+		(Calendar.JULY): 0.5, (Calendar.AUGUST): 0.5, (Calendar.SEPTEMBER): 0.5,
+		(Calendar.OCTOBER): 0.75, (Calendar.NOVEMBER): 1, (Calendar.DECEMBER): 1,
+	]
+	private static final Map RAPPORT_CONSO_MOIS_AUTRE = [
+		(Calendar.JANUARY): 1, (Calendar.FEBRUARY): 1, (Calendar.MARCH): 1,
+		(Calendar.APRIL): 1, (Calendar.MAY): 1, (Calendar.JUNE): 1,
+		(Calendar.JULY): 1, (Calendar.AUGUST): 1, (Calendar.SEPTEMBER): 1,
+		(Calendar.OCTOBER): 1, (Calendar.NOVEMBER): 1, (Calendar.DECEMBER): 1,
 	]
 	
 	Map parameters
@@ -33,6 +45,16 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 	
 	@Override
 	public House execute(House house) throws SmartHomeException {
+		def rapportConsoMois = RAPPORT_CONSO_MOIS_ELEC
+		
+		if (house.chauffage) {
+			if (house.chauffage.libelle == "Pompe à chaleur") {
+				rapportConsoMois = RAPPORT_CONSO_MOIS_POMPE
+			} else {
+				rapportConsoMois = RAPPORT_CONSO_MOIS_AUTRE
+			}
+		} 		
+		
 		int year = parameters.year
 		Date debutYear = DateUtils.firstDayInYear(year)
 		def compteur = house.compteurElectriqueImpl()
@@ -103,17 +125,17 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 		for (int mois = Calendar.JANUARY; mois <= Calendar.DECEMBER; mois++) {
 			if (!consoMois[mois]) {
 				// récupère le rapport du mois
-				def rapportMois = RAPPORT_CONSO_MOIS[mois]
+				def rapportMois = rapportConsoMois[mois]
 				
 				// calcul des consos en ramenant la conso du mois référence sur un rapport de 1
 				// pour ensuite appliquer le rapport du mois
 				consoMois[mois] = [:]
 				
 				if (consoReference.value.kwhp != null && consoReference.value.kwhc != null) {
-					consoMois[mois].kwhp = ((consoReference.value.kwhp / RAPPORT_CONSO_MOIS[consoReference.key]) * rapportMois) as Integer
-					consoMois[mois].kwhc = ((consoReference.value.kwhc / RAPPORT_CONSO_MOIS[consoReference.key]) * rapportMois) as Integer
+					consoMois[mois].kwhp = ((consoReference.value.kwhp / rapportConsoMois[consoReference.key]) * rapportMois) as Integer
+					consoMois[mois].kwhc = ((consoReference.value.kwhc / rapportConsoMois[consoReference.key]) * rapportMois) as Integer
 				} else if (consoReference.value.kwbase != null) {
-					consoMois[mois].kwbase = ((consoReference.value.kwbase / RAPPORT_CONSO_MOIS[consoReference.key]) * rapportMois) as Integer
+					consoMois[mois].kwbase = ((consoReference.value.kwbase / rapportConsoMois[consoReference.key]) * rapportMois) as Integer
 				}
 			}
 		}
