@@ -23,6 +23,14 @@
 	<label for="chartType">
 		Groupe <span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textField name="groupe" value="${chart?.groupe}"class="text long-field" required="true"/>
+	<g:textField name="groupe" value="${chart?.groupe}" class="text long-field" required="true"/>
 </div>
+
+<div class="field-group">
+	<label>
+		Y-Légende
+	</label>
+	<g:textField name="ylegend" value="${chart?.ylegend}" class="text long-field"/>
+</div>
+
 

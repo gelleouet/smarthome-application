@@ -1,7 +1,7 @@
 hibernate {
 	generate_statistics = false
     cache.use_second_level_cache = true
-    cache.use_query_cache = true
+    cache.use_query_cache = false
 	cache.provider_class = 'org.hibernate.cache.EhCacheProvider'
 //    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory' // Hibernate 3
     cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4

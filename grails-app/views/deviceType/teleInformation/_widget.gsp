@@ -14,23 +14,21 @@
 
 <h3>${ device.label }</h3>
 	
-<div class="aui-buttons" style="margin-top:10px;">
-	<g:link class="aui-button" action="watmetre" controller="energie" id="${ device.id }">Watmètre</g:link>
-</div>
-	
 <div class="aui-group" style="margin:10px 0px; padding:10px 0px">
 	<div class="aui-item">
 		<div style="text-align:center;">
-			<g:set var="pourcentage" value="${ 80 }"/>
+			<g:set var="pourcentageW" value="${ papp?.value && isousc?.value ? ((((papp?.value as Integer) * 100) / ((isousc?.value as Integer) * 220)) as Integer) : 100 }"/>
+			<g:set var="pourcentage" value="${ 100 - pourcentageW }"/>
 			
 			<g:link controller="device" action="deviceChart" params="['device.id': device.id]">
-				<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${pourcentage == 100 ? '100%' : ''}, orange ${pourcentage < 100 ? pourcentage + '%' : ''});">
-					${ papp?.value ? papp?.value as Integer : '-' } 
-					<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
+				<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${ pourcentage == 100 ? '100%' : ''}, orange ${pourcentage < 100 ? pourcentage + '%' : ''});">
+					${ papp?.value ? papp?.value as Integer : '-' }<span class="vignette-unite">W</span>
 				</div>
 			</g:link>
 			
-			<h6 class="h6">(W) - Il y a ${ app.formatTimeAgo(date: device.dateValue) }</h6>
+			<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: device.dateValue) }
+			<br/>
+			Utilisation : ${ pourcentageW }%</h6>
 		</div>
 	</div>
 	<div class="aui-item separator-left">
@@ -61,8 +59,13 @@
 				<li>BASE : ${ (consos.base as Double)?.round(1) } kWh</li>
 			</g:else>
 		</ul>
-		
 	</div>
+</div>
+
+<div style="text-align:right; font-weight:bold;">
+	<g:link class="link" action="watmetre" controller="energie" id="${ device.id }">
+		<span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Voir le wattmètre
+	</g:link>
 </div>
 
 

@@ -5,10 +5,11 @@
 	<g:set var="keys" value="${ command.chart.devices.sort{ it.position} }"/>
 
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">
+		<g:set var="haxis" value="${ command.dateChart.format('EEEE dd MMMM yyyy') }"/>
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
 	   		<g:each var="item" in="${ keys }">
-	   		{label: '${ item.metavalue ? item.device.metavalue(item.metavalue).label : item.device.label }', type: 'number'},
+	   		{label: '${ item.legend() }', type: 'number'},
 	   		</g:each>
 	   		],
 	   		<g:each var="item" in="${ keys }" status="status">
@@ -19,10 +20,12 @@
 	   	]);
 	</g:if>
 	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
+		<g:set var="haxis" value="${ command.dateChart.format('MMMM yyyy') }"/>
+		
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'date'},
 	   		<g:each var="item" in="${ keys }">
-	   		{label: '${ item.metavalue ? item.device.metavalue(item.metavalue).label : item.device.label }', type: 'number'},
+	   		{label: '${ item.legend() }', type: 'number'},
 	   		</g:each>
 	   		],
 	   		<g:each var="data" in="${ChartUtils.groupMapDatas(command, datas)}">
@@ -31,10 +34,12 @@
 	   	]);
 	</g:elseif>
 	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
+		<g:set var="haxis" value="${ command.dateChart.format('yyyy') }"/>
+		
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'date'},
 	   		<g:each var="item" in="${ keys }">
-	   		{label: '${ item.metavalue ? item.device.metavalue(item.metavalue).label : item.device.label }', type: 'number'},
+	   		{label: '${ item.legend() }', type: 'number'},
 	   		</g:each>
 	   		],
 	   		<g:each var="data" in="${ChartUtils.groupMapDatas(command, datas)}">
@@ -48,15 +53,22 @@
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
         'legend': {position: 'top'},
-        'curveType': 'function',
         'chartArea': {
         	width: '90%'
         },
         'series': {
         	<g:each var="item" in="${ keys }" status="status">
-	          	${status}: {type: '${ item.chartType }'},
+	          	${status}: {type: '${ item.chartType }',
+	          		color: <g:if test="${ item.color }">'${ item.color }'</g:if><g:else>null</g:else>
+	          	},
 	        </g:each>
 	    },
+	    'vAxis': {
+	    	title: '${ command.chart.ylegend }'
+	    },
+	    'hAxis': {
+	    	title: '${ haxis }'
+	    }
 	}
 </div>
 

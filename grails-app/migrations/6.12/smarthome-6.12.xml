@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1554154609642-1">
+        <createTable tableName="agent_config">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="agent_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_sync" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-2">
+        <createTable tableName="device_planning">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="planning_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-3">
+        <createTable tableName="planning">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rule" type="TEXT"/>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-4">
+        <createTable tableName="widget_user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="col" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="param_id" type="BIGINT"/>
+            <column name="row" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="widget_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-5">
+        <addColumn tableName="widget">
+            <column name="action_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-6">
+        <addColumn tableName="widget">
+            <column name="controller_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-7">
+        <addColumn tableName="device_type">
+            <column defaultValue="false" defaultValueBoolean="false" name="planning" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-8">
+        <addColumn tableName="widget">
+            <column name="refresh_period" type="int4"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-9">
+        <addPrimaryKey columnNames="id" constraintName="agent_config_pkey" tableName="agent_config"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-10">
+        <addPrimaryKey columnNames="id" constraintName="device_planning_pkey" tableName="device_planning"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-11">
+        <addPrimaryKey columnNames="id" constraintName="planning_pkey" tableName="planning"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-12">
+        <addPrimaryKey columnNames="id" constraintName="widget_user_pkey" tableName="widget_user"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-13">
+        <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="device_planning" constraintName="fk_5s0l070qf5n1jfum5014l25pe" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-14">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="planning" constraintName="fk_cope76rahuwfefx4sbqsd9cfa" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-15">
+        <addForeignKeyConstraint baseColumnNames="agent_id" baseTableName="agent_config" constraintName="fk_jk3nr1605a9s14dhh42dwfc1i" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="agent"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-16">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="widget_user" constraintName="fk_lke750rg7c1tsh0bc6oef8tcp" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-17">
+        <addForeignKeyConstraint baseColumnNames="widget_id" baseTableName="widget_user" constraintName="fk_m5scaiudukbhi9n8pebd09jar" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="widget"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-18">
+        <addForeignKeyConstraint baseColumnNames="planning_id" baseTableName="device_planning" constraintName="fk_niiqkydjhfshk1hfdbrhvbp6b" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="planning"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-19">
+        <createIndex indexName="agentconfig_idx" tableName="agent_config" unique="false">
+            <column name="agent_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-20">
+        <createIndex indexName="deviceplanning_idx" tableName="device_planning" unique="false">
+            <column name="device_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-21">
+        <createIndex indexName="widgetuser_idx" tableName="widget_user" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-22">
+        <dropColumn columnName="gsp" tableName="widget"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1554154609642-23">
+        <addNotNullConstraint columnDataType="varchar(255)" columnName="data" tableName="composant_vue"/>
+    </changeSet>
+</databaseChangeLog>

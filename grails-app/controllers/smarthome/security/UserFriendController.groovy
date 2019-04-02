@@ -27,7 +27,7 @@ class UserFriendController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Amis", navigation = NavigationEnum.navbarPrimary)
+	@NavigableAction(label = "Mes amis", navigation = NavigationEnum.navbarPrimary)
 	def userFriendFollowing(UserFriendCommand command) {
 		def user = authenticatedUser
 		command.userId = principal.id

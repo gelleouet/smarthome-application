@@ -7,6 +7,7 @@ import grails.converters.JSON;
 import grails.plugin.cache.CachePut;
 import grails.plugin.cache.Cacheable;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,6 +20,7 @@ import smarthome.core.QueryUtils;
 import smarthome.automation.Chart;
 import smarthome.core.ExchangeType;
 import smarthome.core.SmartHomeException;
+import smarthome.core.chart.ChartTransformer;
 import smarthome.security.User;
 
 
@@ -121,7 +123,14 @@ class ChartService extends AbstractService {
 				deviceImpl: it.device.newDeviceImpl(), metaName: it.metavalue ?: '',
 				dateChart: command.dateChart, viewMode: command.viewMode)
 			
-			map.put(it, deviceValueService.values(deviceCommand))
+			def values = deviceValueService.values(deviceCommand)
+			
+			if (StringUtils.isNotEmpty(it.transformer)) {
+				ChartTransformer chartTransformer = ClassUtils.newInstance(it.transformer)
+				values = chartTransformer.transform(command, values)
+			}
+			
+			map.put(it, values)
 		}
 		
 		return map

@@ -20,7 +20,7 @@
 	          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line', pointsVisible: false},
 	          },
 	          vAxes: {
-	          	0: {title: 'Index (Wh)'},
+	          	0: {title: 'Consommation (Wh)'},
 	          	1: {title: 'Puissance (W)'}
 	          },
 		      chartArea: {
@@ -62,7 +62,7 @@
 		          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line'},
 		          },
 		          vAxes: {
-		          	0: {title: 'Index (kWh)'},
+		          	0: {title: 'Consommation (kWh)'},
 		          	1: {title: 'Puissance (W)'}
 		          },
 		          'seriesType': 'bars',

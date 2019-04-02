@@ -18,14 +18,11 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item" style="width:30%">
-							<h4>${ app.formatUser(date: currentDate) }</h4>
+						<div class="aui-item" style="width:50%">
+							<h4>${ currentDate.format('EEEE dd MMMM yyyy') }</h4>
 						</div>
 						<div class="aui-item">
 							<h4><span class="link">${ consoJour.tarifTotal != null ? (consoJour.tarifTotal as Double).round(1) : '-' }€</span>
-								<g:if test="${ params.compare }">
-									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
-								</g:if>
 							</h4>
 						</div>
 					</div>
@@ -33,13 +30,12 @@
 				
 				<div class="synthese-content">
 						
-					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
+					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'day']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consoJour.total }
-							<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
+							${ consoJour.total }<span class="vignette-unite">kWh</span>
 						</div>
 					</g:link>
-					<h6 class="h6">(kWh) - Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 					
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
@@ -71,6 +67,12 @@
 							</g:else>
 						</tbody>
 					</table>
+					
+					<div style="text-align:right; font-weight:bold;">
+						<g:link class="link" controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'day']">
+							<span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Voir le détail
+						</g:link>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -79,14 +81,11 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item" style="width:30%">
+						<div class="aui-item" style="width:50%">
 							<h4><g:formatDate date="${ currentDate }" format="MMMM yyyy"/></h4>
 						</div>
 						<div class="aui-item">
 							<h4><span class="link">${ consoMois.tarifTotal != null ? (consoMois.tarifTotal as Double).round(1) : '-' }€</span>
-								<g:if test="${ params.compare }">
-									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
-								</g:if>
 							</h4>
 						</div>
 					</div>
@@ -94,13 +93,12 @@
 				
 				<div class="synthese-content">
 						
-					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
+					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'month']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consoMois.total }
-							<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
+							${ consoMois.total as Integer }<span class="vignette-unite">kWh</span>
 						</div>
 					</g:link>
-					<h6 class="h6">(kWh) - Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 					
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
@@ -132,6 +130,12 @@
 							</g:else>
 						</tbody>
 					</table>
+					
+					<div style="text-align:right; font-weight:bold;">
+						<g:link class="link" controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'month']">
+							<span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Voir le détail
+						</g:link>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -140,14 +144,11 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item" style="width:30%">
+						<div class="aui-item" style="width:50%">
 							<h4><g:formatDate date="${ currentDate }" format="yyyy"/></h4>
 						</div>
 						<div class="aui-item">
 							<h4><span class="link">${ consoAnnee.tarifTotal != null ? (consoAnnee.tarifTotal as Double).round(1) : '-' }€</span>
-								<g:if test="${ params.compare }">
-									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
-								</g:if>
 							</h4>
 						</div>
 					</div>
@@ -157,11 +158,10 @@
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consoAnnee.total }
-							<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
+							${ consoAnnee.total as Integer }<span class="vignette-unite">kWh</span>
 						</div>
 					</g:link>
-					<h6 class="h6">(kWh) - Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 					
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
@@ -193,6 +193,12 @@
 							</g:else>
 						</tbody>
 					</table>
+					
+					<div style="text-align:right; font-weight:bold;">
+						<g:link class="link" controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
+							<span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Voir le détail
+						</g:link>
+					</div>
 				</div>
 			</div>
 		</div>

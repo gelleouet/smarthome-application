@@ -2,7 +2,7 @@
 
 <g:set var="currentDate" value="${ new Date() }"/>
 
-<h3>Synthèse consommations jour</h3>
+<h3>Consommations jour</h3>
 
 <g:if test="${ house?.compteur }">
 	<g:set var="compteurElectrique" value="${ house.compteurElectriqueImpl() }"/>
@@ -16,14 +16,11 @@
 			<div style="margin-top:20px">
 				<div class="separator-bottom">
 					<div class="aui-group aui-group-split">
-						<div class="aui-item" style="width:30%">
-							<h4>${ app.formatUser(date: currentDate) }</h4>
+						<div class="aui-item" style="width:50%">
+							<h4>${ currentDate.format('EEEE dd MMMM yyyy') }</h4>
 						</div>
 						<div class="aui-item">
 							<h4><span class="link">${ consos.tarifTotal != null ? (consos.tarifTotal as Double).round(1) : '-' }€</span>
-								<g:if test="${ params.compare }">
-									<g:link class="aui-button" style="float:right; margin-left:10px;" action="compareHouseDeviceChart" controller="device" params="['device.id': house.compteur.id]">Comparer</g:link>
-								</g:if>
 							</h4>
 						</div>
 					</div>
@@ -33,11 +30,10 @@
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consos.total } 
-							<span class="aui-icon aui-icon-small aui-iconfont-priority-low"></span>
+							${ consos.total }<span class="vignette-unite">kWh</span>
 						</div>
 					</g:link>
-					<h6 class="h6">(kWh) - Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 					
 					<table class="aui datatable" style="margin-bottom:20px;">
 						<thead>
@@ -79,6 +75,12 @@
 					'device.id': house.compteur.id, chartHeight: '350', suffixId: 'synthese-day']"/>	
 			</div>
 		</div>
+	</div>
+	
+	<div style="text-align:right; font-weight:bold;">
+		<g:link class="link" controller="device" action="deviceChart" params="['device.id': house.compteur.id]">
+			<span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Voir le détail
+		</g:link>
 	</div>
 </g:if>
 <g:else>

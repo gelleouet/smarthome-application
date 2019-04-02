@@ -653,6 +653,10 @@ h5.device-grid-label {
 	margin: auto;
 }
 
+div.vignette-synthese span.vignette-unite {
+	font-size: 12pt;
+}
+
 .synthese-content {
 	padding: 20px 0px 0px 0px;
 	text-align: center;

@@ -21,6 +21,9 @@ class ChartDevice {
 	String metavalue
 	String function
 	int position
+	String legend
+	String transformer
+	String color
 	
 	boolean persist
 	
@@ -31,11 +34,29 @@ class ChartDevice {
 		metavalue nullable: true
 		persist bindable: true
 		function nullable: true
+		legend nullable: true
+		transformer nullable: true
+		color nullable: true
     }
 	
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		chart index: "ChartDevice_Chart_Idx"
+		transformer type: 'text'
+		color length: 16
 	}
 	
+	/**
+	 * La légende en fonction des champs renseignés
+	 * @return
+	 */
+	String legend() {
+		if (legend) {
+			return legend
+		} else if (metavalue) {
+			return device.metavalue(metavalue).label
+		} else {
+			return device.label
+		}
+	}
 }

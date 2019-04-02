@@ -51,7 +51,7 @@
 		</g:if>
 		
 		<li>
-			<span>Prévisions ${ currentConso.year() } :</span>
+			<span style="font-weight:bold;">Prévisions ${ currentConso.year() } :</span>
 			
 			<table class="aui datatable" style="margin-bottom:20px;">
 				<thead>

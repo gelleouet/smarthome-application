@@ -60,7 +60,7 @@ class TeleInformation extends AbstractDeviceType {
 		
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-				"null,hcinst,hpinst,baseinst")
+				command.metaName ?: "null,hcinst,hpinst,baseinst")
 		} else {
 			values = super.values(command)
 		}
@@ -87,19 +87,19 @@ class TeleInformation extends AbstractDeviceType {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 			
 			if (opttarif in ["HC", "EJP"]) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hcinst" }?.value
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hpinst" }?.value
 				})
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures bases", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "baseinst" }?.value
 				})
 			}
 			
-			chart.colonnes << new GoogleDataTableCol(label: "Puissance (W)", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
 				(deviceValue.value.find{ !it.name }?.value ?: 0) * 220
 			})
 			
@@ -110,7 +110,7 @@ class TeleInformation extends AbstractDeviceType {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 			
 			if (opttarif in ["HC", "EJP"]) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart -> 
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (kWh)", type: "number", value: { deviceValue, index, currentChart -> 
 					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1) 
@@ -118,7 +118,7 @@ class TeleInformation extends AbstractDeviceType {
 						return null
 					}
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchpsum" }?.value 
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -127,7 +127,7 @@ class TeleInformation extends AbstractDeviceType {
 					}
 				})
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures bases", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "basesum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -138,7 +138,7 @@ class TeleInformation extends AbstractDeviceType {
 			}
 			
 			if (!command.comparePreviousYear) {
-				chart.colonnes << new GoogleDataTableCol(label: "Puissance (W)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
 					(deviceValue.value.find{ it.name == "max" }?.value ?:0) * 220
 				})
 			}
