@@ -1,6 +1,7 @@
 package smarthome.automation;
 
 public enum ChartTypeEnum {
+	Bar("BarChart"),
 	Histogram("Histogram"),
 	Column("ColumnChart"), 
 	Combo("ComboChart"), 

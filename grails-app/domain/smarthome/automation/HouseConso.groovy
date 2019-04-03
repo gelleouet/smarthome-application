@@ -67,6 +67,14 @@ class HouseConso implements Serializable {
 	}
 	
 	
+	int consoTotaleBySurface() {
+		if (house.surface) {
+			return (consoTotale() / house.surface) as Integer
+		}
+		return 0
+	}
+	
+	
 	/**
 	 * L'année de la conso
 	 * 

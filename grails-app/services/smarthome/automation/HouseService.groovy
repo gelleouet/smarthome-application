@@ -48,6 +48,44 @@ class HouseService extends AbstractService {
 	}
 	
 	
+	/**
+	 * Tri les consommations selon un ordre
+	 * 
+	 * @param userList
+	 * @param order
+	 * @param limit
+	 * @return
+	 */
+	List<HouseConso> sortHouseConso(List<User> userList, Date dateConso, String order, int limit) {
+		return HouseConso.executeQuery("""select hc
+from HouseConso hc 
+join fetch hc.house as house
+join fetch house.user as user
+where hc.dateConso=:dateConso and user in (:userList)
+and house.surface>0
+order by ((hc.kwHC + hc.kwHP + hc.kwBASE + hc.kwGaz) / house.surface) $order
+""", [dateConso: dateConso, userList: userList, max: limit])	
+	}
+	
+	
+	/**
+	 * répartition chauffage des maisons de plusieurs utilisateurs
+	 * 
+	 * @param userList
+	 * @return
+	 */
+	List<Map> repartitionChauffage(List<User> userList) {
+		return HouseConso.executeQuery("""
+select new map(chauffage.libelle as chauffage, count(house.id) as count)
+from House house
+join house.user as user
+join house.chauffage as chauffage
+where user in (:userList)
+group by chauffage.libelle
+""", [userList: userList])	
+	}
+	
+	
 	List<HouseConso> listLastConsoByHouses(List<House> houses) {
 		if (!houses) {
 			return []

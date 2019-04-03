@@ -3,6 +3,7 @@ package smarthome.security
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.automation.HouseService;
 import smarthome.core.AbstractController
+import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
@@ -39,10 +40,20 @@ class UserFriendController extends AbstractController {
 		def houses = houseService.listDefaultByUsers(friends*.friend, ['user', 'chauffage'])
 		def consos = houseService.listLastConsoByHouses(houses)
 		
+		def friendsAndMe = [user]
+		friendsAndMe.addAll(friends*.friend)
+		
+		def dateConso = DateUtils.firstDayInYear(new Date())
+		def top5 = houseService.sortHouseConso(friendsAndMe, dateConso, "asc", 5)
+		def flop5 = houseService.sortHouseConso(friendsAndMe, dateConso, "desc", 5)
+		
+		def repartitionChauffage = houseService.repartitionChauffage(friendsAndMe)
+		
 		// userFriends est accessible depuis le model avec la variable userFriend[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond friends, model: [command: command, recordsTotal: recordsTotal, user: user,
-			houses: houses, consos: consos, secUser: user]
+			houses: houses, consos: consos, secUser: user, top5: top5, flop5: flop5,
+			repartitionChauffage: repartitionChauffage]
 	}
 	
 	
