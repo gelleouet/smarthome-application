@@ -9,4 +9,5 @@ class GoogleDataTableCol {
 	Closure value
 	String metaName
 	Map style = [:]
+	String pattern
 }

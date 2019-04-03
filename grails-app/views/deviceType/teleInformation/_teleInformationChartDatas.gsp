@@ -30,7 +30,14 @@
 				axis: 'horizontal',
 				keepInBounds: true,
 				actions: ['dragToZoom', 'rightClickToReset']
-			  }
+			  },
+			  hAxis: {
+			  	title: '${ chart.hAxisTitle(command) }',
+			  	gridlines: { color: 'none' },
+	          	slantedText: true,
+	          	format: '${ chart.format(command) }',
+	          	ticks: [${ chart.ticks(command) }]
+		      },
 	  	};
 	  	
 	  	chartType = 'ComboChart';
@@ -39,14 +46,17 @@
 		chartDatas = new google.visualization.DataView(chartDatas)
       	
       	<g:if test="${ !compareChart }">
-	      	chartDatas.setColumns([0,
-	      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
-				${col},{ calc: "stringify",
-	                sourceColumn: ${col},
-	                type: "string",
-	                role: "annotation" },
-	            </g:each>
-	        ])
+      	
+      		<g:if test="${ command.viewMode == ChartViewEnum.year }">
+		      	chartDatas.setColumns([0,
+		      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
+					${col},{ calc: "stringify",
+		                sourceColumn: ${col},
+		                type: "string",
+		                role: "annotation" },
+		            </g:each>
+		        ])
+	        </g:if>
 		    	
 			chartOptions = {
 				  'title': '${label }',
@@ -66,6 +76,13 @@
 		          	1: {title: 'Puissance (W)'}
 		          },
 		          'seriesType': 'bars',
+		          hAxis: {
+		          	title: '${ chart.hAxisTitle(command) }',
+				  	gridlines: { color: 'none' },
+		          	slantedText: true,
+		          	format: '${ chart.format(command) }',
+		          	ticks: [${ chart.ticks(command) }]
+			      },
 		  	};
 	  	</g:if>
 	  	<g:else>
@@ -91,7 +108,14 @@
 				  			prefix: null
 				  		}
 				  	},
-				  }
+				  },
+				  hAxis: {
+				  	title: '${ chart.hAxisTitle(command) }',
+				  	gridlines: { color: 'none' },
+		          	slantedText: true,
+		          	format: '${ chart.format(command) }',
+		          	ticks: [${ chart.ticks(command) }]
+			      },
 		  	};
 	  	</g:else>
 	  	

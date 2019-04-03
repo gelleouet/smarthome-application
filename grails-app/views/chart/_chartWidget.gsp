@@ -29,6 +29,6 @@
 	<div class="aui-progress-indicator">
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
-	<div async-url="${ createLink(action: 'chartDatas', params: [chartHeight: 400, viewMode: command.viewMode, dateChart: app.formatPicker(date: command.dateChart), 'chart.id': chart.id, comparePreviousYear: command.comparePreviousYear]) }" on-async-complete="buildGoogleChart('#chartDiv-${ chart.id }')">
+	<div async-url="${ createLink(action: 'chartDatas', params: [chartHeight: 500, viewMode: command.viewMode, dateChart: app.formatPicker(date: command.dateChart), 'chart.id': chart.id, comparePreviousYear: command.comparePreviousYear]) }" on-async-complete="buildGoogleChart('#chartDiv-${ chart.id }')">
 	</div>
 </div>

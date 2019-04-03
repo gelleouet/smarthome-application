@@ -4,6 +4,20 @@
 
 	<g:if test="${ chart }">
    		chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
+   		
+   		<g:if test="${ command.viewMode == ChartViewEnum.year }">
+	   		chartDatas = new google.visualization.DataView(chartDatas)
+	   		
+	   		chartDatas.setColumns([0,
+				<g:each var="col" in="${ (1..<chart.colonnes.size()-1) }">
+				${col},
+	            </g:each>
+	            ${chart.colonnes.size()-1},{ calc: "stringify",
+	                sourceColumn: ${chart.colonnes.size()-1},
+	                type: "string",
+	                role: "annotation" },
+	        ])
+        </g:if>
    	</g:if>
    	
    	<g:if test="${ chart.joinChart }">
@@ -38,6 +52,13 @@
 				${ status }: {title: '${ axis.title }', maxValue: '${ axis.maxValue ?: 'automatic' }'},
 			</g:each>
 	    },
+	    hAxis: {
+	    	title: '${ chart.hAxisTitle(command) }',
+        	gridlines: { color: 'none'},
+		    slantedText: true,	
+		    format: '${ chart.format(command) }',
+	        ticks: [${ chart.ticks(command) }]
+        },
 	    <g:if test="${ chart?.joinChart }">
 	    'interpolateNulls': true,
 	    </g:if>

@@ -107,7 +107,7 @@ class TeleInformation extends AbstractDeviceType {
 			chart.values = values
 			
 			chart.colonnes = []
-			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
+			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", property: "key")
 			
 			if (opttarif in ["HC", "EJP"]) {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (kWh)", type: "number", value: { deviceValue, index, currentChart -> 
@@ -160,6 +160,8 @@ class TeleInformation extends AbstractDeviceType {
 		GoogleChart chart = new GoogleChart()
 		def opttarif = command.device.metavalue("opttarif")?.value
 		
+		//chart.vAxis << [title: 'Coût (€)']
+		
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.chartType = "SteppedAreaChart"
 			
@@ -192,14 +194,14 @@ class TeleInformation extends AbstractDeviceType {
 			})
 			
 			if (opttarif in ["HC", "EJP"]) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
 				})
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
 			}
@@ -233,17 +235,17 @@ class TeleInformation extends AbstractDeviceType {
 			})
 				
 			if (opttarif in ["HC", "EJP"]) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
 				})
-				chart.colonnes <<  new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes <<  new GoogleDataTableCol(label: "Total (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prix"]
 				})
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures bases (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
 			}

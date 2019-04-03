@@ -210,6 +210,7 @@ class ChartController extends AbstractController {
 	def widgetChart(Chart chart) {
 		ChartCommand command = new ChartCommand(chart: chart)
 		def datas = chartService.values(command)
+		params.chartHeight = 400
 		render(template: 'widgetChart', model: [chart: chart, command: command, datas: datas])
 	}
 }

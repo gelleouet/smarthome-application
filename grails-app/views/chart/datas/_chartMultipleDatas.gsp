@@ -1,11 +1,11 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 <%@ page import="smarthome.core.ChartUtils" %>
+<%@ page import="smarthome.core.chart.GoogleChart" %>
 
 <div data-chart-datas="true" class="hidden">	
 	<g:set var="keys" value="${ command.chart.devices.sort{ it.position} }"/>
 
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">
-		<g:set var="haxis" value="${ command.dateChart.format('EEEE dd MMMM yyyy') }"/>
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'datetime'},
 	   		<g:each var="item" in="${ keys }">
@@ -20,8 +20,6 @@
 	   	]);
 	</g:if>
 	<g:elseif test="${ command.viewMode == ChartViewEnum.month }">
-		<g:set var="haxis" value="${ command.dateChart.format('MMMM yyyy') }"/>
-		
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'date'},
 	   		<g:each var="item" in="${ keys }">
@@ -34,8 +32,6 @@
 	   	]);
 	</g:elseif>
 	<g:elseif test="${ command.viewMode == ChartViewEnum.year }">
-		<g:set var="haxis" value="${ command.dateChart.format('yyyy') }"/>
-		
 		chartDatas = google.visualization.arrayToDataTable([
 	   		[{label: 'Date', type: 'date'},
 	   		<g:each var="item" in="${ keys }">
@@ -67,7 +63,11 @@
 	    	title: '${ command.chart.ylegend }'
 	    },
 	    'hAxis': {
-	    	title: '${ haxis }'
+	    	title: '${ new GoogleChart().hAxisTitle(command) }',
+	    	gridlines: { color: 'none'},
+		    slantedText: true,
+		    format: '${ new GoogleChart().format(command) }',
+	        ticks: [${ new GoogleChart().ticks(command) }]
 	    }
 	}
 </div>
