@@ -50,7 +50,7 @@ class HouseEstimationConsoRule implements Rule<House, House> {
 		if (house.chauffage) {
 			if (house.chauffage.libelle == "Pompe à chaleur") {
 				rapportConsoMois = RAPPORT_CONSO_MOIS_POMPE
-			} else {
+			} else if (!house.chauffage.libelle.contains("électrique")) {
 				rapportConsoMois = RAPPORT_CONSO_MOIS_AUTRE
 			}
 		} 		
