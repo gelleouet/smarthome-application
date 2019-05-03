@@ -6,6 +6,12 @@
  * Utile pour recréer les dépendances et les associations entre projet sur un IDE
  * dépourvu d'intégration avec Grails
  * 
+ * Gère les dépendences compile, test, provided
+ * Gère les projets inline (ie : grails.plugin.location = '.....')
+ * Gère les sources vers les plugins
+ * TODO : gérer les projets multi-modules pour parcourir chaque sous-projet depuis
+ * le projet racine
+ * 
  * @author gelleouet <gregory.elleouet@gmail.com>
  *
  */
@@ -13,11 +19,12 @@
  
 includeTargets << grailsScript("_GrailsClasspath")
  
- 
+
+
 target(default: "Configure project and build path") {
 	 println "Grails: $grailsHome"
 	 
-	 initProjectFile(projectCompiler.buildSettings.baseDir)
+	 initProjectFile(projectCompiler, projectCompiler.buildSettings.baseDir)
 	 initClasspathFile(projectCompiler, projectCompiler.buildSettings.baseDir)
 }
 
@@ -34,15 +41,6 @@ void initClasspathFile(projectCompiler, rootFile) {
 	println "=> Creating .classpath file in ${rootFile}..."
 	
 	def rootPath = rootFile.toPath()
-	
-	println '-- pluginDependencies --'
-	projectCompiler.buildSettings.pluginDependencies.each {
-		println it
-	}
-	println '-- plugin getPluginSourceDirectories --'
-	projectCompiler.pluginSettings.getPluginSourceDirectories().each {
-		println it
-	}
 	
 	new File(".classpath", rootFile).withWriter('UTF-8') { writer ->
 		writer << """\
@@ -76,6 +74,27 @@ void initClasspathFile(projectCompiler, rootFile) {
 """
 		}
 		
+		// insère les sources des plugins à partir du link source ".grails_plugins"
+		def pluginBaseDir = pluginBaseDirectory(projectCompiler, rootFile)
+		
+		projectCompiler.pluginSettings.getPluginSourceDirectories().each { pluginResource ->
+			File pluginFile = pluginResource.file
+			
+			if (pluginFile.exists()) {
+				String pluginPath = pluginFile.absolutePath.replace(pluginBaseDir, '.grails_plugins')
+			
+				if (pluginPath.endsWith("grails-app/conf")) {
+					writer << """\
+	<classpathentry kind="src" path="${pluginPath}" excluding="BuidConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy"/>
+"""
+				} else {
+					writer << """\
+	<classpathentry kind="src" path="${pluginPath}"/>
+"""
+				}
+			}
+		}
+		
 		// insère les dépendences (compile + provided + test)
 		// pas besoin du runtime car pas nécessaire pour la compilation
 		def libs = [:]
@@ -87,6 +106,9 @@ void initClasspathFile(projectCompiler, rootFile) {
 			libs[file.name] = file
 		}
 		projectCompiler.buildSettings.testDependencies.sort().each { file ->
+			libs[file.name] = file
+		}
+		projectCompiler.buildSettings.runtimeDependencies.sort().each { file ->
 			libs[file.name] = file
 		}
 		
@@ -107,13 +129,14 @@ void initClasspathFile(projectCompiler, rootFile) {
 /**
  * Création du fichier .project dans le dossier 'rootFile'
  * Par défaut, active les facets java et groovy
- * et ajoute un lien ".link_to_grails_plugin" vers les plugins du projet dézippés
+ * et ajoute un lien ".grails_plugin" vers les plugins du projet dézippés
  * ce lien est utilisé ensuite dans le classpath pour référencer les dossiers
  * sources de ces plugins
  * 
+ * @param projectCompiler
  * @param rootFile
  */
-void initProjectFile(rootFile) {
+void initProjectFile(projectCompiler, rootFile) {
 	println "=> Creating .project file in ${rootFile}..."
 	
 	new File(".project", rootFile).withWriter('UTF-8') { writer ->
@@ -133,14 +156,27 @@ void initProjectFile(rootFile) {
 	</natures>
 	<linkedResources>
 		<link>
-			<name>.link_to_grails_plugin</name
+			<name>.grails_plugins</name>
 			<type>2</type>
-			<location></location>
+			<location>${pluginBaseDirectory(projectCompiler, rootFile)}</location>
 		</link>
 	</linkedResources>
 </projectDescription>
 """
 	}
+}
+
+
+/**
+ * Renvoit le chemin dans le contextu du projet vers les plugins dézippés
+ * pour un accès aux sources
+ * 
+ * @param projectCompiler
+ * @param rootFile
+ * @return
+ */
+String pluginBaseDirectory(projectCompiler, rootFile) {
+	"${rootFile}/target/work/plugins"
 }
  
  

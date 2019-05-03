@@ -90,7 +90,7 @@ class NotificationAccountSenderController extends AbstractController {
 	 * @param notificationAccountSender
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "notificationAccountSenders")
+	@ExceptionNavigationHandler(actionName = "notificationAccountSenders", modelName = NotificationAccountSenderController.COMMAND_NAME)
 	def delete(NotificationAccountSender notificationAccountSender) {
 		notificationAccountSenderService.delete(notificationAccountSender)
 		redirect(action: COMMAND_NAME + 's')

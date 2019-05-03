@@ -108,7 +108,7 @@ class WorkflowController extends AbstractController {
 	 * @param workflow
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "workflows")
+	@ExceptionNavigationHandler(actionName = "workflows", modelName = WorkflowController.COMMAND_NAME)
 	def delete(Workflow workflow) {
 		workflowService.delete(workflow)
 		redirect(action: COMMAND_NAME + 's')

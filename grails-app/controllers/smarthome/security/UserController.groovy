@@ -104,7 +104,7 @@ class UserController extends AbstractController {
 	 * @param user
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "users")
+	@ExceptionNavigationHandler(actionName = "users", modelName = "user")
 	def switchUser(User user) {
 		// nettoie la session
 		// TODO 

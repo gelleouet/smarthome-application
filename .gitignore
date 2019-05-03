@@ -11,3 +11,4 @@ target-eclipse/
 .classpath
 wrapper/
 /bin/
+/.DS_Store

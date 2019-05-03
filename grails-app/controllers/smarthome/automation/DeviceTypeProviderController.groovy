@@ -92,7 +92,7 @@ class DeviceTypeProviderController extends AbstractController {
 	 * @param deviceTypeProvider
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "deviceTypeProviders")
+	@ExceptionNavigationHandler(actionName = "deviceTypeProviders", modelName = DeviceTypeProviderController.COMMAND_NAME)
 	def delete(DeviceTypeProvider deviceTypeProvider) {
 		deviceTypeProviderService.delete(deviceTypeProvider)
 		redirect(action: COMMAND_NAME + 's')

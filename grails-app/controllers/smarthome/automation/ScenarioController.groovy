@@ -108,7 +108,7 @@ class ScenarioController extends AbstractController {
 	 * @param scenario
 	 * @return
 	 */
-	@ExceptionNavigationHandler(actionName = "scenarios")
+	@ExceptionNavigationHandler(actionName = "scenarios", modelName = ScenarioController.COMMAND_NAME)
 	def delete(Scenario scenario) {
 		scenarioService.delete(scenario)
 		redirect(action: COMMAND_NAME + 's')
