@@ -95,8 +95,8 @@ void initClasspathFile(projectCompiler, rootFile) {
 			}
 		}
 		
-		// insère les dépendences (compile + provided + test)
-		// pas besoin du runtime car pas nécessaire pour la compilation
+		// insère les dépendences (compile + provided + test + runtime)
+		// on passe par une map pour éviter les doublons de libs entre les scopes
 		def libs = [:]
 		
 		projectCompiler.buildSettings.compileDependencies.sort().each { file ->
