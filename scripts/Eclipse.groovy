@@ -21,12 +21,13 @@ includeTargets << grailsScript("_GrailsClasspath")
  
 
 
-target(default: "Configure project and build path") {
+target(default: "Configure project and build path in current project") {
 	 println "Grails: $grailsHome"
 	 
 	 initProjectFile(projectCompiler, projectCompiler.buildSettings.baseDir)
 	 initClasspathFile(projectCompiler, projectCompiler.buildSettings.baseDir)
 }
+
 
 
 /**
@@ -49,7 +50,7 @@ void initClasspathFile(projectCompiler, rootFile) {
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="output" path="target-eclipse"/>
 """
 		// insère les dossiers sources. les sources sont relatives au projet
 		// il faut calculer le path des sources en fonction du path du projet
@@ -67,20 +68,22 @@ void initClasspathFile(projectCompiler, rootFile) {
 		// insère les projets inline
 		// les noms des projets sont relatifs au workspace, donc on ne prend que
 		// son nom final
-		projectCompiler.pluginSettings.inlinePluginDirectories.sort().each { pluginDir ->
-			def pluginFile = new File(pluginDir)
+		projectCompiler.pluginSettings.inlinePluginDirectories.sort().each { pluginResource ->
+			def pluginFile = pluginResource.file
 			writer << """\
 	<classpathentry combineaccessrules="false" kind="src" path="/${pluginFile.name}"/>
 """
 		}
 		
 		// insère les sources des plugins à partir du link source ".grails_plugins"
+		// si le chemin du plugin ne correspond pas au dir base plugin, c'est que 
+		// c'est un plugin inline et qu'il est géré autrement
 		def pluginBaseDir = pluginBaseDirectory(projectCompiler, rootFile)
 		
 		projectCompiler.pluginSettings.getPluginSourceDirectories().each { pluginResource ->
 			File pluginFile = pluginResource.file
 			
-			if (pluginFile.exists()) {
+			if (pluginFile.exists() && pluginFile.absolutePath.contains(pluginBaseDir)) {
 				String pluginPath = pluginFile.absolutePath.replace(pluginBaseDir, '.grails_plugins')
 			
 				if (pluginPath.endsWith("grails-app/conf")) {
