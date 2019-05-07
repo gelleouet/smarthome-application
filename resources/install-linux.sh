@@ -10,77 +10,190 @@
 # @author Gregory Elleouet <gregory.elleouet@gmail.com>
 #
 
+
+CONFIG_FILE="~/.smarthome-application.build"
+
+# charge la dernière conf build
+
+if [ -f "$CONFIG_FILE" ]; then
+	DEFAULT_JAVA_HOME=`grep "JAVA_HOME" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_GRAILS_HOME=`grep "GRAILS_HOME" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_CATALINA_HOME=`grep "CATALINA_HOME" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_CATALINA_BASE=`grep "CATALINA_BASE" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_PROJECT_PATH=`grep "PROJECT_PATH" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_DEPLOY_PATH=`grep "DEPLOY_PATH" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_HTTP_PORT=`grep "HTTP_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_HTTPS_PORT=`grep "HTTPS_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_AJP_PORT=`grep "AJP_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_SHUTDOWN_PORT=`grep "SHUTDOWN_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_JDBC_HOST=`grep "JDBC_HOST" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_JDBC_PORT=`grep "JDBC_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_JDBC_DATABASE=`grep "JDBC_DATABASE" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_JDBC_USER=`grep "JDBC_USER" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_JDBC_PASSWORD=`grep "JDBC_PASSWORD" $CONFIG_FILE | awk -F "=" '{print $2}'`
+fi
+
+# Quelques valeurs par défaut
+
+if [ -z "$DEFAULT_HTTP_PORT" ]; then
+	DEFAULT_HTTP_PORT=8080
+fi
+if [ -z "$DEFAULT_HTTPS_PORT" ]; then
+	DEFAULT_HTTPS_PORT=8443
+fi
+if [ -z "$DEFAULT_AJP_PORT" ]; then
+	DEFAULT_AJP_PORT=8009
+fi
+if [ -z "$DEFAULT_SHUTDOWN_PORT" ]; then
+	DEFAULT_SHUTDOWN_PORT=8005
+fi
+if [ -z "$DEFAULT_JDBC_HOST" ]; then
+	DEFAULT_JDBC_HOST="localhost"
+fi
+if [ -z "$DEFAULT_JDBC_PORT" ]; then
+	DEFAULT_JDBC_PORT=5432
+fi
+
+
 # Config du user
 
 echo "Java environnement"
 echo "------------------"
-read -p "Java home: " JAVA_HOME
-read -p "Grails home: " GRAILS_HOME
-read -p "Catalina home: " CATALINA_HOME
-read -p "Catalina base: " CATALINA_BASE
+read -p "Java home [default=$DEFAULT_JAVA_HOME]: " JAVA_HOME
+read -p "Grails home [default=$DEFAULT_GRAILS_HOME]: " GRAILS_HOME
+read -p "Catalina home [default=$DEFAULT_CATALINA_HOME]: " CATALINA_HOME
+read -p "Catalina base [default=$DEFAULT_CATALINA_BASE]: " CATALINA_BASE
 
 echo "Build environnement"
 echo "-------------------"
-read -p "Project path: " PROJECT_PATH
+read -p "Project path [default=$DEFAULT_PROJECT_PATH]: " PROJECT_PATH
 
 echo "Deploy environnement"
 echo "--------------------"
-read -p "Deploy path: " DEPLOY_PATH
-read -p "HTTP port [default=8080]: " HTTP_PORT
-read -p "HTTPS port [default=8443]: " HTTPS_PORT
-read -p "AJP port [default=8009]: " AJP_PORT
-read -p "SHUTDOWN port [default=8005]: " SHUTDOWN_PORT
-read -p "JDBC host [default=localhost]: " JDBC_HOST
-read -p "JDBC port [default=5432]: " JDBC_PORT
-read -p "JDBC database: " JDBC_DATABASE
-read -p "JDBC user [default=postgres]: " JDBC_USER
-read -p "JDBC password: " JDBC_PASSWORD
+read -p "Deploy path [default=$DEFAULT_DEPLOY_PATH]: " DEPLOY_PATH
+read -p "HTTP port [default=$DEFAULT_HTTP_PORT]: " HTTP_PORT
+read -p "HTTPS port [default=$DEFAULT_HTTPS_PORT]: " HTTPS_PORT
+read -p "AJP port [default=$DEFAULT_AJP_PORT]: " AJP_PORT
+read -p "SHUTDOWN port [default=$DEFAULT_SHUTDOWN_PORT]: " SHUTDOWN_PORT
+read -p "JDBC host [default=$DEFAULT_JDBC_HOST]: " JDBC_HOST
+read -p "JDBC port [default=$DEFAULT_JDBC_PORT]: " JDBC_PORT
+read -p "JDBC database [default=$DEFAULT_JDBC_DATABASE]: " JDBC_DATABASE
+read -p "JDBC user  [default=$DEFAULT_JDBC_USER]: " JDBC_USER
+read -p "JDBC password  [default=$DEFAULT_JDBC_PASSWORD]: " JDBC_PASSWORD
 
-if [ -z "$JAVA_HOME" ]; then
+if [ -z "$JAVA_HOME" & -z "$DEFAULT_JAVA_HOME" ]; then
   echo "Java home is required !"
   exit 1
+else if [ -z "$JAVA_HOME" ]; then
+	JAVA_HOME="$DEFAULT_JAVA_HOME"
 fi
 
-if [ -z "$GRAILS_HOME" ]; then
+if [ -z "$GRAILS_HOME" & -z "$DEFAULT_GRAILS_HOME" ]; then
   echo "Grails home is required !"
   exit 1
+else if [ -z "$GRAILS_HOME" ]; then
+	GRAILS_HOME="$DEFAULT_GRAILS_HOME"
 fi
 
-if [ -z "$CATALINA_HOME" ]; then
+if [ -z "$CATALINA_HOME" & -z "$DEFAULT_CATALINA_HOME" ]; then
   echo "Catalina home is required !"
   exit 1
+else if [ -z "$CATALINA_HOME" ]; then
+	CATALINA_HOME="$DEFAULT_CATALINA_HOME"
 fi
 
-if [ -z "$CATALINA_BASE" ]; then
+if [ -z "$CATALINA_BASE" & -z "$DEFAULT_CATALINA_BASE" ]; then
   echo "Catalina base is required !"
   exit 1
+else if [ -z "$CATALINA_BASE" ]; then
+	CATALINA_BASE="$DEFAULT_CATALINA_BASE"
 fi
 
-if [ -z "$PROJECT_PATH" ]; then
+if [ -z "$PROJECT_PATH" & -z "$DEFAULT_PROJECT_PATH" ]; then
   echo "Project path is required !"
   exit 1
+else if [ -z "$PROJECT_PATH" ]; then
+	PROJECT_PATH="$DEFAULT_PROJECT_PATH"
 fi
 
-if [ -z "$DEPLOY_PATH" ]; then
+if [ -z "$DEPLOY_PATH" & -z "$DEFAULT_DEPLOY_PATH" ]; then
   echo "Deploy path is required !"
   exit 1
+else if [ -z "$DEPLOY_PATH" ]; then
+	DEPLOY_PATH="$DEFAULT_DEPLOY_PATH"
 fi
 
-if [ -z "$JDBC_DATABASE" ]; then
+if [ -z "$HTTP_PORT" ]; then
+	HTTP_PORT="$DEFAULT_HTTP_PORT"
+fi
+
+if [ -z "$HTTPS_PORT" ]; then
+	HTTPS_PORT="$DEFAULT_HTTPS_PORT"
+fi
+
+if [ -z "$AJP_PORT" ]; then
+	AJP_PORT="$DEFAULT_AJP_PORT"
+fi
+
+if [ -z "$SHUTDOWN_PORT" ]; then
+	SHUTDOWN_PORT="$DEFAULT_SHUTDOWN_PORT"
+fi
+
+if [ -z "$JDBC_HOST" ]; then
+	JDBC_HOST="$DEFAULT_JDBC_HOST"
+fi
+
+if [ -z "$JDBC_PORT" ]; then
+	JDBC_PORT="$DEFAULT_JDBC_PORT"
+fi
+
+if [ -z "$JDBC_DATABASE" & -z "$DEFAULT_JDBC_DATABASE" ]; then
   echo "JDBC database is required !"
   exit 1
+else if [ -z "$JDBC_DATABASE" ]; then
+	JDBC_DATABASE="$DEFAULT_JDBC_DATABASE"
 fi
 
-if [ -z "$JDBC_PASSWORD" ]; then
+if [ -z "$JDBC_USER" & -z "$DEFAULT_JDBC_USER" ]; then
+  echo "JDBC user is required !"
+  exit 1
+else if [ -z "$JDBC_USER" ]; then
+	JDBC_USER="$DEFAULT_JDBC_USER"
+fi
+
+if [ -z "$JDBC_PASSWORD" & -z "$DEFAULT_JDBC_PASSWORD" ]; then
   echo "JDBC password is required !"
   exit 1
+else if [ -z "$JDBC_PASSWORD" ]; then
+	JDBC_PASSWORD="$DEFAULT_JDBC_PASSWORD"
 fi
+
+
+# Sauvegarde la config
+
+echo "JAVA_HOME=$JAVA_HOME" > $CONFIG_FILe
+echo "GRAILS_HOME=$GRAILS_HOME" >> $CONFIG_FILe
+echo "CATALINA_HOME=$CATALINA_HOME" >> $CONFIG_FILe
+echo "CATALINA_BASE=$CATALINA_BASE" >> $CONFIG_FILe
+echo "PROJECT_PATH=$PROJECT_PATH" >> $CONFIG_FILe
+echo "DEPLOY_PATH=$DEPLOY_PATH" >> $CONFIG_FILe
+echo "HTTP_PORT=$HTTP_PORT" >> $CONFIG_FILe
+echo "HTTPS_PORT=$HTTPS_PORT" >> $CONFIG_FILe
+echo "AJP_PORT=$AJP_PORT" >> $CONFIG_FILe
+echo "SHUTDOWN_PORT=$SHUTDOWN_PORT" >> $CONFIG_FILe
+echo "JDBC_HOST=$JDBC_HOST" >> $CONFIG_FILe
+echo "JDBC_PORT=$JDBC_PORT" >> $CONFIG_FILe
+echo "JDBC_DATABASE=$JDBC_DATABASE" >> $CONFIG_FILe
+echo "JDBC_USER=$JDBC_USER" >> $CONFIG_FILe
+echo "JDBC_PASSWORD=$JDBC_PASSWORD" >> $CONFIG_FILe
 
 
 # Init variable
 
 PROJECT_NAME=`basename $PROJECT_PATH`
 PATH_SCRIPT="/usr/local/bin"
+
+# Sauvegarde les infos
 
 
 # Construction du script build "[proxy-name]-build.sh"
@@ -142,15 +255,15 @@ cp \$WAR_FILE \$INSTANCE/webapps/${PROJECT_NAME}.war
 sed -i -e "s/serverId.pid/\${INSTANCE_NAME}.pid/g" \$INSTANCE/bin/setenv.sh
 sed -i -e "s/serverId=serverId/serverId=\${INSTANCE_NAME}/g" \$INSTANCE/bin/setenv.sh
 
-sed -i -e "s/port=\"8005\"/port=\"${INSTANCE_ID}${SHUTDOWN_PORT:-8005}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/port=\"8080\"/port=\"${INSTANCE_ID}${HTTP_PORT:-8080}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/redirectPort=\"8443\"/redirectPort=\"${INSTANCE_ID}${HTTPS_PORT:-8443}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/port=\"8009\"/port=\"${INSTANCE_ID}${AJP_PORT:-8009}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8005\"/port=\"${INSTANCE_ID}${SHUTDOWN_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8080\"/port=\"${INSTANCE_ID}${HTTP_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/redirectPort=\"8443\"/redirectPort=\"${INSTANCE_ID}${HTTPS_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8009\"/port=\"${INSTANCE_ID}${AJP_PORT}\"/g" \$INSTANCE/conf/server.xml
 
-sed -i -e "s/#jdbc-host#/${JDBC_HOST:-localhost}/g" \$INSTANCE/conf/context.xml
-sed -i -e "s/#jdbc-port#/${JDBC_PORT:-5432}/g" \$INSTANCE/conf/context.xml
+sed -i -e "s/#jdbc-host#/${JDBC_HOST}/g" \$INSTANCE/conf/context.xml
+sed -i -e "s/#jdbc-port#/${JDBC_PORT}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-database#/${JDBC_DATABASE}/g" \$INSTANCE/conf/context.xml
-sed -i -e "s/#jdbc-user#/${JDBC_USER:-postgres}/g" \$INSTANCE/conf/context.xml
+sed -i -e "s/#jdbc-user#/${JDBC_USER}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-password#/${JDBC_PASSWORD}/g" \$INSTANCE/conf/context.xml
 EOF
 
