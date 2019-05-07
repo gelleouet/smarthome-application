@@ -11,7 +11,7 @@
 #
 
 
-CONFIG_FILE="~/.smarthome-application.build"
+CONFIG_FILE="/root/.smarthome-application.build"
 
 # charge la dernière conf build
 
@@ -81,45 +81,45 @@ read -p "JDBC database [default=$DEFAULT_JDBC_DATABASE]: " JDBC_DATABASE
 read -p "JDBC user  [default=$DEFAULT_JDBC_USER]: " JDBC_USER
 read -p "JDBC password  [default=$DEFAULT_JDBC_PASSWORD]: " JDBC_PASSWORD
 
-if [ -z "$JAVA_HOME" & -z "$DEFAULT_JAVA_HOME" ]; then
+if [ -z "$JAVA_HOME" ] && [ -z "$DEFAULT_JAVA_HOME" ]; then
   echo "Java home is required !"
   exit 1
-else if [ -z "$JAVA_HOME" ]; then
+elif [ -z "$JAVA_HOME" ]; then
 	JAVA_HOME="$DEFAULT_JAVA_HOME"
 fi
 
-if [ -z "$GRAILS_HOME" & -z "$DEFAULT_GRAILS_HOME" ]; then
+if [ -z "$GRAILS_HOME" ] && [ -z "$DEFAULT_GRAILS_HOME" ]; then
   echo "Grails home is required !"
   exit 1
-else if [ -z "$GRAILS_HOME" ]; then
+elif [ -z "$GRAILS_HOME" ]; then
 	GRAILS_HOME="$DEFAULT_GRAILS_HOME"
 fi
 
-if [ -z "$CATALINA_HOME" & -z "$DEFAULT_CATALINA_HOME" ]; then
+if [ -z "$CATALINA_HOME" ] && [ -z "$DEFAULT_CATALINA_HOME" ]; then
   echo "Catalina home is required !"
   exit 1
-else if [ -z "$CATALINA_HOME" ]; then
+elif [ -z "$CATALINA_HOME" ]; then
 	CATALINA_HOME="$DEFAULT_CATALINA_HOME"
 fi
 
-if [ -z "$CATALINA_BASE" & -z "$DEFAULT_CATALINA_BASE" ]; then
+if [ -z "$CATALINA_BASE" ] && [ -z "$DEFAULT_CATALINA_BASE" ]; then
   echo "Catalina base is required !"
   exit 1
-else if [ -z "$CATALINA_BASE" ]; then
+elif [ -z "$CATALINA_BASE" ]; then
 	CATALINA_BASE="$DEFAULT_CATALINA_BASE"
 fi
 
-if [ -z "$PROJECT_PATH" & -z "$DEFAULT_PROJECT_PATH" ]; then
+if [ -z "$PROJECT_PATH" ] && [ -z "$DEFAULT_PROJECT_PATH" ]; then
   echo "Project path is required !"
   exit 1
-else if [ -z "$PROJECT_PATH" ]; then
+elif [ -z "$PROJECT_PATH" ]; then
 	PROJECT_PATH="$DEFAULT_PROJECT_PATH"
 fi
 
-if [ -z "$DEPLOY_PATH" & -z "$DEFAULT_DEPLOY_PATH" ]; then
+if [ -z "$DEPLOY_PATH" ] && [ -z "$DEFAULT_DEPLOY_PATH" ]; then
   echo "Deploy path is required !"
   exit 1
-else if [ -z "$DEPLOY_PATH" ]; then
+elif [ -z "$DEPLOY_PATH" ]; then
 	DEPLOY_PATH="$DEFAULT_DEPLOY_PATH"
 fi
 
@@ -147,45 +147,45 @@ if [ -z "$JDBC_PORT" ]; then
 	JDBC_PORT="$DEFAULT_JDBC_PORT"
 fi
 
-if [ -z "$JDBC_DATABASE" & -z "$DEFAULT_JDBC_DATABASE" ]; then
+if [ -z "$JDBC_DATABASE" ] && [ -z "$DEFAULT_JDBC_DATABASE" ]; then
   echo "JDBC database is required !"
   exit 1
-else if [ -z "$JDBC_DATABASE" ]; then
+elif [ -z "$JDBC_DATABASE" ]; then
 	JDBC_DATABASE="$DEFAULT_JDBC_DATABASE"
 fi
 
-if [ -z "$JDBC_USER" & -z "$DEFAULT_JDBC_USER" ]; then
+if [ -z "$JDBC_USER" ] && [ -z "$DEFAULT_JDBC_USER" ]; then
   echo "JDBC user is required !"
   exit 1
-else if [ -z "$JDBC_USER" ]; then
+elif [ -z "$JDBC_USER" ]; then
 	JDBC_USER="$DEFAULT_JDBC_USER"
 fi
 
-if [ -z "$JDBC_PASSWORD" & -z "$DEFAULT_JDBC_PASSWORD" ]; then
+if [ -z "$JDBC_PASSWORD" ] && [ -z "$DEFAULT_JDBC_PASSWORD" ]; then
   echo "JDBC password is required !"
   exit 1
-else if [ -z "$JDBC_PASSWORD" ]; then
+elif [ -z "$JDBC_PASSWORD" ]; then
 	JDBC_PASSWORD="$DEFAULT_JDBC_PASSWORD"
 fi
 
 
 # Sauvegarde la config
 
-echo "JAVA_HOME=$JAVA_HOME" > $CONFIG_FILe
-echo "GRAILS_HOME=$GRAILS_HOME" >> $CONFIG_FILe
-echo "CATALINA_HOME=$CATALINA_HOME" >> $CONFIG_FILe
-echo "CATALINA_BASE=$CATALINA_BASE" >> $CONFIG_FILe
-echo "PROJECT_PATH=$PROJECT_PATH" >> $CONFIG_FILe
-echo "DEPLOY_PATH=$DEPLOY_PATH" >> $CONFIG_FILe
-echo "HTTP_PORT=$HTTP_PORT" >> $CONFIG_FILe
-echo "HTTPS_PORT=$HTTPS_PORT" >> $CONFIG_FILe
-echo "AJP_PORT=$AJP_PORT" >> $CONFIG_FILe
-echo "SHUTDOWN_PORT=$SHUTDOWN_PORT" >> $CONFIG_FILe
-echo "JDBC_HOST=$JDBC_HOST" >> $CONFIG_FILe
-echo "JDBC_PORT=$JDBC_PORT" >> $CONFIG_FILe
-echo "JDBC_DATABASE=$JDBC_DATABASE" >> $CONFIG_FILe
-echo "JDBC_USER=$JDBC_USER" >> $CONFIG_FILe
-echo "JDBC_PASSWORD=$JDBC_PASSWORD" >> $CONFIG_FILe
+echo "JAVA_HOME=$JAVA_HOME" > $CONFIG_FILE
+echo "GRAILS_HOME=$GRAILS_HOME" >> $CONFIG_FILE
+echo "CATALINA_HOME=$CATALINA_HOME" >> $CONFIG_FILE
+echo "CATALINA_BASE=$CATALINA_BASE" >> $CONFIG_FILE
+echo "PROJECT_PATH=$PROJECT_PATH" >> $CONFIG_FILE
+echo "DEPLOY_PATH=$DEPLOY_PATH" >> $CONFIG_FILE
+echo "HTTP_PORT=$HTTP_PORT" >> $CONFIG_FILE
+echo "HTTPS_PORT=$HTTPS_PORT" >> $CONFIG_FILE
+echo "AJP_PORT=$AJP_PORT" >> $CONFIG_FILE
+echo "SHUTDOWN_PORT=$SHUTDOWN_PORT" >> $CONFIG_FILE
+echo "JDBC_HOST=$JDBC_HOST" >> $CONFIG_FILE
+echo "JDBC_PORT=$JDBC_PORT" >> $CONFIG_FILE
+echo "JDBC_DATABASE=$JDBC_DATABASE" >> $CONFIG_FILE
+echo "JDBC_USER=$JDBC_USER" >> $CONFIG_FILE
+echo "JDBC_PASSWORD=$JDBC_PASSWORD" >> $CONFIG_FILE
 
 
 # Init variable
