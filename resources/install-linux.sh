@@ -109,7 +109,7 @@ read -p "Instance ID [1-9]: " INSTANCE_ID
 read -p "Project version [x.y.z]: " PROJECT_VERSION
 INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
 INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
-WAR_FILE="$PROJECT_PATH/build/libs/${PROJECT_NAME}-\${PROJECT_VERSION}.war"
+WAR_FILE="$PROJECT_PATH/target/${PROJECT_NAME}-\${PROJECT_VERSION}.war"
 
 if [ -z "\$INSTANCE_ID" ]; then
   echo "Instance ID is required !"
