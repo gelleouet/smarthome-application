@@ -4,7 +4,7 @@
 	<br/>
 	Facebook <a href="https://www.facebook.com/bemyhomesmart/">@bemyhomesmart</a> - Twitter <a href="https://twitter.com/gelleouet">@gelleouet</a> - Mail <a href="mailto:contact@jdevops.com" style="text-decoration:none;">contact@jdevops.com</a>
 	<br/>
-	build with Grails <g:meta name="app.grails.version"/> - Atlassian AUI <g:meta name="aui.version"/>
+	build with Grails <g:meta name="app.grails.version"/> - Atlassian AUI <g:meta name="aui.version"/> - Java ${System.getProperty('java.version')}
 	</h6>
 	
 	<div class="desktop-only">

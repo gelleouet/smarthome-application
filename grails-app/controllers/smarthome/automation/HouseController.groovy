@@ -1,8 +1,6 @@
 package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import smarthome.automation.deviceType.Compteur;
 import smarthome.automation.deviceType.Humidite;
 import smarthome.automation.deviceType.TeleInformation;
