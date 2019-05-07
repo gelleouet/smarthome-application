@@ -22,6 +22,7 @@ if [ -f "$CONFIG_FILE" ]; then
 	DEFAULT_CATALINA_BASE=`grep "CATALINA_BASE" $CONFIG_FILE | awk -F "=" '{print $2}'`
 	DEFAULT_PROJECT_PATH=`grep "PROJECT_PATH" $CONFIG_FILE | awk -F "=" '{print $2}'`
 	DEFAULT_DEPLOY_PATH=`grep "DEPLOY_PATH" $CONFIG_FILE | awk -F "=" '{print $2}'`
+	DEFAULT_DEPLOY_CONTEXT=`grep "DEPLOY_CONTEXT" $CONFIG_FILE | awk -F "=" '{print $2}'`
 	DEFAULT_HTTP_PORT=`grep "HTTP_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
 	DEFAULT_HTTPS_PORT=`grep "HTTPS_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
 	DEFAULT_AJP_PORT=`grep "AJP_PORT" $CONFIG_FILE | awk -F "=" '{print $2}'`
@@ -57,6 +58,7 @@ fi
 
 # Config du user
 
+echo "-------------------"
 echo "Java environnement"
 echo "------------------"
 read -p "Java home [default=$DEFAULT_JAVA_HOME]: " JAVA_HOME
@@ -64,13 +66,16 @@ read -p "Grails home [default=$DEFAULT_GRAILS_HOME]: " GRAILS_HOME
 read -p "Catalina home [default=$DEFAULT_CATALINA_HOME]: " CATALINA_HOME
 read -p "Catalina base [default=$DEFAULT_CATALINA_BASE]: " CATALINA_BASE
 
+echo "-------------------"
 echo "Build environnement"
 echo "-------------------"
 read -p "Project path [default=$DEFAULT_PROJECT_PATH]: " PROJECT_PATH
 
+echo "-------------------"
 echo "Deploy environnement"
 echo "--------------------"
 read -p "Deploy path [default=$DEFAULT_DEPLOY_PATH]: " DEPLOY_PATH
+read -p "Deploy context [default=$DEFAULT_DEPLOY_CONTEXT]: " DEPLOY_CONTEXT
 read -p "HTTP port [default=$DEFAULT_HTTP_PORT]: " HTTP_PORT
 read -p "HTTPS port [default=$DEFAULT_HTTPS_PORT]: " HTTPS_PORT
 read -p "AJP port [default=$DEFAULT_AJP_PORT]: " AJP_PORT
@@ -121,6 +126,13 @@ if [ -z "$DEPLOY_PATH" ] && [ -z "$DEFAULT_DEPLOY_PATH" ]; then
   exit 1
 elif [ -z "$DEPLOY_PATH" ]; then
 	DEPLOY_PATH="$DEFAULT_DEPLOY_PATH"
+fi
+
+if [ -z "$DEPLOY_CONTEXT" ] && [ -z "$DEFAULT_DEPLOY_CONTEXT" ]; then
+  echo "Deploy context is required !"
+  exit 1
+elif [ -z "$DEPLOY_CONTEXT" ]; then
+	DEPLOY_CONTEXT="$DEFAULT_DEPLOY_CONTEXT"
 fi
 
 if [ -z "$HTTP_PORT" ]; then
@@ -177,6 +189,7 @@ echo "CATALINA_HOME=$CATALINA_HOME" >> $CONFIG_FILE
 echo "CATALINA_BASE=$CATALINA_BASE" >> $CONFIG_FILE
 echo "PROJECT_PATH=$PROJECT_PATH" >> $CONFIG_FILE
 echo "DEPLOY_PATH=$DEPLOY_PATH" >> $CONFIG_FILE
+echo "DEPLOY_CONTEXT=$DEPLOY_CONTEXT" >> $CONFIG_FILE
 echo "HTTP_PORT=$HTTP_PORT" >> $CONFIG_FILE
 echo "HTTPS_PORT=$HTTPS_PORT" >> $CONFIG_FILE
 echo "AJP_PORT=$AJP_PORT" >> $CONFIG_FILE
@@ -250,7 +263,7 @@ mkdir \$INSTANCE/logs
 mkdir \$INSTANCE/temp
 mkdir \$INSTANCE/work
 mkdir \$INSTANCE/webapps
-cp \$WAR_FILE \$INSTANCE/webapps/${PROJECT_NAME}.war
+cp \$WAR_FILE \$INSTANCE/webapps/${DEPLOY_CONTEXT}.war
 
 sed -i -e "s/serverId.pid/\${INSTANCE_NAME}.pid/g" \$INSTANCE/bin/setenv.sh
 sed -i -e "s/serverId=serverId/serverId=\${INSTANCE_NAME}/g" \$INSTANCE/bin/setenv.sh
