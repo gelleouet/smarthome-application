@@ -105,7 +105,12 @@ chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-build.sh
 
 cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-deploy.sh
 #!/bin/sh
-read -p "Instance ID [1-9]: " INSTANCE_ID
+INSTANCE_ID=\$1
+
+if [ -z "\$INSTANCE_ID" ]; then
+  read -p "Instance ID [1-9]: " INSTANCE_ID
+fi
+
 read -p "Project version [x.y.z]: " PROJECT_VERSION
 INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
 INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
@@ -157,7 +162,12 @@ chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-deploy.sh
 
 cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-start.sh
 #!/bin/sh
-read -p "Instance ID [1-9]: " INSTANCE_ID
+INSTANCE_ID=\$1
+
+if [ -z "\$INSTANCE_ID" ]; then
+  read -p "Instance ID [1-9]: " INSTANCE_ID
+fi
+
 INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
 INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
 export JAVA_HOME="$JAVA_HOME"
@@ -170,7 +180,12 @@ EOF
 
 cat << EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-stop.sh
 #!/bin/sh
-read -p "Instance ID [1-9]: " INSTANCE_ID
+INSTANCE_ID=\$1
+
+if [ -z "\$INSTANCE_ID" ]; then
+  read -p "Instance ID [1-9]: " INSTANCE_ID
+fi
+
 INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
 INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
 export JAVA_HOME="$JAVA_HOME"
