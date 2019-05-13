@@ -300,15 +300,15 @@ Environment="CATALINA_HOME=$CATALINA_HOME"
 Environment="CATALINA_BASE=\$INSTANCE"
 PIDFile=/var/run/\${INSTANCE_NAME}.pid
 ExecStart=$CATALINA_HOME/bin/startup.sh
-ExecStop=/bin/kill -15 \\$MAINPID
+ExecStop=/bin/kill -15 MAINPID
 Restart=on-failure
 RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
-
 EOF1
 
+sed -i -e "s/MAINPID/\$MAINPID/g"  ${SYSTEMD_PATH}/\${INSTANCE_NAME}.service
 
 EOF
 
