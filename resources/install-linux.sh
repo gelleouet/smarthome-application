@@ -1,17 +1,22 @@
 #!/bin/sh
 
-# Installation des scripts de buid/deploy/exec de l'application
+# Installation des scripts de buid/deploy de l'application
 # Les scripts sont copiés dans le dossier /usr/local/bin et sont accessibles
 # directement car présent dans PATH
 #
 # Demande les chemins aux repertoires necessaires (grails, java, template,
 # instance tomcat) et construit les scripts relatifs à cette config
-
+#
+# Installe aussi le service systemd pour cette application
+# le service n'est pas activé par le script
+# il faut lancer manuellement systemctl enable ....
+#
 # @author Gregory Elleouet <gregory.elleouet@gmail.com>
 #
 
 
 CONFIG_FILE="/root/.smarthome-application.build"
+
 
 # charge la dernière conf build
 
@@ -228,6 +233,9 @@ chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-build.sh
 # Construction du script deploy "[proxy-name]-deploy.sh"
 # Cree une instance tomcat à partir d'un template
 # il est possible de creer plusieurs instances en specifiant un id (numero) dans le contexte d'un cluster HA
+# Installe le service systemd associé à l'instance
+
+SYSTEMD_PATH="/etc/systemd/system"
 
 cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-deploy.sh
 #!/bin/sh
@@ -278,47 +286,31 @@ sed -i -e "s/#jdbc-port#/${JDBC_PORT}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-database#/${JDBC_DATABASE}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-user#/${JDBC_USER}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-password#/${JDBC_PASSWORD}/g" \$INSTANCE/conf/context.xml
+
+
+	cat <<EOF1 > ${SYSTEMD_PATH}/${PROJECT_NAME}.service
+	[Unit]
+	Description=Smarthome Application
+	After=syslog.target network.target
+	
+	[Service]
+	Type=forking
+	Environment="JAVA_HOME=$JAVA_HOME"
+	Environment="CATALINA_HOME=$CATALINA_HOME"
+	Environment="CATALINA_BASE=\$INSTANCE"
+	PIDFile=/var/run/${PROJECT_NAME}.pid
+	ExecStart=$CATALINA_HOME/bin/startup.sh
+	ExecStop=/bin/kill -15 $MAINPID
+	Restart=on-failure
+	RestartSec=5s
+	
+	[Install]
+	WantedBy=multi-user.target
+
+	EOF1
+
+
 EOF
 
 chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-deploy.sh
 
-
-# Construction des  fichiers [proxy-name]-start et [proxy-name]-stop 
-# Ces scripts prennent en paramètre l'ID de l'instance à commander
-
-cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-start.sh
-#!/bin/sh
-INSTANCE_ID=\$1
-
-if [ -z "\$INSTANCE_ID" ]; then
-  read -p "Instance ID [1-9]: " INSTANCE_ID
-fi
-
-INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
-INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
-export JAVA_HOME="$JAVA_HOME"
-export CATALINA_HOME="$CATALINA_HOME"
-export CATALINA_BASE="\$INSTANCE"
-cd \$CATALINA_BASE
-\$CATALINA_HOME/bin/startup.sh
-EOF
-
-
-cat << EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-stop.sh
-#!/bin/sh
-INSTANCE_ID=\$1
-
-if [ -z "\$INSTANCE_ID" ]; then
-  read -p "Instance ID [1-9]: " INSTANCE_ID
-fi
-
-INSTANCE_NAME="${PROJECT_NAME}-\${INSTANCE_ID}"
-INSTANCE="$DEPLOY_PATH/\$INSTANCE_NAME"
-export JAVA_HOME="$JAVA_HOME"
-export CATALINA_HOME="$CATALINA_HOME"
-export CATALINA_BASE="\$INSTANCE"
-\$CATALINA_HOME/bin/shutdown.sh
-EOF
-
-chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-start.sh
-chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-stop.sh
