@@ -276,10 +276,10 @@ cp \$WAR_FILE \$INSTANCE/webapps/${DEPLOY_CONTEXT}.war
 sed -i -e "s/serverId.pid/\${INSTANCE_NAME}.pid/g" \$INSTANCE/bin/setenv.sh
 sed -i -e "s/serverId=serverId/serverId=\${INSTANCE_NAME}/g" \$INSTANCE/bin/setenv.sh
 
-sed -i -e "s/port=\"8005\"/port=\"${INSTANCE_ID}${SHUTDOWN_PORT}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/port=\"8080\"/port=\"${INSTANCE_ID}${HTTP_PORT}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/redirectPort=\"8443\"/redirectPort=\"${INSTANCE_ID}${HTTPS_PORT}\"/g" \$INSTANCE/conf/server.xml
-sed -i -e "s/port=\"8009\"/port=\"${INSTANCE_ID}${AJP_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8005\"/port=\"\${INSTANCE_ID}${SHUTDOWN_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8080\"/port=\"\${INSTANCE_ID}${HTTP_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/redirectPort=\"8443\"/redirectPort=\"\${INSTANCE_ID}${HTTPS_PORT}\"/g" \$INSTANCE/conf/server.xml
+sed -i -e "s/port=\"8009\"/port=\"\${INSTANCE_ID}${AJP_PORT}\"/g" \$INSTANCE/conf/server.xml
 
 sed -i -e "s/#jdbc-host#/${JDBC_HOST}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-port#/${JDBC_PORT}/g" \$INSTANCE/conf/context.xml
