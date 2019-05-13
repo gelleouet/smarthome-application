@@ -288,26 +288,26 @@ sed -i -e "s/#jdbc-user#/${JDBC_USER}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-password#/${JDBC_PASSWORD}/g" \$INSTANCE/conf/context.xml
 
 
-	cat <<EOF1 > ${SYSTEMD_PATH}/${PROJECT_NAME}.service
-	[Unit]
-	Description=Smarthome Application
-	After=syslog.target network.target
-	
-	[Service]
-	Type=forking
-	Environment="JAVA_HOME=$JAVA_HOME"
-	Environment="CATALINA_HOME=$CATALINA_HOME"
-	Environment="CATALINA_BASE=\$INSTANCE"
-	PIDFile=/var/run/${PROJECT_NAME}.pid
-	ExecStart=$CATALINA_HOME/bin/startup.sh
-	ExecStop=/bin/kill -15 $MAINPID
-	Restart=on-failure
-	RestartSec=5s
-	
-	[Install]
-	WantedBy=multi-user.target
+cat <<EOF1 > ${SYSTEMD_PATH}/\${INSTANCE_NAME}.service
+[Unit]
+Description=Smarthome Application
+After=syslog.target network.target
 
-	EOF1
+[Service]
+Type=forking
+Environment="JAVA_HOME=$JAVA_HOME"
+Environment="CATALINA_HOME=$CATALINA_HOME"
+Environment="CATALINA_BASE=\$INSTANCE"
+PIDFile=/var/run/\${INSTANCE_NAME}.pid
+ExecStart=$CATALINA_HOME/bin/startup.sh
+ExecStop=/bin/kill -15 \$MAINPID
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
+EOF1
 
 
 EOF
