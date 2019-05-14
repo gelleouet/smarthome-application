@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # Installation des scripts de buid/deploy de l'application
 # Les scripts sont copiés dans le dossier /usr/local/bin et sont accessibles
 # directement car présent dans PATH
@@ -219,7 +217,6 @@ PATH_SCRIPT="/usr/local/bin"
 # synchronise d'abord le projet avec le depot git
 
 cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-build.sh
-#!/bin/sh
 export JAVA_HOME="$JAVA_HOME"
 export GRAILS_HOME="$GRAILS_HOME"
 cd $PROJECT_PATH
@@ -238,7 +235,6 @@ chmod +x ${PATH_SCRIPT}/${PROJECT_NAME}-build.sh
 SYSTEMD_PATH="/etc/systemd/system"
 
 cat <<EOF > ${PATH_SCRIPT}/${PROJECT_NAME}-deploy.sh
-#!/bin/sh
 INSTANCE_ID=\$1
 
 if [ -z "\$INSTANCE_ID" ]; then
@@ -287,6 +283,10 @@ sed -i -e "s/#jdbc-database#/${JDBC_DATABASE}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-user#/${JDBC_USER}/g" \$INSTANCE/conf/context.xml
 sed -i -e "s/#jdbc-password#/${JDBC_PASSWORD}/g" \$INSTANCE/conf/context.xml
 
+# astuce pour proteger le £ dans le fichier MAINPID
+# sinon il est interpreté à l'excution du fichier deploy
+# (il est protege a l'exuction du fichier install avec le \)
+MAINPID=\`printf "\\x24MAINPID"\`
 
 cat <<EOF1 > ${SYSTEMD_PATH}/\${INSTANCE_NAME}.service
 [Unit]
@@ -300,15 +300,13 @@ Environment="CATALINA_HOME=$CATALINA_HOME"
 Environment="CATALINA_BASE=\$INSTANCE"
 PIDFile=/var/run/\${INSTANCE_NAME}.pid
 ExecStart=$CATALINA_HOME/bin/startup.sh
-ExecStop=/bin/kill -15 MAINPID
+ExecStop=/bin/kill -15 \$MAINPID
 Restart=on-failure
 RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
 EOF1
-
-sed -i -e "s/MAINPID/\$MAINPID/g"  ${SYSTEMD_PATH}/\${INSTANCE_NAME}.service
 
 EOF
 
