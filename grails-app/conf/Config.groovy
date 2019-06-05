@@ -139,6 +139,7 @@ smarthome.cluster.serverId = System.properties["smarthome.cluster.serverId"]
 
 // default pagination
 smarthome.pagination.defaultMax = 25
+smarthome.pagination.maxBackend = 500
 grails.databinding.dateFormats = ['yyyy-MM-dd', 'dd/MM/yyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 

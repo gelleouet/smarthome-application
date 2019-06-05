@@ -30,7 +30,7 @@ public @interface ExceptionNavigationHandler {
 	 * 
 	 * @return
 	 */
-	String actionName();
+	String actionName() default "";
 
 
 	/**
@@ -44,5 +44,12 @@ public @interface ExceptionNavigationHandler {
 	 * 
 	 * @return
 	 */
-	String modelName();
+	String modelName() default "";
+
+	/**
+	 * Si activé, renvoit l'erreur au format json
+	 * 
+	 * @return
+	 */
+	boolean json() default false;
 }

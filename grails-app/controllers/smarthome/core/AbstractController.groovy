@@ -1,15 +1,15 @@
 package smarthome.core
 
-import grails.converters.JSON;
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 import java.lang.reflect.Method
 
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException
 
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.SmartHomeCoreConstantes;
-import smarthome.core.SmartHomeException;
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.SmartHomeCoreConstantes
+import smarthome.core.SmartHomeException
 
 
 /**
@@ -28,7 +28,7 @@ abstract class AbstractController {
 	// injecté automatiquement
 	def grailsApplication
 
-	
+
 	/**
 	 * Controle des erreurs de validation et de binding.
 	 * A appeler en 1er dans une action du controller
@@ -44,8 +44,8 @@ abstract class AbstractController {
 			throw new SmartHomeException("Erreur validation du formulaire", controller)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Controle des erreurs de validation et de binding.
 	 * A appeler en 1er dans une action du controller
@@ -59,13 +59,13 @@ abstract class AbstractController {
 	 */
 	static def checkErrors(controller, command) throws SmartHomeException {
 		checkErrors(controller)
-		
+
 		if (command.hasErrors()) {
 			throw new SmartHomeException("Erreur validation du formulaire", command)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Scanne les infos de la request et construit un objet pagination avec les valeurs par défaut
 	 * si tout n'est pas renseigné
@@ -95,8 +95,8 @@ abstract class AbstractController {
 	def parseFlashCommand(commandName, defaultObject) {
 		request[commandName] ?: defaultObject
 	}
-	
-	
+
+
 	/**
 	 * Redirection vers la dernière page
 	 * 
@@ -116,28 +116,28 @@ abstract class AbstractController {
 	def handleAccessDeniedException(AccessDeniedException exception) {
 		setError(exception.message)
 	}
-	
-	
+
+
 	void setError(def error) {
 		request.setAttribute("error", error)
 	}
-	
-	
+
+
 	void setErrors(def errors) {
 		request.setAttribute("errors", errors)
 	}
-	
-	
+
+
 	void setCommand(String name, def command) {
 		request.setAttribute(name, command)
 	}
-	
-	
+
+
 	void setInfo(def info) {
 		request.setAttribute("info", info)
 	}
-	
-	
+
+
 	/**
 	 * Gestionnaire d'erreur pour les exceptions métier LIMS.
 	 * Redirection vers la page indiquée avec l'objet command en flash paramètre
@@ -150,12 +150,12 @@ abstract class AbstractController {
 	def handleSmartHomeException(SmartHomeException exception) {
 		// on insère l'exception dans la request
 		request.setAttribute("exception", exception)
-		
+
 
 		// ajout des erreurs pour la redirection (sauf ajax)
 		if (!request.xhr) {
 			setError(exception.message)
-			
+
 			if (exception.errors) {
 				setErrors(exception.errors)
 			} else if (exception.artefactObject && exception.artefactObject.metaClass.respondsTo(exception.artefactObject, 'hasErrors')) {
@@ -164,28 +164,34 @@ abstract class AbstractController {
 				}
 			}
 		}
-		
+
 		// recherche de l'annotation @ActionExceptionHandler sur l'action en cours
 		Method method = this.getClass().getDeclaredMethod(actionName)
 		ExceptionNavigationHandler metaHandler = method.getAnnotation(ExceptionNavigationHandler)
 
 		if (metaHandler) {
-			// ajout de l'objet en erreur dans le modèle
-			if (metaHandler.modelName()) {
-				setCommand(metaHandler.modelName(), exception.artefactObject)
+			if (metaHandler.json()) {
+				render(status: 400, contentType: "application/json") {
+					[error: exception.message]
+				}
+			} else {
+				// ajout de l'objet en erreur dans le modèle
+				if (metaHandler.modelName()) {
+					setCommand(metaHandler.modelName(), exception.artefactObject)
+				}
+
+				// sélection du controller
+				def controller = metaHandler.controllerName() ?: controllerName
+
+				forward (controller: controller, action : metaHandler.actionName())
 			}
-
-			// sélection du controller
-			def controller = metaHandler.controllerName() ?: controllerName
-
-			forward (controller: controller, action : metaHandler.actionName())
 		} else if (request.xhr) {
 			// rendu erreur uniquement pour les appels Ajax
 			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
 		}
 	}
-	
-	
+
+
 	/**
 	 * Supprime et renvoit un objet de la session
 	 * 
@@ -197,8 +203,8 @@ abstract class AbstractController {
 		session.removeAttribute(attribute)
 		return object
 	}
-	
-	
+
+
 	/**
 	 * Renvoit un objet de la session
 	 * 
@@ -208,8 +214,8 @@ abstract class AbstractController {
 	def getSessionAttribute(String attribute) {
 		return session[(attribute)]
 	}
-	
-	
+
+
 	/**
 	 * Insère un objet dans la session
 	 * 
@@ -221,8 +227,8 @@ abstract class AbstractController {
 		session[(attribute)] = value
 		return value
 	}
-	
-	
+
+
 	/**
 	 * L'objet command d'un plugin peut être soit l'objet lui-même, soit l'objet au format JSON (pour les appels ajax)
 	 * Il faut donc le convertir avant de le traiter
@@ -234,19 +240,19 @@ abstract class AbstractController {
 		if (params.command instanceof String) {
 			def json = JSON.parse(params.command)
 			def object =  Class.forName(json['class']).newInstance(json)
-			
+
 			// cas spécial pour le id qui n'est pas déclaré explicitement
 			if (json.id) {
 				object.id = json.id
 			}
-			
+
 			return object
 		} else {
 			return params.command
 		}
 	}
-	
-	
+
+
 	/**
 	 * Ne fait rien en retour de l'action (affichage chaine vide)
 	 * Surtout utilisé pour les appels Ajax
@@ -256,8 +262,8 @@ abstract class AbstractController {
 	def nop() {
 		render(status: 200, text: '')
 	}
-	
-	
+
+
 	/**
 	 * Retour simple avec message d'erreur et code http
 	 * 
@@ -268,7 +274,7 @@ abstract class AbstractController {
 	def nopError(String error, int status) {
 		render(status: status, text: error)
 	}
-	
+
 	/**
 	 * Retour simple avec message d'erreur et code http par défaut 400
 	 *
@@ -277,6 +283,6 @@ abstract class AbstractController {
 	 * @return
 	 */
 	def nopError400(String error) {
-		nopError(error, 400)	
+		nopError(error, 400)
 	}
 }
