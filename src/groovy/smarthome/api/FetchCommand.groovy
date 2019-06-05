@@ -3,6 +3,8 @@
  */
 package smarthome.api
 
+import org.grails.databinding.BindingFormat
+
 import grails.validation.Validateable
 
 /**
@@ -17,7 +19,9 @@ class FetchCommand {
 	String application
 	String name
 	String metaname
+	@BindingFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 	Date start
+	@BindingFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 	Date end
 	long offset = 0
 	Long limit

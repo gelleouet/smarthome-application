@@ -13,6 +13,7 @@ import smarthome.automation.DeviceValueService
 import smarthome.automation.deviceType.Capteur
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
+import smarthome.core.Chronometre
 import smarthome.core.SmartHomeException
 import smarthome.security.UserApplication
 import smarthome.security.UserApplicationService
@@ -46,6 +47,8 @@ class DeviceApiService extends AbstractService {
 		}
 
 		UserApplication userApplication = userApplicationService.authenticateToken(token, command.application)
+
+		log.info "${command.application} push ${command.datas.size()} datas"
 
 		// recherche du device
 		Device device = Device.findByMacAndUser(command.name, userApplication.user, [lock: true])
@@ -100,6 +103,7 @@ class DeviceApiService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	FetchResult fetch(FetchCommand command, String token) throws SmartHomeException {
+		Chronometre chrono = new Chronometre()
 		UserApplication userApplication = userApplicationService.authenticateToken(token, command.application)
 
 		if (!command.limit || command.limit > grailsApplication.config.smarthome.pagination.maxBackend) {
@@ -141,6 +145,12 @@ class DeviceApiService extends AbstractService {
 
 		values.each {
 			result.datas << [value: it.value, timestamp: it.dateValue.time]
+		}
+
+		if (command.start) {
+			log.info "${command.application} fetch datas from ${command.start} to ${command.end}...${chrono.stop()}ms"
+		} else {
+			log.info "${command.application} fetch last ${command.limit} datas...${chrono.stop()}ms"
 		}
 
 		return result

@@ -172,7 +172,7 @@ abstract class AbstractController {
 		if (metaHandler) {
 			if (metaHandler.json()) {
 				render(status: 400, contentType: "application/json") {
-					[error: exception.message]
+					[error: exception.message, details: request.errors]
 				}
 			} else {
 				// ajout de l'objet en erreur dans le modèle
