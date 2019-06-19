@@ -45,7 +45,6 @@
 	</g:elseif>
    	
 	chartOptions = {
-		'pointSize': '2',
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
         'legend': {position: 'top'},

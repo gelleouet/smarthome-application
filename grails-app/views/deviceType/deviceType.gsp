@@ -17,7 +17,7 @@
 			<div class="buttons-container">
 				<div class="buttons">
 					<g:if test="${deviceType.id }">
-						<g:actionSubmit value="Mettre à jour" action="saveEdit" class="aui-button aui-button-primary" />
+						<g:actionSubmit value="Enregistrer" action="saveEdit" class="aui-button aui-button-primary" />
 					</g:if>
 					<g:else>
 						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />

@@ -37,7 +37,7 @@
 		    </div><!-- .aui-toolbar-inner -->
 		</div>
 	
-		<g:set var="layout" value="${ app.stateDataUser(name: 'layout-css', page: 'tableauBord.index') }"/>
+		<g:set var="layout" value="${ app.stateDataUser(name: 'layout-css', page: 'tableauBord.index') ?: 'layout-1-col' }"/>
 	
 		<div id="tableau-bord-widget-container" data-state-page="tableauBord.index" data-state-name="layout-css" class="widget-container ${ layout }" data-immediate="true"
 				data-url-move="${ g.createLink(controller: 'widget', action: 'moveWidgetUser') }">

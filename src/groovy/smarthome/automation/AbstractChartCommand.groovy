@@ -1,8 +1,8 @@
 package smarthome.automation
 
-import smarthome.core.DateUtils;
-import grails.validation.Validateable;
-import groovy.time.TimeCategory;
+import smarthome.core.DateUtils
+import grails.validation.Validateable
+import groovy.time.TimeCategory
 
 
 abstract class AbstractChartCommand<T> {
@@ -11,8 +11,8 @@ abstract class AbstractChartCommand<T> {
 	ChartViewEnum viewMode
 	ChartNavigationEnum navigation
 	boolean comparePreviousYear
-	
-	
+
+
 	/**
 	 * Defaut constructor
 	 * 
@@ -21,8 +21,8 @@ abstract class AbstractChartCommand<T> {
 		dateChart = new Date().clearTime()
 		viewMode = ChartViewEnum.day
 	}
-	
-	
+
+
 	/**
 	 * Date début en fonction view mode
 	 * 
@@ -33,16 +33,16 @@ abstract class AbstractChartCommand<T> {
 			return dateDebutUser
 		} else {
 			Date date = dateChart.clearTime()
-			
+
 			switch (viewMode) {
-				case ChartViewEnum.year: return DateUtils.firstDayInYear(date) 
-				case ChartViewEnum.month: return DateUtils.firstDayInMonth(date) 
+				case ChartViewEnum.year: return DateUtils.firstDayInYear(date)
+				case ChartViewEnum.month: return DateUtils.firstDayInMonth(date)
 				default: return date
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Date fin en fonction view mode
 	 * 
@@ -50,24 +50,24 @@ abstract class AbstractChartCommand<T> {
 	 */
 	Date dateFin() {
 		Date date = dateChart.clearTime()
-		
+
 		switch (viewMode) {
-			case ChartViewEnum.year: 
+			case ChartViewEnum.year:
 				date = DateUtils.lastDayInYear(date)
 				break
 			case ChartViewEnum.month:
 				date = DateUtils.lastDayInMonth(date)
 				break
 		}
-		
+
 		use(TimeCategory) {
 			date = date + 23.hours + 59.minutes + 59.seconds
 		}
-		
+
 		return date
 	}
-	
-	
+
+
 	/**
 	 * Gère la navigation
 	 */
@@ -100,8 +100,8 @@ abstract class AbstractChartCommand<T> {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Clone l'objet mais pour l'année précédente
 	 * 
@@ -114,8 +114,8 @@ abstract class AbstractChartCommand<T> {
 		}
 		return clone
 	}
-	
-	
+
+
 	/**
 	 * Clone l'objet
 	 *
@@ -128,8 +128,22 @@ abstract class AbstractChartCommand<T> {
 		clone.dateDebutUser = this.dateDebutUser
 		return clone
 	}
-	
-	
+
+
+	/**
+	 * Clone en un autre objet
+	 *
+	 * @return
+	 */
+	def clone(Class cloneClass) {
+		def clone = cloneClass.newInstance()
+		clone.viewMode = this.viewMode
+		clone.dateChart = this.dateChart
+		clone.dateDebutUser = this.dateDebutUser
+		return clone
+	}
+
+
 	/**
 	 * Possibibilité de comparer avec l'année précédente
 	 * Vrai si option activée et si aggrégation mois ou année
@@ -137,16 +151,16 @@ abstract class AbstractChartCommand<T> {
 	 * @return
 	 */
 	boolean canCompareLastYear() {
-		return comparePreviousYear && viewMode != ChartViewEnum.day	
+		return comparePreviousYear && viewMode != ChartViewEnum.day
 	}
-	
-	
+
+
 	/**
 	 * Retourne l'année précédente
 	 * 
 	 * @return
 	 */
 	int lastYear() {
-		return dateChart[Calendar.YEAR] - 1	
+		return dateChart[Calendar.YEAR] - 1
 	}
 }

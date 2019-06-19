@@ -79,12 +79,15 @@ void initClasspathFile(projectCompiler, rootFile) {
 		// si le chemin du plugin ne correspond pas au dir base plugin, c'est que 
 		// c'est un plugin inline et qu'il est géré autrement
 		def pluginBaseDir = pluginBaseDirectory(projectCompiler, rootFile)
+		def pluginBaseDirPath = pluginBaseDir.toPath()
 		
 		projectCompiler.pluginSettings.getPluginSourceDirectories().each { pluginResource ->
 			File pluginFile = pluginResource.file
+			def pluginFilePath = pluginFile.toPath()
 			
-			if (pluginFile.exists() && pluginFile.absolutePath.contains(pluginBaseDir)) {
-				String pluginPath = pluginFile.absolutePath.replace(pluginBaseDir, '.grails_plugins')
+			
+			if (pluginFile.exists() && pluginFilePath.startsWith(pluginBaseDirPath)) {
+				String pluginPath = pluginFile.absolutePath.replace(pluginBaseDir.absolutePath, '.grails_plugins')
 			
 				if (pluginPath.endsWith("grails-app/conf")) {
 					writer << """\
@@ -161,7 +164,7 @@ void initProjectFile(projectCompiler, rootFile) {
 		<link>
 			<name>.grails_plugins</name>
 			<type>2</type>
-			<location>${pluginBaseDirectory(projectCompiler, rootFile)}</location>
+			<location>${pluginBaseDirectory(projectCompiler, rootFile).absolutePath.replace("\\", "/")}</location>
 		</link>
 	</linkedResources>
 </projectDescription>
@@ -178,8 +181,8 @@ void initProjectFile(projectCompiler, rootFile) {
  * @param rootFile
  * @return
  */
-String pluginBaseDirectory(projectCompiler, rootFile) {
-	"${rootFile}/target/work/plugins"
+File pluginBaseDirectory(projectCompiler, rootFile) {
+	new File("${rootFile}/target/work/plugins")
 }
  
  

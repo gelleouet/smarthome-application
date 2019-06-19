@@ -1,25 +1,25 @@
 package smarthome.automation
 
 
-import org.springframework.security.access.annotation.Secured;
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import org.springframework.security.access.annotation.Secured
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
 
 @Secured("isAuthenticated()")
 class EventController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'event'
-	
+	private static final String COMMAND_NAME = 'event'
+
 	EventService eventService
 	ScenarioService scenarioService
 	DeviceService deviceService
 	ModeService modeService
-	
-	
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
@@ -28,16 +28,16 @@ class EventController extends AbstractController {
 	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def events(String eventSearch) {
 		def search = QueryUtils.decorateMatchAll(eventSearch)
-		
-		def events = eventService.listByUser(eventSearch, principal.id, this.getPagination([:])) 
+
+		def events = eventService.listByUser(eventSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = events.totalCount
 
 		// eventInstances est accessible depuis le model avec la variable eventInstance[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond events, model: [recordsTotal: recordsTotal, eventSearch: eventSearch]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -60,21 +60,21 @@ class EventController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		def user = authenticatedUser
-		
+
 		model.devices = deviceService.listByUser(new DeviceSearchCommand(userId: user.id))
 		model.modes = modeService.listModesByUser(user)
 		model.triggerActions = eventService.eventTriggerActions()
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		// init les triggers
 		eventService.prepareEventTriggers(userModel.event, user)
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Dialogue avec graphique calcul solstice
 	 * 
@@ -83,10 +83,10 @@ class EventController extends AbstractController {
 	 */
 	def dialogEventChart(Event event) {
 		def model = [chart: eventService.createScheduledChart(event), event: event]
-		render (template: 'dialogEventChart', model: model)	
+		render (template: 'dialogEventChart', model: model)
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement d'un nouveau
 	 *
@@ -103,10 +103,10 @@ class EventController extends AbstractController {
 		eventService.save(event)
 		eventService.saveModes(event)
 		eventService.saveDevices(event)
-		edit(event)
+		redirect(action: COMMAND_NAME + 's')
 	}
 
-		
+
 	/**
 	 * Suppression
 	 *
@@ -118,8 +118,8 @@ class EventController extends AbstractController {
 		eventService.delete(event)
 		redirect(action: COMMAND_NAME + 's')
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 *
@@ -131,8 +131,8 @@ class EventController extends AbstractController {
 		eventService.execute(event)
 		redirect(action: 'events')
 	}
-	
-	
+
+
 	/**
 	 * Supprime un event en fonction de sa position
 	 *
@@ -149,14 +149,14 @@ class EventController extends AbstractController {
 		eventService.addTrigger(event)
 		render(template: 'triggers', model: fetchModelEdit([event: event]))
 	}
-	
-	
+
+
 	def templateTriggers(Event event) {
 		event.clearNotPersistTriggers()
 		render(template: 'triggers', model: fetchModelEdit([event: event]))
 	}
-	
-	
+
+
 	/**
 	 * Synthèse activité
 	 * 

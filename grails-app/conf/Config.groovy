@@ -6,10 +6,10 @@ grails.config.locations = [SmartHomeSecurityDefaultConfig]
 
 if (System.env["smarthome.config.location"]) {
 	grails.config.locations << "file:" + System.env["smarthome.config.location"]
-	println "Use external configuration : " + System.env["smarthome.config.location"]
+	println "Use external configuration from system.env : " + System.env["smarthome.config.location"]
 } else if (System.properties["smarthome.config.location"]) {
 	grails.config.locations << "file:" + System.properties["smarthome.config.location"]
-	println "Use external configuration : " + System.properties["smarthome.config.location"]
+	println "Use external configuration from system.properties : " + System.properties["smarthome.config.location"]
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

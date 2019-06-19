@@ -1,26 +1,26 @@
 package smarthome.automation
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
-import smarthome.core.AbstractController;
-import smarthome.core.ChartUtils;
-import smarthome.core.DateUtils;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.core.chart.GoogleChart;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
-import smarthome.security.User;
-import smarthome.security.UserFriendService;
-import smarthome.security.UserService;
+import smarthome.core.AbstractController
+import smarthome.core.ChartUtils
+import smarthome.core.DateUtils
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.core.SmartHomeException
+import smarthome.core.chart.GoogleChart
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
+import smarthome.security.User
+import smarthome.security.UserFriendService
+import smarthome.security.UserService
 
 
 @Secured("isAuthenticated()")
 class DeviceController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'device'
-	
+	private static final String COMMAND_NAME = 'device'
+
 	AgentService agentService
 	DeviceService deviceService
 	DeviceValueService deviceValueService
@@ -30,9 +30,9 @@ class DeviceController extends AbstractController {
 	HouseService houseService
 	DeviceUtilService deviceUtilService
 	DevicePlanningService devicePlanningService
-	
-	
-	
+
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
@@ -40,17 +40,17 @@ class DeviceController extends AbstractController {
 	 */
 	@NavigableAction(label = "Objets connectés", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def devices(String deviceSearch) {
-		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]), 
-			search: deviceSearch, userId: principal.id))
+		def devices = deviceService.listByUser(new DeviceSearchCommand(pagination: this.getPagination([:]),
+		search: deviceSearch, userId: principal.id))
 		def recordsTotal = devices.totalCount
-		
+
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond devices, model: [recordsTotal: recordsTotal, deviceSearch: deviceSearch]
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Tous les devices organisés par groupe sous forme de grille
 	 * 
@@ -61,22 +61,22 @@ class DeviceController extends AbstractController {
 		search.userId = principal.id
 		def user = authenticatedUser
 		def tableauBords = deviceService.groupByTableauBord(principal.id)
-		
+
 		// activation favori si aucun tableau de bord
 		if (!search.tableauBord) {
-			search.favori = true	
+			search.favori = true
 		}
-		
+
 		def devices = deviceService.listByUser(search)
 		deviceService.prepareForView(devices)
-		
+
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond devices, model: [user: user, search: search, tableauBords: tableauBords,
 			secUser: user]
 	}
-	
-	
+
+
 	/**
 	 * Les objets partagés d'un ami
 	 * 
@@ -86,15 +86,15 @@ class DeviceController extends AbstractController {
 	def deviceShareGrid(User friend) {
 		def user = authenticatedUser
 		userFriendService.assertFriend(user, friend)
-		
+
 		def devices = deviceService.listByUser(new DeviceSearchCommand(
-			userId: friend.id, userSharedId: user.id))
+				userId: friend.id, userSharedId: user.id))
 		deviceService.prepareForView(devices)
-		
+
 		render(template: 'deviceShareGrid', model: [devices: devices, user: user])
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -106,8 +106,8 @@ class DeviceController extends AbstractController {
 		editDevice = deviceService.edit(editDevice)
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDevice]))
 	}
-	
-	
+
+
 	/**
 	 * Création
 	 *
@@ -117,8 +117,8 @@ class DeviceController extends AbstractController {
 		def editDevice = parseFlashCommand(COMMAND_NAME, new Device())
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDevice]))
 	}
-	
-	
+
+
 	/**
 	 * Prépare le model pour les ecrans de création et modification
 	 *
@@ -126,7 +126,7 @@ class DeviceController extends AbstractController {
 	 */
 	def fetchModelEdit(userModel) {
 		def model = [:]
-		
+
 		// Compléter le model
 		model.user = authenticatedUser
 		model.agents = Agent.findAllByUser(model.user)
@@ -137,14 +137,14 @@ class DeviceController extends AbstractController {
 		} else {
 			model.devicePlannings = []
 		}
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *
@@ -154,10 +154,10 @@ class DeviceController extends AbstractController {
 	def saveEdit(Device device) {
 		checkErrors(this, device)
 		deviceService.saveWithAssociations(device)
-		edit(device)
+		redirect(action: 'devices')
 	}
 
-	
+
 	/**
 	 * Changement d'une métadata sur le device avec envoi à l'agent
 	 *
@@ -170,8 +170,8 @@ class DeviceController extends AbstractController {
 		deviceService.syncMetadata(device, metadataName)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Synchronise les plannigs vers l'agent
 	 *
@@ -197,10 +197,10 @@ class DeviceController extends AbstractController {
 		device.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, device)
 		deviceService.saveWithAssociations(device)
-		edit(device)
+		redirect(action: 'devices')
 	}
-	
-	
+
+
 	/**
 	 * Graphique des values du device
 	 * 
@@ -209,19 +209,19 @@ class DeviceController extends AbstractController {
 	def deviceChart(DeviceChartCommand command) {
 		def user = authenticatedUser
 		deviceService.assertSharedAccess(command.device, user)
-		
+
 		GoogleChart chart = deviceValueService.createChart(command)
 		GoogleChart compareChart
-		
+
 		if (command.comparePreviousYear) {
 			compareChart = deviceValueService.createChart(command.cloneForLastYear())
 		}
-		
+
 		render(view: 'deviceChart', model: [command: command, chart: chart, secUser: user,
 			compareChart: compareChart])
 	}
-	
-	
+
+
 	/**
 	 * Lance le calcul des données aggrégées
 	 */
@@ -229,8 +229,8 @@ class DeviceController extends AbstractController {
 		deviceUtilService.aggregateWholeDevice(command.device.id)
 		deviceChart(command)
 	}
-	
-	
+
+
 	/**
 	 * Graphique comparatif pour les devices liés à la maison entre 2 users
 	 * 
@@ -240,15 +240,15 @@ class DeviceController extends AbstractController {
 		House house = houseService.findDefaultByUser(user)
 		// recherche du device associé de l'utilisateur
 		def device = house?.findSameDevice(command.device)
-		
+
 		if (device) {
 			command.compareDevices << device
 		}
-		
+
 		deviceChart(command)
 	}
-	
-	
+
+
 	/**
 	 * Juste le graphique du device sans les barres de menu et autre
 	 * 
@@ -258,14 +258,14 @@ class DeviceController extends AbstractController {
 	def templateDeviceChart(DeviceChartCommand command) {
 		def user = authenticatedUser
 		deviceService.assertSharedAccess(command.device, user)
-		
+
 		GoogleChart chart = deviceValueService.createChart(command)
-		
+
 		render(template: 'deviceChart', model: [command: command, chart: chart, secUser: user,
 			suffixId: params.suffixId])
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 * 
@@ -275,15 +275,15 @@ class DeviceController extends AbstractController {
 	def invokeAction(Device device, String actionName) {
 		deviceService.assertSharedAccess(device, authenticatedUser)
 		deviceService.execute(device, actionName, device.params)
-		
+
 		if (request.xhr) {
 			nop()
 		} else {
 			redirect(action: 'devicesGrid')
 		}
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 * 
@@ -297,8 +297,8 @@ class DeviceController extends AbstractController {
 		deviceService.execute(device, actionName, device.params)
 		redirect(action: 'devicesGrid')
 	}
-	
-	
+
+
 	/**
 	 * Voie de secours pour un agent pour envoyer des nouvelles valeurs
 	 * sans passer par le websocket
@@ -311,10 +311,10 @@ class DeviceController extends AbstractController {
 	@Secured("permitAll()")
 	def publicChangeValueFromAgent(MessageAgentCommand command) {
 		command.publicIp = request.remoteAddr
-		
+
 		try {
 			def agentToken = agentService.subscribe(command)
-			
+
 			if (agentToken) {
 				deviceService.changeValueFromAgent(agentToken.agent, command.data)
 				nop()
@@ -326,8 +326,8 @@ class DeviceController extends AbstractController {
 			render(status: 400, text: ex.message)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 *
@@ -338,8 +338,8 @@ class DeviceController extends AbstractController {
 		deviceService.delete(device)
 		redirect(action: 'devices')
 	}
-	
-	
+
+
 	/**
 	 * Suppression d'une valeur
 	 * 
@@ -351,8 +351,8 @@ class DeviceController extends AbstractController {
 		deviceValueService.delete(deviceValue)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Modification d'une valeur
 	 * 
@@ -364,8 +364,8 @@ class DeviceController extends AbstractController {
 		deviceValueService.save(deviceValue)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Ajout d'une valeur
 	 * 
@@ -374,15 +374,15 @@ class DeviceController extends AbstractController {
 	 */
 	def addDeviceValue(DeviceValue deviceValue) {
 		deviceService.edit(deviceValue.device)
-		
+
 		// binding datetime à la main
 		deviceValue.dateValue = Date.parse(DateUtils.FORMAT_DATETIME_USER, params.dateValue)
 		deviceValue.validate()
 		deviceValueService.addValue(deviceValue)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Boite de dialogue pour modifier valeur
 	 * 
@@ -391,10 +391,10 @@ class DeviceController extends AbstractController {
 	 */
 	def dialogDeviceValue(DeviceValue deviceValue) {
 		deviceService.edit(device)
-		render(template: 'dialogDeviceValue', model: [deviceValue: deviceValue])	
+		render(template: 'dialogDeviceValue', model: [deviceValue: deviceValue])
 	}
-	
-	
+
+
 	/**
 	 * Boite de dialogue pour ajouter valeur
 	 * 
@@ -403,10 +403,10 @@ class DeviceController extends AbstractController {
 	 */
 	def dialogAddDeviceValue(Device device) {
 		deviceService.edit(device)
-		render(template: 'dialogAddDeviceValue', model: [device: device])	
+		render(template: 'dialogAddDeviceValue', model: [device: device])
 	}
-	
-	
+
+
 	/**
 	 * Vue détaillée d'un device
 	 * 
@@ -417,8 +417,8 @@ class DeviceController extends AbstractController {
 		def filActualite = deviceValueService.lastValuesByDevices([device], this.getPagination([:]))
 		render(view: 'deviceView', model: [device: device, user: device.user, filActualite: filActualite])
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 *
@@ -427,16 +427,16 @@ class DeviceController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "devices", modelName = "")
 	def favori(Device device, boolean favori) {
 		deviceService.favori(device, favori)
-		
+
 		if (request.xhr) {
 			nop()
 		} else {
 			redirect(action: 'devices')
 		}
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Déplace un device sur un autre tableau de bord
 	 *
@@ -448,8 +448,8 @@ class DeviceController extends AbstractController {
 		deviceService.moveToTableauBord(device, tableauBord)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Déplace un device sur un autre groupe
 	 *
@@ -461,8 +461,8 @@ class DeviceController extends AbstractController {
 		deviceService.moveToGroupe(device, groupe)
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Synthèse devices
 	 *

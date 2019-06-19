@@ -792,3 +792,15 @@ tr.planning-day-row td {
 	text-align:right;
 	width:100%;
 }
+
+.container-img {
+	position: relative;
+  	text-align: center;
+}
+
+.content-img-center {
+	position: absolute;
+  	top: 50%;
+  	left: 50%;
+  	transform: translate(-50%, -50%);
+}

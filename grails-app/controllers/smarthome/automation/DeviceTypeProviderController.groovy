@@ -2,47 +2,47 @@ package smarthome.automation
 
 
 
-import org.springframework.security.access.annotation.Secured;
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.SmartHomeException;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
-import smarthome.core.QueryUtils;
+import org.springframework.security.access.annotation.Secured
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.SmartHomeException
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
+import smarthome.core.QueryUtils
 
 
 @Secured("hasRole('ROLE_ADMIN')")
 class DeviceTypeProviderController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'deviceTypeProvider'
-	
+	private static final String COMMAND_NAME = 'deviceTypeProvider'
+
 	DeviceTypeProviderService deviceTypeProviderService
-	
-	
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Fournisseurs compteur", navigation = NavigationEnum.configuration, header = "Administrateur")
+	@NavigableAction(label = "Fournisseurs", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def deviceTypeProviders(String deviceTypeProviderSearch) {
 		def search = QueryUtils.decorateMatchAll(deviceTypeProviderSearch)
-		
+
 		def deviceTypeProviders = DeviceTypeProvider.createCriteria().list(this.getPagination([:])) {
 			if (deviceTypeProviderSearch) {
 				ilike('libelle', search)
 			}
 			join 'deviceType'
 			order 'libelle'
-		}			
+		}
 		def recordsTotal = deviceTypeProviders.totalCount
 
 		// deviceTypeProviders est accessible depuis le model avec la variable deviceTypeProvider[]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond deviceTypeProviders, model: [recordsTotal: recordsTotal, deviceTypeProviderSearch: deviceTypeProviderSearch]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -62,16 +62,16 @@ class DeviceTypeProviderController extends AbstractController {
 	 */
 	def fetchModelEdit(userModel) {
 		def model = [:]
-		
+
 		model.deviceTypes = DeviceType.list()
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *

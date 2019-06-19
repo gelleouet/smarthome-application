@@ -2,7 +2,7 @@
 	<div class="aui-page-header-image">
 		<div class="aui-avatar aui-avatar-medium">
 			<div class="aui-avatar-inner">
-				<span class="aui-icon aui-icon-large aui-iconfont-configure">paramètres</span>
+				<span class="aui-icon aui-icon-large aui-iconfont-configure"></span>
 			</div>
 		</div>
 	</div>

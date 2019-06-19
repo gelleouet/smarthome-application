@@ -16,6 +16,6 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="smarthome-application"/>
 <stringAttribute key="org.grails.ide.eclipse.core.ORG_SCRIPT" value="run-app"/>
 <stringAttribute key="org.grails.ide.eclipse.core.PROJECT_DIR" value="C:\Users\Gregory\Documents\java\workspace-grails\smarthome-application"/>
-<stringAttribute key="org.grails.ide.eclipse.core.SCRIPT" value="-Dsmarthome.cluster.serverId=localhost run-app -Dsmarthome.config.location=C:/Users/Gregory/Documents/system/tomcat-templates/smarthome/conf/smarthome-dev-config.groovy"/>
+<stringAttribute key="org.grails.ide.eclipse.core.SCRIPT" value="-Dsmarthome.cluster.serverId=localhost run-app -Dsmarthome.config.location=C:/Users/Gregory/Documents/system/tomcat-templates/smarthome/conf/smarthome-dev-config.groovy -Dsmarthome.datasource.password=18fhk6vf4d"/>
 <stringAttribute key="process_factory_id" value="org.grails.ide.eclipse.core.processFactory"/>
 </launchConfiguration>
