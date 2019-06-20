@@ -11,6 +11,7 @@ import smarthome.core.DateUtils
 
 
 class GoogleChart {
+	String title
 	String chartType
 	def values
 	List<GoogleDataTableCol> colonnes = []

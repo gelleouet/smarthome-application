@@ -1,7 +1,7 @@
 <%@ page import="smarthome.core.DateUtils" %>
 
 
-<h3>Investissement participatif</h3>
+<h3 id="widget-investissement-participatif-title">Mon investissement citoyen</h3>
 
 	
 <div class="aui-group">
@@ -10,7 +10,7 @@
 			<div class="separator-bottom">
 				<div class="aui-group aui-group-split">
 					<div class="aui-item" style="width:50%">
-						<h4>Action</h4>
+						<h4>Actions</h4>
 					</div>
 					<div class="aui-item">
 						<h4><span class="link">${ totalAction }</span></h4>
@@ -58,7 +58,7 @@
 			<div class="separator-bottom">
 				<div class="aui-group aui-group-split">
 					<div class="aui-item" style="width:50%">
-						<h4>Investissement</h4>
+						<h4>Investissements</h4>
 					</div>
 					<div class="aui-item">
 						<h4><span class="link">${ totalInvestissement as Long }€</span></h4>
@@ -106,10 +106,10 @@
 			<div class="separator-bottom">
 				<div class="aui-group aui-group-split">
 					<div class="aui-item" style="width:50%">
-						<h4>Production</h4>
+						<h4>Productions</h4>
 					</div>
 					<div class="aui-item">
-						<h4><span class="link">${ totalSurface?.round(1) }m² / ${ actions.sum{it.productionTotal()} as Long }kWh</span></h4>
+						<h4><span class="link">${ totalSurface?.round(1) }m² / ${ actions.sum{it.production()}?.round(1) }kWh</span></h4>
 					</div>
 				</div>
 			</div>	
@@ -133,16 +133,16 @@
 					<tbody>
 						<g:each var="action" in="${ actions }">
 							<tr>
-								<td><span class="link">${ action.surface()?.round(1) }m² / ${ action.production()?.round(1) }kWh</span></td>
+								<td><span class="link">${ action.surface()?.round(1) }m² - ${ action.production()?.round(1) }kWh</span></td>
 								<td>
 									<g:if test="${ action.device }">
 										<g:link class="link" controller="device" action="deviceChart" params="['device.id': action.device.id]">
-											<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> ${ action.producteur.surface as Long }m² / ${ action.productionTotal() as Long }kWh
+											<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> ${ action.producteur.surface as Long }m² - ${ action.productionTotal() as Long }kWh
 										</g:link>
 									</g:if>
 									<g:else>
 										<span class="link">
-											${ action.producteur.surface as Long }m² / ${ action.productionTotal() as Long }kWh
+											${ action.producteur.surface as Long }m² - ${ action.productionTotal() as Long }kWh
 										</span>
 									</g:else>
 								</td>

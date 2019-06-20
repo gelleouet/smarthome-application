@@ -3,6 +3,7 @@ package smarthome.core.chart
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.DeviceChartCommand
+import smarthome.automation.ProducteurEnergieAction;
 import smarthome.automation.ProductionChartCommand
 import smarthome.automation.SeriesTypeEnum
 import smarthome.core.DateUtils
@@ -14,6 +15,7 @@ import smarthome.security.User
  */
 class ProductionInvestissementChart extends GoogleChart {
 	ProductionChartCommand command
+	List<ProductionInvestissementChart> actionCharts = []
 
 
 	ProductionInvestissementChart(ProductionChartCommand command) {
@@ -28,16 +30,19 @@ class ProductionInvestissementChart extends GoogleChart {
 	 */
 	ProductionInvestissementChart build() {
 		def allValues = []
+		def unite
 		DeviceChartCommand deviceChartCommand = command.clone(DeviceChartCommand)
-
-		colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
-		colonnes << new GoogleDataTableCol(label: "Production globale", property: "total", type: "number")
-		colonnes << new GoogleDataTableCol(label: "Ma part", property: "mapart", type: "number")
-
+		
+		title = "Production globale"
+		
 		command.actions.findAll { it.device }.each { action ->
 			deviceChartCommand.device = action.device
 			def percent = action.percentAction()
-			allValues.addAll(action.device.newDeviceImpl().values(deviceChartCommand).collect { deviceValue ->
+			def actionValues = action.device.newDeviceImpl().values(deviceChartCommand)
+			
+			actionCharts << buildActionChart(action, percent, actionValues)
+			
+			allValues.addAll(actionValues.collect { deviceValue ->
 				[deviceValue: deviceValue, percent: percent]
 			})
 		}
@@ -47,8 +52,8 @@ class ProductionInvestissementChart extends GoogleChart {
 				DateUtils.truncMinute5(it.deviceValue.dateValue)
 			}
 
+			unite = "Wh"
 			chartType = ChartTypeEnum.Line.factory
-			vAxis << [title: "Production (Wh)"]
 			series << [color: '#f3d43d', type: SeriesTypeEnum.area.toString()]
 			series << [color: '#3572b0', type: SeriesTypeEnum.line.toString()]
 		} else {
@@ -56,12 +61,18 @@ class ProductionInvestissementChart extends GoogleChart {
 				it.deviceValue.dateValue
 			}
 
+			unite = "kWh"
 			chartType = ChartTypeEnum.Column.factory
-			vAxis << [title: "Production (kWh)"]
 			series << [color: '#f3d43d', type: SeriesTypeEnum.bars.toString()]
 			series << [color: '#3572b0', type: SeriesTypeEnum.bars.toString()]
 		}
 
+		colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
+		colonnes << new GoogleDataTableCol(label: "Production ($unite)", property: "total", type: "number")
+		colonnes << new GoogleDataTableCol(label: "Ma part ($unite)", property: "mapart", type: "number")
+		
+		vAxis << [title: "Production ($unite)"]
+		
 		values = allValues.collect { entry ->
 			def result = [dateValue: entry.key]
 			result.total = entry.value.sum { it.deviceValue.value }
@@ -70,5 +81,40 @@ class ProductionInvestissementChart extends GoogleChart {
 		}
 
 		return this
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private ProductionInvestissementChart buildActionChart(ProducteurEnergieAction action, def percent, def values) {
+		ProductionInvestissementChart actionChart = new ProductionInvestissementChart(command)
+		def unite
+		actionChart.title = "Production ${action.producteur.libelle}"
+		
+		if (command.viewMode == ChartViewEnum.day) {
+			unite = "Wh"
+			actionChart.chartType = ChartTypeEnum.Line.factory
+			actionChart.series << [color: '#f3d43d', type: SeriesTypeEnum.area.toString()]
+			actionChart.series << [color: '#3572b0', type: SeriesTypeEnum.line.toString()]
+		} else {
+			unite = "kWh"
+			actionChart.chartType = ChartTypeEnum.Column.factory
+			actionChart.series << [color: '#f3d43d', type: SeriesTypeEnum.bars.toString()]
+			actionChart.series << [color: '#3572b0', type: SeriesTypeEnum.bars.toString()]
+		}
+		
+		actionChart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
+		actionChart.colonnes << new GoogleDataTableCol(label: "Production ($unite)", property: "total", type: "number")
+		actionChart.colonnes << new GoogleDataTableCol(label: "Ma part ($unite)", property: "mapart", type: "number")
+		
+		vAxis << [title: "Production ${action.producteur.libelle} ($unite)"]
+		
+		actionChart.values = values.collect { deviceValue ->
+			[dateValue: deviceValue.dateValue, total: deviceValue.value, mapart: deviceValue.value*percent]
+		}
+		
+		return actionChart
 	}
 }

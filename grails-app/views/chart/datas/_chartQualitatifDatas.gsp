@@ -2,9 +2,12 @@
 <%@ page import="smarthome.core.ChartUtils" %>
 <%@ page import="smarthome.core.chart.GoogleChart" %>
 
+<g:set var="hasChartAction" value="${ deviceOwner && sec.ifAnyGranted(roles: 'ROLE_ADMIN') }"/>
+
 <div data-chart-datas="true" class="hidden" data-on-build-chart="onBuildQualitatifChart"
-	data-url-delete-value="${ deviceOwner ? g.createLink(controller: 'device', action: 'deleteDeviceValue') : '' }"
-	data-url-change-value="${ deviceOwner ? g.createLink(controller: 'device', action: 'dialogDeviceValue') : '' }" data-immediate="true">	
+	data-url-delete-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'deleteDeviceValue') : '' }"
+	data-url-change-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'dialogDeviceValue') : '' }"
+	data-immediate="true">	
 
    	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
    	
@@ -13,6 +16,10 @@
    	</g:if>
    	
 	chartOptions = {
+		<g:if test="${ chart?.title }">
+		'title': '${ chart.title }',
+		'titleTextStyle': {fontSize: '20'},
+		</g:if>
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
         'legend': {position: 'top'},

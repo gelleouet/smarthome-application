@@ -8,14 +8,11 @@
 <body onload="onLoadDeviceChart();">
 	<g:applyLayout name="applicationHeader">
 		<g:form name="navigation-chart-form" action="investissementChart" class="aui">
-			<h3>Répartition investissement participatif</h3>
-		
 			<div class="aui-group aui-group-split">
 				<div class="aui-item">
-					
+					<h3>Répartition investissement citoyen</h3>
 				</div>
 				<div class="aui-item">
-					
 				</div>
 			</div>	
 		</g:form>
@@ -49,9 +46,9 @@
 				<div id="chart-repartition-investissement-participatif-prix" data-chart-type="${ ChartTypeEnum.Pie.factory }">
 					<div data-chart-datas="true" class="hidden">	
 						chartDatas = google.visualization.arrayToDataTable([
-					   		['Producteur', 'Investissement'],
+					   		['Producteur', 'Investissement', {role: 'tooltip'}],
 					   		<g:each var="action" in="${ actions }" status="status">
-						   		['${ action.producteur.libelle }', ${ action.investissement() }],
+						   		['${ action.producteur.libelle }', ${ action.investissement() }, '${ action.producteur.libelle} : ${ g.formatNumber(number: action.investissement(), format:"0.##") }€'],
 					   		</g:each>
 					   	]);
 					   	
@@ -73,9 +70,9 @@
 				<div id="chart-repartition-investissement-participatif-surface" data-chart-type="${ ChartTypeEnum.Pie.factory }">
 					<div data-chart-datas="true" class="hidden">	
 						chartDatas = google.visualization.arrayToDataTable([
-					   		['Producteur', 'Surface'],
+					   		['Producteur', 'Surface', {role: 'tooltip'}],
 					   		<g:each var="action" in="${ actions }" status="status">
-						   		['${ action.producteur.libelle }', ${ action.surface() }],
+						   		['${ action.producteur.libelle }', ${ action.surface() }, '${ action.producteur.libelle} : ${ g.formatNumber(number: action.surface(), format:"0.##") }m²'],
 					   		</g:each>
 					   	]);
 					   	
@@ -93,9 +90,9 @@
 				<div id="chart-repartition-investissement-participatif-production" data-chart-type="${ ChartTypeEnum.Pie.factory }">
 					<div data-chart-datas="true" class="hidden">	
 						chartDatas = google.visualization.arrayToDataTable([
-					   		['Producteur', 'Production'],
+					   		['Producteur', 'Production', {role: 'tooltip'}],
 					   		<g:each var="action" in="${ actions }" status="status">
-						   		['${ action.producteur.libelle }', ${ action.production() }],
+						   		['${ action.producteur.libelle }', ${ action.production() }, '${ action.producteur.libelle} : ${ g.formatNumber(number: action.production(), format:"0.##") }kWh'],
 					   		</g:each>
 					   	]);
 					   	

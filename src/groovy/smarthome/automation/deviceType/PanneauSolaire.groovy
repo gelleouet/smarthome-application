@@ -94,19 +94,22 @@ class PanneauSolaire extends AbstractDeviceType {
 		chart.values = values
 
 		if (command.viewMode == ChartViewEnum.day) {
+			chart.colonnes = [
+				new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue"),
+				new GoogleDataTableCol(label: "Production (Wh)", property: "value", type: "number")
+			]
 			chart.vAxis << [title: "Production (Wh)"]
 			// série par défaut en bleu
 			chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
 		} else {
+			chart.colonnes = [
+				new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue"),
+				new GoogleDataTableCol(label: "Production (kWh)", property: "value", type: "number")
+			]
 			chart.vAxis << [title: "Production (kWh)"]
 			// série par défaut en bleu
 			chart.series << [color: '#3572b0', type: SeriesTypeEnum.bars.toString()]
 		}
-
-		chart.colonnes = [
-			new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue"),
-			new GoogleDataTableCol(label: "Production", property: "value", type: "number")
-		]
 
 		return chart
 	}
