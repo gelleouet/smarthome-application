@@ -109,7 +109,7 @@ class ProductionInvestissementChart extends GoogleChart {
 		actionChart.colonnes << new GoogleDataTableCol(label: "Production ($unite)", property: "total", type: "number")
 		actionChart.colonnes << new GoogleDataTableCol(label: "Ma part ($unite)", property: "mapart", type: "number")
 		
-		vAxis << [title: "Production ${action.producteur.libelle} ($unite)"]
+		actionChart.vAxis << [title: "Production ${action.producteur.libelle} ($unite)"]
 		
 		actionChart.values = values.collect { deviceValue ->
 			[dateValue: deviceValue.dateValue, total: deviceValue.value, mapart: deviceValue.value*percent]

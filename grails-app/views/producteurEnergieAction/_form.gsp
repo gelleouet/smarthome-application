@@ -3,7 +3,7 @@
 
 <div class="field-group">
 	<label>
-		Production solaire
+		Société
 		<span class="aui-icon icon-required">*</span>
 	</label>
 	<g:select name="producteur.id" value="${ producteurEnergieAction?.producteur?.id }" from="${ productions }" 
@@ -12,7 +12,7 @@
 
 <div class="field-group">
 	<label for="nbaction">
-		Action
+		Nombre d'action
 		<span class="aui-icon icon-required">*</span>
 	</label>
 	<g:field name="nbaction" type="number" value="${ producteurEnergieAction?.nbaction }"
