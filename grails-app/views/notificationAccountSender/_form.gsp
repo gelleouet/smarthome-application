@@ -18,9 +18,16 @@
 </div>
 
 <div class="field-group">
-	<label for="implClass">
+	<label for="role">
 		Rôle
 	</label>
 	<g:textField name="role" value="${notificationAccountSender?.role}" class="text medium-field"/>
+</div>
+
+<div class="field-group">
+	<label for="cron">
+		Cron
+	</label>
+	<g:textField name="cron" value="${notificationAccountSender?.cron}" class="text medium-field"/>
 </div>
 

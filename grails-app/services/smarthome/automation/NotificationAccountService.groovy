@@ -1,33 +1,28 @@
 package smarthome.automation
 
-import java.util.Map;
-import java.util.ServiceLoader;
-
-import grails.converters.JSON;
-import grails.plugin.cache.CachePut;
-import grails.plugin.cache.Cacheable;
-
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import smarthome.automation.notification.EmailNotificationSender;
-import smarthome.automation.notification.NotificationSender;
-import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.ClassUtils;
-import smarthome.core.ExchangeType;
-import smarthome.core.QueryUtils;
-import smarthome.core.ScriptUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.security.User;
+import java.io.Serializable
+import java.util.List
+import java.util.Map
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
+import smarthome.automation.notification.EmailNotificationSender
+import smarthome.automation.notification.NotificationSender
+import smarthome.core.AbstractService
+import smarthome.core.AsynchronousMessage
+import smarthome.core.ExchangeType
+import smarthome.core.QueryUtils
+import smarthome.core.ScriptUtils
+import smarthome.core.SmartHomeException
+import smarthome.security.User
 
 
 class NotificationAccountService extends AbstractService {
 
-	
+
 	/**
 	 * Enregistrement
 	 *
@@ -39,15 +34,15 @@ class NotificationAccountService extends AbstractService {
 	NotificationAccount save(NotificationAccount notificationAccount) throws SmartHomeException {
 		// vérif du rôle sur sender
 		notificationAccount.assertAutorisation()
-		
+
 		if (!notificationAccount.save()) {
 			throw new SmartHomeException("Erreur enregistrement notificationAccount", notificationAccount)
 		}
-		
+
 		return notificationAccount
 	}
-	
-	
+
+
 	/**
 	 * Recherche paginée
 	 * 
@@ -64,8 +59,8 @@ class NotificationAccountService extends AbstractService {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Les services de l'utilisateur
 	 * 
@@ -75,8 +70,16 @@ class NotificationAccountService extends AbstractService {
 	List<NotificationAccount> listForUser(User user) {
 		return search(new NotificationAccountCommand(user: user), [:])
 	}
-	
-	
+
+
+	NotificationAccount findByUserAndSender(User user, NotificationAccountSender sender) {
+		return NotificationAccount.createCriteria().get {
+			eq 'user', user
+			eq 'notificationAccountSender', sender
+		}
+	}
+
+
 	/**
 	 * Edition ACL
 	 *
@@ -87,8 +90,8 @@ class NotificationAccountService extends AbstractService {
 	NotificationAccount edit(NotificationAccount notificationAccount) {
 		return notificationAccount
 	}
-	
-	
+
+
 	/**
 	 * Envoi des notifications lors du déchenchement d'un event
 	 *
@@ -99,19 +102,19 @@ class NotificationAccountService extends AbstractService {
 		if (!deviceEvent.attached) {
 			deviceEvent.attach()
 		}
-		
+
 		def notifications = DeviceEventNotification.createCriteria().list {
 			eq 'deviceEvent', deviceEvent
 			join 'deviceEvent'
 			join 'deviceEvent.device'
 		}
-		
+
 		def user = deviceEvent.user
 		def context = [deviceEvent: deviceEvent, device: deviceEvent.device]
-		
+
 		notifications.each { notification ->
 			def message
-			
+
 			// construction du message
 			if (notification.message) {
 				if (notification.script) {
@@ -123,16 +126,16 @@ class NotificationAccountService extends AbstractService {
 					message = notification.message
 				}
 			}
-			
+
 			if (!message) {
 				message = "NOTIFICATION SMARTHOME\rDevice : ${notification.deviceEvent.device.label}\rValeur : ${notification.deviceEvent.device.value}"
 			}
-			
+
 			sendNotification(new Notification(message: message, type: notification.type, user: deviceEvent.user))
 		}
 	}
-	
-	
+
+
 	/**
 	 * Envoi d'une notification
 	 * 
@@ -140,9 +143,9 @@ class NotificationAccountService extends AbstractService {
 	 */
 	void sendNotification(Notification notification) throws SmartHomeException {
 		log.info "Send notification $notification.type to $notification.user.username : $notification.message"
-		
+
 		NotificationSender sender
-		
+
 		// besoin d'un compte pour l'envoi des sms
 		if (notification.type == NotificationAccountEnum.sms) {
 			def account = NotificationAccount.findByUserAndType(notification.user, notification.type)
@@ -151,13 +154,59 @@ class NotificationAccountService extends AbstractService {
 				sender.config = JSON.parse(account.config)
 			}
 		} else if (notification.type == NotificationAccountEnum.mail) {
-			sender = new EmailNotificationSender()			
+			sender = new EmailNotificationSender()
 		}
-		
+
 		if (sender) {
 			// injecte un service pour l'accès au système AMQP et transaction
 			sender.config.notificationAccountService = this
 			sender.send(notification)
+		}
+	}
+
+
+	/**
+	 * Compte les comptes avec cron associé
+	 * 
+	 * @return
+	 */
+	long countWithCron() {
+		return NotificationAccount.createCriteria().get {
+			notificationAccountSender {
+				isNotNull 'cron'
+			}
+			projections {
+				count("id")
+			}
+		}
+	}
+
+
+	/**
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	List<Map> listIdsWithCron(Map pagination) {
+		return NotificationAccount.createCriteria().list(pagination) {
+			notificationAccountSender {
+				isNotNull 'cron'
+			}
+			projections {
+				property "id", "id"
+			}
+			order "id"
+			// transformer pour récupérer une map au lieu d'un tableau
+			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
+		}
+	}
+
+
+	NotificationAccount findById(Serializable id) {
+		return NotificationAccount.createCriteria() {
+			join 'notificationAccountSender'
+			join 'user'
+			idEq id
 		}
 	}
 }

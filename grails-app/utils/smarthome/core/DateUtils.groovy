@@ -1,12 +1,38 @@
 package smarthome.core
 
+import java.text.SimpleDateFormat
+
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 
 class DateUtils {
 
+	static final String FORMAT_DATETIME_ISO = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+	static final String FORMAT_DATE_ISO = "yyyy-MM-dd"
 	static final String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 	static final String FORMAT_DATETIME_USER = "dd/MM/yyyy HH:mm"
+
+
+	/**
+	 * Format d'une date/time ISO8601
+	 *
+	 * @param date
+	 * @return
+	 */
+	static String formatDateTimeIso(Date date) {
+		return date?.format(FORMAT_DATETIME_ISO)
+	}
+
+
+	/**
+	 * Parse date ISO
+	 *
+	 * @param date
+	 * @return
+	 */
+	static Date parseDateIso(String iso) {
+		return new SimpleDateFormat(FORMAT_DATE_ISO).parse(iso)
+	}
 
 
 	/**

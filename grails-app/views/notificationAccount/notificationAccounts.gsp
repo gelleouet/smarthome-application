@@ -16,7 +16,7 @@
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form>
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un service" action="create"/>
+						<g:actionSubmit class="aui-button" value="Ajouter" action="create"/>
 		            </div>
 		            </g:form>
 		        </div>

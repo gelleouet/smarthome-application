@@ -134,12 +134,16 @@ grails.cache.enabled = true
 // 	USER CONFIGURATION (override by grails.config.locations if not empty)
 // ---------------------------------------------------------------------
 
-smarthome.cluster.serverId = System.properties["smarthome.cluster.serverId"]
+smarthome {
+	cluster.serverId = System.properties["smarthome.cluster.serverId"]
+
+	pagination {
+		defaultMax = 25
+		maxBackend = 500
+	}
+}
 
 
-// default pagination
-smarthome.pagination.defaultMax = 25
-smarthome.pagination.maxBackend = 500
 grails.databinding.dateFormats = ['yyyy-MM-dd', 'dd/MM/yyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
 
 
@@ -168,3 +172,4 @@ environments {
 		quartz.scheduler.skipUpdateCheck = true
 	}
 }
+

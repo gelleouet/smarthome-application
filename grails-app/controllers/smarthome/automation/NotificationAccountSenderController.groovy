@@ -1,25 +1,25 @@
 package smarthome.automation
 
 
-import grails.converters.JSON;
+import grails.converters.JSON
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
-import smarthome.automation.notification.NotificationSender;
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.automation.notification.NotificationSender
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
 
 @Secured("hasRole('ROLE_ADMIN')")
 class NotificationAccountSenderController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'notificationAccountSender'
-	
+	private static final String COMMAND_NAME = 'notificationAccountSender'
+
 	NotificationAccountSenderService notificationAccountSenderService
-	
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
@@ -28,20 +28,20 @@ class NotificationAccountSenderController extends AbstractController {
 	@NavigableAction(label = "Connecteurs", navigation = NavigationEnum.configuration, header = "Administrateur")
 	def notificationAccountSenders(String notificationAccountSenderSearch) {
 		def search = QueryUtils.decorateMatchAll(notificationAccountSenderSearch)
-		
+
 		def notificationAccountSenders = NotificationAccountSender.createCriteria().list(this.getPagination([:])) {
 			if (notificationAccountSenderSearch) {
 				ilike('libelle', search)
 			}
-		}			
+		}
 		def recordsTotal = notificationAccountSenders.totalCount
 
 		// notificationAccountSenders est accessible depuis le model avec la variable notificationAccountSender[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond notificationAccountSenders, model: [recordsTotal: recordsTotal, notificationAccountSenderSearch: notificationAccountSenderSearch]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -62,14 +62,14 @@ class NotificationAccountSenderController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 		// Compléter le model
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *
@@ -80,10 +80,10 @@ class NotificationAccountSenderController extends AbstractController {
 	def save(NotificationAccountSender notificationAccountSender) {
 		checkErrors(this, notificationAccountSender)
 		notificationAccountSenderService.save(notificationAccountSender)
-		redirect(action: 'edit', id: notificationAccountSender.id)
+		redirect(action: COMMAND_NAME + 's')
 	}
-	
-	
+
+
 	/**
 	 * Suppression
 	 *
@@ -95,8 +95,8 @@ class NotificationAccountSenderController extends AbstractController {
 		notificationAccountSenderService.delete(notificationAccountSender)
 		redirect(action: COMMAND_NAME + 's')
 	}
-	
-	
+
+
 	/**
 	 * Rendu
 	 * 
@@ -113,8 +113,8 @@ class NotificationAccountSenderController extends AbstractController {
 			nop()
 		}
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param notification

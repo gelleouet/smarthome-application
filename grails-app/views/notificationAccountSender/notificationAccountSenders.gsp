@@ -16,7 +16,7 @@
 		        <div class="aui-toolbar2-secondary">
 		        	<g:form >
 		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un connecteur" action="edit"/>
+						<g:actionSubmit class="aui-button" value="Ajouter" action="edit"/>
 		            </div>
 		            </g:form>
 		        </div>
@@ -42,6 +42,7 @@
 		            <th>Libellé</th>
 		            <th>Implémentation</th>
 		            <th>Rôle</th>
+		            <th>Cron</th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -50,6 +51,7 @@
 			            <td><g:link action="edit" id="${bean.id }">${ bean.libelle }</g:link></td>
 			            <td>${ bean.implClass }</td>
 			            <td>${ bean.role }</td>
+			            <td>${ bean.cron }</td>
 			        </tr>
 		        </g:each>
 		    </tbody>

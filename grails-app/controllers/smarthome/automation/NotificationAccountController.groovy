@@ -1,16 +1,16 @@
 
 package smarthome.automation
 
-import grails.converters.JSON;
+import grails.converters.JSON
 
-import org.springframework.security.access.annotation.Secured;
-import smarthome.automation.notification.NotificationSender;
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.SmartHomeException;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
-import smarthome.security.User;
+import org.springframework.security.access.annotation.Secured
+import smarthome.automation.notification.NotificationSender
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.SmartHomeException
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
+import smarthome.security.User
 
 
 
@@ -18,28 +18,28 @@ import smarthome.security.User;
 class NotificationAccountController extends AbstractController {
 
 	private static final String COMMAND_NAME = 'notificationAccount'
-	
+
 	NotificationAccountService notificationAccountService
-	
-	
-	
+
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Services API", navigation = NavigationEnum.configuration, header = "Compte")
+	@NavigableAction(label = "Services", navigation = NavigationEnum.configuration, header = "Compte")
 	def notificationAccounts(NotificationAccountCommand command) {
 		command.user = authenticatedUser
 		def notificationAccounts = notificationAccountService.search(command, this.getPagination([:]))
 		def recordsTotal = notificationAccounts.totalCount
-		
+
 		// devices est accessible depuis le model avec la variable device[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond notificationAccounts, model: [recordsTotal: recordsTotal, command: command]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -62,8 +62,8 @@ class NotificationAccountController extends AbstractController {
 		def editObject = parseFlashCommand(COMMAND_NAME, new NotificationAccount())
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editObject]))
 	}
-	
-	
+
+
 	/**
 	 * Prépare le model pour les ecrans de création et modification
 	 *
@@ -77,8 +77,8 @@ class NotificationAccountController extends AbstractController {
 		model << userModel
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement d'un nouveau
 	 *
@@ -93,10 +93,10 @@ class NotificationAccountController extends AbstractController {
 		notificationAccount.validate() // important car les erreurs sont traitées lors du binding donc le device.user sort en erreur
 		checkErrors(this, notificationAccount)
 		notificationAccountService.save(notificationAccount)
-		edit(notificationAccount)
+		redirect(action: 'notificationAccounts')
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur un device
 	 *

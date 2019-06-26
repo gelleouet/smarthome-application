@@ -12,7 +12,7 @@ grails.project.fork = [
 	// configure settings for the test-app JVM, uses the daemon by default
 	test: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
 	// configure settings for the run-app JVM
-	run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+	run: [maxMemory: 768, minMemory: 64, debug: true, maxPerm: 256, forkReserve:false],
 	// configure settings for the run-war JVM
 	war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
 	// configure settings for the Console UI JVM
@@ -62,20 +62,20 @@ grails.project.dependency.resolution = {
 		// runtime 'mysql:mysql-connector-java:5.1.29'
 		runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
 		test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
-		
+
 		//compile 'javax.websocket:javax.websocket-api:1.1'
-		
+
 		bundle('javax.websocket:javax.websocket-api:1.1') {
 			// This line is necessary for deployment to Tomcat, since
 			// Tomcat comes with its own version of javax.websocket-api.
 			export = false
-		  }
-		
+		}
+
 		//compile "com.fasterxml.jackson.core:jackson-core:2.9.5"
-		
+
 		compile "org.apache.poi:poi:$poi.version"
 		compile "org.apache.poi:poi-ooxml:$poi.version"
-		
+
 		compile "$camel.groupId:camel-core:$camel.version"
 		compile "$camel.groupId:camel-groovy:$camel.version"
 		compile "$camel.groupId:camel-spring:$camel.version"
@@ -88,10 +88,11 @@ grails.project.dependency.resolution = {
 
 		compile "$quartz.groupId:quartz:$quartz.version"
 		compile "$quartz.groupId:quartz-jobs:$quartz.version"
-		
+
 		compile "$httpclient.groupId:httpclient:$httpclient.version"
+		compile "$httpclient.groupId:httpmime:$httpclient.version"
 		compile "$httpclient.groupId:fluent-hc:$httpclient.version"
-		
+
 		compile ("org.activiti:activiti-engine:$activiti.version") {
 			excludes "spring-beans", "jackson-core"
 		}
@@ -99,7 +100,7 @@ grails.project.dependency.resolution = {
 			excludes "commons-dbcp", "commons-pool"
 		}
 		compile ("$aws.groupId:aws-java-sdk-sns:$aws.version") {
-		
+
 		}
 	}
 

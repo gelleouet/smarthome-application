@@ -17,6 +17,7 @@
 			<div class="buttons-container">
 				<div class="buttons">
 					<g:actionSubmit value="Enregistrer" action="save" class="aui-button aui-button-primary" />
+					<g:link action="notificationAccountSenders" class="cancel">Annuler</g:link>
 				</div>
 			</div>
 		</g:form>
