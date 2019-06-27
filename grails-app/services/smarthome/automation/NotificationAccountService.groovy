@@ -203,7 +203,7 @@ class NotificationAccountService extends AbstractService {
 
 
 	NotificationAccount findById(Serializable id) {
-		return NotificationAccount.createCriteria() {
+		return NotificationAccount.createCriteria().get {
 			join 'notificationAccountSender'
 			join 'user'
 			idEq id
