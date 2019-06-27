@@ -24,8 +24,10 @@ class UrlMappings {
 		group "/dataconnect", {
 			"/redirect" (controller: "dataConnect", action: "redirect")
 			"/authorize" (controller: "dataConnect", action: "authorize")
+			"/refresh_token" (controller: "dataConnect", action: "refresh_token")
 			"/daily_consumption" (controller: "dataConnect", action: "daily_consumption")
 			"/consumption_load_curve" (controller: "dataConnect", action: "consumption_load_curve")
+			"/daily_consumption" (controller: "dataConnect", action: "daily_consumption")
 		}
 	}
 }

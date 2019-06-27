@@ -9,6 +9,7 @@ import smarthome.automation.Device
 import smarthome.automation.DeviceService
 import smarthome.automation.DeviceType
 import smarthome.automation.DeviceValue
+import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueService
 import smarthome.automation.NotificationAccount
 import smarthome.automation.NotificationAccountSender
@@ -16,6 +17,7 @@ import smarthome.automation.NotificationAccountSenderService
 import smarthome.automation.NotificationAccountService
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
+import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.security.User
 
@@ -55,7 +57,7 @@ class DataConnectService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void authorization_code(User user, String code, String usage_point_id) throws SmartHomeException {
+	JSONElement authorization_code(User user, String code, String usage_point_id) throws SmartHomeException {
 		JSONElement result = dataConnectApi.authorization_code(code)
 
 		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
@@ -70,6 +72,8 @@ class DataConnectService extends AbstractService {
 		notificationAccount.jsonConfig.usage_point_id = usage_point_id
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
+
+		return result
 	}
 
 
@@ -79,7 +83,7 @@ class DataConnectService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void refresh_token(User user) throws SmartHomeException {
+	JSONElement refresh_token(User user) throws SmartHomeException {
 		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
 		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
 
@@ -87,7 +91,7 @@ class DataConnectService extends AbstractService {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
 		}
 
-		refresh_token(notificationAccount)
+		return refresh_token(notificationAccount)
 	}
 
 
@@ -97,7 +101,7 @@ class DataConnectService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void refresh_token(NotificationAccount notificationAccount) throws SmartHomeException {
+	JSONElement refresh_token(NotificationAccount notificationAccount) throws SmartHomeException {
 		notificationAccount.configToJson()
 
 		if (!notificationAccount.jsonConfig.refresh_token) {
@@ -112,6 +116,8 @@ class DataConnectService extends AbstractService {
 		notificationAccount.configFromJson()
 
 		notificationAccountService.save(notificationAccount)
+
+		return result
 	}
 
 
@@ -123,7 +129,7 @@ class DataConnectService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void consumptionLoadCurve(User user) throws SmartHomeException {
+	List<JSONElement> consumptionLoadCurve(User user) throws SmartHomeException {
 		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
 		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
 
@@ -131,7 +137,7 @@ class DataConnectService extends AbstractService {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
 		}
 
-		consumptionLoadCurve(notificationAccount)
+		return consumptionLoadCurve(notificationAccount)
 	}
 
 
@@ -156,46 +162,39 @@ class DataConnectService extends AbstractService {
 		// avec le token on peut attaquer l'api metering data
 		// il faut savoir si des données sont déjà remontées sur un device
 		// cela permet de déterminer la plage de date pour le chargement des données
-		Device dataDevice
-
-		if (notificationAccount.jsonConfig.device_id) {
-			dataDevice = deviceService.findById(notificationAccount.jsonConfig.device_id)
-		} else {
-			// création d'un device auto
-			dataDevice = new Device(
-					user: notificationAccount.user,
-					mac: notificationAccount.jsonConfig.usage_point_id,
-					label: notificationAccount.jsonConfig.usage_point_id,
-					deviceType: DeviceType.findByImplClass(TeleInformation))
-		}
-
+		Device dataDevice = this.findOrCreateDevice(notificationAccount)
 		Date start
 		Date end = new Date().clearTime() - 1 // le champ end est exclusif, donc récupère les données de la veille
 
 		use(TimeCategory) {
-			if (dataDevice.dateValue) {
+			if (notificationAccount.jsonConfig.last_consumption_load_curve) {
 				// si un appel a déjà été fait, il correspond à 23h30 du jour concerné
 				// donc on doit récupéré les données du jour suivant
-				start = (dataDevice.dateValue + 1.day).clearTime()
+				start = new Date(notificationAccount.jsonConfig.last_consumption_load_curve as Long)
+				start = (start + 1.day).clearTime()
+
+				// un appel ne peut porter que sur 7 jours
+				if ((end - start).days > 7) {
+					end = start + 7.days
+				}
 			} else {
 				// un appel ne peut porter que sur 7 jours consécutifs
 				start = end - 7.days
 			}
 		}
 
-		List<JSONElement> datapoints = dataConnectApi.consumptionLoadCurve(
+		List<JSONElement> datapoints = dataConnectApi.consumption_load_curve(
 				start, end,
 				notificationAccount.jsonConfig.usage_point_id,
 				notificationAccount.jsonConfig.access_token)
 
 		if (!datapoints) {
-			throw new SmartHomeException("consumptionLoadCurve : no values !")
+			throw new SmartHomeException("DataConnect#consumptionLoadCurve : no values !")
 		}
 
 
 		dataDevice.value = datapoints.last().value
 		dataDevice.dateValue = datapoints.last().timestamp
-		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes'])
 		dataDevice.metavalue('baseinst').value =  datapoints.last().wh.toString()
 		deviceService.save(dataDevice)
 
@@ -213,9 +212,126 @@ class DataConnectService extends AbstractService {
 		}
 
 		notificationAccount.jsonConfig.device_id = dataDevice.id
+		notificationAccount.jsonConfig.last_consumption_load_curve = dataDevice.dateValue.time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
 
 		return datapoints
+	}
+
+
+	/**
+	 * Exécution de l'API dailyConsumption
+	 * Récupère les infos d'un user à partir de la config
+	 *
+	 * @param notificationAccount
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> dailyConsumption(User user) throws SmartHomeException {
+		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
+		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+
+		if (!notificationAccount) {
+			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
+		}
+
+		return dailyConsumption(notificationAccount)
+	}
+
+
+	/**
+	 * Exécution de l'API dailyConsumption direct sur une config
+	 *
+	 * @param user
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> dailyConsumption(NotificationAccount notificationAccount) throws SmartHomeException {
+		notificationAccount.configToJson()
+
+		if (!notificationAccount.jsonConfig.access_token) {
+			throw new SmartHomeException("access_token is required !")
+		}
+
+		if (!notificationAccount.jsonConfig.usage_point_id) {
+			throw new SmartHomeException("usage_point_id is required !")
+		}
+
+		// avec le token on peut attaquer l'api metering data
+		// il faut savoir si des données sont déjà remontées sur un device
+		// cela permet de déterminer la plage de date pour le chargement des données
+		Device dataDevice = this.findOrCreateDevice(notificationAccount)
+		deviceService.save(dataDevice)
+		Date start
+		Date end = new Date().clearTime() - 1 // on récupère max les données de la veille
+
+		use(TimeCategory) {
+			if (notificationAccount.jsonConfig.last_daily_consumption) {
+				// si un appel a déjà été fait, il correspond au jour concerné
+				// donc on doit récupéré les données du jour suivant
+				start = new Date(notificationAccount.jsonConfig.last_daily_consumption as Long)
+				start = (start + 1.day).clearTime()
+
+				// un appel ne peut porter que sur 365 jours
+				if ((end - start).days > 365) {
+					end = start + 365.days
+				}
+			} else {
+				// un appel ne peut porter que sur 365 jours consécutifs
+				start = end - 365.days
+			}
+		}
+
+		List<JSONElement> datapoints = dataConnectApi.daily_consumption(
+				start, end,
+				notificationAccount.jsonConfig.usage_point_id,
+				notificationAccount.jsonConfig.access_token)
+
+		if (!datapoints) {
+			throw new SmartHomeException("DataConnect#dailyConsumption : no values !")
+		}
+
+		// insère les données sur les valeurs aggrégées jour du device
+		for (JSONElement datapoint : datapoints) {
+			deviceValueService.save(new DeviceValueDay(
+					name: 'basesum',
+					device: dataDevice,
+					value: DeviceValue.parseDoubleValue(datapoint.value),
+					dateValue: datapoint.timestamp))
+		}
+
+		Date dateLastValue = datapoints.last().timestamp
+		Date dateFirstValue = datapoints.first().timestamp
+		deviceValueService.aggregateValueMonthFromValueDay(dataDevice, 'basesum',
+				DateUtils.firstDayInMonth(dateFirstValue), dateLastValue)
+
+		notificationAccount.jsonConfig.device_id = dataDevice.id
+		notificationAccount.jsonConfig.last_daily_consumption = dateLastValue.time
+		notificationAccount.configFromJson()
+		notificationAccountService.save(notificationAccount)
+
+		return datapoints
+	}
+
+
+	private Device findOrCreateDevice(NotificationAccount notificationAccount) {
+		Device dataDevice
+
+		if (notificationAccount.jsonConfig.device_id) {
+			dataDevice = deviceService.findById(notificationAccount.jsonConfig.device_id)
+		} else {
+			// création d'un device auto
+			dataDevice = new Device(
+					user: notificationAccount.user,
+					unite: 'W',
+					mac: notificationAccount.jsonConfig.usage_point_id,
+					label: notificationAccount.jsonConfig.usage_point_id,
+					deviceType: DeviceType.findByImplClass(TeleInformation.name))
+		}
+
+		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes', trace: true])
+
+		return dataDevice
 	}
 }

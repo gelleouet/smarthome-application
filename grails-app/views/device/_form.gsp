@@ -61,6 +61,13 @@
 </div>
 
 <div class="field-group">
+	<label for="unite">
+		Unité
+	</label>
+	<g:textField name="unite" value="${device?.unite}" class="text short-field"/>
+</div>
+
+<div class="field-group">
 	<label for="groupe" title="API : device.value">
 		Valeur principale
 	</label>

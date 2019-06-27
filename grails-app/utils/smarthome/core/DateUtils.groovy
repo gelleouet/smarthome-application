@@ -14,6 +14,17 @@ class DateUtils {
 
 
 	/**
+	 * Format d'une date ISO8601
+	 *
+	 * @param date
+	 * @return
+	 */
+	static String formatDateIso(Date date) {
+		return date?.format(FORMAT_DATE_ISO)
+	}
+
+
+	/**
 	 * Format d'une date/time ISO8601
 	 *
 	 * @param date

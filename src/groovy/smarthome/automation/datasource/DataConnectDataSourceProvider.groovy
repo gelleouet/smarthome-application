@@ -29,5 +29,6 @@ class DataConnectDataSourceProvider extends AbstractDataSourceProvider {
 	void execute(NotificationAccount notificationAccount) throws SmartHomeException {
 		dataConnectService.refresh_token(notificationAccount)
 		dataConnectService.consumptionLoadCurve(notificationAccount)
+		dataConnectService.dailyConsumption(notificationAccount)
 	}
 }

@@ -2,6 +2,8 @@ package smarthome.api
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.json.JSONElement
+
+import groovy.time.TimeCategory
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.http.Http
@@ -126,9 +128,23 @@ class DataConnectApi {
 
 
 	/**
-	 * La courbe de consommation
-	 * La courbe de consommation correspond à la puissance soutirée par le client
-	 * moyennée sur des plages de 30 minutes, elle est exprimée en Watt.
+	 * Récupération de la puissance moyenne consommée quotidiennement,
+	 * par tranche d'une demi-heure
+	 * 
+	 * Cette sous ressource renvoie les valeurs correspondant à des journées de
+	 * mesure de la courbe de charge de consommation d’un client pour chaque
+	 * jour de la période demandée. Les valeurs retournées sont des puissances
+	 * moyennes de consommation sur des tranches de 30 minutes. Chaque valeur
+	 * est associée à un numéro, la valeur portant le numéro 1 correspond à la
+	 * puissance moyenne mesurée entre minuit et minuit trente le premier jour
+	 * de la période demandée. La valeur portant le numéro le plus élevé
+	 * correspond à la puissance moyenne mesurée entre 23h30 et minuit, la
+	 * veille du dernier jour demandé. Les éventuelles périodes de données
+	 * absentes se manifesteront par un saut dans la numérotation. La courbe de
+	 * charge s’obtient sur des journées complètes de minuit à minuit du jour
+	 * suivant en heures locales. Un appel peut porter au maximum sur 7 jours
+	 * consécutifs. Un appel peut porter sur des données datant au maximum de 24
+	 * mois et 15 jours avant la date d’appel.
 	 * 
 	 * https://datahub-enedis.fr/data-connect/documentation/metering-data/
 	 * 
@@ -139,16 +155,16 @@ class DataConnectApi {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	List<JSONElement> consumptionLoadCurve(Date start, Date end, String usagePointId, String token) throws SmartHomeException {
+	List<JSONElement> consumption_load_curve(Date start, Date end, String usagePointId, String token) throws SmartHomeException {
 		String url = "${URLS[(grailsApplication.config.enedis.env)].metric}/v3/metering_data/consumption_load_curve"
 
 		JSONElement response = Http.Get(url)
-				.queryParam("start", DateUtils.formatDateTimeIso(start))
-				.queryParam("end", DateUtils.formatDateTimeIso(end))
+				.queryParam("start", DateUtils.formatDateIso(start))
+				.queryParam("end", DateUtils.formatDateIso(end))
 				.queryParam("usage_point_id", usagePointId)
 				.header("Authorization", "Bearer ${token}")
 				.header("Accept", "application/json")
-				.execute(new JsonResponseTransformer())?.content
+				.execute(new JsonResponseTransformer("error_description"))?.content
 
 		if (!response || !response.usage_point) {
 			throw new SmartHomeException("consumptionLoadCurve response empty !")
@@ -166,6 +182,57 @@ class DataConnectApi {
 				// il faut retrancher 1 minute pour ne pas tomber sur la tranche suivante
 				datapoint.timestamp = rankStart + ((datapoint.rank as Integer) * 30).minutes - 1.minute
 
+			}
+		}
+
+		return datapoints
+	}
+
+
+	/**
+	 * Récupération de la consommation quotidienne
+	 * 
+	 * Cette sous ressource renvoie les valeurs correspondant à la consommation
+	 * quotidienne sur chaque jour de la période demandée. Chaque valeur est
+	 * associée à un numéro, la valeur portant le numéro 1 correspond à la
+	 * consommation du premier jour de la période demandée. La valeur portant le
+	 * dernier numéro correspond à la consommation de la veille du jour de fin
+	 * de la période demandée. Les éventuelles périodes de données absentes se
+	 * manifesteront par un saut dans la numérotation. Un appel peut porter au
+	 * maximum sur 365 jours consécutifs. Un appel peut porter sur des données
+	 * datant au maximum de 36 mois et 15 jours avant la date d’appel.
+	 *
+	 * https://datahub-enedis.fr/data-connect/documentation/metering-data/
+	 *
+	 * @param start
+	 * @param end
+	 * @param usagePointId
+	 * @param token
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	List<JSONElement> daily_consumption(Date start, Date end, String usagePointId, String token) throws SmartHomeException {
+		String url = "${URLS[(grailsApplication.config.enedis.env)].metric}/v3/metering_data/daily_consumption"
+
+		JSONElement response = Http.Get(url)
+				.queryParam("start", DateUtils.formatDateIso(start))
+				.queryParam("end", DateUtils.formatDateIso(end))
+				.queryParam("usage_point_id", usagePointId)
+				.header("Authorization", "Bearer ${token}")
+				.header("Accept", "application/json")
+				.execute(new JsonResponseTransformer("error_description"))?.content
+
+		if (!response || !response.usage_point) {
+			throw new SmartHomeException("daily_consumption response empty !")
+		}
+
+		List<JSONElement> datapoints = response.usage_point[0].meter_reading.interval_reading
+		Date rankStart = DateUtils.parseDateIso(response.usage_point[0].meter_reading.start)
+
+		datapoints.each { datapoint ->
+			use (TimeCategory) {
+				// rank 1 = jour start, rank 2 = jour start + 1, etc.
+				datapoint.timestamp = rankStart + ((datapoint.rank as Integer) - 1).days
 			}
 		}
 

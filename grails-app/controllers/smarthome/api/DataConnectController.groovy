@@ -45,14 +45,41 @@ class DataConnectController extends AbstractController {
 
 
 	/**
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
+	def refresh_token() {
+		User user = authenticatedUser // spring security plugin
+		def tokens = dataConnectService.refresh_token(user)
+		render(contentType: "application/json") {
+			tokens
+		}
+	}
+
+
+	/**
 	 * 
 	 * @return
 	 */
 	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
 	def consumption_load_curve() {
 		User user = authenticatedUser // spring security plugin
-		dataConnectService.refresh_token(user)
 		def datapoints = dataConnectService.consumptionLoadCurve(user)
+		render(contentType: "application/json") {
+			datapoints
+		}
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
+	def daily_consumption() {
+		User user = authenticatedUser // spring security plugin
+		def datapoints = dataConnectService.dailyConsumption(user)
 		render(contentType: "application/json") {
 			datapoints
 		}

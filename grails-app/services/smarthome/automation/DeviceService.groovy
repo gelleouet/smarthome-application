@@ -1,50 +1,50 @@
 package smarthome.automation
 
-import java.io.Serializable;
-import java.util.List;
+import java.io.Serializable
+import java.util.List
 
-import grails.async.PromiseList;
-import grails.converters.JSON;
-import grails.plugin.cache.CachePut;
-import grails.plugin.cache.Cacheable;
-import groovy.time.TimeCategory;
-import groovy.time.TimeDuration;
+import grails.async.PromiseList
+import grails.converters.JSON
+import grails.plugin.cache.CachePut
+import grails.plugin.cache.Cacheable
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
 
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Transactional
 
-import smarthome.automation.deviceType.AbstractDeviceType;
-import smarthome.automation.scheduler.SmarthomeScheduler;
-import smarthome.automation.scheduler.WorkflowContextJob;
-import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousWorkflow;
-import smarthome.core.Chronometre;
-import smarthome.core.DateUtils;
-import smarthome.core.ExchangeType;
-import smarthome.core.QueryUtils;
-import smarthome.core.ScriptUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.core.TransactionUtils;
-import smarthome.core.WorkflowService;
-import smarthome.core.chart.GoogleChart;
-import smarthome.core.query.HQL;
-import smarthome.rule.DeviceTypeDetectRuleService;
-import smarthome.security.User;
-import smarthome.security.UserAdmin;
+import smarthome.automation.deviceType.AbstractDeviceType
+import smarthome.automation.scheduler.SmarthomeScheduler
+import smarthome.automation.scheduler.WorkflowContextJob
+import smarthome.core.AbstractService
+import smarthome.core.AsynchronousWorkflow
+import smarthome.core.Chronometre
+import smarthome.core.DateUtils
+import smarthome.core.ExchangeType
+import smarthome.core.QueryUtils
+import smarthome.core.ScriptUtils
+import smarthome.core.SmartHomeException
+import smarthome.core.TransactionUtils
+import smarthome.core.WorkflowService
+import smarthome.core.chart.GoogleChart
+import smarthome.core.query.HQL
+import smarthome.rule.DeviceTypeDetectRuleService
+import smarthome.security.User
+import smarthome.security.UserAdmin
 
 
 class DeviceService extends AbstractService {
 
 	static final String CHANGE_VALUE_WORKFLOW = "deviceService.changeValue"
-	
+
 	AgentService agentService
 	DeviceTypeDetectRuleService deviceTypeDetectRuleService
 	WorkflowService workflowService
 	SmarthomeScheduler smarthomeScheduler
 	DevicePlanningService devicePlanningService
 	PlanningService planningService
-	
-	
+
+
 	/**
 	 * Enregistrement d"un device
 	 * 
@@ -58,11 +58,11 @@ class DeviceService extends AbstractService {
 		if (!device.save()) {
 			throw new SmartHomeException("Erreur enregistrement device !", device)
 		}
-		
+
 		return device
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement d"un device avec toutes les associations bindées
 	 * 
@@ -75,21 +75,21 @@ class DeviceService extends AbstractService {
 	def saveWithAssociations(Device device) throws SmartHomeException {
 		device.clearNotBindingLevelAlert()
 		device.clearNotBindingPlanning()
-		
+
 		device.devicePlannings.each { devicePlanning ->
 			// association forcée sur le user du device
 			// et on revalide l'objet pour supprimer l'erreur sur la propriété user qui était nulle
 			devicePlanning.planning.user = device.user
 			devicePlanning.planning.validate()
 			planningService.save(devicePlanning.planning)
-			
+
 			devicePlanning.save()
 		}
-		
+
 		return this.save(device)
 	}
-	
-	
+
+
 	/**
 	 * Edition d'un device
 	 * 
@@ -100,8 +100,8 @@ class DeviceService extends AbstractService {
 	Device edit(Device device) {
 		return device
 	}
-	
-	
+
+
 	/**
 	 * Vérifie si l'utilisateur a un accès public sur le device
 	 * 
@@ -112,29 +112,29 @@ class DeviceService extends AbstractService {
 		// si l'utilisateur est le proprio => ok
 		if (device.user.id == user.id) {
 			return device
-		} 
-		
+		}
+
 		// si l'utilisateur a un accès partagé
 		def share = DeviceShare.createCriteria().get {
 			eq 'device', device
 			eq 'sharedUser', user
 		}
-		
+
 		if (share) {
 			return device
 		}
-		
+
 		// si le user est admin du device
 		def admin = UserAdmin.findByAdminAndUser(user, device.user)
-		
+
 		if (admin) {
 			return device
 		}
-		
+
 		throw new SmartHomeException("Accès refusé !")
 	}
-	
-	
+
+
 	/**
 	 * Vérifie si l'utilisateur est le proprio du device
 	 * 
@@ -145,15 +145,15 @@ class DeviceService extends AbstractService {
 	 */
 	Device assertOwnerAccess(long deviceId, long userId) throws SmartHomeException {
 		Device device = Device.read(deviceId)
-		
+
 		if (device?.user?.id != userId) {
 			throw new SmartHomeException("Accès refusé !")
 		}
-		
+
 		return device
 	}
-	
-	
+
+
 	/**
 	 * Changement d'une métadata et envoit à l'agent
 	 * 
@@ -165,7 +165,7 @@ class DeviceService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def syncMetadata(Device device, String metadataName) throws SmartHomeException {
 		this.save(device)
-		
+
 		if (device.agent) {
 			if (device.agent.online) {
 				def data = [header: 'config', deviceMac: device.mac, metadataName: metadataName,
@@ -175,11 +175,11 @@ class DeviceService extends AbstractService {
 				throw new SmartHomeException("Agent not connected !", device)
 			}
 		}
-		
+
 		return device
 	}
-	
-	
+
+
 	/**
 	 * Synchronise les plannings vers l'agent
 	 *
@@ -193,15 +193,15 @@ class DeviceService extends AbstractService {
 		if (device.agent) {
 			if (device.agent.online) {
 				def data = []
-				
+
 				List<DevicePlanning> devicePlannings = devicePlanningService.listByDevice(device)
-				
+
 				devicePlannings.each { devicePlanning ->
 					devicePlanning.planning.loadJsonData()
 					data << [title: devicePlanning.planning.title, rule: devicePlanning.planning.rule,
 						data: devicePlanning.planning.jsonData]
 				}
-				
+
 				def message = [header: 'config', deviceMac: device.mac, metadataName: '_plannings',
 					metadataValue: data]
 				agentService.sendMessage(device.agent, message)
@@ -211,7 +211,7 @@ class DeviceService extends AbstractService {
 		}
 	}
 
-	
+
 	/**
 	 * Suppression d'un device avec ses associations
 	 * 
@@ -231,11 +231,12 @@ class DeviceService extends AbstractService {
 		DeviceShare.executeUpdate("DELETE FROM DeviceShare deviceShare WHERE deviceShare.device = :device", [device: device])
 		DeviceLevelAlert.executeUpdate("DELETE FROM DeviceLevelAlert deviceAlert WHERE deviceAlert.device = :device", [device: device])
 		EventDevice.executeUpdate("DELETE FROM EventDevice deviceEvent WHERE deviceEvent.device = :device", [device: device])
+		EventDevice.executeUpdate("DELETE FROM ChartDevice deviceChart WHERE deviceChart.device = :device", [device: device])
 		Device.executeUpdate("DELETE FROM Device device WHERE device = :device", [device: device])
 		return device
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param agent
@@ -249,25 +250,25 @@ class DeviceService extends AbstractService {
 		if (!datas.mac) {
 			throw new SmartHomeException("Mac is empty !")
 		}
-		
+
 		if (datas.value == null) {
 			throw new SmartHomeException("Value is empty !")
 		}
-		
+
 		boolean offline = datas.offline ? true : false
-		
+
 		if (offline) {
 			log.info "change [offline] value ${datas.mac} : ${datas.value}"
 		} else {
 			log.info "change value ${datas.mac} : ${datas.value}"
 		}
-		
+
 		String implClass = deviceTypeDetectRuleService.execute(datas, true)
-		
+
 		def virtualMetas = []
 		def fetchAgent = Agent.read(agent.id)
 		Device device = findOrCreateDevice(fetchAgent, datas.mac, datas.label, implClass)
-		
+
 		// la création de nouveaux device n'est possible qu'en mode association
 		// donc ce mode n'est pas activé, on refuse les nouveaux
 		if (!device.id) {
@@ -277,30 +278,30 @@ class DeviceService extends AbstractService {
 				return null
 			}
 		}
-		
-		def resultDevice = null  
-		
+
+		def resultDevice = null
+
 		// bien metre à jour la date avant toutes les autres instructions
 		Date dateValue = DateUtils.parseJson(datas.dateValue, datas.timezoneOffset)
-		
+
 		// bind des métavalues
 		datas.metavalues?.each { key, values ->
 			def meta = device.addMetavalue(key, values)
-			
+
 			// on tri les metas pour savoir si on doit créer des devices virtuels
 			if (meta.virtualDevice) {
 				virtualMetas << meta
 			}
 		}
-		
+
 		// bind des metadatas
 		datas.metadatas?.each { key, values ->
 			device.addMetadata(key, values)
 		}
-		
+
 		// gestion des devices virtuels associés aux metas virtuels
 		processVirtualMetas(device, virtualMetas, dateValue, offline)
-		
+
 		// si toutes les valeurs envoyées dans metavalue sont des  virtuelMeta
 		// alors on ne touche pas au device principal mais on met à jour seulement les devices virtuels
 		if (! (datas.metavalues?.size() == virtualMetas.size() && virtualMetas)) {
@@ -309,16 +310,16 @@ class DeviceService extends AbstractService {
 			device.processValue(datas)
 			resultDevice = device
 		}
-		
+
 		// dans tous les cas faut enregistrer car il faut quand même enregistrer les valeurs des meta
 		// même si elles sont virtuelles
 		this.save(device)
-		
+
 		// retourner null désactive le déclenchement du workflow avec historisation et trigger
 		return resultDevice
 	}
-	
-	
+
+
 	/**
 	 * Recherche ou création d'un device
 	 * Si le device est trouvé, un verrou (en base) est actionné sur l'objet pour éviter des accès
@@ -327,23 +328,23 @@ class DeviceService extends AbstractService {
 	private Device findOrCreateDevice(Agent agent, String mac, String label, String implClass) throws SmartHomeException {
 		// ajout d'un verrou pessimiste car erreur quand remontée infos depuis agent
 		def device = Device.findByMacAndAgent(mac, agent, [lock: true])
-		
+
 		// on tente de le créer auto si on a toutes les infos
 		if (!device) {
 			def deviceType = DeviceType.findByImplClass(implClass)
-			
+
 			if (!deviceType) {
 				throw new SmartHomeException("Type device (implClass) is empty or not found : ${implClass}")
 			}
-			
+
 			device = new Device(agent: agent, user: agent.user, mac: mac,
-				label: label ?: mac, deviceType: deviceType)
+			label: label ?: mac, deviceType: deviceType)
 		}
-		
+
 		return device
-	} 
-	
-	
+	}
+
+
 	/**
 	 * Gestion des metas virtuelles. On doit créer un device associé à la méta
 	 * avec sa propre valeur
@@ -352,24 +353,24 @@ class DeviceService extends AbstractService {
 	private void processVirtualMetas(Device device, List metas, Date dateValue, boolean offline) throws SmartHomeException {
 		metas?.each {
 			def virtualDevice = findOrCreateDevice(device.agent, "${device.mac}-${it.name}",
-				"${it.label}  -> ${device.label}",
-				device.deviceType.implClass) 
-			
+					"${it.label}  -> ${device.label}",
+					device.deviceType.implClass)
+
 			virtualDevice.value = it.value
 			virtualDevice.dateValue = dateValue
 			virtualDevice.processValue()
-			
+
 			this.save(virtualDevice)
-			
+
 			// Exécute le workflow dédié au changement de valeur
 			// dans les params du workflow, reprennent les mêmes paramètres que la fonction principale
 			// ie changeValueFromAgent(agent, datas)
 			workflowService.asyncExecute(CHANGE_VALUE_WORKFLOW, [result: virtualDevice,
 				arg0: device.agent, arg1: [offline: offline]])
-		}	
+		}
 	}
-	
-	
+
+
 	/**
 	 * Exécute une action sur le device. Les actions dépendent de l'implémentation du type device.
 	 * 
@@ -384,45 +385,45 @@ class DeviceService extends AbstractService {
 		if (!device.attached) {
 			device.attach()
 		}
-		
+
 		WorkflowContext context = new WorkflowContext(parameters: actionParameters,
-			device: device, actionName: actionName, dateAction: new Date())
-		
+		device: device, actionName: actionName, dateAction: new Date())
+
 		WorkflowContext delayContext = context.withDelay()
-		
+
 		// le contexte doit être différé. On replanifie l'exécution à la bonne date
 		// et on interromp le process
 		if (delayContext) {
 			smarthomeScheduler.scheduleOneShotJob(WorkflowContextJob, delayContext.dateAction,
-				WorkflowContextJob.convertJobParams(delayContext))
+					WorkflowContextJob.convertJobParams(delayContext))
 			return null
 		}
-		
+
 		// instancie le type device pour exécuter l'action
 		def deviceImpl = device.newDeviceImpl()
 		device.fetchParams()
 		Object result
-		
+
 		try {
 			result = deviceImpl."${actionName}"(context)
 			log.info "Invoke ${deviceImpl.class.name}.${actionName} [${device.label}]"
 		} catch (Exception e) {
 			throw new SmartHomeException("Can't invoke ${deviceImpl.class.name}.${actionName} [${device.label}]")
 		}
-		
+
 		// le device a déclenché un timer pour une autre exécution
 		if (result instanceof WorkflowContext) {
 			smarthomeScheduler.scheduleOneShotJob(WorkflowContextJob, result.dateAction,
-				WorkflowContextJob.convertJobParams(result))
+					WorkflowContextJob.convertJobParams(result))
 		}
-		
+
 		device.dateValue = new Date()
 		device.actionName = actionName
-		
+
 		return this.save(device)
 	}
-	
-	
+
+
 	/**
 	 * Liste les devices d'un user pour une application tierce (Ex : google home, alexa, etc.)
 	 * Pour apparaitre dans la liste, le device doit être dispo sur un tableau de bord ou favori (visible déjà 
@@ -445,29 +446,29 @@ class DeviceService extends AbstractService {
 			join 'deviceType'
 			order 'label'
 		}
-		
+
 		// Filtre : ne prend que les devices qui ont une config liée à l'application
 		Map<Long, DeviceTypeConfig> configs = [:]
 		List<Map> results = []
-		
+
 		devices.each { Device device ->
 			DeviceTypeConfig config = configs[device.deviceType.id]
-			
+
 			if (!config) {
 				config = device.deviceType.config() ?: new DeviceTypeConfig()
 				config.loadJsonData()
 				configs[device.deviceType.id] = config
 			}
-			
+
 			if (config.jsonData[applicationName]) {
 				results << [device: device, config: config]
 			}
 		}
-		
+
 		return results
 	}
-	
-	
+
+
 	/**
 	 * Liste les 
 	 * @param command
@@ -477,30 +478,30 @@ class DeviceService extends AbstractService {
 		if (!command.adminId) {
 			throw new SmartHomeException("adminId must be fill !", command)
 		}
-		
+
 		HQL hql = new HQL("device",	""" 
 			FROM Device device JOIN FETCH device.deviceType deviceType
 			LEFT JOIN FETCH device.agent agent""")
-		
+
 		if (command.userId) {
 			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
 		} else {
 			hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
 				where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
 		}
-		
+
 		if (command.deviceTypeClass) {
 			hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
 		}
-		
+
 		hql.addOrder("device.label")
-		
+
 		return Device.withSession { session ->
-			hql.list(session, command.pagination)	
+			hql.list(session, command.pagination)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Liste les devices d'un user
 	 * 
@@ -510,30 +511,30 @@ class DeviceService extends AbstractService {
 	 */
 	def listByUser(DeviceSearchCommand command) throws SmartHomeException {
 		Chronometre chrono = new Chronometre()
-		
+
 		def search = QueryUtils.decorateMatchAll(command.search)
-		
+
 		if (!command.userId) {
 			throw new SmartHomeException("userId must be fill !", command)
 		}
-		
+
 		def commonCriteria = {
 			user {
 				idEq(command.userId)
 			}
-			
+
 			if (command.search) {
 				ilike 'label', search
 			}
-			
+
 			if (command.tableauBord) {
 				eq 'tableauBord', command.tableauBord
 			}
-			
+
 			if (command.favori) {
 				eq 'favori', command.favori
 			}
-			
+
 			if (command.deviceTypeClass) {
 				deviceType {
 					eq 'implClass', command.deviceTypeClass
@@ -544,15 +545,15 @@ class DeviceService extends AbstractService {
 					eq 'sharedUser.id', command.userSharedId
 				}
 			}
-			
+
 			join "deviceType"
 			join "user"
-			
+
 			order "label"
 		}
-		
+
 		def devices
-		
+
 		// si on doit tout charger, on en profite pour charger les meta datas et values
 		if (!command.pagination) {
 			devices = Device.createCriteria().listDistinct() {
@@ -566,13 +567,13 @@ class DeviceService extends AbstractService {
 				commonCriteria()
 			}
 		}
-		
+
 		log.info "List ${devices?.size()} devices : ${chrono.stop()}ms"
-		
+
 		return devices
 	}
-	
-	
+
+
 	/**
 	 * Utile pour les environnements sans session hibernate automatique
 	 * Ex : Camel ESB
@@ -587,8 +588,8 @@ class DeviceService extends AbstractService {
 		}
 		//Device.get(id)
 	}
-	
-	
+
+
 	/**
 	 * Construit le message à envoyer à un agent pour exécuter une action
 	 * 
@@ -600,18 +601,18 @@ class DeviceService extends AbstractService {
 		if (!device.attached) {
 			device.attach()
 		}
-		
+
 		// chargement des associations pour eviter erreur à conversion json
 		// @see static Device JSON.registerObjectMarshaller
 		def deviceType = device.deviceType
 		//device.metadatas = DeviceMetadata.findAllByDevice(device)
 		device.metadatas.size()
-		
-		return [header: 'invokeAction', action: actionName, 
+
+		return [header: 'invokeAction', action: actionName,
 			device: device]
 	}
-	
-	
+
+
 	/**
 	 * Les objets partagés d'un utilisateur
 	 * 
@@ -628,8 +629,8 @@ class DeviceService extends AbstractService {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Nombre de devices d'un user
 	 * 
@@ -639,8 +640,8 @@ class DeviceService extends AbstractService {
 	long countDevice(User user) {
 		return Device.where({ user == user}).count()
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement d"un device
 	 *
@@ -654,8 +655,8 @@ class DeviceService extends AbstractService {
 		device.favori = favori
 		return this.save(device)
 	}
-	
-	
+
+
 	/**
 	 * Déplacement dans un autre tableau de bord
 	 *
@@ -670,8 +671,8 @@ class DeviceService extends AbstractService {
 		device.groupe = null
 		return this.save(device)
 	}
-	
-	
+
+
 	/**
 	 * Déplacement dans un autre groupe
 	 *
@@ -685,8 +686,8 @@ class DeviceService extends AbstractService {
 		device.groupe = groupe
 		return this.save(device)
 	}
-	
-	
+
+
 	/**
 	 * Calcul des tableaux de bord
 	 * 
@@ -702,8 +703,8 @@ class DeviceService extends AbstractService {
 			order 'tableauBord'
 		}
 	}
-	
-	
+
+
 	/**
 	 * Dernière activité du user
 	 *
@@ -717,19 +718,19 @@ class DeviceService extends AbstractService {
 		if (!userId) {
 			throw new SmartHomeException("userId required !")
 		}
-		
+
 		return Device.createCriteria().list() {
 			user {
 				idEq(userId)
 			}
-			
+
 			gt 'dateValue', (new Date() - maxDay)
 			maxResults(maxEvent)
 			order "dateValue", "desc"
 		}
 	}
-	
-	
+
+
 	/**
 	 * Prépare les objets pour la vue
 	 * Optimise le chargement des métadonnées de chaque objet en
@@ -740,14 +741,14 @@ class DeviceService extends AbstractService {
 	void prepareForView(List<Device> devices) throws SmartHomeException {
 		if (devices) {
 			PromiseList promiseList = new PromiseList()
-			
+
 			devices.each { device ->
 				promiseList << {
 					device.newDeviceImpl()
 					device.deviceImpl.prepareForView()
 				}
 			}
-		
+
 			promiseList.get()
 		}
 	}
