@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1561671577320-1">
+        <createTable tableName="producteur_energie">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="investissement" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surface" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nbaction" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-2">
+        <createTable tableName="producteur_energie_action">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nbaction" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="producteur_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="device_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-3">
+        <addColumn tableName="widget">
+            <column name="config_name" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-4">
+        <addColumn tableName="notification_account_sender">
+            <column name="cron" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-5">
+        <addColumn tableName="device">
+            <column name="unite" type="varchar(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-6">
+        <addPrimaryKey columnNames="id" constraintName="producteur_energie_action_pkey" tableName="producteur_energie_action"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-7">
+        <addPrimaryKey columnNames="id" constraintName="producteur_energie_pkey" tableName="producteur_energie"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-8">
+        <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="producteur_energie_action" constraintName="fk_femjim9f52aklresonjni5imw" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-9">
+        <addForeignKeyConstraint baseColumnNames="producteur_id" baseTableName="producteur_energie_action" constraintName="fk_plyj6fs6dd3onvx6kp7ww1ma1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="producteur_energie"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-10">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="producteur_energie_action" constraintName="fk_sftxns51a4rg5qa3d38jlj6v2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="utilisateur"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-11">
+        <createIndex indexName="producteurenergieaction_idx" tableName="producteur_energie_action" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1561671577320-12">
+        <modifyDataType columnName="config" newDataType="clob" tableName="notification_account"/>
+    </changeSet>
+</databaseChangeLog>
