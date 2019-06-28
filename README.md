@@ -128,7 +128,7 @@ assurer le service si un noeud s'arrête (problème ou simple maintenance). 2 in
 de l'application sont démarrées à minima et le traffic est réparti entre ces instances
 par un load-balancer [Apache HTTP Server](https://httpd.apache.org/).
 
-![Architecture]()
+![Architecture](https://github.com/gelleouet/smarthome-application/blob/master/grails-app/assets/images/architecture.png)
 
 La sécurité est un point très important. Tous les échanges avec l'application Web
 sont sécurisés avec un certificat SSL (chiffrement des données).
