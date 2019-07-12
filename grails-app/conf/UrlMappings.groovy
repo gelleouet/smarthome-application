@@ -28,6 +28,7 @@ class UrlMappings {
 			"/daily_consumption" (controller: "dataConnect", action: "daily_consumption")
 			"/consumption_load_curve" (controller: "dataConnect", action: "consumption_load_curve")
 			"/daily_consumption" (controller: "dataConnect", action: "daily_consumption")
+			"/consumption_max_power" (controller: "dataConnect", action: "consumption_max_power")
 		}
 	}
 }

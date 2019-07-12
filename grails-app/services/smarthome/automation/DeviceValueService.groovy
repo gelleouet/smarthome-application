@@ -284,7 +284,7 @@ class DeviceValueService extends AbstractService {
 
 
 	/**
-	 * Aggrège les données du device par mois sur la période de référence
+	 * Somme les valeurs du device par mois sur la période de référence
 	 *
 	 * @param device
 	 * @param dateReference
@@ -292,7 +292,7 @@ class DeviceValueService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void aggregateValueMonthFromValueDay(Device device, String name, Date start, Date end) throws SmartHomeException {
+	void sumValueMonthFromValueDay(Device device, String name, Date start, Date end) throws SmartHomeException {
 		List<DeviceValueDay> values = DeviceValueDay.createCriteria().list {
 			between 'dateValue', start, end
 			eq 'device', device
@@ -304,6 +304,31 @@ class DeviceValueService extends AbstractService {
 			DateUtils.firstDayInMonth(it.dateValue)
 		}.each { entry ->
 			addDeviceValueMonth(device, entry.key, name, entry.value.sum { it.value })
+		}
+	}
+
+
+	/**
+	 * Calcule le max des valeurs du device par mois sur la période de référence
+	 *
+	 * @param device
+	 * @param dateReference
+	 *
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void maxValueMonthFromValueDay(Device device, String name, Date start, Date end) throws SmartHomeException {
+		List<DeviceValueDay> values = DeviceValueDay.createCriteria().list {
+			between 'dateValue', start, end
+			eq 'device', device
+			eq 'name', name
+		}
+
+		// regroupement des valeurs sur le 1er jour du mois
+		values.groupBy {
+			DateUtils.firstDayInMonth(it.dateValue)
+		}.each { entry ->
+			addDeviceValueMonth(device, entry.key, name, entry.value.max { it.value }.value )
 		}
 	}
 

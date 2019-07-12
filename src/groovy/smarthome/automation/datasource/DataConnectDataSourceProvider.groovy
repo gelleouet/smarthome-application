@@ -30,5 +30,6 @@ class DataConnectDataSourceProvider extends AbstractDataSourceProvider {
 		dataConnectService.refresh_token(notificationAccount)
 		dataConnectService.consumptionLoadCurve(notificationAccount)
 		dataConnectService.dailyConsumption(notificationAccount)
+		dataConnectService.consumptionMaxPower(notificationAccount)
 	}
 }

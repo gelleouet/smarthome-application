@@ -47,6 +47,13 @@
 		<g:textField name="jsonConfig.last_daily_consumption" value="${ notificationAccount?.jsonConfig?.last_daily_consumption }" class="text medium-field"/>
 	</div>
 	
+	<div class="field-group">
+		<label>
+			Last consumption_max_power
+		</label>
+		<g:textField name="jsonConfig.last_consumption_max_power" value="${ notificationAccount?.jsonConfig?.last_consumption_max_power }" class="text medium-field"/>
+	</div>
+	
 	<h4>Tester les APIs</h4>
 	
 	<br/>
@@ -55,6 +62,7 @@
 		<g:link class="aui-button" action="refresh_token" controller="dataConnect" target="dataconnect">refresh_token</g:link>
 		<g:link class="aui-button" action="consumption_load_curve" controller="dataConnect" target="dataconnect">consumption_load_curve</g:link>
 		<g:link class="aui-button" action="daily_consumption" controller="dataConnect" target="dataconnect">daily_consumption</g:link>
+		<g:link class="aui-button" action="consumption_max_power" controller="dataConnect" target="dataconnect">consumption_max_power</g:link>
 	</div>
 	
 </g:if>

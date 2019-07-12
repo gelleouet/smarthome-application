@@ -84,4 +84,18 @@ class DataConnectController extends AbstractController {
 			datapoints
 		}
 	}
+
+
+	/**
+	 *
+	 * @return
+	 */
+	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
+	def consumption_max_power() {
+		User user = authenticatedUser // spring security plugin
+		def datapoints = dataConnectService.consumptionMaxPower(user)
+		render(contentType: "application/json") {
+			datapoints
+		}
+	}
 }

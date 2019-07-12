@@ -18,6 +18,7 @@ import org.apache.http.entity.mime.FormBodyPartBuilder
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
+import org.apache.http.impl.client.LaxRedirectStrategy
 import org.apache.http.message.BasicNameValuePair
 
 import smarthome.core.SmartHomeException
@@ -179,7 +180,9 @@ class Http {
 	 * @throws Exception
 	 */
 	HttpResult execute(ResponseTransformer transformer = null) throws SmartHomeException {
-		CloseableHttpClient httpClient = HttpClients.createDefault()
+		CloseableHttpClient httpClient = HttpClients.custom()
+				.setRedirectStrategy(new LaxRedirectStrategy())
+				.build()
 		HttpResult httpResult = null
 
 		try {

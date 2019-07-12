@@ -164,7 +164,7 @@ class DataConnectService extends AbstractService {
 		// cela permet de déterminer la plage de date pour le chargement des données
 		Device dataDevice = this.findOrCreateDevice(notificationAccount)
 		Date start
-		Date end = new Date().clearTime() - 1 // le champ end est exclusif, donc récupère les données de la veille
+		Date end = new Date().clearTime()// le champ end est exclusif, donc récupère les données de la veille
 
 		use(TimeCategory) {
 			if (notificationAccount.jsonConfig.last_consumption_load_curve) {
@@ -264,7 +264,7 @@ class DataConnectService extends AbstractService {
 		Device dataDevice = this.findOrCreateDevice(notificationAccount)
 		deviceService.save(dataDevice)
 		Date start
-		Date end = new Date().clearTime() - 1 // on récupère max les données de la veille
+		Date end = new Date().clearTime()// le champ end est exclusif (donnée de la veille)
 
 		use(TimeCategory) {
 			if (notificationAccount.jsonConfig.last_daily_consumption) {
@@ -301,13 +301,107 @@ class DataConnectService extends AbstractService {
 					dateValue: datapoint.timestamp))
 		}
 
-		Date dateLastValue = datapoints.last().timestamp
 		Date dateFirstValue = datapoints.first().timestamp
-		deviceValueService.aggregateValueMonthFromValueDay(dataDevice, 'basesum',
+		Date dateLastValue = datapoints.last().timestamp
+		deviceValueService.sumValueMonthFromValueDay(dataDevice, 'basesum',
 				DateUtils.firstDayInMonth(dateFirstValue), dateLastValue)
 
 		notificationAccount.jsonConfig.device_id = dataDevice.id
 		notificationAccount.jsonConfig.last_daily_consumption = dateLastValue.time
+		notificationAccount.configFromJson()
+		notificationAccountService.save(notificationAccount)
+
+		return datapoints
+	}
+
+
+	/**
+	 * Exécution de l'API consumptionMaxPower
+	 * Récupère les infos d'un user à partir de la config
+	 *
+	 * @param notificationAccount
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> consumptionMaxPower(User user) throws SmartHomeException {
+		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
+		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+
+		if (!notificationAccount) {
+			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
+		}
+
+		return consumptionMaxPower(notificationAccount)
+	}
+
+	/**
+	 * Exécution de l'API consumptionMaxPower direct sur une config
+	 *
+	 * @param user
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> consumptionMaxPower(NotificationAccount notificationAccount) throws SmartHomeException {
+		notificationAccount.configToJson()
+
+		if (!notificationAccount.jsonConfig.access_token) {
+			throw new SmartHomeException("access_token is required !")
+		}
+
+		if (!notificationAccount.jsonConfig.usage_point_id) {
+			throw new SmartHomeException("usage_point_id is required !")
+		}
+
+		// avec le token on peut attaquer l'api metering data
+		// il faut savoir si des données sont déjà remontées sur un device
+		// cela permet de déterminer la plage de date pour le chargement des données
+		Device dataDevice = this.findOrCreateDevice(notificationAccount)
+		deviceService.save(dataDevice)
+		Date start
+		Date end = new Date().clearTime()// le champ end est exclusif (donnée de la veille)
+
+		use(TimeCategory) {
+			if (notificationAccount.jsonConfig.last_consumption_max_power) {
+				// si un appel a déjà été fait, il correspond au jour concerné
+				// donc on doit récupéré les données du jour suivant
+				start = new Date(notificationAccount.jsonConfig.last_consumption_max_power as Long)
+				start = (start + 1.day).clearTime()
+
+				// un appel ne peut porter que sur 365 jours
+				if ((end - start).days > 365) {
+					end = start + 365.days
+				}
+			} else {
+				// un appel ne peut porter que sur 365 jours consécutifs
+				start = end - 365.days
+			}
+		}
+
+		List<JSONElement> datapoints = dataConnectApi.consumption_max_power(
+				start, end,
+				notificationAccount.jsonConfig.usage_point_id,
+				notificationAccount.jsonConfig.access_token)
+
+		if (!datapoints) {
+			throw new SmartHomeException("DataConnect#consumptionMaxPower : no values !")
+		}
+
+		// insère les données sur les valeurs aggrégées jour du device
+		for (JSONElement datapoint : datapoints) {
+			deviceValueService.save(new DeviceValueDay(
+					name: 'max',
+					device: dataDevice,
+					value: DeviceValue.parseDoubleValue(datapoint.value),
+					dateValue: datapoint.timestamp))
+		}
+
+		Date dateFirstValue = datapoints.first().timestamp
+		Date dateLastValue = datapoints.last().timestamp
+		deviceValueService.maxValueMonthFromValueDay(dataDevice, 'max',
+				DateUtils.firstDayInMonth(dateFirstValue), dateLastValue)
+
+		notificationAccount.jsonConfig.device_id = dataDevice.id
+		notificationAccount.jsonConfig.last_consumption_max_power = dateLastValue.time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
 
