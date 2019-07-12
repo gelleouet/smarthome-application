@@ -1,11 +1,4 @@
-<div class="aui-group aui-group-split">
-	<div class="aui-item">
-		<h3>Modes</h3>
-	</div>
-	<div class="aui-item">
-		<g:link class="aui-button-cancel" controller="profil" action="profil"><span class="aui-icon aui-icon-small aui-iconfont-arrows-right"></span> Gérer les modes</g:link>
-	</div>
-</div>
+<h3>Modes</h3>
 
 <g:form name="change-mode-form" class="aui">
 
@@ -20,3 +13,4 @@
 </g:form>
 
 <h6 class="h6" style="padding-top:10px;">Activer un ou plusieurs modes et changer ainsi le comportement de votre maison</h6>
+

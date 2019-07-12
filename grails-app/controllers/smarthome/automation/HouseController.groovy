@@ -1,12 +1,12 @@
 package smarthome.automation
 
-import org.springframework.security.access.annotation.Secured;
-import smarthome.automation.deviceType.Compteur;
-import smarthome.automation.deviceType.Humidite;
-import smarthome.automation.deviceType.TeleInformation;
-import smarthome.automation.deviceType.Temperature;
-import smarthome.core.AbstractController;
-import smarthome.security.User;
+import org.springframework.security.access.annotation.Secured
+import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.Humidite
+import smarthome.automation.deviceType.TeleInformation
+import smarthome.automation.deviceType.Temperature
+import smarthome.core.AbstractController
+import smarthome.security.User
 
 
 @Secured("isAuthenticated()")
@@ -15,8 +15,8 @@ class HouseController extends AbstractController {
 	HouseService houseService
 	DeviceService deviceService
 	ModeService modeService
-	
-	
+
+
 	/**
 	 * Edition d'une maison
 	 * 
@@ -34,12 +34,12 @@ class HouseController extends AbstractController {
 			deviceTypeClass: Temperature.name]))
 		def humidites = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: Humidite.name]))
-		
+
 		render(template: 'form', model: [house: house, compteurs: compteurs, user: user,
 			temperatures: temperatures, humidites: humidites, compteursGaz: compteursGaz])
 	}
-	
-	
+
+
 	/**
 	 * Changement de modes d'une maison
 	 * 
@@ -48,13 +48,35 @@ class HouseController extends AbstractController {
 	 */
 	def changeMode(HouseCommand command) {
 		def user = authenticatedUser
+
+		if (!command?.house?.id) {
+			command.house = houseService.findDefaultByUser(user)
+		}
+
 		command.house.user = user
 		houseService.changeMode(command)
 		render(template: 'changeMode', model: [house: command.house, user: user,
 			modes: modeService.listModesByUser(user)])
 	}
-	
-	
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	def widgetMode() {
+		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
+		render(template: 'changeMode', model: [house: house, user: user,
+			modes: modeService.listModesByUser(user)])
+	}
+
+
+	def configMode() {
+		redirect(controller: 'profil', action: 'profil')
+	}
+
+
 	/**
 	 * Calcul conso à la demande
 	 * 
@@ -67,16 +89,16 @@ class HouseController extends AbstractController {
 		houseService.calculConsoAnnuelle(house, now[Calendar.YEAR])
 		nop()
 	}
-	
-	
+
+
 	def calculConsoForUser(User user) {
 		Date now = new Date()
 		def house = houseService.findDefaultByUser(user)
 		houseService.calculConsoAnnuelle(house, now[Calendar.YEAR])
 		nop()
 	}
-	
-	
+
+
 	/**
 	 * Rendu de la synthese confort de la maison
 	 * 
@@ -87,8 +109,8 @@ class HouseController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		internSyntheseConfort(house)
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @return
@@ -96,14 +118,14 @@ class HouseController extends AbstractController {
 	def syntheseConfortHouse(House house) {
 		internSyntheseConfort(house)
 	}
-	
-	
+
+
 	private def internSyntheseConfort(house) {
 		def houseSynthese = houseService.calculSynthese(house)
 		render(template: 'syntheseConfort', model: [house: house, houseSynthese: houseSynthese])
-	} 
-	
-	
+	}
+
+
 	/**
 	 * Rendu de la synthese consommation du jour
 	 * 
@@ -111,14 +133,14 @@ class HouseController extends AbstractController {
 	 */
 	def syntheseConsommationDay(House house) {
 		def user = authenticatedUser
-		
+
 		if (!house?.id) {
 			house = houseService.findDefaultByUser(user)
 		}
 		render(template: 'syntheseConsommationDay', model: [house: house])
 	}
-	
-	
+
+
 	/**
 	 * Rendu de la synthese consommation du mois
 	 * 
@@ -129,8 +151,8 @@ class HouseController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		render(template: 'syntheseConsommationMonth', model: [house: house])
 	}
-	
-	
+
+
 	/**
 	 * Rendu de la synthese consommation de l'année
 	 *
@@ -141,8 +163,8 @@ class HouseController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		render(template: 'syntheseConsommationYear', model: [house: house])
 	}
-	
-	
+
+
 	/**
 	 * Rendu de la synthese consommation jour/mois/année
 	 *
@@ -150,14 +172,14 @@ class HouseController extends AbstractController {
 	 */
 	def syntheseConsommationAll(House house) {
 		def user = authenticatedUser
-		
+
 		if (!house?.id) {
 			house = houseService.findDefaultByUser(user)
 		}
 		render(template: 'syntheseConsommationAll', model: [house: house])
 	}
-	
-	
+
+
 	/**
 	 * Calcul les coordonnées GPS de la maison principale
 	 *
@@ -167,11 +189,11 @@ class HouseController extends AbstractController {
 	@Secured("hasRole('ROLE_ADMIN')")
 	def geocodeDefaultHouse(User user) {
 		House house = houseService.findDefaultByUser(user)
-		
+
 		if (house) {
 			houseService.geocode(house)
 		}
-		
+
 		nop()
 	}
 }
