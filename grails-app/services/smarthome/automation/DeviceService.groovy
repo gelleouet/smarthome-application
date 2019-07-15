@@ -46,6 +46,22 @@ class DeviceService extends AbstractService {
 
 
 	/**
+	 * Enregistrement d'un device sans les contrôles d'autorisation
+	 * A utiliser dans les contextes hors request (ie jobs)
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Device saveWithoutAuthorize(Device device) throws SmartHomeException {
+		// on peut passer par le save classique car les annotations ne sont
+		// visibles depuis les appels internes (aop)
+		return this.save(device)
+	}
+
+
+	/**
 	 * Enregistrement d"un device
 	 * 
 	 * @param device
@@ -54,7 +70,7 @@ class DeviceService extends AbstractService {
 	 */
 	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def save(Device device) throws SmartHomeException {
+	Device save(Device device) throws SmartHomeException {
 		if (!device.save()) {
 			throw new SmartHomeException("Erreur enregistrement device !", device)
 		}
@@ -72,7 +88,7 @@ class DeviceService extends AbstractService {
 	 */
 	@PreAuthorize("hasPermission(#device, 'OWNER')")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	def saveWithAssociations(Device device) throws SmartHomeException {
+	Device saveWithAssociations(Device device) throws SmartHomeException {
 		device.clearNotBindingLevelAlert()
 		device.clearNotBindingPlanning()
 
