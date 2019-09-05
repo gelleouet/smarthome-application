@@ -29,12 +29,11 @@ class SupervisionController extends AbstractController {
 		command.pagination = this.getPagination([:])
 		
 		def devices = deviceService.listByAdmin(command)
-		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		def users = userService.listByAdmin(user)
 		def deviceImpls = DeviceType.list()
 		
 		render(view: 'supervision', model: [user: user, secUser: user,
-			devices: devices, tableauBords: tableauBords, recordsTotal: devices.totalCount,
+			devices: devices, recordsTotal: devices.totalCount,
 			users: users, deviceImpls: deviceImpls, command: command])
 	}
 	

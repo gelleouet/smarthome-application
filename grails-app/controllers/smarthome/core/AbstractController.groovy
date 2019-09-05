@@ -136,6 +136,10 @@ abstract class AbstractController {
 	void setInfo(def info) {
 		request.setAttribute("info", info)
 	}
+	
+	void setWarning(def warning) {
+		request.setAttribute("message", warning)
+	}
 
 
 	/**

@@ -12,7 +12,6 @@ class DeviceAlertController extends AbstractController {
 	
 	DeviceAlertService deviceAlertService
 	EventService eventService
-	DeviceService deviceService
 	
 	
 	
@@ -24,13 +23,12 @@ class DeviceAlertController extends AbstractController {
 	 */
 	def deviceAlerts(DeviceAlertCommand command) {
 		command.userId = principal.id
-		def tableauBords = deviceService.groupByTableauBord(principal.id)
 		def alerts = deviceAlertService.search(command, this.getPagination([:]))
 		def recordsTotal = alerts.totalCount
 		
 		// alerts est accessible depuis le model avec la variable deviceAlert[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond alerts, model: [recordsTotal: recordsTotal, command: command, tableauBords: tableauBords]
+		respond alerts, model: [recordsTotal: recordsTotal, command: command]
     }
 	
 	

@@ -1,3 +1,5 @@
-<div class="pagination" data-form-id="${ paginateForm }">
-	<g:paginate total="${ recordsTotal }"/>
-</div>
+<nav>
+	<ul class="pagination" data-form-id="${ paginateForm }">
+		<g:paginate total="${ recordsTotal }"/>
+	</ul>
+</nav>

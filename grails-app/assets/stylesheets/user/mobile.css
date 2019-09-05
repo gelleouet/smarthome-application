@@ -27,23 +27,6 @@
 		padding: 0.25em;
 	}
 
-	/* Hide individual steps in pagination, just have next & previous */
-	.pagination .step, .pagination .currentStep {
-		display: none;
-	}
-
-	.pagination .prevLink {
-		float: left;
-	}
-
-	.pagination .nextLink {
-		float: right;
-	}
-
-	/* pagination needs to wrap around floated buttons */
-	.pagination {
-		overflow: hidden;
-	}
 
 	/* slightly smaller margin around content body */
 	fieldset,

@@ -1,37 +1,46 @@
 <html>
 <head>
-	<meta name='layout' content='anonymous'/>
+	<meta name='layout' content='main'/>
 </head>
 
-<body data-page-size="aui-page-size-medium">
-	<g:applyLayout name="applicationContent">
+<body>
+	<g:applyLayout name="page-signin">
     
-     <h3 class="separator">Mot de passe oublié</h3>
-          
-	<g:form controller="register" action="confirmForgotPassword" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
-		<fieldset>
-	        <div class="field-group">
-	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <input class="text" type="email" id="username" name="username" placeholder="you@example.com" required="true" value="${ username }">
-	        </div>
-	     </fieldset>
+	    <div class="text-center mt-4">
+				<h1 class="h2">Mot de passe oublié</h1>
+				<p class="lead">
+					Entrez votre email pour réinitialiser votre mot de passe
+				</p>
+		</div>
+         
+        <div class="card">
+			<div class="card-body">
+				<div class="m-sm-4">
+					<div class="text-center">
+						<asset:image src="apple-touch-icon-retina.png" class="img-fluid rounded-circle" width="132" height="132" />
+					</div>
+					
+					<g:applyLayout name="content-error"/>
+				
+					<g:form controller="register" action="confirmForgotPassword" autocomplete='off'>
+				        <div class="form-group required">
+				            <label for="username">Email</label>
+				            <input class="form-control form-control-lg" type="email" id="username" name="username" placeholder="Entrez votre email" required="true" value="${ username }">
+				        </div>
 	     
-	     
-	     <h6 class="h6">Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
-	     	<br/>
-	     	En cliquant dessus, vous serez alors redirigé vers une page vous demandant un nouveau mot de passe.
-	     </h6>
+					     <h6>Après cette opération, vous allez recevoir un mail contenant un lien pour vous demander un nouveau mot de passe.
+					     </h6>
 
-	     <br/>
+	     				<br/>
 	     
-	     
-	    <div class="buttons-container">
-	        <div class="buttons">
-	            <input class="aui-button aui-button-primary" type="submit" value="Envoyer">
-	            <g:link uri="/" class="cancel">Retourner à la page de connexion</g:link>
-	        </div>
-	    </div>
-	</g:form>
+	     				<div class="text-center mt-3">
+							<button type="submit" class="btn btn-lg btn-primary">Réinitialiser</button>
+							<g:link controller="login" action="auth">Retourner à la page de connexion</g:link>
+						</div>
+					</g:form>
+				</div>
+			</div>
+		</div>
 	
 	</g:applyLayout>
 	

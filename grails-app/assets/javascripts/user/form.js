@@ -2,7 +2,7 @@
  * Transforme un select simple en combobox avec recherche intégrée
  */
 function combobox() {
-	AJS.$("select.combobox").auiSelect2({
+	$("select.combobox").auiSelect2({
 		openOnEnter: false,
 		matcher: function(term, text, option) {
 			// rien n'est saisi, tout passe
@@ -36,13 +36,6 @@ function initToggle() {
 			ajaxGet(form, 'action', $form.serialize(), '')
 		}
 	})
-}
-
-
-function initForm() {
-	if (typeof AJS !== 'undefined') {
-		AJS.$('.ffi input[type="file"]').fancyFileInput();
-	}
 }
 
 

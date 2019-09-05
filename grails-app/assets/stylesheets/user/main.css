@@ -72,53 +72,9 @@
 	display: none;
 }
 
-/* PAGINATION */
-
-.pagination {
-	border-top: 0;
-	margin: 0;
-	padding: 0.3em 0.2em;
-	text-align: center;
-	/*background-color: #EFEFEF;*/
-}
-
-.pagination a,
-.pagination .currentStep {
-	color: #666666;
-	display: inline-block;
-	margin: 0 0.1em;
-	padding: 0.25em 0.7em;
-	text-decoration: none;
-	   -moz-border-radius: 0.3em;
-	-webkit-border-radius: 0.3em;
-	        border-radius: 0.3em;
-}
-
-.pagination a:hover, .pagination a:focus,
-.pagination .currentStep {
-	background-color: #bbbbbb;
-	color: #ffffff;
-	outline: none;
-	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
-}
-
-.no-borderradius .pagination a:hover, .no-borderradius .pagination a:focus,
-.no-borderradius .pagination .currentStep {
-	background-color: transparent;
-	color: #444444;
-	text-decoration: underline;
-}
 
 table {
 	font-size: 14px;
-}
-
-table.app-datatable > tbody > tr:hover {
-	background-color: #f5f5f5;
-}
-
-table.datatable > tbody > tr:hover {
-	background-color: #f5f5f5;
 }
 
 .pick-button { padding: 4px 10px; }
@@ -643,7 +599,7 @@ h5.device-grid-label {
 .vignette-synthese {
 	width: 100px;
 	height: 100px;
-	background-color: #0747a6;
+	background-color: #354052;
 	border-radius: 50%;
 	text-align: center;
 	color: white;
@@ -803,4 +759,18 @@ tr.planning-day-row td {
   	top: 50%;
   	left: 50%;
   	transform: translate(-50%, -50%);
+}
+
+.form-group.required label:after {
+	content: " *";
+	color: #de350b;
+	font-size: 12px;
+}
+
+table.table tr:first-child th {
+	border-top:0;
+}
+
+.card-margin-top {
+	margin-top: 15px;	
 }

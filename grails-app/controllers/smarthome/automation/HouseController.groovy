@@ -146,21 +146,29 @@ class HouseController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	def syntheseConsommationMonth() {
+	def syntheseConsommationMonth(House house) {
 		def user = authenticatedUser
-		def house = houseService.findDefaultByUser(user)
+		
+		if (!house?.id) {
+			house = houseService.findDefaultByUser(user)
+		}
+		
 		render(template: 'syntheseConsommationMonth', model: [house: house])
 	}
-
-
+	
+	
 	/**
 	 * Rendu de la synthese consommation de l'année
 	 *
 	 * @return
 	 */
-	def syntheseConsommationYear() {
+	def syntheseConsommationYear(House house) {
 		def user = authenticatedUser
-		def house = houseService.findDefaultByUser(user)
+		
+		if (!house?.id) {
+			house = houseService.findDefaultByUser(user)
+		}
+		
 		render(template: 'syntheseConsommationYear', model: [house: house])
 	}
 

@@ -1,6 +1,6 @@
 <html>
 <head>
-	<meta name='layout' content='authenticated'/>
+	<meta name='layout' content='main'/>
 </head>
 
 <body>
@@ -8,7 +8,8 @@
 		<g:message code="springSecurity.denied.message" />
 	</g:set>
 
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="page-signin">
+		<g:applyLayout name="content-error"/>
 	</g:applyLayout>
 </body>
 </html>

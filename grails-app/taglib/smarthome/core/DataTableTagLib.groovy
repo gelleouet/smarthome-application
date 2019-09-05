@@ -31,7 +31,7 @@ class DataTableTagLib {
 		}
 		
 		// le body contient déjà la structure de la table sauf la balise <table>
-		out << "<table class=\"${attrs.cssClass ?: 'aui'} app-datatable\" id=\"$attrs.datatableId\" style=\"${attrs.cssStyle ?: ''}\" paginateTotal=\"${ attrs.recordsTotal }\" paginateDebut=\"${ paginateDebut }\" paginateFin=\"${ paginateFin }\">"
+		out << "<table class=\"${attrs.cssClass ?: 'table table-hover'} app-datatable\" id=\"$attrs.datatableId\" style=\"${attrs.cssStyle ?: ''}\" paginateTotal=\"${ attrs.recordsTotal }\" paginateDebut=\"${ paginateDebut }\" paginateFin=\"${ paginateFin }\">"
 		out << body()
 		out << "</table>"
 

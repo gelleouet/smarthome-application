@@ -15,6 +15,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/js/**':                      ['permitAll'],
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
+	'/**/fonts/**':                   ['permitAll'],
 	'/**/favicon.ico':                ['permitAll'],
 	'/grails-errorhandler':			  ['permitAll'],
 	'/websocket/**':		  		  ['permitAll'],
@@ -30,6 +31,8 @@ grails.plugin.springsecurity.password.algorithm = 'bcrypt' /// encryption des mo
 grails.plugin.springsecurity.useSessionFixationPrevention = true // Session Fixation Prevention
 grails.plugin.springsecurity.logout.postOnly = false // permet de faire des GET pour logout
 grails.plugin.springsecurity.useSwitchUserFilter  = true // permet de basculer sur un autre utilisateur
+grails.plugin.springsecurity.failureHandler.defaultFailureUrl = '/user/authfail?login_error=1'
+grails.plugin.springsecurity.failureHandler.ajaxAuthFailUrl = '/user/authfail?ajax=true'
 
 
 // Spring ACL

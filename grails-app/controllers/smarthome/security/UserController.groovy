@@ -1,6 +1,13 @@
 package smarthome.security
 
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.web.WebAttributes;
+
 import smarthome.security.UserService;
+import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured;
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -20,6 +27,7 @@ import smarthome.security.User;
 class UserController extends AbstractController {
 
 	UserService userService
+	def springSecurityService
 
 
 	/**
@@ -124,4 +132,41 @@ class UserController extends AbstractController {
 		redirect(uri: "/j_spring_security_exit_user")
 	}
 	
+	
+	/**
+	 * Surcharge du login/authfail de SpringSecurity car le message en scope flash
+	 * peut ne pas apparaitre dans un contexte de cluster
+	 * @return
+	 */
+	@Secured("permitAll")
+	def authfail() {
+		String msg = ''
+		def exception = session[WebAttributes.AUTHENTICATION_EXCEPTION]
+		
+		if (exception) {
+			if (exception instanceof AccountExpiredException) {
+				msg = g.message(code: "springSecurity.errors.login.expired")
+			}
+			else if (exception instanceof CredentialsExpiredException) {
+				msg = g.message(code: "springSecurity.errors.login.passwordExpired")
+			}
+			else if (exception instanceof DisabledException) {
+				msg = g.message(code: "springSecurity.errors.login.disabled")
+			}
+			else if (exception instanceof LockedException) {
+				msg = g.message(code: "springSecurity.errors.login.locked")
+			}
+			else {
+				msg = g.message(code: "springSecurity.errors.login.fail")
+			}
+		}
+
+		if (springSecurityService.isAjax(request)) {
+			render([error: msg] as JSON)
+		}
+		else {
+			setWarning(msg)
+			forward controller: 'login', action: 'auth', params: params
+		}
+	}
 }

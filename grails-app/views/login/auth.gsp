@@ -1,60 +1,53 @@
 <html>
 <head>
-	<meta name='layout' content='anonymous'/>
+	<meta name='layout' content="main"/>
 </head>
 
 <body>
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="page-signin">
     
-    <g:if test="${ mobileAgent }">
-    	<h1><g:meta name="app.code"/></h1>
-    </g:if>
-    <g:else>
-    	<h1>Bienvenue sur l'application <g:meta name="app.code"/></h1>
-    </g:else>
-      
-    <h3 class="separator">Veuillez saisir vos identifiants</h3>
+	    <div class="text-center mt-4">
+			<h1 class="h2">Bienvenue sur l'application <g:meta name="app.code"/></h1>
+			<p class="lead">
+				Connectez-vous pour continuer
+			</p>
+		</div>
+	      
+	    <div class="card">
+			<div class="card-body">
+				<div class="m-sm-4">
+					<div class="text-center">
+						<asset:image src="apple-touch-icon-retina.png" class="img-fluid rounded-circle" width="132" height="132" />
+					</div>
+					
+					<g:applyLayout name="content-error"/>
+					
+					<form action="${postUrl}" method="post" id="d" autocomplete='off'>
+						<div class="form-group required">
+							<label>Email</label>
+							<input class="form-control form-control-lg" type="email" id="username" name="j_username" placeholder="Entrez votre email" autofocus="true" required="true">
+						</div>
+						<div class="form-group required">
+							<label>Mot de passe</label>
+							<input class="form-control form-control-lg" type="password" id="password" name="j_password" placeholder="Entrez votre mot de passe" required="true">
+							<small>
+								<g:link controller="register" action="forgotPassword">Mot de passe oublié ?</g:link></small>
+						</div>
+						<div>
+							<div class="custom-control custom-checkbox align-items-center">
+								<input class="custom-control-input" type="checkbox" name="${rememberMeParameter}" id="remember_me" checked='checked'>
+		            			<label for="remember_me" class="custom-control-label text-small">Mémoriser mes identifiants</label>
+							</div>
+						</div>
+						<div class="text-center mt-3">
+							<button type="submit" class="btn btn-lg btn-primary">Connexion</button>
+							<g:link controller="register" action="account">Créer un compte</g:link>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
           
-	<form action="${postUrl}" method="post" id="d" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
-		<fieldset>
-	        <div class="field-group">
-	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <input class="text" type="email" id="username" name="j_username" placeholder="yourmail@example.com" autofocus="true">
-	        </div>
-	        <div class="field-group">
-	            <label for="password1" accesskey="p">Mot de passe<span class="aui-icon icon-required"> required</span></label>
-	            <input class="password" type="password" id="password" name="j_password">
-	        </div>
-	     </fieldset>
-	     
-	     <fieldset class="group">
-	        <div class="checkbox">
-	            <input class="checkbox" type="checkbox" name="${rememberMeParameter}" id="remember_me" checked='checked'>
-	            <label for="remember_me">Mémoriser mes identifiants</label>
-	        </div>                                
-	    </fieldset>
-	    
-	    <div class="buttons-container">
-	        <div class="buttons">
-	            <input class="aui-button aui-button-primary" type="submit" value="S'authentifier" id="connexion">
-	            <g:link class="cancel" controller="register" action="forgotPassword">J'ai oublié mon mot de passe</g:link>
-	        </div>
-	    </div>
-	</form>
-	
-	
-	<h2 class="separator"></h2>
-	
-    <h3>Liens utiles</h3>
-	
-	<div class="buttons-container" style="padding-top:20px">
-        <div class="buttons">
-            <a class="aui-button" href="https://github.com/gelleouet/smarthome-application" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Github application</a>
-            <a class="aui-button" href="https://github.com/gelleouet/smarthome-application/wiki" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Wiki application</a>
-            <a class="aui-button" href="https://github.com/gelleouet/smarthome-raspberry" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Github agent</a>
-            <a class="aui-button" href="https://github.com/gelleouet/smarthome-raspberry/wiki" target="blank"><span class="aui-icon aui-icon-small aui-iconfont-user"></span> Wiki agent</a>
-        </div>
-    </div>
 	</g:applyLayout>
 	
 </body>

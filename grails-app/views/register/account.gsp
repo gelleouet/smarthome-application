@@ -1,67 +1,79 @@
 <html>
 <head>
-	<meta name='layout' content='anonymous'/>
+	<meta name='layout' content='main'/>
 </head>
 
 <body>
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="page-signin">
     
-    <h3 class="separator">Création d'un compte <g:meta name="app.code"/></h3>
-          
-	<g:form action="createAccount" class="aui ${ mobileAgent ? 'top-label' : '' }" autocomplete='off'>
-		<fieldset>
-	        <div class="field-group">
-	            <label for="prenom">Prénom<span class="aui-icon icon-required"> required</span></label>
-	            <g:field class="text medium-field" type="text" name="prenom" required="true" value="${ command.prenom }" />
-	        </div>
-	        <div class="field-group">
-	            <label for="prenom">Nom<span class="aui-icon icon-required"> required</span></label>
-	            <g:field class="text medium-field" type="text" name="nom" required="true" value="${ command.nom }"/>
-	        </div>
-	        <div class="field-group">
-	            <label for="username">Adresse mail<span class="aui-icon icon-required"> required</span></label>
-	            <g:field class="text long-field" type="email" name="username" required="true" value="${ command.username }"/>
-	        </div>
-	        <div class="field-group">
-	            <label for="username">Mot de passe<span class="aui-icon icon-required"> required</span></label>
-	            <g:passwordField name="newPassword" class="text medim-field" required="true" pattern=".{8,64}"/>
-	            <div class="description">Minimum 8 caractères dont 1 chiffre</div>
-	        </div>
-	        <div class="field-group">
-	            <label for="username">Confirmation<span class="aui-icon icon-required"> required</span></label>
-	            <g:passwordField name="confirmPassword" class="text medim-field" required="true" pattern=".{8,64}"/>
-	            <div class="description">Minimum 8 caractères dont 1 chiffre</div>
-	        </div>
-	     </fieldset>
-	     <fieldset class="group">
-	        <legend><span>Social</span></legend>
-	        <div class="checkbox">
-	        	<g:checkBox name="profilPublic" class="checkbox" value="${ command.profilPublic }"/>
-	            <label for="profilPublic" class="label">J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
-	            dans le but de partager les statistiques de ma maison. Vous pouvez ainsi suivre d'autres utilisateurs et comparer vos consommations.
-	            <br/>
-	            Dans un souci de confidentialité, vos données ne seront visibles à vos amis que si vous acceptez leurs invitations.
-	            </label>
-	        </div>
-	    </fieldset>
-	     
-	     <br/>
-	     <h6 class="h6">Après avoir cliqué sur "Envoyer", vous allez recevoir un email contenant un lien vers une page Web.
-	     	<br/>
-	     	Ce lien permettra d'activer votre compte. Cette action permet aussi de vérifier que vous êtes bien le propriétaire de l'adresse mail.
-	     </h6>
+	    <div class="text-center mt-4">
+			<h1 class="h2">Création d'un nouveau compte</h1>
+			<p class="lead">
+				Compléter le formulaire suivant pour démarrer avec <g:meta name="app.code"/>
+			</p>
+		</div>
+    
 
-	     <br/>
+		<div class="card">
+			<div class="card-body">
+				<div class="m-sm-4">
+					<div class="text-center">
+						<asset:image src="apple-touch-icon-retina.png" class="img-fluid rounded-circle" width="132" height="132" />
+					</div>
+					
+					<g:applyLayout name="content-error"/>
+				
+					<g:form action="createAccount" autocomplete='off'>
+				        <div class="form-group required">
+				        	<label for="prenom">Prénom</label>
+	            			<g:field class="form-control form-control-lg" type="text" name="prenom" required="true" value="${ command.prenom }" />
+				        </div>
+				        <div class="form-group required">
+				        	<label for="nom">Nom</label>
+	            			<g:field class="form-control form-control-lg" type="text" name="nom" required="true" value="${ command.nom }"/>
+				        </div>
+				        <div class="form-group required">
+				        	<label for="username">Email</label>
+	            			<g:field class="form-control form-control-lg" type="email" name="username" required="true" value="${ command.username }"/>
+				        </div>
+				        <div class="form-group required">
+				        	<label for="newPassword">Mot de passe</label>
+	            			<g:passwordField name="newPassword" class="form-control form-control-lg" required="true" pattern=".{8,64}"/>
+	            			<small class="form-text text-muted">Minimum 8 caractères dont 1 chiffre</small>
+				        </div>
+				        <div class="form-group required">
+				        	<label for="confirmPassword">Confirmation</label>
+	            			<g:passwordField name="confirmPassword" class="form-control form-control-lg" required="true" pattern=".{8,64}"/>
+	            			<small class="form-text text-muted">Minimum 8 caractères dont 1 chiffre</small>
+				        </div>
+				        <label class="custom-control custom-checkbox">
+				        	<g:checkBox name="profilPublic" class="custom-control-input" value="${ command.profilPublic }"/>
+				        	<span class="custom-control-label">
+				        		J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
+	            				dans le but de partager les statistiques de ma maison.
+	            				Vous pouvez ainsi suivre d'autres utilisateurs et comparer vos consommations.
+								Dans un souci de confidentialité, vos données ne seront visibles à vos amis que si vous acceptez leurs invitations.
+				        	</span>
+				        </label>
 	     
+	     				<br/>
+	     				
+					    <h6>
+					     	Après avoir cliqué sur "Démarrer", vous allez recevoir un mail contenant un lien vers une page Web.
+	     					Ce lien permettra d'activer votre compte. Cette action permet aussi de vérifier que vous êtes bien le propriétaire de l'adresse email.
+	     				</h6>
+
+	     				<br/>
 	     
-	    <div class="buttons-container">
-	        <div class="buttons">
-	            <input class="aui-button aui-button-primary" type="submit" value="Envoyer">
-	            <g:link uri="/" class="cancel">Retourner à la page de connexion</g:link>
-	        </div>
-	    </div>
-	</g:form>
-	
+	     				<div class="text-center mt-3">
+							<button type="submit" class="btn btn-lg btn-primary">Démarrer</button>
+							<g:link controller="login" action="auth">Retourner à la page de connexion</g:link>
+						</div>
+					</g:form>
+				</div>
+			</div>
+		</div>
+          
 	</g:applyLayout>
 	
 </body>

@@ -8,7 +8,7 @@
 	}).ajaxStop(function() {
 		$('#ajaxSpinner').fadeOut(200);
 		formatDataTable();
-		combobox();
+		//combobox();
 		ajaxPagination();
 		buildGoogleCharts();
 	});
@@ -24,11 +24,12 @@ $( document ).ready(function() {
 	
 	formatDataTable();
 	ajaxPagination();
-	combobox();
-	initDragAndDrop();
+	//combobox();
+	//initDragAndDrop();
 	initToggle()
-	initForm()
 	selectHashTab()
+	divAsyncUrl()
+	formAsync()
 })
 
 
@@ -156,7 +157,7 @@ function ajaxPagination() {
 /**
  * Chargement des DIV asynchrones
  */
-$(window).on('load', function() {
+function divAsyncUrl() {
 	$("div[async-url]").each(function() {
 		// récupère l'url dans le composant
 		var div = $(this);
@@ -173,7 +174,7 @@ $(window).on('load', function() {
 			}
 		});
 	});
-});
+}
 
 
 function ajaxGet(eltSrcId, urlAttr, datas, divDstId, onSuccess) {
@@ -202,9 +203,9 @@ function ajaxGet(eltSrcId, urlAttr, datas, divDstId, onSuccess) {
  * Chargement des formulaires asynchrone.
  * 
  */
-$(window).on('load', function() {
+function formAsync() {
 	$('form[id^="deferedForm"]').submit();
-});
+}
 
 
 var errorAjaxFunction = function(jqXHR, textStatus, errorThrown) {
