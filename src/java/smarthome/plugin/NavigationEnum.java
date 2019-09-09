@@ -7,5 +7,5 @@ package smarthome.plugin;
  *
  */
 public enum NavigationEnum {
-	user, configuration, navbarPrimary, viewPlugin;
+	user, configuration, navbarPrimary, viewPlugin, admin, automation;
 }

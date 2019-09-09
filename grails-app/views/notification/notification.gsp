@@ -1,24 +1,22 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
-		<h3>${ notification.id ? 'Notification : ' + notification.description : 'Nouvelle notification' } <span id="ajaxSpinner" class="spinner"/></h3>
+	<g:applyLayout name="page-settings" model="[titre: 'Notifications', navigation: 'user']">
 		
-		<g:form controller="notification" method="post" class="aui" name="notification-form">
-			<g:hiddenField name="id" value="${notification.id}" />
+		<h4 class="mb-4">${ notification?.id ? 'Notification : ' + notification.description : 'Nouvelle notification' }</h4>
+		
+		<g:form controller="notification" method="post" name="notification-form">
+			<g:hiddenField name="id" value="${notification?.id}" />
 	
 			<g:render template="form"/>
 			
 			<br/>
-	
-			<div class="buttons-container">
-				<div class="buttons">
-					<g:actionSubmit value="Enregistrer" action="save" class="aui-button aui-button-primary" />
-				</div>
-			</div>
+			
+			<g:actionSubmit value="Enregistrer" action="save" class="btn btn-primary" />
+			<g:link action="notifications" class="btn btn-link">Annuler</g:link>
 		</g:form>
 		
 	</g:applyLayout>

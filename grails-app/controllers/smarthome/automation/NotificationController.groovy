@@ -26,7 +26,7 @@ class NotificationController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Notifications", navigation = NavigationEnum.configuration, header = "Compte")
+	@NavigableAction(label = "Notifications", navigation = NavigationEnum.user, header = "Compte")
 	def notifications(NotificationCommand command) {
 		command.user = authenticatedUser
 		def notifications = notificationService.search(command, this.getPagination([:])) 
@@ -46,7 +46,9 @@ class NotificationController extends AbstractController {
 	 */
 	def edit(Notification notification) {
 		def editNotification = parseFlashCommand(COMMAND_NAME, notification)
-		notificationService.edit(notification)
+		if (editNotification?.id) {
+			notificationService.edit(editNotification)
+		}
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editNotification]))
 	}
 	
@@ -97,7 +99,7 @@ class NotificationController extends AbstractController {
 		notification.validate()
 		checkErrors(this, notification)
 		notificationService.save(notification)
-		redirect(action: 'edit', id: notification.id)
+		redirect(action: COMMAND_NAME + 's')
 	}
 
 

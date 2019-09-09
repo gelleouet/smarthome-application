@@ -444,10 +444,11 @@ div .dataTables_info {
 
 table td.command-column a {
 	display: none;
+	color: black;
 }
 
 table tr:hover td.command-column a {
-	display: inline;
+	display: inline-block;
 }
 
 .column-1-buttons {

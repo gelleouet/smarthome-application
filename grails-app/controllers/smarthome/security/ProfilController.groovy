@@ -30,7 +30,7 @@ class ProfilController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Profil", navigation = NavigationEnum.configuration, defaultGroup = true,
+	@NavigableAction(label = "Profil", navigation = NavigationEnum.user, defaultGroup = true,
 		header = "Compte")
 	def profil() {
 		// plugin spring security add authenticatedUser property

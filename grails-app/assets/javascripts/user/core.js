@@ -8,9 +8,10 @@
 	}).ajaxStop(function() {
 		$('#ajaxSpinner').fadeOut(200);
 		formatDataTable();
-		//combobox();
+		combobox();
 		ajaxPagination();
 		buildGoogleCharts();
+		initIcon()
 	});
 })(jQuery);
 
@@ -24,7 +25,7 @@ $( document ).ready(function() {
 	
 	formatDataTable();
 	ajaxPagination();
-	//combobox();
+	combobox();
 	//initDragAndDrop();
 	initToggle()
 	selectHashTab()
@@ -268,6 +269,11 @@ function showDialog(dialogId) {
 
 function hideDialog(dialogId) {
 	AJS.dialog2('#' + dialogId).hide();
+}
+
+
+function initIcon() {
+	//feather.replace()
 }
 
 

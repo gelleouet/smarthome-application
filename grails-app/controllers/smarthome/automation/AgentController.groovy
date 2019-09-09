@@ -52,7 +52,7 @@ class AgentController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Agents", navigation = NavigationEnum.configuration, header = "Smarthome")
+	@NavigableAction(label = "Agents", navigation = NavigationEnum.automation, header = "Smarthome")
 	def agents(String agentSearch) {
 		def user = authenticatedUser
 		def agents = agentService.listByUser(agentSearch, user.id, this.getPagination([:]))

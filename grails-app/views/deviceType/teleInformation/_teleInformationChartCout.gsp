@@ -13,7 +13,7 @@
 
 <div id="chartDivTarif" data-chart-type="ColumnChart">
 	<br/>
-	<h6 class="h6">Loading chart...</h6>
+	<h6>Loading chart...</h6>
 	<div class="aui-progress-indicator">
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
@@ -22,15 +22,16 @@
 </div>  
 
 <g:if test="${ !mobileAgent }">
-	<form class="aui">
-		<div class="field-group">
+	<form class="form-inline">
+		<div class="form-group">
 			<label for="label">
 				Coût sur la sélection
 			</label>
-			<g:textField name="selectionCout" class="text medium-field" readonly="true"/> €
-			<div class="description">Vous pouvez zoomer sur les graphiques en glissant la souris avec le clic gauche sur une zone. Pour revenir en arrière, faites un clic droit.
-		Vous pouvez aussi calculer la consommation totale sur une période en sélectionnant 2 points sur une série. Cette option ne fonctionne que sur une seule série 
-		à la fois.</div>
+			<g:textField name="selectionCout" class="form-control" readonly="true"/> €
 		</div>
 	</form>
+	
+	<small class="form-text text-muted">Vous pouvez zoomer sur les graphiques en glissant la souris avec le clic gauche sur une zone. Pour revenir en arrière, faites un clic droit.
+		Vous pouvez aussi calculer la consommation totale sur une période en sélectionnant 2 points sur une série. Cette option ne fonctionne que sur une seule série 
+		à la fois.</small>
 </g:if>
