@@ -24,7 +24,7 @@ class UserApplicationController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Applications", navigation = NavigationEnum.configuration, header = "Compte")
+	@NavigableAction(label = "Applications", navigation = NavigationEnum.user, header = "Compte")
 	def userApplications(UserApplicationCommand command) {
 		command.user = authenticatedUser
 		def userApplications = userApplicationService.search(command, this.getPagination([:]))

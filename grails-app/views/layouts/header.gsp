@@ -48,11 +48,15 @@
             </a>
             
             <div class="dropdown-menu dropdown-menu-right">
-				<g:link class="dropdown-item" controller="profil" action="profil"><i class="align-middle mr-1" data-feather="user"></i> Profil</g:link>
-				<g:link class="dropdown-item" controller="profil" action="profil"><i class="align-middle mr-1" data-feather="settings"></i> Paramètres</g:link>
+				<g:link class="dropdown-item" controller="profil" action="profil"><i class="align-middle mr-1" data-feather="user"></i> Compte</g:link>
+				<g:link class="dropdown-item" controller="device" action="devices"><i class="align-middle mr-1" data-feather="home"></i> Smarthome</g:link>
+				<div class="dropdown-divider"></div>
 				<sec:ifAllGranted roles="ROLE_SUPERVISION">
                		<g:link class="dropdown-item" controller="supervision" action="supervision"><i class="align-middle mr-1" data-feather="users"></i> Supervision</g:link>	
                	</sec:ifAllGranted>
+               	<sec:ifAllGranted roles="ROLE_ADMIN">
+					<g:link class="dropdown-item" controller="user" action="users"><i class="align-middle mr-1" data-feather="settings"></i> Système</g:link>
+				</sec:ifAllGranted>
 				<div class="dropdown-divider"></div>
 				<sec:ifSwitched>
                 	<g:link action="exitSwitchUser" controller="user" class="dropdown-item"><i class="align-middle mr-1" data-feather="log-out"></i> Revenir à votre session</g:link>

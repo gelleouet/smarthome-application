@@ -25,7 +25,7 @@ class PasswordController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mot de passe", navigation = NavigationEnum.configuration, header = "Compte")
+	@NavigableAction(label = "Mot de passe", navigation = NavigationEnum.user, header = "Compte")
 	def password() {
 		// plugin spring security add authenticatedUser property
 		def command = parseFlashCommand("command", new ChangePasswordCommand(username: authenticatedUser.username,
