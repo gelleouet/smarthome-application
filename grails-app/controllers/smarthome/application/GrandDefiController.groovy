@@ -26,4 +26,16 @@ class GrandDefiController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		render(view: 'consommation', model: [secUser: user, house: house])
 	}
+	
+	
+	/**
+	 * Affichage page config/résumé des compteurs
+	 * 
+	 * @return
+	 */
+	def  compteur() {
+		def user = authenticatedUser
+		def house = houseService.findDefaultByUser(user)
+		render(view: 'compteur', model: [secUser: user, house: house])
+	}
 }

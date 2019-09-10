@@ -1,6 +1,6 @@
 
 // IMPORTANT : Ne pas changer ca, si bascule dans document.ready, ca ne marche plus
-(function($) {
+/*(function($) {
 	// Gestion d'un spinner à chaque appel Ajax
 	// Affiche / Masque un élément d'id = ajaxSpinner
 	$(document).ajaxStart(function() {
@@ -13,7 +13,7 @@
 		buildGoogleCharts();
 		initIcon()
 	});
-})(jQuery);
+})(jQuery);$/
 
 
 /**
@@ -273,7 +273,7 @@ function hideDialog(dialogId) {
 
 
 function initIcon() {
-	//feather.replace()
+	//$.feather.replace()
 }
 
 
