@@ -125,9 +125,9 @@ function initPlanningBuffer(planning) {
  * 
  */
 function initPlanningUI() {
-	$(".planning").selectable({
+	/*$(".planning").selectable({
         filter: "tbody td.planning-cell"
-    })
+    })*/
 }
 
 

@@ -420,7 +420,7 @@ class DataConnectService extends AbstractService {
 					user: notificationAccount.user,
 					unite: 'W',
 					mac: notificationAccount.jsonConfig.usage_point_id,
-					label: 'Compteur électrique (Enedis)',
+					label: 'Compteur Linky (Enedis DataConnect)',
 					deviceType: DeviceType.findByImplClass(TeleInformation.name))
 		}
 

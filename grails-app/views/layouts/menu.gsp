@@ -23,7 +23,7 @@
 	</li>
 	
 	<li class="sidebar-item">
-		<g:link class="sidebar-link" action="compteur" controller="grandDefi"><i class="align-middle" data-feather="tool"></i> Mes compteurs</g:link>
-		<g:link class="sidebar-link" action="consommation" controller="grandDefi"><i class="align-middle" data-feather="bar-chart"></i> Ma consommation</g:link>
+		<g:link class="sidebar-link" action="compteur" controller="grandDefi"><app:icon name="tool"/> Mes compteurs</g:link>
+		<g:link class="sidebar-link" action="consommation" controller="grandDefi"><app:icon name="bar-chart"/> Mes consommations</g:link>
 	</li>
 </ul>

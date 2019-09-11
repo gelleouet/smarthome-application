@@ -27,8 +27,16 @@
 				<div class="row">
 					<div class="col-md-3 col-xl-2">
 						<div class="card">
+							<g:set var="items" value="${ app.navigationItems(category: navigation)?.subitems?.sort({ it.label }) }"/>
+						
+							<g:if test="${ items && items[0].header }">
+								<div class="card-header">
+									<h5 class="card-title mb-0">${ items[0].header }</h5>
+								</div>
+							</g:if>
+						
 							<div class="list-group list-group-flush">
-								<g:each var="item" in="${ app.navigationItems(category: navigation)?.subitems?.sort({ it.label }) }">
+								<g:each var="item" in="${ items }">
 									<g:link controller="${item.controller }"
 											action="${item.action }"
 											class="list-group-item list-group-item-action ${app.isCurrentItem(item: item) ? 'active' : '' }">
