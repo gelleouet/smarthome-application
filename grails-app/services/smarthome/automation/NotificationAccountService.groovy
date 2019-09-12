@@ -78,6 +78,16 @@ class NotificationAccountService extends AbstractService {
 			eq 'notificationAccountSender', sender
 		}
 	}
+	
+	
+	NotificationAccount findByUserAndLibelleSender(User user, String senderLibelle) {
+		return NotificationAccount.createCriteria().get {
+			eq 'user', user
+			notificationAccountSender {
+				eq 'libelle', senderLibelle
+			}
+		}
+	}
 
 
 	/**

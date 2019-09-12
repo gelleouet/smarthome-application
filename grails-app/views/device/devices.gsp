@@ -61,7 +61,7 @@
 			            	</g:link>
 			            	
 			            	<g:remoteLink class="btn btn-light" title="Partager" url="[action: 'dialogDeviceShare', controller: 'deviceShare', id: bean.id]" update="ajaxDialog" onComplete="showDeviceShareDialog()">
-			            		<app:icon name="share"/>
+			            		<app:icon name="share-2"/>
 			            	</g:remoteLink>
 			            </td>
 			        </tr>

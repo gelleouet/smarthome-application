@@ -21,6 +21,7 @@
 		
 		<main class="content">
 			<div class="container-fluid p-0">
+				<g:applyLayout name="content-error"/>
 				<g:layoutBody/>
 			</div>
 		</main>

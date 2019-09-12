@@ -602,7 +602,31 @@ class DeviceService extends AbstractService {
 			idEq id as Long
 			join 'deviceType'
 		}
-		//Device.get(id)
+	}
+	
+	
+	/**
+	 * Recherche d'un objet par son nom si celui-ci a été par convention (nommage automatique
+	 * par le système). C'est le seul cas car ce champ n'est pas unique par user
+	 * 
+	 * Déclenche une erreur si plusieurs devices sont trouvés
+	 * 
+	 * @param user
+	 * @param label
+	 * @return
+	 */
+	Device findByLabel(User user, String label) throws SmartHomeException {
+		List devices = Device.createCriteria().list {
+			eq 'label', label
+			eq 'user', user
+			join 'deviceType'
+		}
+		
+		if (devices.size() > 1) {
+			throw new SmartHomeException("Objet ${label} en doublon !")
+		}
+		
+		return devices ? devices[0] : null
 	}
 
 

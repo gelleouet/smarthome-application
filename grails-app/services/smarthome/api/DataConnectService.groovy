@@ -409,23 +409,55 @@ class DataConnectService extends AbstractService {
 	}
 
 
-	private Device findOrCreateDevice(NotificationAccount notificationAccount) {
-		Device dataDevice
+	private Device findOrCreateDevice(NotificationAccount notificationAccount) throws SmartHomeException {
+		String defaultCompteurLabel = grailsApplication.config.enedis.compteurLabel
 
-		if (notificationAccount.jsonConfig.device_id) {
-			dataDevice = deviceService.findById(notificationAccount.jsonConfig.device_id)
-		} else {
-			// création d'un device auto
-			dataDevice = new Device(
+		// recherche du device associé au compte dataconnect
+		// (il y a déjà eu un appel réussi avec récupération des données)
+		Device dataDevice = getDeviceFromConfig(notificationAccount)
+		
+		// vérifie quand même que le device n'a pas été modifiée entre temps
+		if (!dataDevice) {
+			// recherche d'un device qui aurait déjà été créé par le dataconnect mais
+			// le consentement a été recréé et reseté
+			dataDevice = deviceService.findByLabel(notificationAccount.user, defaultCompteurLabel)
+			
+			// rien n'est trouvé, création d'un device auto
+			if (!dataDevice) {
+				dataDevice = new Device(
 					user: notificationAccount.user,
 					unite: 'W',
 					mac: notificationAccount.jsonConfig.usage_point_id,
-					label: 'Compteur Linky (Enedis DataConnect)',
+					label: defaultCompteurLabel,
 					deviceType: DeviceType.findByImplClass(TeleInformation.name))
+			}
 		}
 
+		// ajout ou update config device
+		dataDevice.addMetadata('modele', [value: 'Linky', label: 'Modèle'])
 		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes', trace: true])
 
 		return dataDevice
+	}
+	
+	
+	/**
+	 * Retourne le device associé à la config
+	 * 
+	 * @param notificationAccount
+	 * @return
+	 */
+	Device getDeviceFromConfig(NotificationAccount notificationAccount) {
+		Device device
+		
+		if (!notificationAccount.jsonConfig) {
+			notificationAccount.configToJson()
+		}
+		
+		if (notificationAccount.jsonConfig.device_id) {
+			device = deviceService.findById(notificationAccount.jsonConfig.device_id)
+		}
+		
+		return device
 	}
 }

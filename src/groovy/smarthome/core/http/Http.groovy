@@ -223,7 +223,7 @@ class Http {
 
 			if (httpResult.code != 200) {
 				String error = transformer.error(httpResult.content)
-				throw new SmartHomeException("HTTP request error [${httpResult.code}] : ${error ?: httpResult.message} !")
+				throw new SmartHomeException("HTTP request error [${httpResult.code}] : ${error ?: httpResult.message}")
 			}
 		} catch (Exception ex) {
 			throw ex

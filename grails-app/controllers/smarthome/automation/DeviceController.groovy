@@ -56,7 +56,7 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Pilotage", navigation = NavigationEnum.navbarPrimary)
+	//@NavigableAction(label = "Pilotage", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(DeviceSearchCommand search) {
 		search.userId = principal.id
 		def user = authenticatedUser

@@ -8,18 +8,26 @@ class SmartHomeCoreFilters {
 	
 	def filters = {
 		/**
-		 * userAgent
+		 * defaultSmarthome
 		 *
-		 * Détermine pour chaque requête si le client est un mobile
+		 * Complétion du model : 
+		 *  - mobileAgent
+		 *  - secUser
 		 */
-		userAgent(controller: '*', action: '*', uriExclude: '/assets/**') {
+		defaultSmarthome(controller: '*', action: '*', uriExclude: '/assets/**') {
 			after = { model ->
 				if (model) {
+					// insère le type de device
 					String agentHeader = request.getHeader('User-Agent')
 					if (agentHeader) {
 						model['mobileAgent'] = agentHeader.contains('iPhone') || 
 							agentHeader.contains('Android') || agentHeader.contains('Windows Phone')
 					} 
+					
+					// associe un objet 'secUser' pour éviter le recharger (ex dans les menus, etc)
+					if (model['user'] && !model['secUser']) {
+						model['secUser'] = model['user']
+					}
 				}
 				return true
 			}

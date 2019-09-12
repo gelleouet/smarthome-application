@@ -17,7 +17,7 @@ class IconTagLib {
 	 */
 	def icon = { attrs, body ->
 		if (attrs.lib == 'awesome') {
-			out << """<i class="${ attrs.class ?: 'align-middle'} fa-${ attrs.name }"></i>"""
+			out << """<i class="${ attrs.class ?: 'align-middle'} fas fa-${ attrs.name }"></i>"""
 		} else {
 			out << """<i class="${ attrs.class ?: 'align-middle'}" data-feather="${ attrs.name }"></i>"""
 		}
