@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-signin">
+	<g:applyLayout name="page-focus">
     
 	    <div class="text-center mt-4">
 			<h1 class="h2">Création d'un nouveau compte</h1>
@@ -13,7 +13,6 @@
 			</p>
 		</div>
     
-
 		<div class="card">
 			<div class="card-body">
 				<div class="m-sm-4">
@@ -49,7 +48,7 @@
 				        <label class="custom-control custom-checkbox">
 				        	<g:checkBox name="profilPublic" class="custom-control-input" value="${ command.profilPublic }"/>
 				        	<span class="custom-control-label">
-				        		J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
+				        		J'autorise les autres utilisateurs <g:meta name="app.code"/> à pouvoir m'envoyer des invitations
 	            				dans le but de partager les statistiques de ma maison.
 	            				Vous pouvez ainsi suivre d'autres utilisateurs et comparer vos consommations.
 								Dans un souci de confidentialité, vos données ne seront visibles à vos amis que si vous acceptez leurs invitations.
@@ -67,12 +66,12 @@
 	     
 	     				<div class="text-center mt-3">
 							<button type="submit" class="btn btn-lg btn-primary">Démarrer</button>
-							<g:link controller="login" action="auth">Retourner à la page de connexion</g:link>
+							<g:link class="btn btn-link" controller="login" action="auth">Retourner à la page de connexion</g:link>
 						</div>
 					</g:form>
 				</div>
 			</div>
-		</div>
+		</div> <!-- div.card -->
           
 	</g:applyLayout>
 	

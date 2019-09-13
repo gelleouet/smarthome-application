@@ -2,8 +2,8 @@
 	<nav id="sidebar" class="sidebar">
 		<div class="sidebar-content">
 			<g:link class="sidebar-brand" uri="/">
-				<i class="align-middle" data-feather="home"></i>
-				<span class="align-middle">BeMyHomeSmart</span>
+				<app:icon name="home"/>
+				<span class="align-middle"><g:meta name="app.code"/></span>
 			</g:link>
 			
 			<g:applyLayout name="menu"/>

@@ -8,7 +8,7 @@
 		    	<h6>
 				<g:meta name="app.code"/> v<g:meta name="app.version"/>
 				<br/>
-				build with Grails <g:meta name="app.grails.version"/> - Atlassian AUI <g:meta name="aui.version"/> - Java ${System.getProperty('java.version')}
+				build with Grails <g:meta name="app.grails.version"/> - Java ${System.getProperty('java.version')}
 				</h6>
 				<asset:image src="/gandi-ssl.png" />
 				

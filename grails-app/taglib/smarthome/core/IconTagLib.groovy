@@ -13,13 +13,14 @@ class IconTagLib {
 	 * @attr name REQUIRED nom de l'icone à insérer
 	 * @attr lib nom de la librairie (par défaut feather)
 	 * @attr class style css
+	 * @attr style style css
 	 * 
 	 */
 	def icon = { attrs, body ->
 		if (attrs.lib == 'awesome') {
-			out << """<i class="${ attrs.class ?: 'align-middle'} fas fa-${ attrs.name }"></i>"""
+			out << """<i class="${ attrs.class ?: 'align-middle'} fas fa-${ attrs.name }" style="${ attrs.style ?: ''}"></i>"""
 		} else {
-			out << """<i class="${ attrs.class ?: 'align-middle'}" data-feather="${ attrs.name }"></i>"""
+			out << """<i class="${ attrs.class ?: 'align-middle'}" data-feather="${ attrs.name }" style="${ attrs.style ?: ''}"></i>"""
 		}
 	}
 }

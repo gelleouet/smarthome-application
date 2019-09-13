@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-signin">
+	<g:applyLayout name="page-focus">
     	<div class="text-center mt-4">
 			<h1 class="h2">Réinitialisation du mot de passe</h1>
 			<p class="lead">
@@ -40,7 +40,7 @@
 					     
 					    <div class="text-center mt-3">
 					    	<button type="submit" class="btn btn-lg btn-primary">Confirmer</button>
-					    	<g:link controller="login" action="auth">Retourner à la page de connexion</g:link>
+					    	<g:link class="btn btn-link" controller="login" action="auth">Retourner à la page de connexion</g:link>
 					    </div>
 					</g:form>
 				</div>

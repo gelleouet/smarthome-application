@@ -775,3 +775,7 @@ table.table tr:first-child th {
 .card-margin-top {
 	margin-top: 15px;	
 }
+
+.custom-navbar {
+	background-color: #354052;
+}
