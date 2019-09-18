@@ -22,6 +22,11 @@
 		optionValue="libelle" class="form-control combobox" noSelection="[null: ' ']"/>
 </div>
 <div class="form-group">
+	<label>ECS</label>
+	<g:select name="house.ecs.id" value="${house?.ecs?.id}" from="${ smarthome.automation.ECS.list() }" optionKey="id" 
+		optionValue="libelle" class="form-control combobox" noSelection="[null: ' ']"/>
+</div>
+<div class="form-group">
 	<label>Compteur gaz</label>
 	<g:select name="house.compteurGaz.id" value="${house?.compteurGaz?.id}" from="${ compteursGaz }" optionKey="id" 
 		optionValue="label" class="form-control combobox" noSelection="[null: '']"/>

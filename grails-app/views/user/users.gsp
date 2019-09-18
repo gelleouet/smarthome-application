@@ -1,41 +1,28 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
+	<g:applyLayout name="page-settings" model="[titre: 'Utilisateurs', navigation: 'Système']">
 	
-		<div class="aui-toolbar2">
-		    <div class="aui-toolbar2-inner">
-		        <div class="aui-toolbar2-primary">
-		            <div>
-		                <h3>Utilisateurs</h3>
-		            </div>		            
-		        </div>
-		        <div class="aui-toolbar2-secondary">
-		        	<g:form controller="user" >
-		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter un utilisateur" action="create"/>
-		            </div>
-		            </g:form>
-		        </div>
-		    </div><!-- .aui-toolbar-inner -->
+	
+		<div class="row">
+			<div class="col-8">
+				<g:form class="form-inline" action="users">
+					<fieldset>
+						<input autofocus="true" class="form-control" type="text" placeholder="Rechercher nom, prénom, email" name="search" value="${ command.search }"/>
+						<button class="btn btn-light"><app:icon name="search"/></button>
+					</fieldset>
+				</g:form>
+			</div>
+			<div class="col-4 text-right">
+				<g:link action="create" class="btn btn-light"><app:icon name="plus"/> Ajouter</g:link>
+			</div>
 		</div>
-
-		
-		<h4>
-			<g:form class="aui" action="users">
-				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher nom, prénom, email" name="search" value="${ command.search }"/>
-					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
-				</fieldset>
-			</g:form>
-		</h4>
 		
 		<br/>
 		
-		<div style="overflow-x:auto;">
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
@@ -56,15 +43,14 @@
 			            <td><app:formatTimeAgo date="${user.lastConnexion }"/></td>
 			            <td><g:render template="/user/userStatut" model="[user: user]"/></td>
 			            <td class="column-1-buttons command-column">
-			            	<g:link class="aui-button aui-button-subtle confirm-button" title="Basculer vers l'utilisateur" action="switchUser" id="${ user.id }">
-			            		<span class="aui-icon aui-icon-small aui-iconfont-group"></span>
+			            	<g:link class="btn btn-light confirm-button" title="Basculer vers l'utilisateur" action="switchUser" id="${ user.id }">
+			            		<app:icon name="log-in"/>
 			            	</g:link>
 			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>
 		</app:datatable>
-		</div>
 		
 	</g:applyLayout>
 	

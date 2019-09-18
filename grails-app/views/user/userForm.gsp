@@ -4,102 +4,86 @@
 
 	<h4>Profil</h4>
 
-	<fieldset>
-		<div class="field-group">
-			<label for="username">Email<span
-				class="aui-icon icon-required"> required</span></label>
-			<g:textField name="username" value="${user.username}" type="email"
-				class="text long-field" required="true" />
-			<div class="description">En cas de changement d'email, un
-				email vous sera envoyé à la nouvelle adresse pour valider votre
-				accès.</div>
-		</div>
-		<div class="field-group">
-			<label for="prenom">Prénom<span
-				class="aui-icon icon-required"> required</span></label>
-			<g:textField name="prenom" value="${user.prenom}" required="true" 
-				class="text long-field"  />
-		</div>
-		<div class="field-group">
-			<label for="nom">Nom<span class="aui-icon icon-required">
-					required</span></label>
-			<g:textField name="nom" value="${user.nom}" class="text long-field"
-				required="true" />
-		</div>
-	</fieldset>
+	<div class="form-group required">
+		<label for="username">Email</label>
+		<g:textField name="username" value="${user.username}" type="email" class="form-control" required="true" />
+		<g:applyLayout name="form-description">En cas de changement d'email, un
+			email vous sera envoyé à la nouvelle adresse pour valider votre
+			accès.</g:applyLayout>
+	</div>
+	<div class="form-group required">
+		<label for="prenom">Prénom</label>
+		<g:textField name="prenom" value="${user.prenom}" required="true"  class="form-control"  />
+	</div>
+	<div class="form-group required">
+		<label for="nom">Nom</label>
+		<g:textField name="nom" value="${user.nom}" class="form-control" required="true" />
+	</div>
 	
 	
-	<h4>Applications</h4>
+	<h4 class="mt-4">Applications</h4>
 			
-	<fieldset>
-		<div class="field-group">
-			<label>Application ID<span
-				class="aui-icon icon-required"> required</span></label>
-			<h5>${ user.applicationKey }</h5>
-			<div class="description">Utilisez cet ID pour connecter des agents à l'application <g:meta name="app.code"/>. Il vous sera demandé dans les identifiants de connexion.</div>
-		</div>
-	</fieldset>
+	<div class="field-group required">
+		<label>Application ID</label>
+		<h5>${ user.applicationKey }</h5>
+		<g:applyLayout name="form-description">Utilisez cet ID pour connecter des agents à l'application <g:meta name="app.code"/>.
+		Il vous sera demandé dans les identifiants de connexion.</g:applyLayout>
+	</div>
 	
 	
 	<g:if test="${user.id }">
-		<h4>Authentification</h4>
+		<h4 class="mt-4">Authentification</h4>
 		
-		<fieldset>
-			<div class="field-group">
-				<label for="lastActivation">Dernière activation</label>
-				<g:field class="text medium-field" name="lastActivation" value="${app.formatPicker(date: user.lastActivation)}" type="date" required="true"/>
-			</div>
-		</fieldset>
+		<div class="form-group">
+			<label for="lastActivation">Dernière activation</label>
+			<g:field class="form-control small" name="lastActivation" value="${app.formatPicker(date: user.lastActivation)}" type="date" required="true"/>
+		</div>
 		
-		<fieldset class="group">
-	        <legend><span>Status</span></legend>
-	        
-	        <div class="checkbox">
-	        	<g:checkBox class="checkbox" name="enabled" value="${user.enabled }"/>
-	            <label for="enabled">Compte activé</label>
-	        </div>                                
-	        <div class="checkbox">
-	        	<g:checkBox class="checkbox" name="accountExpired" value="${user.accountExpired }"/>
-	            <label for="accountExpired">Compte expiré</label>
-	        </div>                                
-	        <div class="checkbox">
-	        	<g:checkBox class="checkbox" name="accountLocked" value="${user.accountLocked }"/>
-	            <label for="accountLocked">Compte bloqué</label>
-	        </div>                                
-	        <div class="checkbox">
-	        	<g:checkBox class="checkbox" name="passwordExpired" value="${user.passwordExpired }"/>
-	            <label for="passwordExpired">Mot de passe expiré</label>
-	            <div class="description">
-	            	<g:if test="${ registration }">
-	            		<span class="aui-lozenge aui-lozenge-current">Mail d'activation envoyé le ${ g.formatDate(date: registration.dateCreated) }</span>
-	            	</g:if>
-	            </div>
-	        </div>                                
-	    </fieldset>
+		<label class="custom-control custom-checkbox">
+	        <g:checkBox class="custom-control-input" name="enabled" value="${user.enabled }"/>
+	        <span class="custom-control-label" for="enabled">Compte activé</span>
+	    </label>      
+	                          
+        <label class="custom-control custom-checkbox">
+        	<g:checkBox class="custom-control-input" name="accountExpired" value="${user.accountExpired }"/>
+            <span class="custom-control-label" for="accountExpired">Compte expiré</span>
+        </label>      
+                            
+        <label class="custom-control custom-checkbox">
+        	<g:checkBox class="custom-control-input" name="accountLocked" value="${user.accountLocked }"/>
+            <span class="custom-control-label" for="accountLocked">Compte bloqué</span>
+        </label>      
+                               
+        <label class="custom-control custom-checkbox">
+        	<g:checkBox class="custom-control-input" name="passwordExpired" value="${user.passwordExpired }"/>
+            <span class="custom-control-label" for="passwordExpired">Mot de passe expiré</span>
+            <g:if test="${ registration }">
+	            <g:applyLayout name="form-description">
+	            Mail d'activation envoyé le ${ g.formatDate(date: registration.dateCreated) }
+	            </g:applyLayout>
+            </g:if>
+        </label>                           
     </g:if>
     
-    <h4>Sécurité</h4>
+    <h4 class="mt-4">Sécurité</h4>
     
-    <fieldset>
-		<div class="field-group">
-			<label for="roles">Groupes</label>
+	<div class="form-group">
+		<label for="roles">Groupes</label>
+		
+		<div>
 			<app:picklist options="${ roles }" idField="id" labelField="authority" selectId="roles" selectedOptions="${ userRoles }"/>
 		</div>
-	</fieldset>
+	</div>
     
-    
-	<br/>
 
-	<div class="buttons-container">
-				<div class="buttons">
-					<g:if test="${user.id }">
-						<g:actionSubmit value="Mettre à jour" action="saveEdit" class="aui-button aui-button-primary" />
-					</g:if>
-					<g:else>
-						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
-					</g:else>
-					
-					<g:link action="users" class="cancel">Annuler</g:link>
-				</div>
-			</div>
+	<div class="mt-4">
+		<g:if test="${user.id }">
+			<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />
+		</g:if>
+		<g:else>
+			<g:actionSubmit value="Créer" action="saveCreate" class="btn btn-primary" />
+		</g:else>
+		
+		<g:link action="users" class="btn btn-link">Annuler</g:link>
+	</div>
 </g:form>

@@ -3,8 +3,6 @@
  */
 package smarthome.core;
 
-import grails.validation.ValidationErrors;
-
 
 /**
  * @author gregory
@@ -13,10 +11,10 @@ import grails.validation.ValidationErrors;
 public class SmartHomeException extends Exception {
 
 	private Object artefactObject;
-	private ValidationErrors errors;
+	private Object errors;
 
 
-	public ValidationErrors getErrors() {
+	public Object getErrors() {
 		return errors;
 	}
 
@@ -56,7 +54,7 @@ public class SmartHomeException extends Exception {
 	}
 	
 	
-	public SmartHomeException(String message, Object artefactObject, ValidationErrors errors) {
+	public SmartHomeException(String message, Object artefactObject, Object errors) {
 		this(message);
 		this.artefactObject = artefactObject;
 		this.errors = errors;

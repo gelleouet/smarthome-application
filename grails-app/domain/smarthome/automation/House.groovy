@@ -1,16 +1,16 @@
 package smarthome.automation
 
-import java.io.Serializable;
+import java.io.Serializable
 
-import smarthome.automation.deviceType.AbstractDeviceType;
-import smarthome.automation.deviceType.Compteur;
-import smarthome.automation.deviceType.Humidite;
-import smarthome.automation.deviceType.TeleInformation;
-import smarthome.automation.deviceType.Temperature;
-import smarthome.core.SmartHomeCoreConstantes;
-import smarthome.core.chart.GoogleChart;
-import smarthome.security.User;
-import grails.validation.Validateable;
+import smarthome.automation.deviceType.AbstractDeviceType
+import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.Humidite
+import smarthome.automation.deviceType.TeleInformation
+import smarthome.automation.deviceType.Temperature
+import smarthome.core.SmartHomeCoreConstantes
+import smarthome.core.chart.GoogleChart
+import smarthome.security.User
+import grails.validation.Validateable
 
 /**
  * Description des maisons d'un user
@@ -32,27 +32,29 @@ class House implements Serializable {
 	Device temperature
 	Device humidite
 	Chauffage chauffage
+	ECS ecs
 	String location
 	String latitude
 	String longitude
-	
-	
+
+
 	static belongsTo = [user: User]
-	
+
 	static hasMany = [modes: HouseMode, consos: HouseConso, weathers: HouseWeather]
-	
-    static constraints = {
+
+	static constraints = {
 		surface nullable: true
 		compteur nullable: true
 		compteurGaz nullable: true
 		temperature nullable: true
 		humidite nullable: true
 		chauffage nullable: true
+		ecs nullable: true
 		location nullable: true
 		latitude nullable: true
 		longitude nullable: true
-    }
-	
+	}
+
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "House_User_Idx"
@@ -62,8 +64,8 @@ class House implements Serializable {
 		latitude length: 32
 		longitude length: 32
 	}
-	
-	
+
+
 	/**
 	 * Recherche de la dernière conso
 	 * 
@@ -73,8 +75,8 @@ class House implements Serializable {
 		Date now = new Date()
 		return consoByYear(now[Calendar.YEAR])
 	}
-	
-	
+
+
 	/**
 	 * La conso d'une année (enregistrée au 1er janvier)
 	 * 
@@ -87,8 +89,8 @@ class House implements Serializable {
 			eq "dateConso", HouseConso.dateConsoForYear(year)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Création d'une nouvelle conso pour une année (enregistrée au 1er janvier)
 	 * 
@@ -97,11 +99,11 @@ class House implements Serializable {
 	 */
 	HouseConso newConsoForYear(int year) {
 		HouseConso conso = new HouseConso(house: this,
-			dateConso: HouseConso.dateConsoForYear(year))
-		return conso	
+		dateConso: HouseConso.dateConsoForYear(year))
+		return conso
 	}
-	
-	
+
+
 	/**
 	 * Retourne une instance du compteur électrique principal
 	 * 
@@ -110,11 +112,11 @@ class House implements Serializable {
 	AbstractDeviceType compteurElectriqueImpl() {
 		if (compteur) {
 			return compteur.newDeviceImpl()
-		}	
+		}
 		return null
 	}
-	
-	
+
+
 	/**
 	 * Retourne une instance du compteur gaz principal
 	 *
@@ -126,8 +128,8 @@ class House implements Serializable {
 		}
 		return null
 	}
-	
-	
+
+
 	/**
 	 * Retrouve le device équivalent dans ceux associés à la maison
 	 * 
@@ -136,7 +138,7 @@ class House implements Serializable {
 	 */
 	Device findSameDevice(Device device) {
 		def deviceImpl = device.newDeviceImpl()
-		
+
 		if (deviceImpl instanceof Temperature) {
 			return this.temperature
 		} else if (deviceImpl instanceof Humidite) {
@@ -146,21 +148,21 @@ class House implements Serializable {
 		} else if (deviceImpl instanceof Compteur) {
 			return this.compteurGaz
 		}
-		
-		return null	
+
+		return null
 	}
-	
-	
+
+
 	/**
 	 * Service météo d'une maison
 	 * 
 	 * @return
 	 */
 	HouseWeather weather() {
-		weathers?.size() ? weathers[0] : null	
+		weathers?.size() ? weathers[0] : null
 	}
-	
-	
+
+
 	/**
 	 * Création d'un chart global sur les consommations d'énergie d'une maison
 	 * 
@@ -168,6 +170,5 @@ class House implements Serializable {
 	 * @return
 	 */
 	GoogleChart chartConsommationEnergie(ChartCommand command) {
-		
-	} 
+	}
 }

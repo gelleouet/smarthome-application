@@ -1,23 +1,24 @@
 package smarthome.core
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
 @Secured("hasRole('ROLE_ADMIN')")
 class ScriptRuleController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'scriptRule'
-	
+	private static final String COMMAND_NAME = 'scriptRule'
+
 	ScriptRuleService scriptRuleService
-	
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Règles métier", navigation = NavigationEnum.configuration, header = "Administrateur")
+	@NavigableAction(label = "Règles métier", navigation = NavigationEnum.configuration,
+	header = "Système")
 	def scriptRules(String scriptRuleSearch) {
 		def scriptRules
 		int recordsTotal
@@ -25,10 +26,10 @@ class ScriptRuleController extends AbstractController {
 
 		if (scriptRuleSearch) {
 			def search = QueryUtils.decorateMatchAll(scriptRuleSearch)
-			
+
 			scriptRules = ScriptRule.createCriteria().list(pagination) {
 				ilike('ruleName', search)
-			}			
+			}
 			recordsTotal = scriptRules.totalCount
 		} else {
 			recordsTotal = ScriptRule.count()
@@ -39,8 +40,8 @@ class ScriptRuleController extends AbstractController {
 		// @see grails.scaffolding.templates.domainSuffix
 		respond scriptRules, model: [recordsTotal: recordsTotal, scriptRuleSearch: scriptRuleSearch]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -62,8 +63,8 @@ class ScriptRuleController extends AbstractController {
 		def editScriptRule = parseFlashCommand(COMMAND_NAME, new ScriptRule())
 		render(view: COMMAND_NAME, model: [(COMMAND_NAME): editScriptRule])
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *

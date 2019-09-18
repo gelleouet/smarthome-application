@@ -1,8 +1,8 @@
 package smarthome.security
 
-import java.util.Set;
+import java.util.Set
 
-import smarthome.core.SmartHomeCoreConstantes;
+import smarthome.core.SmartHomeCoreConstantes
 import grails.validation.Validateable
 
 
@@ -17,15 +17,14 @@ class User implements Serializable {
 
 	transient springSecurityService
 
-	static hasMany = [friends: UserFriend]
-	
 	String username	// sert aussi d'email qui sera la clé unique
 	String password
 	String nom
 	String prenom
 	String applicationKey
 	String telephoneMobile
-	
+	Profil profil
+
 	Date lastActivation
 	Date lastConnexion
 	boolean enabled = true
@@ -33,10 +32,12 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	boolean profilPublic
-	
-	
+
 	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)
 	def roles = []
+
+
+	static hasMany = [friends: UserFriend]
 
 	static transients = ['springSecurityService', 'roles']
 
@@ -48,6 +49,7 @@ class User implements Serializable {
 		roles bindable: true
 		telephoneMobile nullable: true
 		lastConnexion nullable: true
+		profil nullable: true
 	}
 
 	static mapping = {
@@ -57,35 +59,35 @@ class User implements Serializable {
 		username index: 'UserApplication_Username_Idx'
 		sort 'nom'
 	}
-	
-	
+
+
 	static {
 		grails.converters.JSON.registerObjectMarshaller(User) {
-//			it.properties.findAll {k,v -> 
-//				!(k in ['password', 'friends'])
-//			}
+			//			it.properties.findAll {k,v ->
+			//				!(k in ['password', 'friends'])
+			//			}
 			[id: it.id, username: it.username, nom: it.nom, prenom: it.prenom]
 		}
 	}
-	
+
 
 	Set<Role> getAuthorities() {
 		def roles = UserRole.createCriteria().list {
 			eq 'user', this
 			join 'role'
 		}
-		
+
 		return roles.collect { it.role }
 		//UserRole.findAllByPersonne(this).collect { it.role }
 	}
-	
-	
+
+
 	boolean hasRole(String role) {
 		this.getAuthorities().find {
 			it.authority == role
 		}
 	}
-	
+
 
 	def beforeInsert() {
 		encodePassword()
@@ -100,25 +102,25 @@ class User implements Serializable {
 	protected void encodePassword() {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
 	}
-	
+
 	String getPrenomNom() {
 		return "$prenom $nom"
 	}
-	
+
 	String getNomPrenom() {
 		return "$nom $prenom"
 	}
-	
+
 	String getInitiale() {
 		String initiale = prenom[0].toUpperCase()
 		String[] tokens = nom.split(" ")
-		
+
 		if (tokens.length > 1) {
 			initiale += tokens[0][0].toUpperCase() + tokens[1][0].toUpperCase()
 		} else if (tokens) {
 			initiale += tokens[0][0].toUpperCase()
 		}
-		
+
 		return initiale
 	}
 }

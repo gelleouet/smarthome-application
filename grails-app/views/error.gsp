@@ -1,6 +1,6 @@
 <html>
 <head>
-	<meta name="layout" content="anonymous">
+	<meta name="layout" content="main">
 </head>
 <body>
 	<g:if test="${ !error }">
@@ -9,7 +9,7 @@
 		</g:set>
 	</g:if>
 	
-	<g:applyLayout name="applicationContent">
+	<g:applyLayout name="page-focus">
 		<g:link uri="/">Revenir à la page d'accueil</g:link>
 		
 		<g:if env="development">

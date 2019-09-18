@@ -7,7 +7,7 @@
 
 <body onload="onLoadDeviceEdit()">
 	
-	<g:applyLayout name="page-settings" model="[titre: 'Objets connectés', navigation: 'automation']">
+	<g:applyLayout name="page-settings" model="[titre: 'Objets connectés', navigation: 'Smarthome']">
 		
 		<div class="row mb-4">
 			<div class="col-8">

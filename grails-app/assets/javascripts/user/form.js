@@ -47,3 +47,15 @@ function initDateTimePicker() {
 		format: 'd/m/Y H:i'
 	})
 }
+
+
+function initPickList() {
+	$(".picklist").pickList({
+		sourceListLabel:	"Disponibles",
+		targetListLabel:	"Ajoutés",
+		addClass: "pick-button",
+		addAllClass: "pick-button",
+		removeClass: "pick-button",
+		removeAllClass: "pick-button",
+	});
+}

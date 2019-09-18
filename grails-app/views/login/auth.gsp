@@ -56,30 +56,7 @@
 			</div> <!-- div.col -->
 			
 			<div class="col">
-				<div class="card">
-					<div class="card-header">
-						<h4 class="card-title">Le Grand Défi Energie 2019</h4>
-						<h6 class="card-subtitle text-muted">ALEC du pays de Rennes</h6>
-					</div>
-					
-					<div class="card-body">
-						<div class="text-center">
-							<a href="https://www.alec-rennes.org/legranddefienergie2019/" target="granddefi">
-								<asset:image src="grand-defi.gif"/>
-								Plus d'informations
-							</a>
-							
-						</div>
-						
-						<div class="text-center mt-4">
-							<asset:image src="grand-defi-partenaire.png"/>
-						</div>
-						
-						<div class="text-center mt-4">
-							<g:link action="account" controller="register" class="btn btn-primary">Je participe au défi</g:link>
-						</div>
-					</div>
-				</div>
+				<g:render template="/grandDefi/plaquette" model="[withAccountButton: true]"/>
 			</div> <!-- div.col -->
 			
 		</div> <!-- div.row -->

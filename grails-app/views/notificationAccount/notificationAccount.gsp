@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Services', navigation: 'user']">
+	<g:applyLayout name="page-settings" model="[titre: 'Services', navigation: 'Compte']">
 		
 		<h4 class="mb-4">${ notificationAccount.id ? 'Service : ' + notificationAccount.notificationAccountSender.libelle : 'Nouveau service' }</h4>
 		

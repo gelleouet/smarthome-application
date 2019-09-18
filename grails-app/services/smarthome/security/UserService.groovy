@@ -1,13 +1,13 @@
 package smarthome.security
 
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional
 
 import smarthome.core.AbstractService
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.QueryUtils;
+import smarthome.core.AsynchronousMessage
+import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
-import smarthome.security.ChangePasswordCommand;
-import smarthome.security.User;
+import smarthome.security.ChangePasswordCommand
+import smarthome.security.User
 
 
 /**
@@ -34,30 +34,30 @@ class UserService extends AbstractService {
 		return User.createCriteria().list(pagination) {
 			if (command.search) {
 				def search = QueryUtils.decorateMatchAll(command.search)
-				
+
 				or {
 					ilike 'nom', search
 					ilike 'prenom', search
 					ilike 'username', search
 				}
 			}
-			
+
 			if (command.profilPublic != null) {
-				eq 'profilPublic', command.profilPublic 
+				eq 'profilPublic', command.profilPublic
 			}
-			
+
 			if (command.notInIds) {
 				not {
 					'in' 'id', command.notInIds
 				}
 			}
-			
-			order "prenom" 	
-			order "nom" 	
+
+			order "prenom"
+			order "nom"
 		}
 	}
-	
-	
+
+
 	/**
 	 * Authentification d'une application
 	 * 
@@ -68,23 +68,23 @@ class UserService extends AbstractService {
 	User authenticateApplication(String userName, String applicationId) throws SmartHomeException {
 		if (!userName || !applicationId) {
 			throw new SmartHomeException("Invalid username or applicationId !")
-		} 
-		
+		}
+
 		// recherche user
 		User user = User.findByUsername(userName)
-		
+
 		if (!user) {
 			throw new SmartHomeException("Invalid username !")
 		}
-		
+
 		if (user.applicationKey != applicationId) {
 			throw new SmartHomeException("Invalid applicationId !")
 		}
-		
+
 		return user
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement du profil. 
 	 * Détecte si changement de username (ie email) pour envoyer un mail de confirmation.
@@ -97,10 +97,10 @@ class UserService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	def save(User user, boolean saveRole) throws SmartHomeException {
 		log.info "Enregistrement utilisateur ${user.username}"
-		
+
 		// cas spécial si création
 		// mise à jour des champs que l'utilisateur ne peut pas modifier
-		if (! user.id) {
+		if (! user.id && !user.password) {
 			user.lastActivation = new Date()
 			user.passwordExpired = true
 			user.password = UUID.randomUUID() // création d'un password fictif en attente du déblocage par l'utilisateur
@@ -110,18 +110,18 @@ class UserService extends AbstractService {
 		if (!user.save()) {
 			throw new SmartHomeException("Erreur enregistrement utilisateur", user)
 		}
-		
+
 		// enregistrement des groupes : on efface tout et on remet les nouveaux
 		if (saveRole) {
 			UserRole.removeAll(user)
-			
+
 			if (user.roles) {
 				user.roles.each {
 					UserRole.create(user, Role.read(it.toLong()))
 				}
 			}
 		}
-		
+
 		return user
 	}
 
@@ -137,7 +137,7 @@ class UserService extends AbstractService {
 	@AsynchronousMessage(routingKey = 'smarthome.security.resetUserPassword')
 	def changePassword(ChangePasswordCommand command) throws SmartHomeException {
 		log.info "Changement mot de passe user ${command.username}"
-		
+
 		def user = User.findByUsername(command.username)
 
 		if (!user) {
@@ -155,11 +155,11 @@ class UserService extends AbstractService {
 		if (!user.save()) {
 			throw new SmartHomeException("Erreur changement mot de passe", command)
 		}
-		
+
 		return user
 	}
-	
-	
+
+
 	/**
 	 * L'utilisateur est-il un administrateur de plusieurs utilisateurs
 	 * 
@@ -167,10 +167,10 @@ class UserService extends AbstractService {
 	 * @return
 	 */
 	boolean isAdminUsers(User user) {
-		return UserAdmin.findByAdmin(user)	
+		return UserAdmin.findByAdmin(user)
 	}
-	
-	
+
+
 	/**
 	 * Liste les users d'un admin
 	 *  
@@ -181,6 +181,6 @@ class UserService extends AbstractService {
 		return UserAdmin.executeQuery("""SELECT user FROM UserAdmin userAdmin
 			JOIN userAdmin.user user
 			WHERE userAdmin.admin.id = :adminId
-			ORDER BY user.prenom, user.nom""", [adminId: admin.id])	
+			ORDER BY user.prenom, user.nom""", [adminId: admin.id])
 	}
 }

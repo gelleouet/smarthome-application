@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Services', navigation: 'user']">
+	<g:applyLayout name="page-settings" model="[titre: 'Services', navigation: 'Compte']">
 	
 		<div class="row">
 			<div class="col-8">

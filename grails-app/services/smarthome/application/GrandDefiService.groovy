@@ -3,20 +3,20 @@
  */
 package smarthome.application
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.springframework.transaction.annotation.Transactional;
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.transaction.annotation.Transactional
 
-import smarthome.api.DataConnectService;
-import smarthome.application.granddefi.RegisterCompteurCommand;
-import smarthome.automation.Device;
-import smarthome.automation.DeviceService;
-import smarthome.automation.DeviceType;
-import smarthome.automation.HouseService;
-import smarthome.automation.NotificationAccountService;
-import smarthome.automation.deviceType.TeleInformation;
-import smarthome.core.AbstractService;
-import smarthome.core.SmartHomeException;
-import smarthome.security.User;
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import smarthome.application.granddefi.AccountCommand
+import smarthome.automation.House
+import smarthome.automation.HouseService
+import smarthome.core.AbstractService
+import smarthome.core.AsynchronousWorkflow
+import smarthome.core.SmartHomeException
+import smarthome.security.RegistrationCode
+import smarthome.security.Role
+import smarthome.security.User
+import smarthome.security.UserService
 
 /**
  * @author gregory.elleouet@gmail.com<Grégory Elléoouet>
@@ -24,15 +24,12 @@ import smarthome.security.User;
  */
 class GrandDefiService extends AbstractService {
 
-	private static final String LABEL_COMPTEUR_ELEC_MANUEL = "Compteur électrique (non connecté)"
-	
 	HouseService houseService
-	DeviceService deviceService
-	NotificationAccountService notificationAccountService
-	DataConnectService dataConnectService
 	GrailsApplication grailsApplication
-	
-	
+	UserService userService
+	LinkGenerator grailsLinkGenerator
+
+
 	/**
 	 * Création du modèle pour l'affichage des consommations
 	 * 
@@ -42,62 +39,65 @@ class GrandDefiService extends AbstractService {
 	 */
 	Map modelConsommation(User user) throws SmartHomeException {
 		Map model = [user: user]
-		
+
 		model.house = houseService.findDefaultByUser(user)
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
-	 * Création du modèle pour la gestion des compteurs
-	 * 
-	 * @param model
+	 * Création d'un compte
+	 *
+	 * @param username
 	 * @return
 	 */
-	Map modelCompteur(User user) throws SmartHomeException {
-		Map model = [user: user]
-		
-		model.house = houseService.findDefaultByUser(user)
-		
-		// recherche des services associés
-		model.dataConnect = notificationAccountService.findByUserAndLibelleSender(user,
-				grailsApplication.config.enedis.appName)
-		
-		// recherche du compteur connecté
-		if (model.dataConnect) {
-			model.dataConnectDevice = dataConnectService.getDeviceFromConfig(model.dataConnect)
-		}
-		
-		// si pas de compteur connecté, recherche du compteur non connecté
-		if (!model.dataConnectDevice) {
-			model.compteurElecDevice = deviceService.findByLabel(user, LABEL_COMPTEUR_ELEC_MANUEL)
-		}
-		
-		return model
-	}
-	
-	
-	/**
-	 * Enregistrement d'un nouveau compteur non connecté
-	 * 
-	 * @param command
-	 * @throws SmartHomeException
-	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void registerCompteurElec(RegisterCompteurCommand command) throws SmartHomeException {
-		Device compteur = new Device(
-			user: command.user,
-			unite: 'W',
-			mac: 'compteur_elec',
-			label: LABEL_COMPTEUR_ELEC_MANUEL,
-			deviceType: DeviceType.findByImplClass(TeleInformation.name))
-		
-		// ajout ou update config device
-		compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
-		
-		deviceService.save(compteur)
+	@AsynchronousWorkflow("registerService.createAccount")
+	RegistrationCode createAccount(AccountCommand account) throws SmartHomeException {
+		log.info "Demande création compte ${account.username}"
+
+		// on vérifie que l'adresse n'est pas déjà prie
+		User user = User.findByUsername(account.username)
+
+		if (user) {
+			throw new SmartHomeException("Un compte existe déjà avec cette adresse !", account)
+		}
+
+		// création d'un code d'enregistrement
+		RegistrationCode registrationCode = new RegistrationCode(username: account.username)
+		registrationCode.serverUrl = grailsLinkGenerator.link(controller: 'register', action: 'confirmAccount',
+		params: [username: account.username, token: registrationCode.token], absolute: true)
+
+		if (!registrationCode.save()) {
+			throw new SmartHomeException("Erreur création d'un token d'activation !", account)
+		}
+
+		// création d'un user avec compte bloqué en attente déblocage
+		// et attribution du role GRAND_DEFI
+		user = new User(username: account.username, password: account.newPassword, prenom: account.prenom,
+		nom: account.nom, lastActivation: new Date(), accountLocked: true,
+		applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
+		profil: account.profil)
+		user.roles << Role.findByAuthority('ROLE_GRAND_DEFI').id
+		try {
+			userService.save(user, true)
+		} catch (SmartHomeException ex) {
+			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
+			throw new SmartHomeException(ex.message, account, user)
+		}
+
+		// création d'une maison par défaut
+		try {
+			houseService.bindDefault(user, [chauffage: account.chauffage,
+				ecs: account.ecs, surface: account.surface,
+				location: account.commune.libelle + ", France"])
+		} catch (SmartHomeException ex) {
+			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
+			throw new SmartHomeException(ex.message, account)
+		}
+
+		return registrationCode
 	}
+
 }
-
-

@@ -28,13 +28,6 @@
 	
 	<div class="form-group">
 		<label>
-			Device ID
-		</label>
-		<g:textField name="jsonConfig.device_id" value="${ notificationAccount?.jsonConfig?.device_id }" class="form-control"/>
-	</div>
-	
-	<div class="form-group">
-		<label>
 			Last consumption_load_curve
 		</label>
 		<g:textField name="jsonConfig.last_consumption_load_curve" value="${ notificationAccount?.jsonConfig?.last_consumption_load_curve }" class="form-control"/>

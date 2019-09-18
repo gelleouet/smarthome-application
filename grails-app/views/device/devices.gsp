@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Objets connectés', navigation: 'automation']">
+	<g:applyLayout name="page-settings" model="[titre: 'Objets connectés', navigation: 'Smarthome']">
 	
 		<div class="row">
 			<div class="col-8">

@@ -1,14 +1,20 @@
 package smarthome.application
 
-import smarthome.api.DataConnectService;
-import smarthome.application.granddefi.RegisterCompteurCommand;
-import smarthome.automation.DeviceService;
-import smarthome.automation.HouseService;
-import smarthome.automation.NotificationAccountSenderService;
-import smarthome.automation.NotificationAccountService;
-import smarthome.core.AbstractController;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.api.DataConnectService
+import smarthome.application.granddefi.AccountCommand
+import smarthome.application.granddefi.RegisterCompteurCommand
+import smarthome.automation.Chauffage
+import smarthome.automation.DeviceService
+import smarthome.automation.ECS
+import smarthome.automation.HouseService
+import smarthome.automation.NotificationAccountSenderService
+import smarthome.automation.NotificationAccountService
+import smarthome.common.Commune
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
+import smarthome.security.Profil
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -22,65 +28,52 @@ import grails.plugin.springsecurity.annotation.Secured
 class GrandDefiController extends AbstractController {
 
 	GrandDefiService grandDefiService
-	
-	
+
+
+	/**
+	 * Affichage formulaire création d'un compte
+	 * 
+	 * @return
+	 */
+	@Secured("permitAll")
+	def account() {
+		def model = [:]
+		model.communes = Commune.list()
+		model.profils = Profil.list()
+		model.chauffages = Chauffage.list()
+		model.ecs = ECS.list()
+		model.command = parseFlashCommand('command', new AccountCommand())
+
+		render(view: 'account', model: model)
+	}
+
+
+	/**
+	 * Création d'un compte Grand Défi
+	 * 
+	 * @param command
+	 * @return
+	 */
+	@Secured("permitAll")
+	@ExceptionNavigationHandler(actionName = "account", modelName = "command")
+	def createAccount(AccountCommand command) {
+		checkErrors(this, command)
+		grandDefiService.createAccount(command)
+		setInfo "Votre compte est créé. Veuillez consulter vos mails pour l'activer."
+		forward(controller: 'login', action: 'auth')
+	}
+
+
 	/**
 	 * Affichage des consommations élec et gaz
 	 * @return
 	 */
 	@NavigableAction(label = "Mes consommations", navigation = NavigationEnum.navbarPrimary,
-		header = "Grand Défi", icon = "bar-chart")
+	header = "Grand Défi", icon = "bar-chart")
 	def consommation() {
 		def user = authenticatedUser
 		def model = grandDefiService.modelConsommation(user)
-		
+
 		render(view: 'consommation', model: model)
-	}
-	
-	
-	/**
-	 * Affichage page config/résumé des compteurs
-	 * 
-	 * @return
-	 */
-	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary,
-		header = "Grand Défi", icon = "tool")
-	def compteur() {
-		def user = authenticatedUser
-		def model = grandDefiService.modelCompteur(user)
-		
-		render(view: 'compteur', model: model)
-	}
-	
-	
-	/**
-	 * Enregistrement d'un compteur (elec, gaz, etc...)
-	 * 
-	 * @param command
-	 * @return
-	 */
-	def registerCompteur(RegisterCompteurCommand command) {
-		command.user = authenticatedUser
-		
-		if (command.compteurType == 'elec') {
-			if (command.compteurModel == 'Linky') {
-				redirect(action: 'dataconnect')
-				return
-			} else {
-				grandDefiService.registerCompteurElec(command)
-			}
-		}
-		
-		redirect(action: 'compteur')
-	}
-	
-	
-	/**
-	 * Consentement DataConnect
-	 * 
-	 * @return
-	 */
-	def dataconnect() {
-		render(view: 'dataconnect')
 	}
 }

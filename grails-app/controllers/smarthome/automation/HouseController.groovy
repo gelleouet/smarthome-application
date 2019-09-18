@@ -26,6 +26,7 @@ class HouseController extends AbstractController {
 	def templateEditByUser() {
 		def user = params.user
 		def house = houseService.findDefaultByUser(user)
+
 		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
 			deviceTypeClass: TeleInformation.name]))
 		def compteursGaz = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
@@ -148,15 +149,15 @@ class HouseController extends AbstractController {
 	 */
 	def syntheseConsommationMonth(House house) {
 		def user = authenticatedUser
-		
+
 		if (!house?.id) {
 			house = houseService.findDefaultByUser(user)
 		}
-		
+
 		render(template: 'syntheseConsommationMonth', model: [house: house])
 	}
-	
-	
+
+
 	/**
 	 * Rendu de la synthese consommation de l'année
 	 *
@@ -164,11 +165,11 @@ class HouseController extends AbstractController {
 	 */
 	def syntheseConsommationYear(House house) {
 		def user = authenticatedUser
-		
+
 		if (!house?.id) {
 			house = houseService.findDefaultByUser(user)
 		}
-		
+
 		render(template: 'syntheseConsommationYear', model: [house: house])
 	}
 

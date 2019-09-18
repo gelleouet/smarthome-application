@@ -603,8 +603,8 @@ class DeviceService extends AbstractService {
 			join 'deviceType'
 		}
 	}
-	
-	
+
+
 	/**
 	 * Recherche d'un objet par son nom si celui-ci a été par convention (nommage automatique
 	 * par le système). C'est le seul cas car ce champ n'est pas unique par user
@@ -621,12 +621,28 @@ class DeviceService extends AbstractService {
 			eq 'user', user
 			join 'deviceType'
 		}
-		
+
 		if (devices.size() > 1) {
 			throw new SmartHomeException("Objet ${label} en doublon !")
 		}
-		
+
 		return devices ? devices[0] : null
+	}
+
+
+	/**
+	 * Recherche d'un objet par son identifiant mac
+	 *
+	 * @param user
+	 * @param label
+	 * @return
+	 */
+	Device findByMac(User user, String mac) throws SmartHomeException {
+		return Device.createCriteria().get {
+			eq 'mac', mac
+			eq 'user', user
+			join 'deviceType'
+		}
 	}
 
 

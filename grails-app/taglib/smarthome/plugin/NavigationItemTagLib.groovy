@@ -1,6 +1,6 @@
 package smarthome.plugin
 
-import smarthome.plugin.NavigationItemUtils;
+import smarthome.plugin.NavigationItemUtils
 
 /**
  * Librairie tags GSP pour l'utilisation des plugins
@@ -13,19 +13,14 @@ class NavigationItemTagLib {
 
 	/** Dependency injection for webInvocationPrivilegeEvaluator. */
 	def webInvocationPrivilegeEvaluator
-	
+
 	/** Dependency injection for springSecurityService. */
 	def springSecurityService
-	
+
 	//static defaultEncodeAs = [taglib:'html']
 
 	// les tags renvoyant directement une valeur pouvant être utilisé comme fonction
-	static returnObjectForTags = [
-		'isCurrentItem',
-		'isChildCurrentItem',
-		'currentItem',
-		'navigationItems'
-	]
+	static returnObjectForTags = ['isCurrentItem', 'isCurrentItemController', 'isChildCurrentItem', 'currentItem', 'navigationItems']
 
 
 	/**
@@ -42,6 +37,19 @@ class NavigationItemTagLib {
 
 
 	/**
+	 * Renvoit vrai si l'action en cours correspond à l'item passé en paramètre.
+	 * Permet de rajouter par exemple un style pour sélectionner un menu correspond à l'action en cours
+	 *
+	 * @attr item  REQUIRED un objet @see NavigationItem
+	 *
+	 * @return true si item == action courante
+	 */
+	def isCurrentItemController = { attrs, body ->
+		attrs.item.controller == controllerName
+	}
+
+
+	/**
 	 * Renvoit vrai si l'action en cours est un item enfant (ou le même) de l'item passé en paramètre
 	 * Permet de rajouter par exemple un style pour sélectionner un menu correspond à l'action en cours
 	 * 
@@ -52,8 +60,8 @@ class NavigationItemTagLib {
 	def isChildCurrentItem = { attrs, body ->
 		NavigationItemUtils.findChildByControllerAction(attrs.item, controllerName) != null
 	}
-	
-	
+
+
 	/**
 	 * Renvoie l'élément courant à partir de la liste globale
 	 * 
@@ -65,8 +73,8 @@ class NavigationItemTagLib {
 		def item = NavigationItemUtils.findChildByControllerAction(attrs.item, controllerName)
 		return item
 	}
-	
-	
+
+
 	/**
 	 * Renvoit les menus de navigation en fonction des permissions de l'utilisateur
 	 * 
@@ -74,12 +82,12 @@ class NavigationItemTagLib {
 	 */
 	def navigationItems = { attrs, body ->
 		def sections
-		
+
 		if (request.navigationItems != null) {
 			sections = request.navigationItems
 		} else {
 			sections = [:]
-	
+
 			// Scanne tous les controllers
 			for (controller in grailsApplication.controllerClasses) {
 				// Scanne toutes les méthodes avec annotation NavigableAction ou NavigableActions
@@ -93,16 +101,16 @@ class NavigationItemTagLib {
 					}
 				}
 			}
-			
+
 			// met le résultat dans la request pour d'autres appels
 			request.navigationItems = sections
 		}
-		
+
 		// renvoit les items de la catégory demandée
 		return sections[(attrs.category)] ?: new NavigationItem()
 	}
-	
-	
+
+
 	/**
 	 * Vérifie les droits d'accès à l'action de l'utilisateur connecté
 	 * 
@@ -115,5 +123,5 @@ class NavigationItemTagLib {
 		def url = g.createLink(controller: controller, action: action, base: '/').toString()
 		return webInvocationPrivilegeEvaluator.isAllowed(request.contextPath, url, 'GET', auth)
 	}
-	
+
 }

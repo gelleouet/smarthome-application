@@ -2,27 +2,27 @@ package smarthome.automation
 
 
 
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
 @Secured("hasRole('ROLE_ADMIN')")
 class DeviceTypeController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'deviceType'
-	
+	private static final String COMMAND_NAME = 'deviceType'
+
 	DeviceTypeService deviceTypeService
-	
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Catalogue", navigation = NavigationEnum.configuration, header = "Administrateur")
+	@NavigableAction(label = "Catalogue", navigation = NavigationEnum.configuration, header = "Système")
 	def deviceTypes(String deviceTypeSearch) {
 		def deviceTypes
 		int recordsTotal
@@ -30,7 +30,7 @@ class DeviceTypeController extends AbstractController {
 
 		if (deviceTypeSearch) {
 			def search = QueryUtils.decorateMatchAll(deviceTypeSearch)
-			
+
 			def query = DeviceType.where {
 				libelle =~ search
 			}
@@ -45,8 +45,8 @@ class DeviceTypeController extends AbstractController {
 		// @see grails.scaffolding.templates.domainSuffix
 		respond deviceTypes, model: [recordsTotal: recordsTotal, deviceTypeSearch: deviceTypeSearch]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -68,8 +68,8 @@ class DeviceTypeController extends AbstractController {
 		def editDeviceType = parseFlashCommand(COMMAND_NAME, new DeviceType())
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDeviceType]))
 	}
-	
-	
+
+
 	/**
 	 * Prépare le model pour les ecrans de création et modification
 	 *
@@ -77,16 +77,16 @@ class DeviceTypeController extends AbstractController {
 	 */
 	def fetchModelEdit(userModel) {
 		def model = [:]
-		
+
 		model.deviceTypeConfig = userModel.deviceType?.config()
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *
@@ -113,8 +113,8 @@ class DeviceTypeController extends AbstractController {
 		deviceTypeService.save(deviceType, params.configuration)
 		redirect(action: COMMAND_NAME + 's')
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param implClass
@@ -125,5 +125,4 @@ class DeviceTypeController extends AbstractController {
 		render(template: deviceType.newDeviceType().viewForm(), model: [device: device,
 			user: authenticatedUser])
 	}
-	
 }

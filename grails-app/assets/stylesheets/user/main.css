@@ -776,6 +776,6 @@ table.table tr:first-child th {
 	margin-top: 15px;	
 }
 
-.custom-navbar {
-	background-color: #354052;
+input.form-control.small {
+	width: 175px;
 }

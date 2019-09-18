@@ -1,15 +1,15 @@
 package smarthome.security
 
-import smarthome.security.UserService;
-import grails.plugin.springsecurity.annotation.Secured;
-import smarthome.automation.DeviceService;
-import smarthome.automation.HouseService;
-import smarthome.automation.ModeService;
+import smarthome.security.UserService
+import grails.plugin.springsecurity.annotation.Secured
+import smarthome.automation.DeviceService
+import smarthome.automation.HouseService
+import smarthome.automation.ModeService
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
-import smarthome.security.User;
+import smarthome.security.User
 /**
  * Controller gestion utilisateur
  * 
@@ -30,15 +30,15 @@ class ProfilController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Profil", navigation = NavigationEnum.user, defaultGroup = true,
-		header = "Compte")
+	@NavigableAction(label = "Profil", navigation = NavigationEnum.configuration,
+	defaultGroup = true, header = "Compte", icon = "user")
 	def profil() {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
-		render(view: 'profil', model: [user: user])
+		render(view: 'profil', model: [user: user, profils: Profil.list()])
 	}
-	
-	
+
+
 	/**
 	 * Widget profil
 	 * 
@@ -50,9 +50,9 @@ class ProfilController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		render(template: 'widgetProfil', model: [user: user, house: house])
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Dialog profil publique d'un user
 	 * 
@@ -63,7 +63,7 @@ class ProfilController extends AbstractController {
 		def house = houseService.findDefaultByUser(user)
 		def userDeviceCount = deviceService.countDevice(user)
 		def sharedDeviceCount = deviceService.listSharedDeviceId(user.id).size()
-		render(template: 'dialogProfilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount, 
+		render(template: 'dialogProfilPublic', model: [user: user, house: house, userDeviceCount: userDeviceCount,
 			sharedDeviceCount: sharedDeviceCount, viewOnly: true])
 	}
 
@@ -78,21 +78,32 @@ class ProfilController extends AbstractController {
 	def saveProfil(ProfilCommand command) {
 		checkErrors(this, command.user)
 		boolean syncCoords = command.house.isDirty('location')
-		
+
 		command.house.user = command.user
 		houseService.save(command.house)
-		
+
 		if (syncCoords) {
 			houseService.asyncGeocode(command.house)
 		}
-		
+
 		// on ne mappe que les infos "non sensibles" (ie pas le mot de passe)
 		// @see constraint bindable User
 		userService.save(command.user, false)
-		
+
 		modeService.saveModes(command.modes, command.user)
-		
+
 		redirect(action: 'profil')
 	}
 
+
+	/**
+	 * Ajax render profil form
+	 * 
+	 * @param profil
+	 * @return
+	 */
+	@Secured("permitAll()")
+	def formProfil(Profil profil) {
+		render(template: "/profil/${ profil.view }")
+	}
 }

@@ -1,43 +1,43 @@
 package smarthome.automation
 
-import grails.converters.JSON;
+import grails.converters.JSON
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.core.SmartHomeException
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
 
 @Secured("isAuthenticated()")
 class NotificationController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'notification'
-	
+	private static final String COMMAND_NAME = 'notification'
+
 	NotificationService notificationService
 	NotificationAccountService notificationAccountService
-	
-	
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Notifications", navigation = NavigationEnum.user, header = "Compte")
+	@NavigableAction(label = "Notifications", navigation = NavigationEnum.configuration, header = "Compte")
 	def notifications(NotificationCommand command) {
 		command.user = authenticatedUser
-		def notifications = notificationService.search(command, this.getPagination([:])) 
+		def notifications = notificationService.search(command, this.getPagination([:]))
 		def recordsTotal = notifications.totalCount
 
 		// notifications est accessible depuis le model avec la variable notification[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
 		respond notifications, model: [recordsTotal: recordsTotal, command: command]
 	}
-	
-	
+
+
 	/**
 	 * Edition
 	 *
@@ -51,8 +51,8 @@ class NotificationController extends AbstractController {
 		}
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editNotification]))
 	}
-	
-	
+
+
 	/**
 	 * Exécution pour test
 	 * 
@@ -74,17 +74,17 @@ class NotificationController extends AbstractController {
 	 */
 	def fetchModelEdit(userModel) {
 		def model = [:]
-		
+
 		// Compléter le model
 		model.notificationAccounts = notificationAccountService.listForUser(authenticatedUser)
-		
+
 		// on remplit avec les infos du user
 		model << userModel
-		
+
 		return model
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement modification
 	 *

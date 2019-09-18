@@ -44,19 +44,21 @@
         	
         	<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-toggle="dropdown">
         		<asset:image src="useravatar.png" class="avatar img-fluid rounded-circle mr-1"/>
-        		<span class="text-dark">${ loggedInUser.prenom }</span>
+        		<span class="text-dark">${ loggedInUser.initiale }</span>
             </a>
             
+            <g:set var="headers" value="${ app.navigationItems(category: 'configuration')?.subitems?.groupBy({ it.header }) }"/>
+            
             <div class="dropdown-menu dropdown-menu-right">
-				<g:link class="dropdown-item" controller="profil" action="profil"><i class="align-middle mr-1" data-feather="user"></i> Compte</g:link>
-				<g:link class="dropdown-item" controller="device" action="devices"><i class="align-middle mr-1" data-feather="home"></i> Smarthome</g:link>
-				<div class="dropdown-divider"></div>
-				<sec:ifAllGranted roles="ROLE_SUPERVISION">
-               		<g:link class="dropdown-item" controller="supervision" action="supervision"><i class="align-middle mr-1" data-feather="users"></i> Supervision</g:link>	
-               	</sec:ifAllGranted>
-               	<sec:ifAllGranted roles="ROLE_ADMIN">
-					<g:link class="dropdown-item" controller="user" action="users"><i class="align-middle mr-1" data-feather="settings"></i> Système</g:link>
-				</sec:ifAllGranted>
+            	<div class="dropdown-header">${ loggedInUser.username }</div>
+            	
+            	<g:each var="header" in="${ headers.sort{ it.key } }">
+            		<g:set var="item" value="${ header.value.find{ it.defaultGroup } }"/>
+            		<g:if test="${ item }">
+						<g:link class="dropdown-item" controller="${ item.controller }" action="${ item.action }"><app:icon class="align-middle mr-1" name="${ item.icon }"/> ${ header.key }</g:link>
+					</g:if>
+				</g:each>
+				
 				<div class="dropdown-divider"></div>
 				<sec:ifSwitched>
                 	<g:link action="exitSwitchUser" controller="user" class="dropdown-item"><i class="align-middle mr-1" data-feather="log-out"></i> Revenir à votre session</g:link>

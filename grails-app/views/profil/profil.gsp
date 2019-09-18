@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Profil', navigation: 'user']">
+	<g:applyLayout name="page-settings" model="[titre: 'Profil', navigation: 'Compte']">
 	
 		<g:form name="profil-form" controller="profil" method="post">
 			
@@ -12,6 +12,11 @@
 	
 			<h4>Général</h4>
 			
+			<div class="form-group">
+				<label>Profil</label>
+				<g:select class="form-control" name="user.profil.id" from="${ profils }"
+           				optionKey="id" optionValue="libelle"  value="${ user.profil?.id }"/>
+			</div>
 			<div class="form-group required">
 				<label>Email</label>
 				<g:textField name="user.username" value="${user.username}" type="email"

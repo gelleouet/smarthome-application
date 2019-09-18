@@ -5,7 +5,7 @@
 
 <body>
 
-	<g:applyLayout name="page-settings" model="[titre: 'Mot de passe', navigation: 'user']">
+	<g:applyLayout name="page-settings" model="[titre: 'Mot de passe', navigation: 'Compte']">
 
 		<g:form method="post">
 			<g:hiddenField name="username" value="${command.username}" />

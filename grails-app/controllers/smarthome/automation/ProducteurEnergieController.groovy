@@ -20,7 +20,8 @@ class ProducteurEnergieController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Productions solaires", navigation = NavigationEnum.configuration, header = "Administrateur")
+	@NavigableAction(label = "Productions solaires", navigation = NavigationEnum.configuration,
+	header = "Système")
 	def producteurEnergies(ProducteurEnergieCommand command) {
 		def producteurEnergies = producteurEnergieService.search(command, this.getPagination([:]))
 		def recordsTotal = producteurEnergies.totalCount

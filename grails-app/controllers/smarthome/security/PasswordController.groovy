@@ -1,13 +1,13 @@
 package smarthome.security
 
-import smarthome.security.UserService;
-import grails.plugin.springsecurity.annotation.Secured;
+import smarthome.security.UserService
+import grails.plugin.springsecurity.annotation.Secured
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
-import smarthome.security.ChangePasswordCommand;
-import smarthome.security.User;
+import smarthome.security.ChangePasswordCommand
+import smarthome.security.User
 /**
  * Controller gestion utilisateur
  * 
@@ -25,7 +25,8 @@ class PasswordController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mot de passe", navigation = NavigationEnum.user, header = "Compte")
+	@NavigableAction(label = "Mot de passe", navigation = NavigationEnum.configuration,
+	header = "Compte")
 	def password() {
 		// plugin spring security add authenticatedUser property
 		def command = parseFlashCommand("command", new ChangePasswordCommand(username: authenticatedUser.username,

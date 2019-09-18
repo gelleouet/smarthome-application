@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Applications', navigation: 'user']">
+	<g:applyLayout name="page-settings" model="[titre: 'Applications', navigation: 'Compte']">
 	
 		<g:form class="form-inline" action="userApplications">
 			<fieldset>

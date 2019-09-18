@@ -3,7 +3,7 @@
 		<div class="sidebar-content">
 			<g:link class="sidebar-brand" uri="/">
 				<i class="align-middle" data-feather="home"></i>
-				<span class="align-middle">BeMyHomeSmart</span>
+				<span class="align-middle"><g:meta name="app.code"/></span>
 			</g:link>
 			
 			<g:applyLayout name="menu"/>
@@ -26,25 +26,43 @@
 				
 				<div class="row">
 					<div class="col-md-3 col-xl-2">
-						<div class="card">
-							<g:set var="items" value="${ app.navigationItems(category: navigation)?.subitems?.sort({ it.label }) }"/>
 						
-							<g:if test="${ items && items[0].header }">
-								<div class="card-header">
-									<h5 class="card-title mb-0">${ items[0].header }</h5>
-								</div>
+						<g:set var="items" value="${ app.navigationItems(category: 'configuration')?.subitems?.sort({ it.label }) }"/>
+						<g:set var="headers" value="${ app.navigationItems(category: 'configuration')?.subitems?.groupBy({ it.header }) }"/>
+						
+						<g:each var="header" in="${ headers.sort{ it.key } }">
+			            		
+			            	<g:if test="${ header.key != navigation }">
+			            		<g:set var="item" value="${ header.value.find{ it.defaultGroup } }"/>
+			            		
+			            		<g:if test="${ item }">
+			            			<div class="card">
+			            				<div class="list-group list-group-flush">
+											<g:link class="list-group-item list-group-item-action font-weight-bold" style="font-size:16px;" controller="${ item.controller }" action="${ item.action }"><app:icon name="${ item.icon }"/> ${ header.key }</g:link>
+										</div>
+									</div> <!-- div.card -->
+								</g:if>
 							</g:if>
+							
+							<g:else>
+								<div class="card">
+									<div class="card-header">
+										<h5 class="card-title mb-0">${ header.key }</h5>
+									</div>
+									
+									<div class="list-group list-group-flush">
+										<g:each var="item" in="${ header.value.sort{ it.label } }">
+											<g:link controller="${item.controller }"
+													action="${item.action }"
+													class="list-group-item list-group-item-action ${app.isCurrentItemController(item: item) ? 'active' : '' }">
+													${item.label }
+											</g:link>
+										</g:each>
+									</div> <!-- div.list-group -->
+								</div> <!-- div.card -->
+							</g:else>
+						</g:each>
 						
-							<div class="list-group list-group-flush">
-								<g:each var="item" in="${ items }">
-									<g:link controller="${item.controller }"
-											action="${item.action }"
-											class="list-group-item list-group-item-action ${app.isCurrentItem(item: item) ? 'active' : '' }">
-											${item.label }
-									</g:link>
-								</g:each>
-							</div> <!-- div.list-group -->
-						</div> <!-- div.card -->
 					</div>	<!-- div.col  -->
 					
 					<div class="col-md-9 col-xl-10">

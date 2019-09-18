@@ -3,10 +3,10 @@
  */
 package smarthome.security
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -19,32 +19,32 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class SmartHomeSecurityUtils {
 
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("(.+)@(.+)\\.(.+)")
-	
+
 	/**
 	 * Validator email
 	 * Le EmailValidator de commons-validator bloque certains noms de domaine
 	 */
 	static final emailValidator = { String email, command ->
 		Matcher emailMatcher = EMAIL_PATTERN.matcher(email)
-		
+
 		if (!emailMatcher.matches()) {
 			return "Adresse email non valide !"
 		}
-		
+
 		if (emailMatcher.group(1).length() < 2) {
 			return "Utilisateur email non valide !"
 		}
-		
-		if (emailMatcher.group(2).length() < 4) {
+
+		if (emailMatcher.group(2).length() < 2) {
 			return "Nom de domaine email non valide !"
 		}
-		
+
 		if (emailMatcher.group(3).length() < 2) {
 			return "Extension email non valide !"
 		}
 	}
-	
-	
+
+
 	/**
 	 * Validator pour le mot de passe
 	 */
@@ -118,5 +118,4 @@ class SmartHomeSecurityUtils {
 
 		password && password.matches(passValidationRegex)
 	}
-	
 }

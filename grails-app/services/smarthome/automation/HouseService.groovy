@@ -1,21 +1,21 @@
 package smarthome.automation
 
-import java.io.Serializable;
+import java.io.Serializable
 
-import grails.async.Promises;
-import grails.converters.JSON;
-import grails.plugin.cache.CachePut;
-import grails.plugin.cache.Cacheable;
+import grails.async.Promises
+import grails.converters.JSON
+import grails.plugin.cache.CachePut
+import grails.plugin.cache.Cacheable
 
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Transactional
 
-import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.SmartHomeException;
-import smarthome.rule.HouseEstimationConsoRuleService;
-import smarthome.rule.HouseSyntheseRuleService;
-import smarthome.security.User;
+import smarthome.core.AbstractService
+import smarthome.core.AsynchronousMessage
+import smarthome.core.SmartHomeException
+import smarthome.rule.HouseEstimationConsoRuleService
+import smarthome.rule.HouseSyntheseRuleService
+import smarthome.security.User
 
 
 class HouseService extends AbstractService {
@@ -24,8 +24,8 @@ class HouseService extends AbstractService {
 	HouseEstimationConsoRuleService houseEstimationConsoRuleService
 	DeviceShareService deviceShareService
 	GeocodingService geocodingService
-	
-	
+
+
 	/**
 	 * Maison par défaut de plusieurs users
 	 * 
@@ -36,18 +36,18 @@ class HouseService extends AbstractService {
 		if (!userList) {
 			return []
 		}
-		
+
 		return House.createCriteria().list() {
 			'in' 'user', userList
 			eq 'defaut', true
-			
+
 			for (String fetch : fetchs) {
 				join fetch
 			}
-		}	
+		}
 	}
-	
-	
+
+
 	/**
 	 * Tri les consommations selon un ordre
 	 * 
@@ -64,10 +64,10 @@ join fetch house.user as user
 where hc.dateConso=:dateConso and user in (:userList)
 and house.surface>0
 order by ((hc.kwHC + hc.kwHP + hc.kwBASE + hc.kwGaz) / house.surface) $order
-""", [dateConso: dateConso, userList: userList, max: limit])	
+""", [dateConso: dateConso, userList: userList, max: limit])
 	}
-	
-	
+
+
 	/**
 	 * répartition chauffage des maisons de plusieurs utilisateurs
 	 * 
@@ -82,25 +82,25 @@ join house.user as user
 join house.chauffage as chauffage
 where user in (:userList)
 group by chauffage.libelle
-""", [userList: userList])	
+""", [userList: userList])
 	}
-	
-	
+
+
 	List<HouseConso> listLastConsoByHouses(List<House> houses) {
 		if (!houses) {
 			return []
 		}
-		
+
 		Date dateConso = new Date().clearTime()
 		dateConso[Calendar.DAY_OF_YEAR] = 1
-		
+
 		return HouseConso.createCriteria().list() {
 			'in' 'house', houses
 			eq 'dateConso', dateConso
 		}
 	}
-	
-	
+
+
 	/**
 	 * Edition d'une maison
 	 *
@@ -111,8 +111,8 @@ group by chauffage.libelle
 	House edit(House house) {
 		return house
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement maison
 	 * 
@@ -127,11 +127,35 @@ group by chauffage.libelle
 			house.defaut = true
 			house.name = "Maison principale"
 		}
-		
+
 		return super.save(house)
 	}
-	
-	
+
+
+	/**
+	 * Création d'une maison par défaut si n'existe pas encore pour le user
+	 * et bind des propriétés
+	 *
+	 * @param house
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	House bindDefault(User user, Map binding) throws SmartHomeException {
+		House house = findDefaultByUser(user)
+
+		if (!house) {
+			house = new House(user: user, defaut: true, name: "Maison principale")
+		}
+
+		binding?.each { key, value ->
+			house[(key)] = value
+		}
+
+		return save(house)
+	}
+
+
 	/**
 	 * Synchro des positions GPS en fonction location
 	 * 
@@ -142,7 +166,7 @@ group by chauffage.libelle
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	House geocode(House house) throws SmartHomeException {
 		Map coords
-		
+
 		if (house.location) {
 			try {
 				coords = geocodingService.geocode(house.location)
@@ -150,7 +174,7 @@ group by chauffage.libelle
 				log.error "Geocoding ${house.location} : ${e.message}"
 			}
 		}
-		
+
 		if (coords) {
 			house.latitude = coords.latitude
 			house.longitude = coords.longitude
@@ -158,11 +182,11 @@ group by chauffage.libelle
 			house.latitude = null
 			house.longitude = null
 		}
-		
+
 		return this.save(house)
 	}
-	
-	
+
+
 	/**
 	 * Calcul position gps en mode asynchrone
 	 * 
@@ -173,13 +197,13 @@ group by chauffage.libelle
 		def promise = Promises.task {
 			geocode(house)
 		}
-		
+
 		promise.onComplete { result ->
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	 * Recherche de la maison principale d'un user
 	 * 
@@ -189,8 +213,8 @@ group by chauffage.libelle
 	House findDefaultByUser(User user) {
 		return House.findByUserAndDefaut(user, true)
 	}
-	
-	
+
+
 	/**
 	 * Recherche de toutes les maisons d'un user
 	 * @param user
@@ -199,8 +223,8 @@ group by chauffage.libelle
 	List<House> findAllByUser(User user) {
 		return House.findAllByUser(user)
 	}
-	
-	
+
+
 	/**
 	 * Calcul de la conso sur une année à partir du compteur associé
 	 * C'est une estimation car la conso est calculé sur une année complète et
@@ -215,18 +239,18 @@ group by chauffage.libelle
 		if (!house.attached) {
 			house.attach()
 		}
-		
+
 		// si pas de compteur associé, pas besoin de faire le calcul car pas de conso
 		if (!house?.compteur) {
 			return house
 		}
-		
+
 		houseEstimationConsoRuleService.execute(house, false, [year: year])
-		
-		return house	
+
+		return house
 	}
-	
-	
+
+
 	/**
 	 * Calcul des interprétations de la maison
 	 * 
@@ -237,8 +261,8 @@ group by chauffage.libelle
 	HouseSynthese calculSynthese(House house) throws SmartHomeException {
 		return houseSyntheseRuleService.execute(house, false)
 	}
-	
-	
+
+
 	/**
 	 * Change les modes d'une maison
 	 * 
@@ -249,35 +273,35 @@ group by chauffage.libelle
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	HouseCommand changeMode(HouseCommand command) throws SmartHomeException {
 		def existModes = []
-		
-		// supprime les modes non présents 
+
+		// supprime les modes non présents
 		command.house.modes?.removeAll { houseMode ->
 			Mode mode = command.modes.find {
 				it.id == houseMode.mode.id
 			}
-			
+
 			// si on l'a trouvé, on le flag car on ne devra pas le réinséré
 			if (mode) {
 				existModes << mode
 			}
-			
+
 			return !mode
 		}
-		
+
 		// supprime les modes déjà présents
 		command.modes.removeAll(existModes)
-		
+
 		// ajoute les modes sélectionnés
 		command.modes.each {
-			command.house.addToModes(new HouseMode(house: command.house, mode: it))	
+			command.house.addToModes(new HouseMode(house: command.house, mode: it))
 		}
-		
+
 		this.save(command.house)
-		
+
 		return command
 	}
-	
-	
+
+
 	/**
 	 * Liste les modes activés de la maison par défaut d'un user
 	 * 
@@ -285,11 +309,11 @@ group by chauffage.libelle
 	 */
 	List<Mode> defaultHouseModes(User user) {
 		House house = this.findDefaultByUser(user)
-		
+
 		return houseModes(house)
 	}
-	
-	
+
+
 	/**
 	 * Liste les modes activés d'une maison
 	 * 
@@ -299,11 +323,11 @@ group by chauffage.libelle
 		if (!house) {
 			return []
 		}
-		
+
 		return house.modes*.mode
 	}
-	
-	
+
+
 	/**
 	 * Classement DPE (A ... G)
 	 * @param house
@@ -314,10 +338,10 @@ group by chauffage.libelle
 		if (!house?.surface || !conso) {
 			return null
 		}
-		
+
 		DPE dpe = new DPE()
 		dpe.kwParAn = ((conso.kwHC + conso.kwHP + conso.kwBASE + conso.kwGaz) / house.surface) as Integer
-		
+
 		if (dpe.kwParAn <= 50) {
 			dpe.note = "A"
 		} else if (dpe.kwParAn > 50 && dpe.kwParAn <= 90) {
@@ -333,13 +357,13 @@ group by chauffage.libelle
 		} else {
 			dpe.note = "G"
 		}
-		
+
 		dpe.index = (dpe.note as char) - ('A' as char)
-		
+
 		return dpe
 	}
-	
-	
+
+
 	/**
 	 * Compte le nombre de maisons pour les calculs de conso
 	 * 
@@ -352,10 +376,10 @@ group by chauffage.libelle
 			projections {
 				count("id")
 			}
-		}	
+		}
 	}
-	
-	
+
+
 	/**
 	 * Les ids des maisons pour les calculs de conso
 	 * 
@@ -371,10 +395,10 @@ group by chauffage.libelle
 			order "id"
 			// transformer pour récupérer une map au lieu d'un tableau
 			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
-		}	
+		}
 	}
-	
-	
+
+
 	/**
 	 * Utile pour les environnements sans session hibernate automatique
 	 * Ex : Camel ESB
@@ -385,8 +409,8 @@ group by chauffage.libelle
 	House findById(Serializable id) {
 		House.get(id)
 	}
-	
-	
+
+
 	/**
 	 * Partage une maison à un utilisateur
 	 * Seuls les objets par défaut liés à la maison sont partagés
@@ -400,7 +424,7 @@ group by chauffage.libelle
 		if (house) {
 			if (house.compteur) {
 				deviceShareService.addShare(house.compteur, sharedUser.id)
-			}	
+			}
 			if (house.humidite) {
 				deviceShareService.addShare(house.humidite, sharedUser.id)
 			}
@@ -409,8 +433,8 @@ group by chauffage.libelle
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Partage la maison par défaut à un utilisateur
 	 * Seuls les objets par défaut liés à la maison sont partagés
@@ -422,7 +446,7 @@ group by chauffage.libelle
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void shareDefaultHouse(User user, User sharedUser) throws SmartHomeException {
 		House house = this.findDefaultByUser(user)
-		
+
 		if (house) {
 			this.shareHouse(house, sharedUser)
 		}

@@ -1,10 +1,10 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
+	<g:applyLayout name="page-settings">
 	
 		<div class="aui-toolbar2">
 		    <div class="aui-toolbar2-inner">

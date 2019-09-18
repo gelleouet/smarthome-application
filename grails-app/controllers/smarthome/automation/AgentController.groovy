@@ -1,27 +1,27 @@
 
 package smarthome.automation
 
-import grails.converters.JSON;
+import grails.converters.JSON
 
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.annotation.Secured
 
-import smarthome.core.AbstractController;
-import smarthome.core.ExceptionNavigationHandler;
-import smarthome.core.QueryUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.plugin.NavigableAction;
-import smarthome.plugin.NavigationEnum;
+import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.QueryUtils
+import smarthome.core.SmartHomeException
+import smarthome.plugin.NavigableAction
+import smarthome.plugin.NavigationEnum
 
 
 
 @Secured("isAuthenticated()")
 class AgentController extends AbstractController {
 
-    private static final String COMMAND_NAME = 'agent'
-	
+	private static final String COMMAND_NAME = 'agent'
+
 	AgentService agentService
-	
-	
+
+
 	/**
 	 * Demande d'un agent pour obtenir un token de connexion
 	 *
@@ -31,10 +31,10 @@ class AgentController extends AbstractController {
 	@Secured("permitAll()")
 	def subscribe(MessageAgentCommand command) {
 		command.publicIp = request.remoteAddr
-		
+
 		try {
 			def agentToken = agentService.subscribe(command)
-			
+
 			if (agentToken) {
 				render agentToken as JSON
 			} else {
@@ -45,14 +45,14 @@ class AgentController extends AbstractController {
 			render(status: 400, text: ex.message)
 		}
 	}
-	
-	
+
+
 	/**
 	 * Affichage paginé avec fonction recherche
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Agents", navigation = NavigationEnum.automation, header = "Smarthome")
+	@NavigableAction(label = "Agents", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def agents(String agentSearch) {
 		def user = authenticatedUser
 		def agents = agentService.listByUser(agentSearch, user.id, this.getPagination([:]))
@@ -62,8 +62,8 @@ class AgentController extends AbstractController {
 		// @see grails.scaffolding.templates.domainSuffix
 		respond agents, model: [recordsTotal: recordsTotal, agentSearch: agentSearch, user: user]
 	}
-	
-	
+
+
 	/**
 	 * Activation / désactivation d'un agent
 	 * 
@@ -76,8 +76,8 @@ class AgentController extends AbstractController {
 		agentService.activer(agent, actif)
 		redirect(action: 'agents')
 	}
-	
-	
+
+
 	/**
 	 * Ajout d'un device sur agent
 	 * 
@@ -88,8 +88,8 @@ class AgentController extends AbstractController {
 		flash.device = new Device(agent: agent)
 		redirect(action: 'create', controller: 'device')
 	}
-	
-	
+
+
 	/**
 	 * Edition d'un agent
 	 * 
@@ -100,8 +100,8 @@ class AgentController extends AbstractController {
 		agent = agentService.edit(agent)
 		render(view: 'agent', model: [agent: agent])
 	}
-	
-	
+
+
 	/**
 	 * Enregistrement d'un agent
 	 * 
@@ -112,8 +112,8 @@ class AgentController extends AbstractController {
 		agentService.save(agent)
 		edit(agent)
 	}
-	
-	
+
+
 	/**
 	 * Démarre l'inclusion sur un agent
 	 * 
@@ -125,7 +125,7 @@ class AgentController extends AbstractController {
 		agentService.startAssociation(agent, true)
 		redirect(action: 'agents')
 	}
-	
+
 	/**
 	 * Démarre l'exclusion sur un agent
 	 *
@@ -137,8 +137,8 @@ class AgentController extends AbstractController {
 		agentService.startAssociation(agent, false)
 		redirect(action: 'agents')
 	}
-	
-	
+
+
 	/**
 	 * Reset config
 	 *

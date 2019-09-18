@@ -1,20 +1,20 @@
 package smarthome.security
 
-import org.springframework.security.authentication.AccountExpiredException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.web.WebAttributes;
+import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.CredentialsExpiredException
+import org.springframework.security.authentication.DisabledException
+import org.springframework.security.authentication.LockedException
+import org.springframework.security.web.WebAttributes
 
-import smarthome.security.UserService;
-import grails.converters.JSON;
-import grails.plugin.springsecurity.annotation.Secured;
+import smarthome.security.UserService
+import grails.converters.JSON
+import grails.plugin.springsecurity.annotation.Secured
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
-import smarthome.security.RegistrationCode;
-import smarthome.security.User;
+import smarthome.security.RegistrationCode
+import smarthome.security.User
 
 
 /**
@@ -35,7 +35,8 @@ class UserController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Utilisateurs", navigation = NavigationEnum.configuration, header = "Administrateur")
+	@NavigableAction(label = "Utilisateurs", navigation = NavigationEnum.configuration,
+	header = "Système", icon = "settings", defaultGroup = true)
 	def users(UserCommand command) {
 		def users = userService.search(command, this.getPagination([:]))
 		def recordsTotal = users.totalCount
@@ -44,8 +45,8 @@ class UserController extends AbstractController {
 		// @see grails.scaffolding.templates.domainSuffix
 		respond users, model: [recordsTotal: recordsTotal, command: command]
 	}
-	
-	
+
+
 	/**
 	 * Edition d'un utilisateur
 	 * 
@@ -58,10 +59,11 @@ class UserController extends AbstractController {
 		def registrations = RegistrationCode.where({
 			username == editUser.username
 		}).list(sort: 'dateCreated', order: 'desc')
-		
-		def model = [user: editUser, roles: Role.list(), userRoles: userRoles, 
-			registration: registrations ? registrations[0] : null]
-		
+
+		def model = [user: editUser, roles: Role.list(), userRoles: userRoles,
+			registration: registrations ? registrations[0] : null,
+			secUser: authenticatedUser]
+
 		render(view: 'user', model: model)
 	}
 
@@ -104,8 +106,8 @@ class UserController extends AbstractController {
 		userService.save(user, true)
 		redirect(action: 'users')
 	}
-	
-	
+
+
 	/**
 	 * Authentification rapide vers un autre utilisateur
 	 *
@@ -115,11 +117,11 @@ class UserController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "users", modelName = "user")
 	def switchUser(User user) {
 		// nettoie la session
-		// TODO 
+		// TODO
 		redirect(uri: "/j_spring_security_switch_user", params: [j_username: user.username])
 	}
-	
-	
+
+
 	/**
 	 * Revenir à la session normale
 	 *
@@ -128,11 +130,11 @@ class UserController extends AbstractController {
 	@Secured("isAuthenticated()")
 	def exitSwitchUser() {
 		// nettoie la session
-		// TODO 
+		// TODO
 		redirect(uri: "/j_spring_security_exit_user")
 	}
-	
-	
+
+
 	/**
 	 * Surcharge du login/authfail de SpringSecurity car le message en scope flash
 	 * peut ne pas apparaitre dans un contexte de cluster
@@ -142,7 +144,7 @@ class UserController extends AbstractController {
 	def authfail() {
 		String msg = ''
 		def exception = session[WebAttributes.AUTHENTICATION_EXCEPTION]
-		
+
 		if (exception) {
 			if (exception instanceof AccountExpiredException) {
 				msg = g.message(code: "springSecurity.errors.login.expired")

@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
