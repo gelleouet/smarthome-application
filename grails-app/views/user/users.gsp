@@ -31,7 +31,6 @@
 		            <th>Activation</th>
 		            <th>Connexion</th>
 		            <th>Statuts</th>
-		            <th class="column-1-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -42,11 +41,6 @@
 			            <td><app:formatUser date="${user.lastActivation }"/></td>
 			            <td><app:formatTimeAgo date="${user.lastConnexion }"/></td>
 			            <td><g:render template="/user/userStatut" model="[user: user]"/></td>
-			            <td class="column-1-buttons command-column">
-			            	<g:link class="btn btn-light confirm-button" title="Basculer vers l'utilisateur" action="switchUser" id="${ user.id }">
-			            		<app:icon name="log-in"/>
-			            	</g:link>
-			            </td>
 			        </tr>
 		        </g:each>
 		    </tbody>

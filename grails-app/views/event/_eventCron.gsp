@@ -1,9 +1,9 @@
-<div class="field-group">
+<div class="form-group">
 	<label>
 		Cron
 	</label>
-	<g:textField name="cron" value="${event?.cron}" class="text long-field"/>
-	<div class="description">Expression cron : seconde | minute | heure | jour du mois | mois | jour semaine. Exemples :
+	<g:textField name="cron" value="${event?.cron}" class="form-control"/>
+	<small class="text-muted">Expression cron : seconde | minute | heure | jour du mois | mois | jour semaine. Exemples :
 		<ul>
 			<li>0 15 10 ? * * : Fire at 10:15am every day</li>
 			<li>0 15 10 * * ? 2005 : Fire at 10:15am every day during the year 2005</li>
@@ -15,26 +15,25 @@
 			<li>0 15 10 ? * 6#3 : Fire at 10:15am on the third Friday of every month</li>
 			<li>0 0 12 1/5 * ? : Fire at 12pm (noon) every 5 days every month, starting on the first day of the month.</li>
 		</ul>
-	</div>
+	</small>
 </div>
 
-<fieldset class="group">	
-	<legend><span>Options</span></legend>
-	<div class="checkbox">
-		<g:checkBox name="synchroSoleil" value="${event?.synchroSoleil}" class="checkbox"/>
-		<label>Ajuster l'heure de planification pour déclencher l'événement à <g:field type="time" name="heureDecalage" value="${ event?.heureDecalage }" class="text" style="width:100px;"/>
-			au solstice d'<g:select name="solstice" value="${ event?.solstice }" from="['été', 'hiver']" class="select"/>.</label>
-		<div class="description">
-			Le cron doit toujours être programmé sur l'heure la plus tôt. La nouvelle heure sera calculée tous les jours. 
-			<a id="event-chart-button" data-url="${ g.createLink(action: 'dialogEventChart') }" class="aui-button aui-button-link cancel">
-				<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Afficher le graphique annuel.
-			</a>
-		</div>
-	</div>
-	<div class="checkbox">
-		<g:checkBox name="heureEte" value="${event?.heureEte}" class="checkbox"/>
-		<label>Incrémenter d'une heure la planification pendant le changement d'heure en été.</label>
-		<div class="description">Cette option est compatible avec la planification solsticiale.</div>
-	</div>
-</fieldset>
+<label class="custom-control custom-checkbox">
+	<g:checkBox name="synchroSoleil" value="${event?.synchroSoleil}" class="custom-control-input"/>
+	<span class="custom-control-label">Ajuster l'heure de planification pour déclencher l'événement à 
+	<g:field type="time" name="heureDecalage" value="${ event?.heureDecalage }" style="width:100px; display:inline;" class="form-control"/>
+		au solstice d'<g:select name="solstice" value="${ event?.solstice }" from="['été', 'hiver']" style="width:100px; display:inline;" class="form-control"/></span>
+</label>
+<small class="text-muted">
+	Le cron doit toujours être programmé sur l'heure la plus tôt. La nouvelle heure sera calculée tous les jours. 
+	<a id="event-chart-button" data-url="${ g.createLink(action: 'dialogEventChart') }" class="btn btn-light">
+		<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Afficher le graphique annuel.
+	</a>
+</small>
+
+<label class="custom-control custom-checkbox">
+	<g:checkBox name="heureEte" value="${event?.heureEte}" class="custom-control-input"/>
+	<span class="custom-control-label">Incrémenter d'une heure la planification pendant le changement d'heure en été.</span>
+</label>
+<small class="text-muted">Cette option est compatible avec la planification solsticiale.</small>
 

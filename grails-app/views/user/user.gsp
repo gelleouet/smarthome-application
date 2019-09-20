@@ -8,15 +8,18 @@
 	
 	
 		<div class="row mb-4">
-			<div class="col-8">
+			<div class="col-6">
 				<h4>${ user.id ? user.nom + ' ' + user.prenom: 'Nouvel utilisateur' }</h4>
 			</div>
-			<div class="col-4 text-right">
+			<div class="col-6 text-right">
 				<div class="btn-toolbar">
 					<div class="btn-group">
 						<g:remoteLink url="[action: 'geocodeDefaultHouse', controller: 'house', id: user.id]" class="btn btn-light">GPS</g:remoteLink>
 		        		<g:remoteLink url="[action: 'calculDefaultWeather', controller: 'houseWeather', id: user.id]" class="btn btn-light">Météo</g:remoteLink>
 		        		<g:remoteLink url="[action: 'calculConsoForUser', controller: 'house', id: user.id]" class="btn btn-light">Consos</g:remoteLink>
+		        		<g:link class="btn btn-light" action="switchUser" id="${ user.id }">
+		            		<app:icon name="log-in"/> Switch
+		            	</g:link>
 					</div>
 				</div>
 			</div>

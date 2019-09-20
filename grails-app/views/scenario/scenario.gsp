@@ -1,11 +1,23 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
-		<h3>${ scenario.id ? 'Scénario : ' + scenario.label : 'Nouveau scénario' } <span id="ajaxSpinner" class="spinner"/></h3>
+	<g:applyLayout name="page-settings" model="[titre: 'Scénarios', navigation: 'Smarthome']">
+	
+		<div class="row mb-4">
+			<div class="col-8">
+				<h4>${ scenario.id ? 'Scénario : ' + scenario.label : 'Nouveau scénario' }</h4>
+			</div>
+			<div class="col-4 text-right">
+				<div class="btn-toolbar">
+					<div class="btn-group">
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		
 		<g:form controller="scenario" method="post" class="aui">
 			<g:hiddenField name="id" value="${scenario.id}" />
@@ -14,18 +26,14 @@
 			
 			<br/>
 	
-			<div class="buttons-container">
-				<div class="buttons">
-					<g:if test="${scenario.id }">
-						<g:actionSubmit value="Mettre à jour" action="saveEdit" class="aui-button aui-button-primary" />
-					</g:if>
-					<g:else>
-						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
-					</g:else>
-					
-					<g:link action="scenarios" class="cancel">Annuler</g:link>
-				</div>
-			</div>
+			<g:if test="${scenario.id }">
+				<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />
+			</g:if>
+			<g:else>
+				<g:actionSubmit value="Enregistrer" action="saveCreate" class="btn btn-primary" />
+			</g:else>
+			
+			<g:link action="scenarios" class="btn btn-link">Annuler</g:link>
 		</g:form>
 		
 	</g:applyLayout>

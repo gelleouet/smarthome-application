@@ -1,5 +1,5 @@
 <g:if test="${ ! user.enabled }">
-	<span class="badge badge-secondary">Désactivé</span>
+	<span class="badge badge-dark">Désactivé</span>
 </g:if>
 
 <g:else>

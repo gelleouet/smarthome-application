@@ -8,7 +8,6 @@
 //= require jquery-1.11.1.min
 //= require jquery-ui.min-1.11.3
 //= require jquery-picklist.min
-//= require datatables-1.10.2
 //= require jquery.datetimepicker.full.min
 //= require app-stack
 //= require_full_tree ./user

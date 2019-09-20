@@ -25,7 +25,7 @@ class ProducteurEnergieActionController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Mes actions", navigation = NavigationEnum.configuration, header = "Compte")
+	//@NavigableAction(label = "Mes actions", navigation = NavigationEnum.configuration, header = "Compte")
 	def producteurEnergieActions(ProducteurEnergieActionCommand command) {
 		def user = authenticatedUser // inject plugin spring security
 		def actions = producteurEnergieActionService.listByUser(user, command, this.getPagination([:]))

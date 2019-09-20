@@ -26,7 +26,7 @@ class NotificationController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Notifications", navigation = NavigationEnum.configuration, header = "Compte")
+	@NavigableAction(label = "Notifications", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def notifications(NotificationCommand command) {
 		command.user = authenticatedUser
 		def notifications = notificationService.search(command, this.getPagination([:]))

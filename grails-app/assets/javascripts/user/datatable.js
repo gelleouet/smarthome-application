@@ -21,7 +21,7 @@ function formatDataTable() {
 	
 	// réécriture des infos de pagination liées à chaque table
 	$('.dataTables_info').each(function() {
-		var datable = $(this).siblings('table').first();
+		var datable = $(this).parents('div.dataTables_wrapper').first().find('table');
 		var msgInfo = '';
 		
 		if (datable.attr('paginatetotal') > 0 && datable.attr('paginatedebut') > 0) {
@@ -30,4 +30,8 @@ function formatDataTable() {
 		
 		$(this).html(msgInfo);
 	});
+	
+	$('ul.pagination').addClass('text-center')
+	$('ul.pagination span.currentStep').addClass('page-item page-link active')
+	$('ul.pagination a').addClass('page-item page-link')
 }
