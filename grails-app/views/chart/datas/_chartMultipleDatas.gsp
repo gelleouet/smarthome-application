@@ -2,7 +2,7 @@
 <%@ page import="smarthome.core.ChartUtils" %>
 <%@ page import="smarthome.core.chart.GoogleChart" %>
 
-<div data-chart-datas="true" class="hidden">	
+<div data-chart-datas="true" class="d-none">	
 	<g:set var="keys" value="${ command.chart.devices.sort{ it.position} }"/>
 
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">

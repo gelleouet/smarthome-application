@@ -34,6 +34,16 @@ class DataConnectController extends AbstractController {
 
 
 	/**
+	 * Consentement DataConnect
+	 *
+	 * @return
+	 */
+	def dataconnect() {
+		render(view: '/compteur/dataconnect')
+	}
+
+
+	/**
 	 * Demande consentement depuis service
 	 * 
 	 * 

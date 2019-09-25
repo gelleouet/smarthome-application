@@ -9,6 +9,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpPut
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.entity.ByteArrayEntity
@@ -42,7 +43,7 @@ class Http {
 
 
 	/**
-	 * Point d'entrée création d'une requete get
+	 * Point d'entrée création d'une requete GET
 	 *
 	 * @param url
 	 * @return
@@ -53,13 +54,24 @@ class Http {
 
 
 	/**
-	 * Point d'entrée création d'une requete post
+	 * Point d'entrée création d'une requete POST
 	 *
 	 * @param url
 	 * @return
 	 */
 	static Http Post(String url) {
 		return build(url, new HttpPost())
+	}
+
+
+	/**
+	 * Point d'entrée création d'une requete PUT
+	 *
+	 * @param url
+	 * @return
+	 */
+	static Http Put(String url) {
+		return build(url, new HttpPut())
 	}
 
 
@@ -221,7 +233,7 @@ class Http {
 						}
 					})
 
-			if (httpResult.code != 200) {
+			if (httpResult.code >= 300) {
 				String error = transformer.error(httpResult.content)
 				throw new SmartHomeException("HTTP request error [${httpResult.code}] : ${error ?: httpResult.message}")
 			}

@@ -67,7 +67,7 @@
 	
 </g:if>
 <g:else>
-	<h4>DataConnect Enedis</h4>
+	<h4>Enedis DataConnect</h4>
 
 	<h5>Enedis gère le réseau d’électricité jusqu’au compteur d’électricité.
 	Pour consulter vos consommations, autorisez Enedis à nous transmettre vos données Linky.</h5>

@@ -25,11 +25,11 @@
 			<g:if test="${ house?.compteur && house.compteur.id == dataConnectDevice?.id }">
 				<div class="row mb-4 text-center">
 					<div class="col">
-						<asset:image src="linky.png"/>
+						<g:render template="/compteur/modeleElec" model="[compteur: house?.compteur]"/>
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="dataconnect"><app:icon name="user-check"/> DataConnect</g:link>
+							<g:link class="btn btn-primary mb-2" action="dataconnect" controller="dataConnect"><app:icon name="user-check"/> DataConnect</g:link>
 							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 					</div>
@@ -41,7 +41,7 @@
 			<g:elseif test="${ house?.compteur }">
 				<div class="row mb-4 text-center">
 					<div class="col">
-						<g:render template="/compteur/modele" model="[compteur: house?.compteur]"/>
+						<g:render template="/compteur/modeleElec" model="[compteur: house?.compteur]"/>
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">

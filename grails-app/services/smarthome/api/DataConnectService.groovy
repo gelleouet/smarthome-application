@@ -429,8 +429,9 @@ class DataConnectService extends AbstractService {
 		}
 
 		// ajout ou update config device
-		dataDevice.addMetadata('modele', [value: 'Linky', label: 'Modèle'])
+		dataDevice.addMetadata('modele', [label: 'Modèle', value: 'Linky'])
 		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes', trace: true])
+		dataDevice.addMetavalue('opttarif', [label: 'Option tarifaire', value: 'BASE'])
 
 		return dataDevice
 	}

@@ -4,7 +4,7 @@
 
 <g:set var="hasChartAction" value="${ deviceOwner && sec.ifAnyGranted(roles: 'ROLE_ADMIN') }"/>
 
-<div data-chart-datas="true" class="hidden" data-on-build-chart="onBuildQualitatifChart"
+<div data-chart-datas="true" class="d-none" data-on-build-chart="onBuildQualitatifChart"
 	data-url-delete-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'deleteDeviceValue') : '' }"
 	data-url-change-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'dialogDeviceValue') : '' }"
 	data-immediate="true">	

@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Notifications', navigation: 'Compte']">
+	<g:applyLayout name="page-settings" model="[titre: 'Notifications', navigation: 'Smarthome']">
 		
 		<h4 class="mb-4">${ notification?.id ? 'Notification : ' + notification.description : 'Nouvelle notification' }</h4>
 		

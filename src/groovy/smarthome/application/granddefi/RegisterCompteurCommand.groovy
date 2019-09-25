@@ -17,4 +17,5 @@ class RegisterCompteurCommand {
 	String compteurModel
 	User user
 	Device compteurElec
+	Device compteurGaz
 }

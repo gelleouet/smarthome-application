@@ -177,7 +177,7 @@ class DataConnectApi {
 
 		datapoints.each { datapoint ->
 			// on ramène les puissances moyenne sur 30min à une consommation en Wh
-			datapoint.wh = (datapoint.value as Double) * 2
+			datapoint.wh = ((datapoint.value as Double) / 2.0 as Double).round(0)
 
 			use (TimeCategory) {
 				// le rank correspond aux intervalles d'une 1/2H

@@ -43,24 +43,21 @@ class CompteurController extends AbstractController {
 
 		if (command.compteurType == 'elec') {
 			if (command.compteurModel == 'Linky') {
-				redirect(action: 'dataconnect')
+				redirect(action: 'dataconnect', controller: 'dataConnect')
 				return
 			} else {
 				compteurService.registerCompteurElec(command)
 			}
+		} else if (command.compteurType == 'gaz') {
+			if (command.compteurModel == 'Gazpar') {
+				redirect(action: 'adict', controller: 'adict')
+				return
+			} else {
+				compteurService.registerCompteurGaz(command)
+			}
 		}
 
 		redirect(action: 'compteur')
-	}
-
-
-	/**
-	 * Consentement DataConnect
-	 *
-	 * @return
-	 */
-	def dataconnect() {
-		render(view: 'dataconnect')
 	}
 
 
@@ -71,6 +68,17 @@ class CompteurController extends AbstractController {
 	 */
 	def resetCompteurElec() {
 		compteurService.resetCompteurElec(authenticatedUser)
+		redirect(action: 'compteur')
+	}
+
+
+	/**
+	 * Reset config compteur gaz
+	 *
+	 * @return
+	 */
+	def resetCompteurGaz() {
+		compteurService.resetCompteurGaz(authenticatedUser)
 		redirect(action: 'compteur')
 	}
 }

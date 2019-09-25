@@ -1,6 +1,6 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
-<div data-chart-datas="true" class="hidden">	
+<div data-chart-datas="true" class="d-none">	
 
 	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
 

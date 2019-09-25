@@ -12,7 +12,9 @@
 			<div class="col d-flex">
 				<div class="card flex-fill w-100">
 					<div class="card-body">
-						<g:render template="/house/syntheseConsommationDay" model="[house: house, title: 'Consommation d\'électricité du jour']"/>
+						<g:render template="/widget/syntheseConsommationDay"
+							model="[compteur: house?.compteur, title: 'Consommation d\'électricité des dernières 24 heures',
+								currentDate: new Date()-1, icon: 'zap']"/>
 					</div>
 				</div>
 			</div>
@@ -22,7 +24,9 @@
 			<div class="col d-flex">
 				<div class="card flex-fill w-100">
 					<div class="card-body">
-						<g:render template="/house/syntheseConsommationMonth" model="[house: house, title: 'Consommation d\'électricité du mois']"/>
+						<g:render template="/widget/syntheseConsommationMonth"
+							model="[compteur: house?.compteur, title: 'Consommation d\'électricité par jour',
+								icon: 'zap']"/>
 					</div>
 				</div>
 			</div>
@@ -32,7 +36,9 @@
 			<div class="col d-flex">
 				<div class="card flex-fill w-100">
 					<div class="card-body">
-						<g:render template="/house/syntheseConsommationYear"/>
+						<g:render template="/widget/syntheseConsommationMonth"
+							model="[compteur: house?.compteurGaz, title: 'Consommation de gaz par jour',
+								icon: 'fire', iconLib: 'awesome']"/>
 					</div>
 				</div>
 			</div>

@@ -10,7 +10,20 @@
 	</g:if>
 	
 	<g:applyLayout name="page-focus">
-		<g:link uri="/">Revenir à la page d'accueil</g:link>
+	
+		<div class="text-center mt-4">
+			<h1 class="h2">Erreur générale</h1>
+		</div>
+		
+		<div class="card">
+			<div class="card-body">
+				<g:applyLayout name="content-error"/>
+				
+				<div class="text-center">
+					<g:link uri="/" class="btn btn-link">Revenir à la page d'accueil</g:link>
+				</div>
+			</div>
+		</div>
 		
 		<g:if env="development">
 			<g:renderException exception="${exception}" />

@@ -4,7 +4,7 @@
 </head>
 
 <body>
-	<g:applyLayout name="page-settings" model="[titre: 'Notifications', navigation: 'Compte']">
+	<g:applyLayout name="page-settings" model="[titre: 'Notifications', navigation: 'Smarthome']">
 	
 		<div class="row">
 			<div class="col-8">

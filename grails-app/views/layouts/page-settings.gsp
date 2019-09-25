@@ -31,14 +31,15 @@
 						<g:set var="headers" value="${ app.navigationItems(category: 'configuration')?.subitems?.groupBy({ it.header }) }"/>
 						
 						<g:each var="header" in="${ headers.sort{ it.key } }">
-			            		
+			            	
+			            	<g:set var="defaultItem" value="${ header.value.find{ it.defaultGroup } }"/>
+			            	
 			            	<g:if test="${ header.key != navigation }">
-			            		<g:set var="item" value="${ header.value.find{ it.defaultGroup } }"/>
 			            		
-			            		<g:if test="${ item }">
+			            		<g:if test="${ defaultItem }">
 			            			<div class="card">
 			            				<div class="list-group list-group-flush">
-											<g:link class="list-group-item list-group-item-action font-weight-bold" style="font-size:16px;" controller="${ item.controller }" action="${ item.action }"><app:icon name="${ item.icon }"/> ${ header.key }</g:link>
+											<g:link class="list-group-item list-group-item-action font-weight-bold" style="font-size:16px;" controller="${ defaultItem.controller }" action="${ defaultItem.action }"><app:icon name="${ defaultItem.icon }"/> ${ header.key }</g:link>
 										</div>
 									</div> <!-- div.card -->
 								</g:if>
@@ -47,7 +48,11 @@
 							<g:else>
 								<div class="card">
 									<div class="card-header">
-										<h5 class="card-title mb-0">${ header.key }</h5>
+										<h5 class="card-title mb-0">
+											<g:if test="${ defaultItem  }">
+											<app:icon name="${ defaultItem.icon }"/> 
+											</g:if> ${ header.key }
+										</h5>
 									</div>
 									
 									<div class="list-group list-group-flush">

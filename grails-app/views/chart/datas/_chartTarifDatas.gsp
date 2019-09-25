@@ -1,23 +1,11 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
-<div data-chart-datas="true" class="hidden" data-immediate="true">	
+<div data-chart-datas="true" class="d-none" data-immediate="true">	
 
 	<g:if test="${ chart }">
    		chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
-   		
-   		<g:if test="${ command.viewMode == ChartViewEnum.year }">
-	   		chartDatas = new google.visualization.DataView(chartDatas)
-	   		
-	   		chartDatas.setColumns([0,
-				<g:each var="col" in="${ (1..<chart.colonnes.size()-1) }">
-				${col},
-	            </g:each>
-	            ${chart.colonnes.size()-1},{ calc: "stringify",
-	                sourceColumn: ${chart.colonnes.size()-1},
-	                type: "string",
-	                role: "annotation" },
-	        ])
-        </g:if>
+   		chartDatas = new google.visualization.DataView(chartDatas)
+   		<g:render template="/chart/google/annotation" model="[series: chart.series]"/>
    	</g:if>
    	
    	<g:if test="${ chart.joinChart }">

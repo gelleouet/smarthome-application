@@ -18,7 +18,7 @@
 				<div style="margin-top:20px">
 					<div class="separator-bottom">
 						<div class="row">
-							<div class="col" style="width:30%">
+							<div class="col-8">
 								<h5><g:formatDate date="${ currentDate }" format="yyyy"/></h5>
 							</div>
 							<div class="col text-right">
@@ -61,7 +61,7 @@
 								</g:if>
 								<g:else>
 									<tr>
-										<td>Toutes heures</td>
+										<td>Heures base</td>
 										<td><span class="link">${ (consos.base as Double)?.round(1) }</span></td>
 										<td><span class="link">${ (consos.tarifBASE as Double)?.round(1) }</span></td>
 									</tr>

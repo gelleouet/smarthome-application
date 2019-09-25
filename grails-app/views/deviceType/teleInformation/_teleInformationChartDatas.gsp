@@ -1,6 +1,6 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
 
-<div data-chart-datas="true" class="hidden">
+<div data-chart-datas="true" class="d-none">
 	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) })
 
 	<g:if test="${ compareChart }">
@@ -17,7 +17,7 @@
 	          selectionMode: 'multiple',
 	          seriesType: 'steppedArea',
 	          series: {
-	          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line', pointsVisible: false},
+	          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
 	          },
 	          vAxes: {
 	          	0: {title: 'Consommation (Wh)'},
@@ -47,16 +47,7 @@
       	
       	<g:if test="${ !compareChart }">
       	
-      		<g:if test="${ command.viewMode == ChartViewEnum.year }">
-		      	chartDatas.setColumns([0,
-		      		<g:each var="col" in="${ (1..<chart.colonnes.size()) }">
-					${col},{ calc: "stringify",
-		                sourceColumn: ${col},
-		                type: "string",
-		                role: "annotation" },
-		            </g:each>
-		        ])
-	        </g:if>
+	      	<g:render template="/chart/google/annotation" model="[series: chart.series]"/>
 		    	
 			chartOptions = {
 				  'title': '${label }',
@@ -68,8 +59,8 @@
 			      	width: '90%'
 			      },
 			      selectionMode: 'multiple',
-			      'series': {
-		          	${chart.colonnes.size()-2}: {targetAxisIndex: 1, type: 'line'},
+			      series: {
+		          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
 		          },
 		          vAxes: {
 		          	0: {title: 'Consommation (kWh)'},
@@ -97,6 +88,9 @@
 			      },
 			      selectionMode: 'multiple',
 		          'seriesType': 'bars',
+		          series: {
+		          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
+		          },
 		          diff: {
 				  	oldData: {
 				  		tooltip: {

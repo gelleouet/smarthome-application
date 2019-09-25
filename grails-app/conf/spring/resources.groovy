@@ -96,4 +96,8 @@ beans = {
 	dataConnectApi(smarthome.api.DataConnectApi) {
 		grailsApplication = ref('grailsApplication')
 	}
+
+	adictApi(smarthome.api.AdictApi) {
+		grailsApplication = ref('grailsApplication')
+	}
 }

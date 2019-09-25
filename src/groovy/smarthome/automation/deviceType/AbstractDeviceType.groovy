@@ -1,34 +1,34 @@
 package smarthome.automation.deviceType
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringUtils
 
-import groovy.time.TimeCategory;
+import groovy.time.TimeCategory
 
-import java.lang.reflect.Method;
-import java.util.Map;
+import java.lang.reflect.Method
+import java.util.Map
 
-import smarthome.automation.ChartTypeEnum;
-import smarthome.automation.ChartViewEnum;
-import smarthome.automation.DataModifierEnum;
-import smarthome.automation.Device;
-import smarthome.automation.DeviceChartCommand;
-import smarthome.automation.DeviceTypeProvider;
-import smarthome.automation.DeviceTypeProviderPrix;
-import smarthome.automation.DeviceValue;
-import smarthome.automation.DeviceValueDay;
-import smarthome.automation.DeviceValueMonth;
-import smarthome.automation.LevelAlertEnum;
-import smarthome.automation.SeriesTypeEnum;
-import smarthome.automation.WorkflowEvent;
-import smarthome.automation.WorkflowEventParameter;
-import smarthome.automation.WorkflowEventParameters;
-import smarthome.core.ApplicationUtils;
-import smarthome.core.ClassUtils;
-import smarthome.core.DateUtils;
-import smarthome.core.SmartHomeException;
-import smarthome.core.chart.GoogleChart;
-import smarthome.core.chart.GoogleChartProcessor;
-import smarthome.core.chart.GoogleDataTableCol;
+import smarthome.automation.ChartTypeEnum
+import smarthome.automation.ChartViewEnum
+import smarthome.automation.DataModifierEnum
+import smarthome.automation.Device
+import smarthome.automation.DeviceChartCommand
+import smarthome.automation.DeviceTypeProvider
+import smarthome.automation.DeviceTypeProviderPrix
+import smarthome.automation.DeviceValue
+import smarthome.automation.DeviceValueDay
+import smarthome.automation.DeviceValueMonth
+import smarthome.automation.LevelAlertEnum
+import smarthome.automation.SeriesTypeEnum
+import smarthome.automation.WorkflowEvent
+import smarthome.automation.WorkflowEventParameter
+import smarthome.automation.WorkflowEventParameters
+import smarthome.core.ApplicationUtils
+import smarthome.core.ClassUtils
+import smarthome.core.DateUtils
+import smarthome.core.SmartHomeException
+import smarthome.core.chart.GoogleChart
+import smarthome.core.chart.GoogleChartProcessor
+import smarthome.core.chart.GoogleDataTableCol
 
 abstract class AbstractDeviceType implements Serializable {
 	Device device
@@ -37,8 +37,8 @@ abstract class AbstractDeviceType implements Serializable {
 	protected String contratCache
 	protected Map tarifCache
 	protected Map viewParams = [:]
-	
-	
+
+
 	/**
 	 * Son nom simple pour le système de convention
 	 * (recherche des vues, des ressources icones, etc...)
@@ -48,7 +48,7 @@ abstract class AbstractDeviceType implements Serializable {
 	final def simpleName() {
 		StringUtils.uncapitalize(this.getClass().simpleName)
 	}
-	
+
 	/**
 	 * Le nom de la vue pour affichage en grille
 	 * 
@@ -57,8 +57,8 @@ abstract class AbstractDeviceType implements Serializable {
 	final def viewGrid() {
 		"/deviceType/${name}/${name}"
 	}
-	
-	
+
+
 	/**
 	 * Style du widget
 	 * 
@@ -67,8 +67,8 @@ abstract class AbstractDeviceType implements Serializable {
 	String cssStyle() {
 		""
 	}
-	
-	
+
+
 	/**
 	 * Nom de la vue pour saisie des options
 	 * 
@@ -77,8 +77,8 @@ abstract class AbstractDeviceType implements Serializable {
 	final def viewForm() {
 		"/deviceType/${name}/${name}Form"
 	}
-	
-	
+
+
 	/**
 	 * Une vue chart spécifique à un device.
 	 * Par défaut, rien : affichage du graphique normal
@@ -86,10 +86,9 @@ abstract class AbstractDeviceType implements Serializable {
 	 * @return
 	 */
 	String viewChart() {
-		
 	}
 
-	
+
 	/**
 	 * Nom de l'image à associer au device
 	 * 
@@ -98,8 +97,8 @@ abstract class AbstractDeviceType implements Serializable {
 	String icon() {
 		"/deviceType/${name}.png"
 	}
-	
-	
+
+
 	/**
 	 * Indique si device qualitatif ou quantitatif
 	 * 
@@ -107,9 +106,9 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	boolean isQualitatif() {
 		return device.deviceType.qualitatif
-	} 
-	
-	
+	}
+
+
 	/**
 	 * Indique s'il faut historiser la valeur
 	 * Par défaut, historise tout le temps si device qualitatif, sinon
@@ -125,8 +124,8 @@ abstract class AbstractDeviceType implements Serializable {
 			return value
 		}
 	}
-	
-	
+
+
 	/**
 	 * La liste des actions disponibles pour ce device
 	 * toutes les méthodes annotées WorkflowEvent
@@ -135,17 +134,17 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	final def events() {
 		def events = []
-		
+
 		getClass().getMethods()?.each { method ->
 			if (method.getAnnotation(WorkflowEvent)) {
 				events << method.name
 			}
 		}
-		
+
 		return events.sort()
 	}
-	
-	
+
+
 	/**
 	 * Liste des paramètres pour la méthode demandée
 	 * 
@@ -154,11 +153,11 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	final List eventParameters(String actionName) {
 		List parameters = []
-		
+
 		getClass().getMethods()?.each { method ->
 			if (method.name == actionName) {
 				WorkflowEventParameters workflowEventParameters = method.getAnnotation(WorkflowEventParameters)
-				
+
 				if (workflowEventParameters) {
 					for (WorkflowEventParameter workflowEventParameter : workflowEventParameters.value()) {
 						parameters << workflowEventParameter
@@ -166,10 +165,10 @@ abstract class AbstractDeviceType implements Serializable {
 				}
 			}
 		}
-		return parameters	
+		return parameters
 	}
-	
-	
+
+
 	/**
 	 * Prépare les méta données avant enregistrement de celles-ci
 	 * Permet à un type device de transformer ou d'ajouter de nouvelles 
@@ -181,10 +180,9 @@ abstract class AbstractDeviceType implements Serializable {
 	 * @return
 	 */
 	def prepareMetaValuesForSave(def datas) {
-		
 	}
-	
-	
+
+
 	/**
 	 * Retourne le type de graphique par défaut
 	 *
@@ -197,8 +195,8 @@ abstract class AbstractDeviceType implements Serializable {
 			ChartTypeEnum.Bubble
 		}
 	}
-	
-	
+
+
 	/**
 	 * Le template par défaut pour préparer les données du chart
 	 *
@@ -211,8 +209,8 @@ abstract class AbstractDeviceType implements Serializable {
 			'/chart/datas/chartQuantitatifDatas'
 		}
 	}
-	
-	
+
+
 	/**
 	 * Utilisation d'un google chart préparé
 	 * 
@@ -223,24 +221,21 @@ abstract class AbstractDeviceType implements Serializable {
 	GoogleChart googleChart(DeviceChartCommand command, List values) {
 		GoogleChart chart = new GoogleChart()
 		command.device.extrasToJson()
-		
+
 		/**
 		 * Graphe qualitatif : valeur importante
 		 */
 		if (isQualitatif()) {
 			chart.values = values
-			
+
 			if (command.viewMode == ChartViewEnum.day) {
-				chart.colonnes = [
-					new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime"),
-					new GoogleDataTableCol(label: "Valeur", property: "value", type: "number"),
-					new GoogleDataTableCol(type: "boolean", role: "scope", value: { deviceValue, index, currentChart ->
-						deviceValue.alertLevel ? false : true}),
-				]
-				
+				chart.colonnes = [new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime"), new GoogleDataTableCol(label: "Valeur", property: "value", type: "number"), new GoogleDataTableCol(type: "boolean", role: "scope", value: { deviceValue, index, currentChart ->
+						deviceValue.alertLevel ? false : true
+					}),]
+
 				// série par défaut en bleu
 				chart.series << [color: '#3572b0', type: SeriesTypeEnum.area.toString()]
-				
+
 				// affichage des alertes
 				command.device.levelAlerts?.findAll({ it.level != LevelAlertEnum.monitoring })?.sort({ it.level })?.each {
 					chart.colonnes << new GoogleDataTableCol(label: "${it.mode} ${it.value}°", staticValue: it.value, type: "number")
@@ -253,14 +248,13 @@ abstract class AbstractDeviceType implements Serializable {
 					new GoogleDataTableCol(label: "Max", type: "number", value: { deviceValue, index, currentChart -> deviceValue.value.find{ it.name == "max" }?.value }),
 					new GoogleDataTableCol(label: "Moyenne", type: "number", value: { deviceValue, index, currentChart -> deviceValue.value.find{ it.name == "avg" }?.value }),
 				]
-				
-				chart.series = [
-				    [color: '#ff9f00'],					// min
-				    [color: '#dc3912'],					// max
+
+				chart.series = [[color: '#ff9f00'], // min
+					[color: '#dc3912'], // max
 					[color: '#3572b0', type: SeriesTypeEnum.area.toString()]	// moyenne
 				]
 			}
-		} 
+		}
 		/**
 		 * Graphe quantitatif : nombre d'évévement
 		 */
@@ -268,11 +262,11 @@ abstract class AbstractDeviceType implements Serializable {
 			if (command.viewMode == ChartViewEnum.day) {
 				// regroupement des valeurs sur l'heure de la journée
 				chart.values = values.groupBy { DateUtils.copyTruncHour(it.dateValue) }
-				
+
 				chart.colonnes = [
-				    new GoogleDataTableCol(label: "ID", type: "string", staticValue: ""),
+					new GoogleDataTableCol(label: "ID", type: "string", staticValue: ""),
 					new GoogleDataTableCol(label: "Date", type: "datetime", property: "key"),
-					new GoogleDataTableCol(label: "Heure", type: "number", value: { deviceValue, index, currentChart -> 
+					new GoogleDataTableCol(label: "Heure", type: "number", value: { deviceValue, index, currentChart ->
 						deviceValue.key[Calendar.HOUR_OF_DAY]
 					}),
 					new GoogleDataTableCol(label: "Objet", type: "string", staticValue: command.device.label),
@@ -283,7 +277,7 @@ abstract class AbstractDeviceType implements Serializable {
 			} else {
 				// les données sont déjà regroupées comme il faut
 				chart.values = values
-				
+
 				chart.colonnes = [
 					new GoogleDataTableCol(label: "ID", type: "string", staticValue: ""),
 					new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
@@ -299,16 +293,16 @@ abstract class AbstractDeviceType implements Serializable {
 				]
 			}
 		}
-		
+
 		if (command.device.extrasJson.googleChartProcessor) {
 			GoogleChartProcessor processor = ClassUtils.forNameInstance(command.device.extrasJson.googleChartProcessor)
 			ApplicationUtils.autowireBean(processor)
 			processor.process(chart, [command: command])
 		}
-		
+
 		return chart
 	}
-	
+
 	/**
 	 * Charge les prix pour une année donnée et les renvoit indexés dans une map en
 	 * fonction de l'option tarifaire
@@ -320,24 +314,24 @@ abstract class AbstractDeviceType implements Serializable {
 		if (tarifCache != null) {
 			return tarifCache
 		}
-		
+
 		tarifCache = [:]
 		DeviceTypeProvider provider = getFournisseur()
-		
+
 		if (provider) {
 			String contrat = getContrat()
-			
+
 			if (contrat) {
 				DeviceTypeProviderPrix.findAllByDeviceTypeProviderAndContratAndAnnee(provider, contrat, annee).each {
 					tarifCache.put(it.period, it.prixUnitaire)
 				}
 			}
 		}
-		
+
 		return tarifCache
 	}
-	
-	
+
+
 	/**
 	 * Calcul d'un tarif pour une période donnée
 	 * 
@@ -348,34 +342,34 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	Double calculTarif(String period, double quantite, int annee) {
 		Double prixUnitaire = listTarifAnnee(annee)?.get(period.toUpperCase())
-		
+
 		if (prixUnitaire != null) {
-			return prixUnitaire * quantite
+			return ((prixUnitaire * quantite) as Double).round(2)
 		}
-		
+
 		return null
 	}
-	
-	
+
+
 	/**
 	 * Retourne le nom du contrat
 	 * @return
 	 */
 	String getContrat() {
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Retourne le fournisseur du contrat
 	 *
 	 * @return
 	 */
 	DeviceTypeProvider getFournisseur() {
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Préparation des données pour la vue
 	 * Cette méthode est appelée par le service et permet de charger des éléments
@@ -388,16 +382,16 @@ abstract class AbstractDeviceType implements Serializable {
 		viewParams.lastAlert = device.lastDeviceAlert()
 		implPrepareForView()
 	}
-	
-	
+
+
 	/**
 	 * Implémentation prepareForView à surcharger par les impl deviceType
 	 */
 	void implPrepareForView() {
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Charge les données sur une période donnée (en général pour les graphes)
 	 * C'est défini dans chaque impl car les données ne sont pas forcément les mêmes
@@ -410,7 +404,7 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	def values(DeviceChartCommand command) throws SmartHomeException {
 		def values = []
-		
+
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(), command.metaName)
 		} else if (command.viewMode == ChartViewEnum.month) {
@@ -422,11 +416,11 @@ abstract class AbstractDeviceType implements Serializable {
 				it.dateValue
 			}.collect { it }
 		}
-		
+
 		return values
 	}
-	
-	
+
+
 	/**
 	 * Aggrège les données du device d'un jour 
 	 * Uniquement la valeur principale
@@ -435,7 +429,7 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	List aggregateValueDay(Date dateReference) {
 		def values
-		
+
 		if (isQualitatif()) {
 			// qualitatif : min, max, avg par date (sans heure)
 			values = DeviceValue.executeQuery("""\
@@ -445,7 +439,7 @@ abstract class AbstractDeviceType implements Serializable {
 				WHERE deviceValue.device = :device AND deviceValue.name is null
 				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
 				GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
+						dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
 		} else {
 			// quantitatif : count par heure de la journée
 			values = DeviceValue.executeQuery("""\
@@ -455,13 +449,13 @@ abstract class AbstractDeviceType implements Serializable {
 				WHERE deviceValue.device = :device AND deviceValue.name is null
 				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
 				GROUP BY deviceValue.name, date_trunc('hour', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
+						dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
 		}
-		
+
 		return values
 	}
-	
-	
+
+
 	/**
 	 * Aggrège les données du device d'un mois
 	 * Uniquement la valeur principale
@@ -470,7 +464,7 @@ abstract class AbstractDeviceType implements Serializable {
 	 */
 	List aggregateValueMonth(Date dateReference) {
 		def values
-		
+
 		if (isQualitatif()) {
 			// qualitatif : min, max, avg  par date (sans heure)
 			values = DeviceValue.executeQuery("""\
@@ -480,7 +474,7 @@ abstract class AbstractDeviceType implements Serializable {
 				WHERE deviceValue.device = :device AND deviceValue.name is null
 				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
 				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
+						dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
 		} else {
 			// quantitatif : count par heure de la journée
 			values = DeviceValue.executeQuery("""\
@@ -490,28 +484,27 @@ abstract class AbstractDeviceType implements Serializable {
 				WHERE deviceValue.device = :device AND deviceValue.name is null
 				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
 				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue), extract('hour' from deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
-			.collect { deviceValue ->
-				use (TimeCategory) {
-					[dateValue: deviceValue.dateValue + deviceValue.hourOfDay.hours, name: deviceValue.name, count: deviceValue.count]
-				}
-			}
+						dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
+					.collect { deviceValue ->
+						use (TimeCategory) {
+							[dateValue: deviceValue.dateValue + deviceValue.hourOfDay.hours, name: deviceValue.name, count: deviceValue.count]
+						}
+					}
 		}
-		
+
 		return values
 	}
-	
-	
+
+
 	/**
 	 * Renvoit les clés disponibles pour la construction d'un plannning
 	 * 
 	 * @return
 	 */
 	List<String> planningKeys() {
-		return []	
-	}
-	
-	
+		return []}
+
+
 	/**
 	 * Renvoit les valeurs possibles sur le planning
 	 * Map indexée sur la valeur avec les infos associées (label, couleur, etc)
@@ -521,4 +514,4 @@ abstract class AbstractDeviceType implements Serializable {
 	Map planningValues() {
 		return [:]
 	}
- }
+}

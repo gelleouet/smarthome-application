@@ -46,8 +46,10 @@ class EventController extends AbstractController {
 	 */
 	def edit(Event event) {
 		def editevent = parseFlashCommand(COMMAND_NAME, event)
-		editevent = eventService.edit(editevent)
-		editevent.triggerParameterToJson()
+		if (event?.id) {
+			editevent = eventService.edit(editevent)
+			editevent.triggerParameterToJson()
+		}
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editevent]))
 	}
 
