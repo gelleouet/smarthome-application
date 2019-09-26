@@ -25,11 +25,33 @@ class DataConnectController extends AbstractController {
 	 */
 	@Secured("permitAll()")
 	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
-	def redirect(String code, String usage_point_id) {
+	def redirect(String code, String usage_point_id, String state) {
 		User user = authenticatedUser // spring security plugin
 		dataConnectService.authorization_code(user, code, usage_point_id)
-		setInfo("Votre consentement sur le service Enedis DataConnect est validé avec succès !")
-		forward(controller: 'notificationAccount', action: 'notificationAccounts')
+
+		log.info "Redirect Consentement from ${state}"
+		String info = "Votre consentement sur le service Enedis DataConnect est validé avec succès !"
+
+
+		if (state == "grand-defi") {
+			log.info "Redirect DataConnect Autorisation to BMHS GrandDefi"
+			// la demande de consentement vient de l'application spéciale "Grand Défi"
+			// et la redirection doit être renvoyée vers cette application
+			redirect(url: 'https://www.jdevops.com/granddefi/compteur/compteur', params: [info: info])
+		} else {
+			setInfo(info)
+			forward(controller: 'notificationAccount', action: 'notificationAccounts')
+		}
+	}
+
+
+	/**
+	 * Consentement DataConnect
+	 *
+	 * @return
+	 */
+	def dataconnect() {
+		render(view: '/compteur/dataconnect')
 	}
 
 

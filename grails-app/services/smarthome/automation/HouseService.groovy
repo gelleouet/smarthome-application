@@ -130,8 +130,32 @@ group by chauffage.libelle
 		
 		return super.save(house)
 	}
-	
-	
+
+
+	/**
+	 * Création d'une maison par défaut si n'existe pas encore pour le user
+	 * et bind des propriétés
+	 *
+	 * @param house
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	House bindDefault(User user, Map binding) throws SmartHomeException {
+		House house = findDefaultByUser(user)
+
+		if (!house) {
+			house = new House(user: user, defaut: true, name: "Maison principale")
+		}
+
+		binding?.each { key, value ->
+			house[(key)] = value
+		}
+
+		return save(house)
+	}
+
+
 	/**
 	 * Synchro des positions GPS en fonction location
 	 * 

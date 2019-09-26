@@ -48,7 +48,7 @@ class DataSourceProviderCronPaginateSubJob implements Job {
 						providerImpl.execute(notificationAccount)
 					}
 				} catch (SmartHomeException ex) {
-					log.error("Cannot execute provider ${notificationAccount.id} : ${ex.message}")
+					log.error("Provider ${notificationAccount.notificationAccountSender.libelle} [${notificationAccount.id}] : ${ex.message}")
 				}
 			}
 		}

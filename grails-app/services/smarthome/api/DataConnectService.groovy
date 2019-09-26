@@ -11,6 +11,7 @@ import smarthome.automation.DeviceType
 import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueService
+import smarthome.automation.HouseService
 import smarthome.automation.NotificationAccount
 import smarthome.automation.NotificationAccountSender
 import smarthome.automation.NotificationAccountSenderService
@@ -35,6 +36,7 @@ class DataConnectService extends AbstractService {
 	DataConnectApi dataConnectApi
 	DeviceService deviceService
 	DeviceValueService deviceValueService
+	HouseService houseService
 
 
 	/**
@@ -72,6 +74,11 @@ class DataConnectService extends AbstractService {
 		notificationAccount.jsonConfig.usage_point_id = usage_point_id
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
+
+		// création du device et association avec le compteur de la maison principale
+		Device dataDevice = this.findOrCreateDevice(notificationAccount)
+		deviceService.saveWithoutAuthorize(dataDevice)
+		houseService.bindDefault(user, [compteur: dataDevice])
 
 		return result
 	}
@@ -114,7 +121,6 @@ class DataConnectService extends AbstractService {
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
 		notificationAccount.configFromJson()
-
 		notificationAccountService.save(notificationAccount)
 
 		return result
@@ -192,7 +198,6 @@ class DataConnectService extends AbstractService {
 			throw new SmartHomeException("DataConnect#consumptionLoadCurve : no values !")
 		}
 
-
 		dataDevice.value = datapoints.last().value
 		dataDevice.dateValue = datapoints.last().timestamp
 		dataDevice.metavalue('baseinst').value =  datapoints.last().wh.toString()
@@ -211,7 +216,6 @@ class DataConnectService extends AbstractService {
 					dateValue: datapoint.timestamp))
 		}
 
-		notificationAccount.jsonConfig.device_id = dataDevice.id
 		notificationAccount.jsonConfig.last_consumption_load_curve = dataDevice.dateValue.time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
@@ -306,7 +310,6 @@ class DataConnectService extends AbstractService {
 		deviceValueService.sumValueMonthFromValueDay(dataDevice, 'basesum',
 				DateUtils.firstDayInMonth(dateFirstValue), dateLastValue)
 
-		notificationAccount.jsonConfig.device_id = dataDevice.id
 		notificationAccount.jsonConfig.last_daily_consumption = dateLastValue.time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
@@ -400,7 +403,6 @@ class DataConnectService extends AbstractService {
 		deviceValueService.maxValueMonthFromValueDay(dataDevice, 'max',
 				DateUtils.firstDayInMonth(dateFirstValue), dateLastValue)
 
-		notificationAccount.jsonConfig.device_id = dataDevice.id
 		notificationAccount.jsonConfig.last_consumption_max_power = dateLastValue.time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
@@ -409,23 +411,50 @@ class DataConnectService extends AbstractService {
 	}
 
 
-	private Device findOrCreateDevice(NotificationAccount notificationAccount) {
-		Device dataDevice
+	private Device findOrCreateDevice(NotificationAccount notificationAccount) throws SmartHomeException {
+		String defaultCompteurLabel = grailsApplication.config.enedis.compteurLabel
 
-		if (notificationAccount.jsonConfig.device_id) {
-			dataDevice = deviceService.findById(notificationAccount.jsonConfig.device_id)
-		} else {
-			// création d'un device auto
+		// recherche du device associé au compte dataconnect
+		// (il y a déjà eu un appel réussi avec récupération des données)
+		Device dataDevice = getDeviceFromConfig(notificationAccount)
+
+		// vérifie quand même que le device n'a pas été modifiée entre temps
+		if (!dataDevice) {
 			dataDevice = new Device(
 					user: notificationAccount.user,
 					unite: 'W',
 					mac: notificationAccount.jsonConfig.usage_point_id,
-					label: 'Compteur électrique (Enedis)',
+					label: defaultCompteurLabel,
 					deviceType: DeviceType.findByImplClass(TeleInformation.name))
 		}
 
+		// ajout ou update config device
+		dataDevice.addMetadata('modele', [label: 'Modèle', value: 'Linky'])
 		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes', trace: true])
+		dataDevice.addMetavalue('opttarif', [label: 'Option tarifaire', value: 'BASE'])
 
 		return dataDevice
+	}
+
+
+	/**
+	 * Retourne le device associé à la config
+	 * 
+	 * @param notificationAccount
+	 * @return
+	 */
+	Device getDeviceFromConfig(NotificationAccount notificationAccount) {
+		Device device
+
+		if (!notificationAccount.jsonConfig) {
+			notificationAccount.configToJson()
+		}
+
+		if (notificationAccount.jsonConfig.usage_point_id) {
+			device = deviceService.findByMac(notificationAccount.user,
+					notificationAccount.jsonConfig.usage_point_id)
+		}
+
+		return device
 	}
 }
