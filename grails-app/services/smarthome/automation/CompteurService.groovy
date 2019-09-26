@@ -101,11 +101,10 @@ class CompteurService extends AbstractService {
 						mac: MAC_COMPTEUR_ELEC_MANUEL,
 						label: LABEL_COMPTEUR_ELEC_MANUEL,
 						deviceType: DeviceType.findByImplClass(TeleInformation.name))
+
+				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 			}
 		}
-
-		// ajout ou update config device
-		compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 
 		deviceService.save(compteur)
 
@@ -136,12 +135,12 @@ class CompteurService extends AbstractService {
 						mac: MAC_COMPTEUR_GAZ_MANUEL,
 						label: LABEL_COMPTEUR_GAZ_MANUEL,
 						deviceType: DeviceType.findByImplClass(CompteurGaz.name))
+
+				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 			}
 		}
 
 		// ajout ou update config device
-		compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
-
 		deviceService.save(compteur)
 
 		// si le compteur est bien créé, on l'associe à la maison principale

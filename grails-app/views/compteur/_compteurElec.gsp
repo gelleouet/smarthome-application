@@ -45,7 +45,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="compteur"><app:icon name="edit"/> Saisie index</g:link>
+							<g:link class="btn btn-primary mb-2" action="saisieIndex" id="${ house.compteur.id }"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 					</div>

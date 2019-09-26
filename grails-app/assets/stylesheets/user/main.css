@@ -779,3 +779,7 @@ table.table tr:first-child th {
 input.form-control.small {
 	width: 175px;
 }
+
+input.form-control.medium {
+	width: 350px;
+}

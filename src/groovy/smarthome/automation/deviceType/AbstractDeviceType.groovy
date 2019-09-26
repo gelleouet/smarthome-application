@@ -338,10 +338,14 @@ abstract class AbstractDeviceType implements Serializable {
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(), command.metaName)
 		} else if (command.viewMode == ChartViewEnum.month) {
+			// on ne sait pas si le device a plusieurs métriques, donc on fait un
+			// regroupement sur la date pour avoir une abcisse homogène
 			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
 				it.dateValue
 			}.collect { it }
 		} else if (command.viewMode == ChartViewEnum.year) {
+			// on ne sait pas si le device a plusieurs métriques, donc on fait un
+			// regroupement sur la date pour avoir une abcisse homogène
 			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
 				it.dateValue
 			}.collect { it }

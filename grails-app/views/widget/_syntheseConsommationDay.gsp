@@ -77,12 +77,6 @@
 								</div>
 								<div class="col">
 									<strong>${ consoMoyenne }${ defaultUnite }</strong>
-									<g:if test="${ consos.total > consoMoyenne  }">
-										<app:icon name="arrow-up-right"/>
-									</g:if>
-									<g:else>
-										<app:icon name="arrow-down-right"/>
-									</g:else>
 								</div>
 							</div>
 							

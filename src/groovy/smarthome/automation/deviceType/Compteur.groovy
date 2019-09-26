@@ -12,6 +12,7 @@ import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
+import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -24,6 +25,11 @@ import smarthome.core.chart.GoogleDataTableCol
  *
  */
 class Compteur extends AbstractDeviceType {
+
+	private static final String AGGREGATE_METRIC_NAME = "sum"
+	private static final String META_METRIC_NAME = "conso"
+	private static final String DEFAULT_CONTRAT = "BASE"
+
 	protected DeviceTypeProvider fournisseurCache
 	protected String contratCache
 
@@ -46,13 +52,21 @@ class Compteur extends AbstractDeviceType {
 	List values(DeviceChartCommand command) throws SmartHomeException {
 		def values = []
 
+		// pour chaque vue, il n'y a qu'une seule métrique à charger
+		// la metavalue "META_METRIC_NAME" avec la conso horaire entre chaque prise de mesure
+		// pour les vues agrégées, la fonction de calcul repart des index (métrique principale
+		// sans nom) pour recalculer les consos entre 2 index de la même période.
+		// sans ces 2 vues, il n'y a donc qu'une métrique appelée "AGGREGATE_METRIC_NAME"
+
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-					"conso")
+					META_METRIC_NAME)
 		} else if (command.viewMode == ChartViewEnum.month) {
-			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin())
+			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(),
+					AGGREGATE_METRIC_NAME)
 		} else if (command.viewMode == ChartViewEnum.year) {
-			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin())
+			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin(),
+					AGGREGATE_METRIC_NAME)
 		}
 
 		return values
@@ -71,7 +85,8 @@ class Compteur extends AbstractDeviceType {
 		command.device.extrasToJson()
 		chart.values = values
 
-		chart.colonnes = [new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue"), new GoogleDataTableCol(label: "Index", property: "value", type: "number")]
+		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
+		chart.colonnes << new GoogleDataTableCol(label: "Index", property: "value", type: "number")
 
 		// Convertit les valeurs si besoin
 		def coefConversion = command.device.metadata('coefConversion')
@@ -95,67 +110,6 @@ class Compteur extends AbstractDeviceType {
 	 */
 	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
-
-		if (command.viewMode == ChartViewEnum.day) {
-			chart.chartType = "SteppedAreaChart"
-
-			chart.values = values.collectEntries { entry ->
-				Map resultValues = [:]
-				entry.value.each { deviceValue ->
-					if (deviceValue.name == 'hcinst' || deviceValue.name == 'hpinst') {
-						def name = deviceValue.name == 'hcinst' ? 'HC' : 'HP'
-						def kwh = deviceValue.value / 1000.0
-						resultValues["kwh${name}"] = kwh
-						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
-					}
-				}
-				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
-				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
-				[(entry.key): resultValues]
-			}
-
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "datetime", value: { deviceValue, index, currentChart ->
-					deviceValue.key
-				}),
-				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value["prixHC"]
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value["prixHP"]
-				})
-			]
-		} else {
-			chart.values = values.collectEntries { entry ->
-				Map resultValues = [:]
-				entry.value.each { deviceValue ->
-					if (deviceValue.name == 'hchcsum' || deviceValue.name == 'hchpsum') {
-						def name = deviceValue.name == 'hchcsum' ? 'HC' : 'HP'
-						def kwh = deviceValue.value / 1000.0
-						resultValues["kwh${name}"] = kwh
-						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
-					}
-				}
-				resultValues["kwh"] = (resultValues["kwhHC"]?:0d) + (resultValues["kwhHP"]?:0d)
-				resultValues["prix"] = (resultValues["prixHC"]?:0d) + (resultValues["prixHP"]?:0d)
-				[(entry.key): resultValues]
-			}
-
-			chart.colonnes = [
-				new GoogleDataTableCol(label: "Date", type: "date", value: { deviceValue, index, currentChart ->
-					deviceValue.key
-				}),
-				new GoogleDataTableCol(label: "Heures creuses (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value["prixHC"]
-				}),
-				new GoogleDataTableCol(label: "Heures pleines (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value["prixHP"]
-				}),
-				new GoogleDataTableCol(label: "Total (€)", type: "number", value: { deviceValue, index, currentChart ->
-					deviceValue.value["prix"]
-				})
-			]
-		}
 
 		return chart
 	}
@@ -235,7 +189,25 @@ class Compteur extends AbstractDeviceType {
 	 * Nom du contrat
 	 */
 	String getContrat() {
-		return "BASE"
+		if (contratCache != null) {
+			return contratCache
+		}
+
+		String optionTarifaire = getOptTarif()
+
+		if (optionTarifaire) {
+			String intensiteSouscrite = getPuissanceSous()
+
+			if (intensiteSouscrite) {
+				contratCache = "${optionTarifaire}_${intensiteSouscrite}".toUpperCase() // ex : HC_60
+			} else {
+				contratCache = "${optionTarifaire}".toUpperCase() // ex : HC_60
+			}
+		} else {
+			contratCache = DEFAULT_CONTRAT
+		}
+
+		return contratCache
 	}
 
 
@@ -250,12 +222,22 @@ class Compteur extends AbstractDeviceType {
 
 
 	/**
+	 * Puissance du contrat
+	 * 
+	 * @return
+	 */
+	String getPuissanceSous() {
+		return device.metavalue("isousc")?.value // 60A, 45A, ...
+	}
+
+
+	/**
 	 * Unité pour les widgets (peut être différent)
 	 *
 	 * @return
 	 */
 	String defaultUnite() {
-
+		return device.unite
 	}
 
 
@@ -268,7 +250,7 @@ class Compteur extends AbstractDeviceType {
 		// calcule la conso du jour en repartant des index
 		def values = DeviceValue.executeQuery("""\
 			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as sum)
+			(max(deviceValue.value) - min(deviceValue.value)) as ${AGGREGATE_METRIC_NAME})
 			FROM DeviceValue deviceValue
 			WHERE deviceValue.device = :device
 			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
@@ -290,7 +272,7 @@ class Compteur extends AbstractDeviceType {
 		// calcule la conso du mois en repartant des index
 		def values = DeviceValue.executeQuery("""\
 			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as sum)
+			(max(deviceValue.value) - min(deviceValue.value)) as ${AGGREGATE_METRIC_NAME})
 			FROM DeviceValue deviceValue
 			WHERE deviceValue.device = :device
 			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
@@ -315,16 +297,153 @@ class Compteur extends AbstractDeviceType {
 			// les consos intermédiaires sont désormais calculées par l'agent (à cause du offline)
 			// ce test sert à calculer la conso si pas envoyée par un ancien agent
 			if (!datas.metavalues?.conso) {
-				device.addMetavalue("conso", [value: "0", label: "Période consommation", trace: true])
+				device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation", trace: true])
 
 				// récupère la dernière valeur principale (le dernier index)
 				def lastIndex = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue)
 
 				if (lastIndex) {
 					def conso = device.value.toLong() - lastIndex.value.toLong()
-					device.addMetavalue("conso", [value: conso.toString()])
+					device.addMetavalue(META_METRIC_NAME, [value: conso.toString()])
 				}
 			}
 		}
 	}
+
+
+	/**
+	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	Map consosJour(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstHour = DateUtils.firstTimeInDay(currentDate)
+		Date lastHour = DateUtils.lastTimeInDay(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValue.values(device, firstHour, lastHour, 'hpinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValue.values(device, firstHour, lastHour, 'hcinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValue.values(device, firstHour, lastHour, 'baseinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
+
+
+	/**
+	 * Consommation moyenne par jour sur une période
+	 *
+	 * @param dateStart
+	 * @param dateEnd
+	 * @return
+	 */
+	Double consoMoyenneJour(Date dateStart, Date dateEnd) {
+		Double consoMoyenne
+		def consos = [optTarif: getOptTarif()]
+		dateStart = dateStart.clearTime()
+		dateEnd = dateEnd.clearTime()
+		int duree = (dateEnd - dateStart) + 1
+
+		if (duree) {
+			if (consos.optTarif in ['HC', 'EJP']) {
+				def hchp = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				def hchc = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				consoMoyenne = ((hchp + hchc) / duree as Double).round(1)
+			} else {
+				def base = ((DeviceValueDay.values(device, dateStart, dateEnd, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				consoMoyenne = (base / duree as Double).round(1)
+			}
+		}
+
+		return consoMoyenne
+	}
+
+
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	Map consosMois(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
+		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
+
+
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	Map consosAnnee(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
+		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
+
+
+	/**
+	 * Parse une saisie d'index par un user pour mettre à jour l'objet device associé
+	 * 
+	 * @param command
+	 * @throws SmartHomeException
+	 */
+	void parseIndex(SaisieIndexCommand command) throws SmartHomeException {
+
+	}
+
 }

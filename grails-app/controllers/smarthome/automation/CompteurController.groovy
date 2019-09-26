@@ -2,6 +2,7 @@ package smarthome.automation
 
 import smarthome.application.granddefi.RegisterCompteurCommand
 import smarthome.core.AbstractController
+import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
 
@@ -80,5 +81,29 @@ class CompteurController extends AbstractController {
 	def resetCompteurGaz() {
 		compteurService.resetCompteurGaz(authenticatedUser)
 		redirect(action: 'compteur')
+	}
+
+
+	/**
+	 * Saisie des index d'un compteur (elec, gaz, eau, etc....)
+	 * 
+	 * @param device
+	 * @return
+	 */
+	def saisieIndex(Device device) {
+		def command = this.parseFlashCommand("command", new SaisieIndexCommand())
+		render(view: 'saisieIndex', model: [device: device, command: command])
+	}
+
+
+	/**
+	 * Enregistrement des index
+	 * 
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "saisieIndex", modelName = "command")
+	def saveIndex() {
+		setInfo "Index enregistré avec succès !"
+		forward(action: 'compteur')
 	}
 }

@@ -18,6 +18,7 @@ import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
+import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -59,6 +60,7 @@ class TeleInformation extends Compteur {
 	}
 
 
+
 	/**
 	 * (non-Javadoc)
 	 * @see smarthome.automation.deviceType.AbstractDeviceType#values()
@@ -70,8 +72,18 @@ class TeleInformation extends Compteur {
 		if (command.viewMode == ChartViewEnum.day) {
 			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
 					command.metaName ?: "null,hcinst,hpinst,baseinst")
-		} else {
-			values = super.values(command)
+		} else if (command.viewMode == ChartViewEnum.month) {
+			// en fonction du contrat, il peut y avoir plusieurs métriques
+			// au minium il y en a 2 : la conso et la puissance
+			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
+				it.dateValue
+			}.collect { it }
+		} else if (command.viewMode == ChartViewEnum.year) {
+			// en fonction du contrat, il peut y avoir plusieurs métriques
+			// au minium il y en a 2 : la conso et la puissance
+			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
+				it.dateValue
+			}.collect { it }
 		}
 
 		return values
@@ -350,34 +362,6 @@ class TeleInformation extends Compteur {
 
 
 	/**
-	 * Nom du contrat
-	 */
-	@Override
-	String getContrat() {
-		if (contratCache != null) {
-			return contratCache
-		}
-
-		String optionTarifaire = device.metavalue("opttarif")?.value // base, hc, ...
-
-		if (optionTarifaire) {
-			// le isousc n'est pas toujours fourni (ie module sans fil TIC)
-			String intensiteSouscrite = device.metavalue("isousc")?.value // 60A, 45A, ...
-
-			if (intensiteSouscrite) {
-				contratCache = "${optionTarifaire}_${intensiteSouscrite}".toUpperCase() // ex : HC_60
-			} else {
-				contratCache = "${optionTarifaire}".toUpperCase() // ex : HC_60
-			}
-
-			return contratCache
-		}
-
-		return null
-	}
-
-
-	/**
 	 * Unité pour les widgets (peut être différent)
 	 * 
 	 * @return
@@ -388,129 +372,7 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 * 
-	 * @return
-	 */
-	Map consosJour(Date currentDate = null) {
-		def consos = [optTarif: getOptTarif()]
-		currentDate = currentDate ?: new Date()
-		def currentYear = currentDate[Calendar.YEAR]
-		Date firstHour = DateUtils.firstTimeInDay(currentDate)
-		Date lastHour = DateUtils.lastTimeInDay(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValue.values(device, firstHour, lastHour, 'hpinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValue.values(device, firstHour, lastHour, 'hcinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
-
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValue.values(device, firstHour, lastHour, 'baseinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
-
-		return consos
-	}
-
-
-	/**
-	 * Consommation moyenne par jour sur une période en kWh
-	 * 
-	 * @param dateStart
-	 * @param dateEnd
-	 * @return
-	 */
-	Double consoMoyenneJour(Date dateStart, Date dateEnd) {
-		Double consoMoyenne
-		def consos = [optTarif: getOptTarif()]
-		dateStart = dateStart.clearTime()
-		dateEnd = dateEnd.clearTime()
-		int duree = (dateEnd - dateStart) + 1
-
-		if (duree) {
-			if (consos.optTarif in ['HC', 'EJP']) {
-				def hchp = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				def hchc = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				consoMoyenne = ((hchp + hchc) / duree as Double).round(1)
-			} else {
-				def base = ((DeviceValueDay.values(device, dateStart, dateEnd, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				consoMoyenne = (base / duree as Double).round(1)
-			}
-		}
-
-		return consoMoyenne
-	}
-
-
-	/**
-	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 *
-	 * @return
-	 */
-	Map consosMois(Date currentDate = null) {
-		def consos = [optTarif: getOptTarif()]
-		currentDate = currentDate ?: new Date()
-		def currentYear = currentDate[Calendar.YEAR]
-		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
-		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
-
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
-
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
-
-		return consos
-	}
-
-
-	/**
-	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 *
-	 * @return
-	 */
-	Map consosAnnee(Date currentDate = null) {
-		def consos = [optTarif: getOptTarif()]
-		currentDate = currentDate ?: new Date()
-		def currentYear = currentDate[Calendar.YEAR]
-		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
-		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
-
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
-
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
-
-		return consos
-	}
 
 
 	/**
@@ -548,7 +410,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-
 	/**
 	 * (non-Javadoc)
 	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueMonth(java.util.Date)
@@ -582,4 +443,15 @@ class TeleInformation extends Compteur {
 
 		return values
 	}
+
+
+	/** (non-Javadoc)
+	 *
+	 * @see smarthome.automation.deviceType.Compteur#parseIndex(smarthome.automation.SaisieIndexCommand)
+	 */
+	@Override
+	void parseIndex(SaisieIndexCommand command) throws SmartHomeException {
+
+	}
+
 }

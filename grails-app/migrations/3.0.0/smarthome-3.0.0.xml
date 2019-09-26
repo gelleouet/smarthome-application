@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1569528715004-1">
+        <createTable tableName="commune">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_postal" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-2">
+        <createTable tableName="ecs">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-3">
+        <createTable tableName="profil">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="view" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-4">
+        <addColumn tableName="house">
+            <column name="ecs_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-5">
+        <addColumn tableName="utilisateur">
+            <column name="profil_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-6">
+        <addPrimaryKey columnNames="id" constraintName="commune_pkey" tableName="commune"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-7">
+        <addPrimaryKey columnNames="id" constraintName="ecs_pkey" tableName="ecs"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-8">
+        <addPrimaryKey columnNames="id" constraintName="profil_pkey" tableName="profil"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-9">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_dnstgpijeixvef414f5hy0fbb" deferrable="false" disabled="false" initiallyDeferred="false" tableName="ecs"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-10">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_dtxgw1r8lv8fxlofthwiv6am5" deferrable="false" disabled="false" initiallyDeferred="false" tableName="profil"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-11">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_mkujenk3qdcwa887ftd32w94t" deferrable="false" disabled="false" initiallyDeferred="false" tableName="commune"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-12">
+        <addUniqueConstraint columnNames="code_postal" constraintName="uk_o5uj9yuxtkxtbu6ebv3b2o1x8" deferrable="false" disabled="false" initiallyDeferred="false" tableName="commune"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-13">
+        <addForeignKeyConstraint baseColumnNames="profil_id" baseTableName="utilisateur" constraintName="fk_1evy87s3npvykd184dfbchn6y" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="profil"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1569528715004-14">
+        <addForeignKeyConstraint baseColumnNames="ecs_id" baseTableName="house" constraintName="fk_6t1997kwlsxepecqk7hn0xvy1" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ecs"/>
+    </changeSet>
+</databaseChangeLog>
