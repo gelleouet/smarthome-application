@@ -29,7 +29,8 @@ import smarthome.core.chart.GoogleDataTableCol
  * @author gregory
  *
  */
-class TeleInformation extends AbstractDeviceType {
+class TeleInformation extends Compteur {
+
 	public static final SERIES_COLOR = [
 		'hc': '#47bac1',
 		'hp': '#dc3912',
@@ -349,29 +350,6 @@ class TeleInformation extends AbstractDeviceType {
 
 
 	/**
-	 * Retourne le fournisseur du contrat
-	 *
-	 * @return
-	 */
-	@Override
-	DeviceTypeProvider getFournisseur() {
-		if (fournisseurCache != null) {
-			return fournisseurCache
-		}
-
-		// cherche le fournisseur dans les metadonnées
-		String libelle = device.metadata("fournisseur")?.value
-
-		if (libelle) {
-			fournisseurCache = DeviceTypeProvider.findByLibelle(libelle)
-			return fournisseurCache
-		}
-
-		return null
-	}
-
-
-	/**
 	 * Nom du contrat
 	 */
 	@Override
@@ -400,20 +378,11 @@ class TeleInformation extends AbstractDeviceType {
 
 
 	/**
-	 * Option tarifaire
-	 * 
-	 * @return
-	 */
-	String getOptTarif() {
-		return device.metavalue("opttarif")?.value // base, hc, ...
-	}
-
-
-	/**
 	 * Unité pour les widgets (peut être différent)
 	 * 
 	 * @return
 	 */
+	@Override
 	String defaultUnite() {
 		"kWh"
 	}

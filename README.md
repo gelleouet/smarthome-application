@@ -186,6 +186,13 @@ Permet d'envoyer des messages entre instances
 - _smarthome.config.location_ : le fichier de config avec les credentials et
 paramètres de l'application
 
+Pour debugger l'application, ilsuffit de rajouter le paramètre --debug-fork sur la ligne de commande.
+Le process Java s'arrête alors en écoute sur une connexion debug, port 5005.
+Il suffit d'attacher un process Java "Remote Application" sur ce port
+
+     bash> grails run-app --debug-fork -Dsmarthome.cluster.serverId=.. -Dsmarthome.datasource.password=.. -Dsmarthome.config.location=..
+
+
 ### 3.2 Conventions Grails
 
 Pour plus de détails, consulter la [documentation officielle](http://docs.grails.org/latest/)

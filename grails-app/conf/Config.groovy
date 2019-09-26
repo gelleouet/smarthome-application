@@ -173,3 +173,6 @@ environments {
 	}
 }
 
+enedis {
+	state = "grand-defi"
+}
