@@ -12,10 +12,12 @@ import smarthome.automation.House
 import smarthome.automation.HouseService
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
+import smarthome.core.ConfigService
 import smarthome.core.SmartHomeException
 import smarthome.security.RegistrationCode
 import smarthome.security.Role
 import smarthome.security.User
+import smarthome.security.UserAdmin
 import smarthome.security.UserService
 
 /**
@@ -28,6 +30,7 @@ class GrandDefiService extends AbstractService {
 	GrailsApplication grailsApplication
 	UserService userService
 	LinkGenerator grailsLinkGenerator
+	ConfigService configService
 
 
 	/**
@@ -57,7 +60,7 @@ class GrandDefiService extends AbstractService {
 	RegistrationCode createAccount(AccountCommand account) throws SmartHomeException {
 		log.info "Demande création compte ${account.username}"
 
-		// on vérifie que l'adresse n'est pas déjà prie
+		// on vérifie que l'adresse n'est pas déjà prise
 		User user = User.findByUsername(account.username)
 
 		if (user) {
@@ -85,6 +88,15 @@ class GrandDefiService extends AbstractService {
 		} catch (SmartHomeException ex) {
 			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
 			throw new SmartHomeException(ex.message, account, user)
+		}
+
+		// Association à un admin
+		String adminIds = configService.value("GRAND_DEFI_ADMIN_IDS")
+
+		if (adminIds) {
+			for (String adminId : adminIds.split(",")) {
+				userService.save(new UserAdmin(user: user, admin: User.read(adminId.trim() as Long)))
+			}
 		}
 
 		// création d'une maison par défaut

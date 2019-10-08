@@ -17,7 +17,7 @@
 	          selectionMode: 'multiple',
 	          seriesType: 'steppedArea',
 	          series: {
-	          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
+	          	<g:render template="/chart/google/series" model="[chart: chart]"/>
 	          },
 	          vAxes: {
 	          	0: {title: 'Consommation (Wh)'},
@@ -47,7 +47,7 @@
       	
       	<g:if test="${ !compareChart }">
       	
-	      	<g:render template="/chart/google/annotation" model="[series: chart.series]"/>
+	      	<g:render template="/chart/google/annotation" model="[chart: chart]"/>
 		    	
 			chartOptions = {
 				  'title': '${label }',
@@ -60,7 +60,7 @@
 			      },
 			      selectionMode: 'multiple',
 			      series: {
-		          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
+		          	<g:render template="/chart/google/series" model="[chart: chart]"/>
 		          },
 		          vAxes: {
 		          	0: {title: 'Consommation (kWh)'},
@@ -89,7 +89,7 @@
 			      selectionMode: 'multiple',
 		          'seriesType': 'bars',
 		          series: {
-		          	<g:render template="/chart/google/series" model="[series: chart.series]"/>
+		          	<g:render template="/chart/google/series" model="[chart: chart]"/>
 		          },
 		          diff: {
 				  	oldData: {

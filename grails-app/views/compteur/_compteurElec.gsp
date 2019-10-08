@@ -45,7 +45,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="saisieIndex" id="${ house.compteur.id }"><app:icon name="edit"/> Saisie index</g:link>
+							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="[deviceId: house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 					</div>
@@ -67,7 +67,7 @@
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="linky.png" class="ml-4" style="height:75px;"/>
+							<asset:image src="linky.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Les consommations seront téléchargées automatiquement par le service Enedis DataConnect</small>
@@ -76,18 +76,32 @@
 					
 					<label class="custom-control custom-radio mt-4">
 						<g:radio name="compteurModel" value="Electronique" class="custom-control-input"/>
-						<span class="custom-control-label">Compteur non communicant ou existant</span>
+						<span class="custom-control-label">Compteur non communicant</span>
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="compteur-elec-electronique.png" class="ml-4" style="height:75px;"/>
-							<asset:image src="compteur-elec-mecanique.png" class="ml-1" style="height:75px;"/>
+							<asset:image src="compteur-elec-electronique.png" class="ml-4 compteur-model-img"/>
+							<asset:image src="compteur-elec-mecanique.png" class="ml-1 compteur-model-img"/>
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Les index de consommation seront saisis manuellement ou envoyés automatiquement par le bus téléinformation</small>
+						</div>
+					</div>
+					
+					<label class="custom-control custom-radio mt-4">
+						<g:radio name="compteurModel" value="_exist" class="custom-control-input"/>
+						<span class="custom-control-label">Compteur existant</span>
+					</label>
+					<div class="row">
+						<div class="col">
+							<asset:image src="compteur-elec-electronique.png" class="ml-4 compteur-model-img"/>
+							<asset:image src="linky.png" class="ml-1 compteur-model-img"/>
+						</div>
+						<div class="col-8">
+							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>
 							
 							<g:select class="form-control" name="compteurElec.id" from="${ compteurElecs }"
-         								optionKey="id" optionValue="label" placeholder="Select compteur" noSelection="[null: '']"/>
+         								optionKey="id" optionValue="label" noSelection="[null: ' ']"/>
 						</div>
 					</div>
 					

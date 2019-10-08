@@ -190,8 +190,14 @@ class Device implements Serializable, EventTriggerPreparable {
 		}
 
 		meta.value = values.value
-		meta.type = values.type
-		meta.label = values.label
+
+		if (values.type) {
+			meta.type = values.type
+		}
+
+		if (values.label) {
+			meta.label = values.label
+		}
 
 		if (values.values instanceof Iterable) {
 			meta.values = values.values.join("##")

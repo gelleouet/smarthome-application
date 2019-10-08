@@ -1,10 +1,14 @@
 package smarthome.automation
 
 import smarthome.application.granddefi.RegisterCompteurCommand
+import smarthome.automation.deviceType.CompteurGaz
 import smarthome.core.AbstractController
+import smarthome.core.ConfigService
 import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.SmartHomeException
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
+import smarthome.security.Profil
 
 import org.springframework.security.access.annotation.Secured
 
@@ -16,6 +20,9 @@ import org.springframework.security.access.annotation.Secured
 class CompteurController extends AbstractController {
 
 	CompteurService compteurService
+	ConfigService configService
+	DeviceService deviceService
+	DeviceTypeService deviceTypeService
 
 
 	/**
@@ -39,8 +46,9 @@ class CompteurController extends AbstractController {
 	 * @param command
 	 * @return
 	 */
+	@ExceptionNavigationHandler(actionName = "compteur")
 	def registerCompteur(RegisterCompteurCommand command) {
-		command.user = authenticatedUser
+		command.user = authenticatedUser // plugin spring security
 
 		if (command.compteurType == 'elec') {
 			if (command.compteurModel == 'Linky') {
@@ -90,9 +98,20 @@ class CompteurController extends AbstractController {
 	 * @param device
 	 * @return
 	 */
-	def saisieIndex(Device device) {
-		def command = this.parseFlashCommand("command", new SaisieIndexCommand())
-		render(view: 'saisieIndex', model: [device: device, command: command])
+	def saisieIndex(SaisieIndexCommand command) {
+		command = this.parseFlashCommand("command", command)
+		def device = Device.read(command.deviceId)
+
+		if (!device) {
+			throw new SmartHomeException("Device introuvable !")
+		}
+
+		// vérif autorisation
+		deviceService.edit(device)
+		def defaultCoefGaz = configService.value(CompteurGaz.CONFIG_DEFAULT_COEF_CONVERSION)
+
+		render(view: 'saisieIndex', model: [command: command, device: device,
+			defaultCoefGaz: defaultCoefGaz])
 	}
 
 
@@ -102,8 +121,86 @@ class CompteurController extends AbstractController {
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "saisieIndex", modelName = "command")
-	def saveIndex() {
-		setInfo "Index enregistré avec succès !"
+	def saveIndex(SaisieIndexCommand command) {
+		bindFile(command, 'photo', 'photo')
+		checkErrors(this, command)
+		compteurService.saveIndexForValidation(command)
+		setInfo "Index enregistré avec succès. Il sera validé ultérieurement par un administrateur."
 		forward(action: 'compteur')
+	}
+
+
+	/**
+	 * Les index en cours de validation par un admin
+	 * 
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	@NavigableAction(label = "Validation des index", navigation = NavigationEnum.navbarPrimary,
+	header = "Grand Défi", icon = "check-square")
+	def compteurIndexs(CompteurIndexCommand command) {
+		command.admin(authenticatedUser) // plugin spring security
+		checkErrors(this, command)
+		def indexs = compteurService.listCompteurIndex(command, getPagination([:]))
+
+		render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
+			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])
+	}
+
+
+	/**
+	 * Affichage d'un index par un admin
+	 * 
+	 * @param index
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	def compteurIndex(CompteurIndex index) {
+		index = this.parseFlashCommand('index', index)
+		def defaultCoefGaz = configService.value(CompteurGaz.CONFIG_DEFAULT_COEF_CONVERSION)
+		render(view: 'compteurIndex', model: [command: index, device: index.device,
+			modeAdmin: true, defaultCoefGaz: defaultCoefGaz])
+	}
+
+
+	/**
+	 * Validation d'un index par un admin
+	 * 
+	 * @param index
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	@ExceptionNavigationHandler(actionName = "compteurIndex", modelName = "index")
+	def validIndex(CompteurIndex compteurIndex) {
+		checkErrors(this, compteurIndex)
+		compteurService.validIndex(compteurIndex)
+		redirect(action: 'compteurIndexs')
+	}
+
+
+	/**
+	 * Affichage photo prise du compteur
+	 * 
+	 * @param index
+	 * @return
+	 */
+	def compteurIndexImg(CompteurIndex index) {
+		if (index.photo) {
+			render(file: index.photo, contentType: 'image/png')
+		} else {
+			nop()
+		}
+	}
+
+
+	/**
+	 * Suppression d'un index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	def deleteIndex(CompteurIndex index) {
+		compteurService.delete(index)
+		redirect(action: 'compteurIndexs')
 	}
 }

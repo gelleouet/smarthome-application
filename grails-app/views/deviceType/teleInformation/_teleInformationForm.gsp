@@ -32,3 +32,21 @@
 		from="${['Electronique', 'Mécanique', 'Linky']}"
 		noSelection="['': '']"/>
 </div>
+
+
+<g:set var="aggregate" value="${ device?.metadata('aggregate') }"/>
+
+<g:if test="${ aggregate?.id }">
+	<g:hiddenField name="metadatas[2].id" value="${ aggregate.id }"/>
+</g:if>
+
+<g:hiddenField name="metadatas[2].name" value="aggregate"/>
+
+<div class="form-group">
+	<label title="API : device.metadata('aggregate')?.value">
+		Calcul des données aggrégées
+	</label>
+	<g:select name="metadatas[2].value" value="${ aggregate?.value }" class="form-control"
+		from="${['diff-index', 'sum-conso']}"
+		noSelection="['': ' ']"/>
+</div>

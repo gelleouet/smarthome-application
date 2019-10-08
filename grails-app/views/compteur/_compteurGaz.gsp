@@ -45,7 +45,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="saisieIndex" id="${ house.compteurGaz.id }"><app:icon name="edit"/> Saisie index</g:link>
+							<g:link class="btn btn-primary mb-2" action="saisieIndex" params="[deviceId: house.compteurGaz.id]"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 					</div>
@@ -67,7 +67,7 @@
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="gazpar.png" class="ml-4" style="height:75px;"/>
+							<asset:image src="gazpar.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Les consommations seront téléchargées automatiquement par le service GRDF ADICT</small>
@@ -76,17 +76,31 @@
 					
 					<label class="custom-control custom-radio mt-4">
 						<g:radio name="compteurModel" value="Gaz" class="custom-control-input"/>
-						<span class="custom-control-label">Compteur non communicant ou existant</span>
+						<span class="custom-control-label">Compteur non communicant</span>
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="compteur-gaz.png" class="ml-4" style="height:75px;"/>
+							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Les index de consommation seront saisis manuellement ou envoyés automatiquement par impulsions</small>
+						</div>
+					</div>
+					
+					<label class="custom-control custom-radio mt-4">
+						<g:radio name="compteurModel" value="_exist" class="custom-control-input"/>
+						<span class="custom-control-label">Compteur existant</span>
+					</label>
+					<div class="row">
+						<div class="col">
+							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
+							<asset:image src="gazpar.png" class="ml-1 compteur-model-img"/>
+						</div>
+						<div class="col-8">
+							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>
 							
 							<g:select class="form-control" name="compteurGaz.id" from="${ compteurGazs }"
-         								optionKey="id" optionValue="label" placeholder="Select compteur" noSelection="[null: '']"/>
+         								optionKey="id" optionValue="label" noSelection="[null: ' ']"/>
 						</div>
 					</div>
 					

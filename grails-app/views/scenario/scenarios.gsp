@@ -38,7 +38,7 @@
 			            <td>${ bean.description }</td>
 			            <td>${ app.formatTimeAgo(date: bean.lastExecution) }</td>
 			            <td class="column-1-buttons command-column">
-			            	<g:link class="btn btn-light confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
+			            	<g:link class="btn btn-light confirm-button" title="Supprimer" action="delete" id="${ bean.id }">
 			            		<app:icon name="trash"/>
 			            	</g:link>
 			            </td>

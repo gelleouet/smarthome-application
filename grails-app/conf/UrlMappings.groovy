@@ -8,7 +8,7 @@ class UrlMappings {
 		}
 		"/"(controller: 'tableauBord', action: 'index')
 		"500"(view:'/error')
-		"404"(view:'/error')
+		"404"(view:'/error404')
 
 		/**
 		 * Les accès à l'API Smarthome

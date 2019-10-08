@@ -1,5 +1,5 @@
 chartDatas.setColumns([0,
-	<g:each var="serie" in="${ series }" status="status">
+	<g:each var="serie" in="${ chart.series }" status="status">
 		${status+1},
 		<g:if test="${ serie.annotation }">
 		{ calc: "stringify",

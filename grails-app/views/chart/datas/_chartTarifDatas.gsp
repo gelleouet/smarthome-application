@@ -5,7 +5,7 @@
 	<g:if test="${ chart }">
    		chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
    		chartDatas = new google.visualization.DataView(chartDatas)
-   		<g:render template="/chart/google/annotation" model="[series: chart.series]"/>
+   		<g:render template="/chart/google/annotation" model="[chart: chart]"/>
    	</g:if>
    	
    	<g:if test="${ chart.joinChart }">

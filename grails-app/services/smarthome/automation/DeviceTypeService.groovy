@@ -1,10 +1,13 @@
 package smarthome.automation
 
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional
 
-import smarthome.core.AbstractService;
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.SmartHomeException;
+import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.CompteurGaz
+import smarthome.automation.deviceType.TeleInformation
+import smarthome.core.AbstractService
+import smarthome.core.AsynchronousMessage
+import smarthome.core.SmartHomeException
 
 
 class DeviceTypeService extends AbstractService {
@@ -26,12 +29,22 @@ class DeviceTypeService extends AbstractService {
 		} else {
 			deviceType.config.clear()
 		}
-		
+
 		if (!deviceType.save()) {
 			throw new SmartHomeException("Erreur enregistrement device type", deviceType)
 		}
-		
+
 		return deviceType
 	}
-	
+
+
+	/**
+	 * Liste les impl Compteur
+	 * 
+	 * @return
+	 */
+	List<DeviceType> listCompteur() {
+		def impls = [TeleInformation.name, Compteur.name, CompteurGaz.name]
+		return DeviceType.findAllByImplClassInList(impls, [sort: 'libelle'])
+	}
 }

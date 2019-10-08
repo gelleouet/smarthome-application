@@ -5,6 +5,7 @@ import java.util.List
 import java.util.Map
 
 import smarthome.automation.ChartViewEnum
+import smarthome.automation.CompteurIndex
 import smarthome.automation.DeviceChartCommand
 import smarthome.automation.DeviceTypeProvider
 import smarthome.automation.DeviceTypeProviderPrix
@@ -12,7 +13,6 @@ import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
-import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -26,9 +26,14 @@ import smarthome.core.chart.GoogleDataTableCol
  */
 class Compteur extends AbstractDeviceType {
 
-	private static final String AGGREGATE_METRIC_NAME = "sum"
-	private static final String META_METRIC_NAME = "conso"
-	private static final String DEFAULT_CONTRAT = "BASE"
+	protected static final String AGGREGATE_METRIC_NAME = "sum"
+	protected static final String META_METRIC_NAME = "conso"
+	protected static final String DEFAULT_CONTRAT = "BASE"
+
+	protected static final SERIES_COLOR = [
+		'conso': '#47bac1',
+		'total': '#e8eaed'
+	]
 
 	protected DeviceTypeProvider fournisseurCache
 	protected String contratCache
@@ -63,10 +68,10 @@ class Compteur extends AbstractDeviceType {
 					META_METRIC_NAME)
 		} else if (command.viewMode == ChartViewEnum.month) {
 			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(),
-					AGGREGATE_METRIC_NAME)
+					aggregateMetaName())
 		} else if (command.viewMode == ChartViewEnum.year) {
 			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin(),
-					AGGREGATE_METRIC_NAME)
+					aggregateMetaName())
 		}
 
 		return values
@@ -217,7 +222,7 @@ class Compteur extends AbstractDeviceType {
 	 * @return
 	 */
 	String getOptTarif() {
-		return device.metavalue("opttarif")?.value // base, hc, ...
+		return device.metavalue("opttarif")?.value ?: DEFAULT_CONTRAT // base, hc, ...
 	}
 
 
@@ -297,7 +302,7 @@ class Compteur extends AbstractDeviceType {
 			// les consos intermédiaires sont désormais calculées par l'agent (à cause du offline)
 			// ce test sert à calculer la conso si pas envoyée par un ancien agent
 			if (!datas.metavalues?.conso) {
-				device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation", trace: true])
+				addDefaultMetas()
 
 				// récupère la dernière valeur principale (le dernier index)
 				def lastIndex = DeviceValue.lastValueInPeriod(device, dateInf, device.dateValue)
@@ -312,7 +317,26 @@ class Compteur extends AbstractDeviceType {
 
 
 	/**
-	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 * Ajout des metavalues et metadatas par défaut pour initialiser le
+	 * device correctement
+	 */
+	protected void addDefaultMetas() {
+		device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation", trace: true])
+	}
+
+
+	/**
+	 * La clé des données aggrégées
+	 * 
+	 * @return
+	 */
+	protected String aggregateMetaName() {
+		AGGREGATE_METRIC_NAME
+	}
+
+
+	/**
+	 * Les consos du jour
 	 *
 	 * @return
 	 */
@@ -323,21 +347,11 @@ class Compteur extends AbstractDeviceType {
 		Date firstHour = DateUtils.firstTimeInDay(currentDate)
 		Date lastHour = DateUtils.lastTimeInDay(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValue.values(device, firstHour, lastHour, 'hpinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValue.values(device, firstHour, lastHour, 'hcinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+		consos.base = ((DeviceValue.values(device, firstHour, lastHour, META_METRIC_NAME).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+		consos.total = consos.base
 
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValue.values(device, firstHour, lastHour, 'baseinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
+		consos.tarifBASE = calculTarif(DEFAULT_CONTRAT, consos.base, currentYear)
+		consos.tarifTotal = consos.tarifBASE
 
 		return consos
 	}
@@ -358,14 +372,8 @@ class Compteur extends AbstractDeviceType {
 		int duree = (dateEnd - dateStart) + 1
 
 		if (duree) {
-			if (consos.optTarif in ['HC', 'EJP']) {
-				def hchp = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				def hchc = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				consoMoyenne = ((hchp + hchc) / duree as Double).round(1)
-			} else {
-				def base = ((DeviceValueDay.values(device, dateStart, dateEnd, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-				consoMoyenne = (base / duree as Double).round(1)
-			}
+			def base = ((DeviceValueDay.values(device, dateStart, dateEnd, aggregateMetaName()).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consoMoyenne = (base / duree as Double).round(1)
 		}
 
 		return consoMoyenne
@@ -384,21 +392,11 @@ class Compteur extends AbstractDeviceType {
 		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
 		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+		consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, aggregateMetaName()).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+		consos.total = consos.base
 
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
+		consos.tarifBASE = calculTarif(DEFAULT_CONTRAT, consos.base, currentYear)
+		consos.tarifTotal = consos.tarifBASE
 
 		return consos
 	}
@@ -416,21 +414,11 @@ class Compteur extends AbstractDeviceType {
 		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
 		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
-			consos.hchp = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.hchc = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+		consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, aggregateMetaName()).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+		consos.total = consos.base
 
-			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
-			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
-			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
-		} else {
-			consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
-			consos.total = consos.base
-
-			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
-			consos.tarifTotal = consos.tarifBASE
-		}
+		consos.tarifBASE = calculTarif(DEFAULT_CONTRAT, consos.base, currentYear)
+		consos.tarifTotal = consos.tarifBASE
 
 		return consos
 	}
@@ -438,12 +426,44 @@ class Compteur extends AbstractDeviceType {
 
 	/**
 	 * Parse une saisie d'index par un user pour mettre à jour l'objet device associé
+	 * Par défaut l'index est enregisré dans la valeur principale
 	 * 
-	 * @param command
+	 * @param index
 	 * @throws SmartHomeException
 	 */
-	void parseIndex(SaisieIndexCommand command) throws SmartHomeException {
+	void parseIndex(CompteurIndex index) throws SmartHomeException {
+		// met à jour la valeur principale
+		device.value = (index.index1 as Long).toString()
 
+		// essaie de calculer une conso sur la période si un ancien index est trouvé
+		DeviceValue lastIndex = lastIndex()
+		addDefaultMetas()
+
+		if (lastIndex) {
+			def conso = (index.index1 - lastIndex.value) as Long
+			device.addMetavalue(META_METRIC_NAME, [value: conso.toString()])
+		}
+	}
+
+
+	/**
+	 * Le dernier index enregistré sur le device
+	 * Par défaut, la value principale (sans name) est associé à l'index
+	 * 
+	 * @return
+	 */
+	DeviceValue lastIndex() {
+		// si aucune date sur le device, alors aucune value
+		if (device.dateValue) {
+			return DeviceValue.createCriteria().get {
+				eq 'device', device
+				isNull 'name'
+				maxResults 1
+				order 'dateValue', 'desc'
+			}
+		} else {
+			return null
+		}
 	}
 
 }

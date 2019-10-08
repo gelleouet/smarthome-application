@@ -96,7 +96,7 @@
 				<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />
 			</g:if>
 			<g:else>
-				<g:actionSubmit value="Créer" action="saveCreate" class="btn btn-primary" />
+				<g:actionSubmit value="Enregistrer" action="saveCreate" class="btn btn-primary" />
 			</g:else>
 			<g:link action="devices" class="btn btn-link">Annuler</g:link>
 		</g:form>

@@ -264,12 +264,13 @@ function favoriteStar(starId, star) {
 
 
 function showDialog(dialogId) {
-	AJS.dialog2('#' + dialogId).show();
+	$('#' + dialogId).modal('show')
 }
 
 
 function hideDialog(dialogId) {
-	AJS.dialog2('#' + dialogId).hide();
+	$('#' + dialogId).modal('hide')
+	$('#' + dialogId).modal('dispose')
 }
 
 

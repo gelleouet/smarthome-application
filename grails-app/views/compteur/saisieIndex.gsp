@@ -31,48 +31,21 @@
 				
 					<h5>Veuillez saisir les index de votre compteur pour enregistrer une nouvelle consommation</h5>
 				
-					<g:form action="saveIndex">
-					
-						<g:hiddenField name="device.id" value="${ device.id }"/>
+					<g:uploadForm action="saveIndex">
 					
 						<div class="row justify-content-center mt-4">
 							<div class="col-6 text-left">
-								<g:if test="${ compteur instanceof smarthome.automation.deviceType.TeleInformation }">
-									<g:if test="${ compteur.optTarif in ['HC', 'EJP'] }">
-										<div class="form-group required">
-											<label>Index Heures Creuses</label>
-											<g:field type="number decimal" name="metavalues.hchc" value="${ command.metavalues.hchc }" class="form-control" required="true"/>
-										</div>
-										<div class="form-group required">
-											<label>Index Heures Pleines</label>
-											<g:field type="number decimal" name="metavalues.hchp" value="${ command.metavalues.hchp }" class="form-control" required="true"/>
-										</div>
-									</g:if>
-									<g:else>
-										<div class="form-group required">
-											<label>Index Heures Base</label>
-											<g:field type="number decimal" name="metavalues.base" value="${ command.metavalues.base }" class="form-control" required="true"/>
-										</div>
-									</g:else>
-								</g:if>
 								
-								<g:elseif test="${ compteur instanceof smarthome.automation.deviceType.CompteurGaz }">
-									<div class="form-group required">
-										<label>Index</label>
-										<g:field type="number decimal" name="value" value="${ command.value }" class="form-control" required="true"/>
-									</div>
-									<div class="form-group required">
-										<label>Coefficient de conversion</label>
-										<g:field type="number decimal" name="metadatas.coefConversion" value="${ command.metadatas.coefConversion ?: device.metadata('coefConversion')?.value }" class="form-control" required="true"/>
-										<small class="text-muted">Ce coefficient sert à convertir les volumes en kWh. Il sera conservé dans la configuration du compteur</small>
-									</div>
-								</g:elseif>
+								<g:hiddenField name="deviceId" value="${ command.deviceId }"/>
 								
-								<div class="form-group required">
-									<label>Date Index</label>
-									<g:field name="dateValue" class="form-control small" value="${ app.formatPicker(date: new Date()) }" type="date" required="true"/>
-									<small class="text-muted">Après calcul avec le dernier index enregistré, la consommation sera enregistrée à cette date</small>
+								<g:render template="formIndex"/>
+								
+								<div class="form-group required mt-2">
+									<label for="photo-file">Importer une photo du compteur</label>
+									<input name="photo" type="file" required="true" id="photo-file"/>
+									<small class="form-text text-muted">Veuillez à ce que les index soient lisibles sur la photo pour que l'administrateur puisse valider votre saisie.</small>
 								</div>
+								
 							</div>
 						</div>	
 					
@@ -80,7 +53,7 @@
 							<button class="btn btn-primary">Enregistrer</button>
 							<g:link action="compteur" class="btn btn-link">Annuler</g:link>
 						</div>
-					</g:form>
+					</g:uploadForm>
 				</div>
 			</div><!-- div.card-body -->
 			

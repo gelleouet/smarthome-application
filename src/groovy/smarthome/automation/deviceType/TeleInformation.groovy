@@ -8,6 +8,7 @@ import java.util.Map
 
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
+import smarthome.automation.CompteurIndex
 import smarthome.automation.DataModifierEnum
 import smarthome.automation.Device
 import smarthome.automation.DeviceChartCommand
@@ -18,7 +19,6 @@ import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
-import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -109,7 +109,7 @@ class TeleInformation extends Compteur {
 			chart.colonnes = []
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 
-			if (opttarif in ["HC", "EJP"]) {
+			if (isDoubleTarification(opttarif)) {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hcinst" }?.value
 				})
@@ -117,13 +117,13 @@ class TeleInformation extends Compteur {
 					deviceValue.value.find{ it.name == "hpinst" }?.value
 				})
 
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc, targetAxisIndex: 0]
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp, targetAxisIndex: 0]
+				chart.series << [type: 'bars', color: SERIES_COLOR.hc, targetAxisIndex: 0]
+				chart.series << [type: 'bars', color: SERIES_COLOR.hp, targetAxisIndex: 0]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "baseinst" }?.value
 				})
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, targetAxisIndex: 0]
+				chart.series << [type: 'bars', color: SERIES_COLOR.base, targetAxisIndex: 0]
 			}
 
 			chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
@@ -136,7 +136,7 @@ class TeleInformation extends Compteur {
 			chart.colonnes = []
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", property: "key")
 
-			if (opttarif in ["HC", "EJP"]) {
+			if (isDoubleTarification(opttarif)) {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
 					if (value != null) {
@@ -225,7 +225,7 @@ class TeleInformation extends Compteur {
 				deviceValue.key
 			})
 
-			if (opttarif in ["HC", "EJP"]) {
+			if (isDoubleTarification(opttarif)) {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
@@ -270,7 +270,7 @@ class TeleInformation extends Compteur {
 				deviceValue.key
 			})
 
-			if (opttarif in ["HC", "EJP"]) {
+			if (isDoubleTarification(opttarif)) {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
@@ -372,9 +372,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-
-
-
 	/**
 	 * (non-Javadoc)
 	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueDay(java.util.Date)
@@ -395,16 +392,36 @@ class TeleInformation extends Compteur {
 					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)]))
 
 		// traite ensuite les index
-		values.addAll(DeviceValue.executeQuery("""\
-			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as sum)
-			FROM DeviceValue deviceValue
-			WHERE deviceValue.device = :device
-			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name in (:metaNames)
-			GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference),
-					metaNames: ['hchp', 'hchc', 'base']]))
+		// pour les saisies manuelles, si un seul index par jour le mode de calcul par diff des index
+		// ne peut pas marcher car une seule valeur et elle va s'annuler
+		// on bascule avec la somme des consos qui est moins précise lorsque le téléinfo
+		// est branché car si une coupure pendant un certain temps, il y a une perte d'info
+		if (device.metadata('aggregate')?.value == 'sum-conso') {
+			// ATTENTION !!! retransformer le name pour rester valide avec l'autre requete
+			// et le chargement des données dans la méthode @see values
+			values.addAll(DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue,
+				(case when deviceValue.name = 'hpinst' then 'hchp' when deviceValue.name = 'hcinst' then 'hchc' else 'base' end) as name,
+				sum(deviceValue.value) as sum)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				AND deviceValue.name in (:metaNames)
+				GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
+						dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference),
+						metaNames: ['hpinst', 'hcinst', 'baseinst']]))
+		} else {
+			values.addAll(DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+				(max(deviceValue.value) - min(deviceValue.value)) as sum)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				AND deviceValue.name in (:metaNames)
+				GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
+						dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference),
+						metaNames: ['hchp', 'hchc', 'base']]))
+		}
 
 		return values
 	}
@@ -430,28 +447,306 @@ class TeleInformation extends Compteur {
 					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))]))
 
 		// traite ensuite les index
-		values.addAll(DeviceValue.executeQuery("""\
-			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as sum)
-			FROM DeviceValue deviceValue
-			WHERE deviceValue.device = :device
-			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name in (:metaNames)
-			GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
-					metaNames: ['hchp', 'hchc', 'base']]))
+		// pour les saisies manuelles, si un seul index par jour le mode de calcul par diff des index
+		// ne peut pas marcher car une seule valeur et elle va s'annuler
+		// on bascule avec la somme des consos qui est moins précise lorsque le téléinfo
+		// est branché car si une coupure pendant un certain temps, il y a une perte d'info
+		if (device.metadata('aggregate')?.value == 'sum-conso') {
+			// ATTENTION !!! retransformer le name pour rester valide avec l'autre requete
+			// et le chargement des données dans la méthode @see values
+			values.addAll(DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue,
+				(case when deviceValue.name = 'hpinst' then 'hchp' when deviceValue.name = 'hcinst' then 'hchc' else 'base' end) as name,
+				sum(deviceValue.value) as sum)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				AND deviceValue.name in (:metaNames)
+				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
+						dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
+						metaNames: ['hpinst', 'hcinst', 'baseinst']]))
+		} else {
+			values.addAll(DeviceValue.executeQuery("""\
+				SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
+				(max(deviceValue.value) - min(deviceValue.value)) as sum)
+				FROM DeviceValue deviceValue
+				WHERE deviceValue.device = :device
+				AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
+				AND deviceValue.name in (:metaNames)
+				GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
+						dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
+						metaNames: ['hchp', 'hchc', 'base']]))
+		}
 
 		return values
 	}
 
 
-	/** (non-Javadoc)
+	/**
+	 * (non-Javadoc)
 	 *
-	 * @see smarthome.automation.deviceType.Compteur#parseIndex(smarthome.automation.SaisieIndexCommand)
+	 * @see smarthome.automation.deviceType.Compteur#parseIndex(smarthome.automation.CompteurIndex)
 	 */
 	@Override
-	void parseIndex(SaisieIndexCommand command) throws SmartHomeException {
+	void parseIndex(CompteurIndex index) throws SmartHomeException {
+		// la valeur principale est la puissance instantanée. ici on ne la connait pas
+		// mais on met une fausse valeur 0 car si null, le device ne sera pas historisé
+		device.value = "0"
 
+		// contrat double index
+		if (isDoubleTarification()) {
+			if (!index.index1 || !index.index2) {
+				throw new SmartHomeException("Les 2 index sont nécessaires pour les contrats double tarif !")
+			}
+
+			// conserve les index
+			device.addMetavalue("hchp", [value: (index.index1 as Long).toString(), label: "Total heures pleines", trace: true, unite: "Wh"])
+			device.addMetavalue("hchc", [value: (index.index2 as Long).toString(), label: "Total heures creuses", trace: true, unite: "Wh"])
+
+			// insère les metavalue pour conso période
+			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines", trace: true, unite: "Wh"])
+			device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses", trace: true, unite: "Wh"])
+
+			// essaie de calculer une conso sur la période si un ancien index est trouvé
+			DeviceValue lastIndexHP = lastIndexHP()
+
+			if (lastIndexHP) {
+				def conso = (index.index1 - lastIndexHP.value) as Long
+				device.addMetavalue("hpinst", [value: conso.toString()])
+			}
+
+			DeviceValue lastIndexHC = lastIndexHC()
+
+			if (lastIndexHC) {
+				def conso = (index.index2 - lastIndexHC.value) as Long
+				device.addMetavalue("hcinst", [value: conso.toString()])
+			}
+		} else {
+			// conserve les index
+			device.addMetavalue("base", [value: (index.index1 as Long).toString(), label: "Total toutes heures", trace: true, unite: "Wh"])
+
+			// insère les metavalue pour conso période
+			device.addMetavalue("baseinst", [value: "0", label: "Période toutes heures", trace: true, unite: "Wh"])
+
+			// essaie de calculer une conso sur la période si un ancien index est trouvé
+			DeviceValue lastIndex = lastIndex()
+
+			if (lastIndex) {
+				def conso = (index.index1 - lastIndex.value) as Long
+				device.addMetavalue("baseinst", [value: conso.toString()])
+			}
+		}
 	}
 
+
+	/**
+	 * Cas spécial pour la double tarification : l'index "principal" est le tarif 
+	 * normal (heure pleine)
+	 *
+	 * @see smarthome.automation.deviceType.Compteur#lastIndex()
+	 */
+	@Override
+	DeviceValue lastIndex() {
+		if (device.dateValue) {
+			if (isDoubleTarification()) {
+				return DeviceValue.createCriteria().get {
+					eq 'device', device
+					eq 'name', 'hchp'
+					maxResults 1
+					order 'dateValue', 'desc'
+				}
+			} else {
+				return DeviceValue.createCriteria().get {
+					eq 'device', device
+					eq 'name', 'base'
+					maxResults 1
+					order 'dateValue', 'desc'
+				}
+			}
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Pour les compteurs double tarif, renvoit l'index heure plein (ie l'index
+	 * principal donc le même que lastIndex())
+	 *
+	 * @return
+	 */
+	DeviceValue lastIndexHP() {
+		return lastIndex()
+	}
+
+
+	/**
+	 * Pour les compteurs double tarif, renvoit l'index heure creuse
+	 * 
+	 * @return
+	 */
+	DeviceValue lastIndexHC() {
+		if (device.dateValue && isDoubleTarification()) {
+			return DeviceValue.createCriteria().get {
+				eq 'device', device
+				eq 'name', 'hchc'
+				maxResults 1
+				order 'dateValue', 'desc'
+			}
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Contrat double tarif ? (ie HC ou EJP)
+	 * 
+	 * @return
+	 */
+	boolean isDoubleTarification() {
+		String opttarif = this.getOptTarif()
+		return isDoubleTarification(opttarif)
+	}
+
+
+
+	/**
+	 * Contrat double tarif ? (ie HC ou EJP)
+	 * 
+	 * @param opttarif
+	 * @return
+	 */
+	boolean isDoubleTarification(String opttarif) {
+		return opttarif in ["HC", "EJP"]
+	}
+
+
+	/**
+	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	@Override
+	Map consosJour(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstHour = DateUtils.firstTimeInDay(currentDate)
+		Date lastHour = DateUtils.lastTimeInDay(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValue.values(device, firstHour, lastHour, 'hpinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValue.values(device, firstHour, lastHour, 'hcinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValue.values(device, firstHour, lastHour, 'baseinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
+
+
+	/**
+	 * Consommation moyenne par jour sur une période
+	 *
+	 * @param dateStart
+	 * @param dateEnd
+	 * @return
+	 */
+	@Override
+	Double consoMoyenneJour(Date dateStart, Date dateEnd) {
+		Double consoMoyenne
+		def consos = [optTarif: getOptTarif()]
+		dateStart = dateStart.clearTime()
+		dateEnd = dateEnd.clearTime()
+		int duree = (dateEnd - dateStart) + 1
+
+		if (duree) {
+			if (consos.optTarif in ['HC', 'EJP']) {
+				def hchp = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				def hchc = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				consoMoyenne = ((hchp + hchc) / duree as Double).round(1)
+			} else {
+				def base = ((DeviceValueDay.values(device, dateStart, dateEnd, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+				consoMoyenne = (base / duree as Double).round(1)
+			}
+		}
+
+		return consoMoyenne
+	}
+
+
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	@Override
+	Map consosMois(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
+		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
+
+
+	/**
+	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
+	 *
+	 * @return
+	 */
+	@Override
+	Map consosAnnee(Date currentDate = null) {
+		def consos = [optTarif: getOptTarif()]
+		currentDate = currentDate ?: new Date()
+		def currentYear = currentDate[Calendar.YEAR]
+		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
+		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
+
+		if (consos.optTarif in ['HC', 'EJP']) {
+			consos.hchp = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.hchc = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = (consos.hchp + consos.hchc as Double).round(1)
+
+			consos.tarifHP = calculTarif(consos.optTarif == 'HC' ? 'HP' : 'PM', consos.hchp, currentYear)
+			consos.tarifHC = calculTarif(consos.optTarif == 'HC' ? 'HC' : 'HN', consos.hchc, currentYear)
+			consos.tarifTotal = (consos.tarifHP != null || consos.tarifHC != null) ? (consos.tarifHP ?: 0.0) + (consos.tarifHC ?: 0.0) : null
+		} else {
+			consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'basesum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+			consos.total = consos.base
+
+			consos.tarifBASE = calculTarif('BASE', consos.base, currentYear)
+			consos.tarifTotal = consos.tarifBASE
+		}
+
+		return consos
+	}
 }

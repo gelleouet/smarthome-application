@@ -136,7 +136,7 @@ abstract class AbstractController {
 	void setInfo(def info) {
 		request.setAttribute("info", info)
 	}
-	
+
 	void setWarning(def warning) {
 		request.setAttribute("message", warning)
 	}
@@ -288,5 +288,38 @@ abstract class AbstractController {
 	 */
 	def nopError400(String error) {
 		nopError(error, 400)
+	}
+
+
+	/**
+	 * Récupère le fichier si uploadé
+	 */
+	byte[] parseFile(String name) {
+		def file = request.getFile(name)
+		if (file && !file.empty) {
+			return file.getInputStream().getBytes()
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Bind un fichier sur une entité
+	 *
+	 * @param domain
+	 * @param domainProperty
+	 * @param paramFile
+	 */
+	def bindFile(def domain, String domainProperty, String paramFile) {
+		def dataFile = this.parseFile(paramFile)
+
+		if (dataFile) {
+			domain."$domainProperty" = dataFile
+			domain.clearErrors()
+			domain.validate()
+		}
+
+		return domain
 	}
 }

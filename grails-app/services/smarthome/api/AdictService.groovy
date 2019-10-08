@@ -158,7 +158,6 @@ class AdictService extends AbstractService {
 		dataDevice.addMetadata('modele', [label: 'Modèle', value: 'Gazpar'])
 		dataDevice.addMetadata('coefConversion', [label: 'Coefficient conversion'])
 		dataDevice.addMetavalue('conso', [unite: 'Wh', label: 'Période consommation', trace: true])
-		dataDevice.addMetavalue('volume', [unite: 'dm3', label: 'Volume', trace: true])
 
 		return dataDevice
 	}

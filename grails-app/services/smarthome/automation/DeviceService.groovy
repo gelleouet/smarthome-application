@@ -80,6 +80,20 @@ class DeviceService extends AbstractService {
 
 
 	/**
+	 * Enregistrement du device et déclenchement process pour changement de valeur
+	 * 
+	 * @param device
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@AsynchronousWorkflow(DeviceService.CHANGE_VALUE_WORKFLOW)
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Device saveAndTriggerChange(Device device) throws SmartHomeException {
+		return this.save(device)
+	}
+
+
+	/**
 	 * Enregistrement d"un device avec toutes les associations bindées
 	 * 
 	 * @param device

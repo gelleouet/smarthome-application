@@ -6,10 +6,13 @@ import org.springframework.transaction.annotation.Transactional
 import smarthome.api.AdictService
 import smarthome.api.DataConnectService
 import smarthome.application.granddefi.RegisterCompteurCommand
+import smarthome.automation.deviceType.Compteur
 import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
+import smarthome.core.AsynchronousWorkflow
 import smarthome.core.SmartHomeException
+import smarthome.core.query.HQL
 import smarthome.security.User
 
 /**
@@ -88,7 +91,11 @@ class CompteurService extends AbstractService {
 	void registerCompteurElec(RegisterCompteurCommand command) throws SmartHomeException {
 		Device compteur
 
-		if (command.compteurElec) {
+		if (command.compteurModel == "_exist") {
+			if (!command.compteurElec) {
+				throw new SmartHomeException("Veuillez sélectionner un compteur !")
+			}
+
 			compteur = command.compteurElec
 		} else {
 			// recherche d'un existant
@@ -103,6 +110,9 @@ class CompteurService extends AbstractService {
 						deviceType: DeviceType.findByImplClass(TeleInformation.name))
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
+				compteur.addMetadata('aggregate', [value: 'sum-conso', label: 'Calcul des données aggrégées'])
+				compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: 'BASE'])
+				compteur.addMetavalue('baseinst', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
 		}
 
@@ -123,7 +133,11 @@ class CompteurService extends AbstractService {
 	void registerCompteurGaz(RegisterCompteurCommand command) throws SmartHomeException {
 		Device compteur
 
-		if (command.compteurGaz) {
+		if (command.compteurModel == "_exist") {
+			if (!command.compteurGaz) {
+				throw new SmartHomeException("Veuillez sélectionner un compteur !")
+			}
+
 			compteur = command.compteurGaz
 		} else {
 			// recherche d'un existant
@@ -137,6 +151,8 @@ class CompteurService extends AbstractService {
 						deviceType: DeviceType.findByImplClass(CompteurGaz.name))
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
+				compteur.addMetadata('coefConversion', [label: 'Coefficient conversion'])
+				compteur.addMetavalue('conso', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
 		}
 
@@ -169,5 +185,146 @@ class CompteurService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void resetCompteurGaz(User user)  throws SmartHomeException {
 		houseService.bindDefault(user, [compteurGaz: null])
+	}
+
+
+	/**
+	 * Enregistrement d'un index pour validation par admin
+	 * L'index n'est pas enregistré sur le device mais dans une table TMP
+	 * pour qu'un admin le valide
+	 * Un seul index temporaire par user à la fois
+	 * 
+	 * @param command
+	 * @throws SmartHomeException
+	 */
+	@AsynchronousWorkflow("compteurService.saveIndexForValidation")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	CompteurIndex saveIndexForValidation(SaisieIndexCommand command)  throws SmartHomeException {
+		command.asserts()
+
+		Device device = Device.read(command.deviceId)
+
+		// le nouvel index doit aussi être postérieur au dernier relevé
+		if (device.dateValue && command.dateIndex <= device.dateValue) {
+			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", command)
+		}
+
+		// quit si au moins un index est trouvé pour le user
+		if (countCompteurIndexForDevice(device)) {
+			throw new SmartHomeException("Un index en attente de validation existe déjà pour ce compteur !")
+		}
+
+		// construction d'un objet Index
+		CompteurIndex index = new CompteurIndex(device: device,
+		dateIndex: command.dateIndex,
+		index1: command.index1, index2: command.index2,
+		param1: command.param1, photo: command.photo)
+
+		return super.save(index)
+	}
+
+
+	/**
+	 * Validation d'un index
+	 * Transfert vers les consos du device
+	 * 
+	 * @param compteurIndex
+	 * @throws SmartHomeException
+	 */
+	@AsynchronousWorkflow("compteurService.validIndex")
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void validIndex(CompteurIndex compteurIndex) throws SmartHomeException {
+		Device device = compteurIndex.device
+
+		// contrôles intégrité donnée
+		if (device.dateValue && compteurIndex.dateIndex <= device.dateValue) {
+			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", compteurIndex)
+		}
+
+		// mise à jour des champs communs
+		device.dateValue = compteurIndex.dateIndex
+
+		// on passe les données du compteur dans l'impl associée pour mettre à
+		// jour les bonnes données
+		try {
+			Compteur compteurImpl = device.newDeviceImpl()
+			compteurImpl.parseIndex(compteurIndex)
+		} catch (SmartHomeException ex) {
+			// on recatche l'erreur pour passer l'objet command
+			throw new SmartHomeException(ex.message, compteurIndex)
+		}
+
+		deviceService.saveAndTriggerChange(device)
+
+		// si tout s'est bien passé, on peut supprimer cette saisie
+		compteurIndex.delete()
+	}
+
+
+	/**
+	 * Nombre d'index à valider pour un device
+	 * 
+	 * @param device
+	 * @return
+	 */
+	long countCompteurIndexForDevice(Device device) {
+		return CompteurIndex.createCriteria().get {
+			eq 'device.id', device.id
+			projections {
+				count('id')
+			}
+		}
+	}
+
+	/**
+	 * Nombre d'index à valider pour un user
+	 *
+	 * @param user
+	 * @return
+	 */
+	long countCompteurIndexForUser(User user) {
+		return CompteurIndex.createCriteria().get {
+			device {
+				eq 'user.id', user.id
+			}
+			projections {
+				count('id')
+			}
+		}
+	}
+
+
+	/**
+	 * Liste les index en cours de validation par un admin
+	 * 
+	 * @param command
+	 * @param pagination
+	 * @return
+	 */
+	List<CompteurIndex> listCompteurIndex(CompteurIndexCommand command, Map pagination) {
+		HQL hql = new HQL("compteurIndex",	""" 
+			FROM CompteurIndex compteurIndex
+			JOIN FETCH compteurIndex.device device
+			JOIN FETCH device.deviceType deviceType
+			JOIN FETCH device.user user
+			LEFT JOIN FETCH user.profil profil""")
+
+		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
+			where userAdmin.admin.id = :adminId)""", [adminId: command.admin.id])
+
+		if (command.deviceType) {
+			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceType.id])
+		}
+
+		if (command.profil) {
+			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profil.id])
+		}
+
+		hql.addOrder("compteurIndex.dateIndex")
+		hql.addOrder("compteurIndex.id")
+
+		return CompteurIndex.withSession { session ->
+			hql.list(session, pagination)
+		}
 	}
 }

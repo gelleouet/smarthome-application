@@ -10,10 +10,13 @@
 	data-immediate="true">	
 
    	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
+   	chartDatas = new google.visualization.DataView(chartDatas)
    	
    	<g:if test="${ chart.joinChart }">
    		chartJoinDatas = new google.visualization.DataTable(${ raw(chart.joinChart.toJsonDataTable().toString(false)) });	
    	</g:if>
+   	
+   	<g:render template="/chart/google/annotation" model="[chart: chart]"/>
    	
 	chartOptions = {
 		<g:if test="${ chart?.title }">
@@ -36,10 +39,7 @@
 			'actions': ['dragToZoom', 'rightClickToReset']
 		},
 		'series': {
-			<g:each var="serie" in="${ chart.series }" status="status">
-				${ status }: {color: '${ serie.color }', lineDashStyle: ${ chart.lineDashStyle(serie) },
-					type: '${ serie.type ?: "line" }', targetAxisIndex: ${ serie.axisIndex ?: 0}},
-			</g:each>
+			<g:render template="/chart/google/series" model="[chart: chart]"/>
 		},
 		'vAxes': {
 			<g:each var="axis" in="${ chart.vAxis }" status="status">

@@ -783,3 +783,8 @@ input.form-control.small {
 input.form-control.medium {
 	width: 350px;
 }
+
+.compteur-model-img {
+	height: 70px;
+	width: 50px;
+}
