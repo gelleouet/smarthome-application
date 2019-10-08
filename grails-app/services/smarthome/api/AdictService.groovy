@@ -92,6 +92,104 @@ class AdictService extends AbstractService {
 
 
 	/**
+	 * API consommation informative pour appel user
+	 * 
+	 * @param user
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> consommationInformative(User user) throws SmartHomeException {
+		NotificationAccount notificationAccount = notificationAccount(user)
+
+		if (!notificationAccount) {
+			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
+		}
+
+		return consommationInformative(notificationAccount)
+	}
+
+
+	/**
+	 * API consommation informative
+	 * 
+	 * @param notificationAccount
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	List<JSONElement> consommationInformative(NotificationAccount notificationAccount) throws SmartHomeException {
+		notificationAccount.configToJson()
+
+		if (!notificationAccount.jsonConfig.pce) {
+			throw new SmartHomeException("pce is required !")
+		}
+
+		if (!notificationAccount.jsonConfig.role) {
+			throw new SmartHomeException("role is required !")
+		}
+
+		Device dataDevice = this.findOrCreateDevice(notificationAccount)
+		deviceService.saveWithoutAuthorize(dataDevice)
+		Date start
+		// on récupère les données de la veille max
+		Date end = new Date().clearTime() - 1
+
+		use(TimeCategory) {
+			if (notificationAccount.jsonConfig.last_consommationInformative) {
+				// les données remontent tous les jours. on se place sur le jour suivant
+				start = new Date(notificationAccount.jsonConfig.last_consommationInformative as Long)
+				start = (start + 1.day).clearTime()
+
+				// un appel ne peut porter que sur 6 mois max
+				if ((end - start).months >= 6) {
+					end = start + 6.months
+				}
+			} else {
+				// un appel ne peut porter que sur 6mois max, on borne à 6 mois
+				start = end - 6.months
+			}
+		}
+
+		// récupère un token valide avant d'appeler l'api consommation
+		String token = this.token()
+
+		List<JSONElement> datapoints = adictApi.consommationInformative(token,
+				notificationAccount.jsonConfig.pce,
+				notificationAccount.jsonConfig.role,
+				start, end)
+
+		if (!datapoints) {
+			throw new SmartHomeException("Adict#consommationInformative : no values !")
+		}
+
+		dataDevice.value = datapoints.last().value.toString()
+		dataDevice.dateValue = datapoints.last().timestamp
+		dataDevice.metavalue('conso').value =  datapoints.last().conso.toString()
+		// met à jour le coef de conversion avec le dernier renvoyé (juste pour information)
+		dataDevice.metadata('coefConversion').value =  datapoints.last().coeffConversion
+		deviceService.saveWithoutAuthorize(dataDevice)
+
+		// insère les données sur le device et historise les valeur
+		for (JSONElement datapoint : datapoints) {
+			// enregistre les consos sur les données aggrégées par jour
+			deviceValueService.addDeviceValueDay(dataDevice, datapoint.timestamp,
+					'consosum', datapoint.conso)
+		}
+
+		// aggrège les données sur le mois
+		deviceValueService.sumValueMonthFromValueDay(dataDevice, 'consosum',
+				DateUtils.firstDayInMonth(datapoints.first().timestamp),
+				datapoints.last().timestamp)
+
+		notificationAccount.jsonConfig.last_consommationInformative = dataDevice.dateValue.time
+		notificationAccount.configFromJson()
+		notificationAccountService.save(notificationAccount)
+
+		return datapoints
+	}
+
+
+	/**
 	 * Retourne le device associé à la config
 	 *
 	 * @param notificationAccount

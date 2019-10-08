@@ -346,7 +346,7 @@ class DeviceValueService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	DeviceValue addDeviceValue(Device device, Date dateValue, String name, double value) throws SmartHomeException {
-		DeviceValueDay deviceValue
+		DeviceValue deviceValue
 
 		if (name) {
 			deviceValue = DeviceValue.findByDeviceAndDateValueAndName(device, dateValue, name)

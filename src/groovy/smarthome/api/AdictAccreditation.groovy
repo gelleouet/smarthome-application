@@ -14,4 +14,10 @@ class AdictAccreditation {
 	String titulaireType
 	String titulaireValeur
 	String emailTitulaire
+	String last_consommationInformative
+
+
+	static constraints = {
+		last_consommationInformative nullable: true
+	}
 }

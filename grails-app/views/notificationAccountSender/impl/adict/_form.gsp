@@ -60,7 +60,6 @@
 	<h4 class="mt-4">Tester l'API</h4>
 	
 	<div class="btn-group mb-4">
-		<g:link class="btn btn-light" action="token" controller="adict" target="adict">token</g:link>
 		<g:link class="btn btn-light" action="consommationInformative" controller="adict" target="adict">consommationInformative</g:link>
 	</div>
 	

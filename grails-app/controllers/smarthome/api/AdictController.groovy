@@ -50,4 +50,20 @@ class AdictController extends AbstractController {
 		setInfo("Votre consentement sur le service GRDF ADICT est validé avec succès !")
 		forward action: 'compteur', controller: 'compteur'
 	}
+
+
+	/**
+	 * API consommationInformative
+	 * 
+	 * @return
+	 */
+	def consommationInformative() {
+		User user = authenticatedUser // spring security plugin
+		def datapoints = adictService.consommationInformative(user)
+
+		render(contentType: "application/json") {
+			datapoints
+		}
+	}
+
 }

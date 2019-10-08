@@ -233,13 +233,13 @@ class TeleInformation extends Compteur {
 					deviceValue.value["prixHP"]
 				})
 
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc]
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp]
+				chart.series << [type: 'bars', color: SERIES_COLOR.hc]
+				chart.series << [type: 'bars', color: SERIES_COLOR.hp]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
-				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base]
+				chart.series << [type: 'bars', color: SERIES_COLOR.base]
 			}
 		} else {
 			chart.values = values.collectEntries { entry ->
