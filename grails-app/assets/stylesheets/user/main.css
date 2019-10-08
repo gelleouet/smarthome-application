@@ -598,14 +598,15 @@ h5.device-grid-label {
 
 
 .vignette-synthese {
-	width: 100px;
-	height: 100px;
+	display: table-cell;
+	vertical-align: middle;
+	width: 115px;
+	height: 115px;
 	background-color: #354052;
 	border-radius: 50%;
 	text-align: center;
 	color: white;
 	font-weight: bold;
-	line-height: 100px;
 	font-size: 18pt;
 	margin: auto;
 }

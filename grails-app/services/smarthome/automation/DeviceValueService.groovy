@@ -334,6 +334,37 @@ class DeviceValueService extends AbstractService {
 
 
 	/**
+	 * Ajoute une nouvelle valeur en vérifiant si n'existe pas déjà pour la même
+	 * clé et même date
+	 *
+	 * @param device
+	 * @param dateValue
+	 * @param name
+	 * @param value
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DeviceValue addDeviceValue(Device device, Date dateValue, String name, double value) throws SmartHomeException {
+		DeviceValueDay deviceValue
+
+		if (name) {
+			deviceValue = DeviceValue.findByDeviceAndDateValueAndName(device, dateValue, name)
+		} else {
+			deviceValue = DeviceValue.findByDeviceAndDateValueAndNameIsNull(device, dateValue)
+		}
+
+		if (!deviceValue) {
+			deviceValue = new DeviceValue(device: device, dateValue: dateValue, name: name)
+		}
+
+		deviceValue.value = value.round(2)
+
+		return super.save(deviceValue)
+	}
+
+
+	/**
 	 * Ajoute une nouvelle valeur aggrégée par jour
 	 * 
 	 * @param device
