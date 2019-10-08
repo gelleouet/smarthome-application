@@ -6,7 +6,6 @@ import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.SmartHomeException;
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
-import smarthome.core.QueryUtils;
 
 
 @Secured("hasRole('ROLE_ADMIN')")
@@ -22,22 +21,13 @@ class ${className}Controller extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "${className}s", navigation = NavigationEnum.configuration, header = "")
-	def ${propertyName}s(String ${propertyName}Search) {
-		def search = QueryUtils.decorateMatchAll(${propertyName}Search)
-		
-		def ${propertyName}s = ${className}.createCriteria().list(this.getPagination([:])) {
-			if (${propertyName}Search) {
-				or {
-					ilike('property1', search)
-					ilike('property2', search)
-				}
-			}
-		}			
+	def ${propertyName}s(${className}Command command) {
+		def ${propertyName}s = ${propertyName}Service.list(command, this.getPagination([:]))		
 		def recordsTotal = ${propertyName}s.totalCount
 
 		// ${propertyName}s est accessible depuis le model avec la variable ${propertyName}[Instance]List
 		// @see grails.scaffolding.templates.domainSuffix
-		respond ${propertyName}s, model: [recordsTotal: recordsTotal, ${propertyName}Search: ${propertyName}Search]
+		respond ${propertyName}s, model: [recordsTotal: recordsTotal, command: command]
 	}
 	
 	
@@ -49,7 +39,9 @@ class ${className}Controller extends AbstractController {
 	 */
 	def edit(${className} ${propertyName}) {
 		def edit${className} = parseFlashCommand(COMMAND_NAME, ${propertyName})
-		${propertyName}Service.edit(${propertyName})
+		if (${propertyName}.id) {
+			${propertyName}Service.edit(${propertyName})
+		}
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): edit${className}]))
 	}
 
@@ -82,7 +74,7 @@ class ${className}Controller extends AbstractController {
 	def save(${className} ${propertyName}) {
 		checkErrors(this, ${propertyName})
 		${propertyName}Service.save(${propertyName})
-		redirect(action: 'edit', id: ${propertyName}.id)
+		redirect(action: COMMAND_NAME + 's')
 	}
 
 

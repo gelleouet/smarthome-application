@@ -31,6 +31,7 @@ class GrandDefiService extends AbstractService {
 	UserService userService
 	LinkGenerator grailsLinkGenerator
 	ConfigService configService
+	DefiService defiService
 
 
 	/**
@@ -90,7 +91,7 @@ class GrandDefiService extends AbstractService {
 			throw new SmartHomeException(ex.message, account, user)
 		}
 
-		// Association à un admin
+		// Association à un admin (pour la validation des index)
 		String adminIds = configService.value("GRAND_DEFI_ADMIN_IDS")
 
 		if (adminIds) {
@@ -104,6 +105,21 @@ class GrandDefiService extends AbstractService {
 			houseService.bindDefault(user, [chauffage: account.chauffage,
 				ecs: account.ecs, surface: account.surface,
 				location: account.commune.libelle + ", France"])
+		} catch (SmartHomeException ex) {
+			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
+			throw new SmartHomeException(ex.message, account)
+		}
+
+		// construction des équipes "à la volée" et association avec une équipe
+		// et le grand défi en cours
+		String grandDefiId = configService.value("GRAND_DEFI_ID")
+
+		if (!grandDefiId) {
+			throw new SmartHomeException("Les inscriptions pour le Grand Défi ne sont plus autorisées", account)
+		}
+
+		try {
+			defiService.inscription(user, grandDefiId as Long, account.commune.libelle)
 		} catch (SmartHomeException ex) {
 			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
 			throw new SmartHomeException(ex.message, account)

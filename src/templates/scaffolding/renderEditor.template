@@ -82,7 +82,7 @@
 				if (cp.matches) sb << ' pattern="${' << "${domainInstance}.constraints.${property.name}.matches" << '}"'
 				if (isRequired()) sb << ' required=""'
 				sb << ' value="${' << "${domainInstance}?.${property.name}" << '}"'
-				sb << 'class="text medium-field"/>'
+				sb << 'class="form-control"/>'
 			}
 			sb as String
         }
@@ -103,7 +103,7 @@
  			sb << ' optionKey="id"'
 			if (isRequired()) sb << ' required=""'
  			sb << ' value="${' << "${domainInstance}?.${property.name}" << '?.id}"'
- 			sb << ' class="select"'
+ 			sb << ' class="form-control"'
  			sb << renderNoSelection(property)
  			sb << '/>'
 			sb as String
@@ -127,7 +127,7 @@
             sb << ' size="5"'
             if (isRequired()) sb << ' required=""'
             sb << ' value="${' << "${domainInstance}?.${property.name}" << '*.id}"'
-            sb << ' class="select"'
+            sb << ' class="form-control"'
             sb << '/>'
             sb as String
 

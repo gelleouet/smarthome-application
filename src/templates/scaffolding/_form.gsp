@@ -35,11 +35,8 @@ private renderFieldForProperty(p, owningClass, prefix = "") {
 		required = (cp ? !(cp.propertyType in [boolean, Boolean]) && !cp.nullable : false)
 	}
 	%>
-<div class="field-group">
-	<label for="${prefix}${p.name}">
-		${p.naturalName}
-		<% if (required) { %><span class="aui-icon icon-required">*</span><% } %>
-	</label>
+<div class="form-group <% if (required) { %>required<% } %>">
+	<label for="${prefix}${p.name}">${p.naturalName}</label>
 	${renderEditor(p)}
 </div>
 <%  } %>

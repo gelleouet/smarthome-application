@@ -781,6 +781,10 @@ input.form-control.small {
 	width: 175px;
 }
 
+input.form-control.aui-date-picker {
+	width: 175px;
+}
+
 input.form-control.medium {
 	width: 350px;
 }

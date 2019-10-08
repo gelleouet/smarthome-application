@@ -28,6 +28,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class GrandDefiController extends AbstractController {
 
 	GrandDefiService grandDefiService
+	DefiService defiService
 
 
 	/**
@@ -75,5 +76,21 @@ class GrandDefiController extends AbstractController {
 		def model = grandDefiService.modelConsommation(user)
 
 		render(view: 'consommation', model: model)
+	}
+
+
+	/**
+	 * Page "Mon Défi" avec les résultats du défi en individuel
+	 * 
+	 * @return
+	 */
+	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary,
+	header = "Grand Défi", icon = "award")
+	def mondefi(DefiCommand command) {
+		command.user = authenticatedUser // spring security plugin
+		def defis = defiService.listByUser(command, [max: 5])
+
+		render(view: 'mondefi', model: [command: command, defis: defis,
+			currentDefi: defis ? defis[0] : null])
 	}
 }

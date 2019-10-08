@@ -10,6 +10,7 @@ package smarthome.core;
 public class SmartHomeCoreConstantes {
 
 	public static final String DEFAULT_SCHEMA = "smarthome";
+	public static final String APPLICATION_SCHEMA = "application";
 	
 	public static final String DATE_BINDING_FORMAT = "yyyy-MM-dd";
 	public static final String DATE_USER_FORMAT = "dd/MM/yyyy";

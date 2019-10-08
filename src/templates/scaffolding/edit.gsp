@@ -1,31 +1,32 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
-		<h3>\${ ${propertyName}.id ? '${className} : ' + ${propertyName}.'TODO' : 'Nouveau ${propertyName}' } <span id="ajaxSpinner" class="spinner"/></h3>
+	<g:applyLayout name="page-settings" model="[titre: '${className}s', navigation: 'navigation']">
+		<g:form controller="${propertyName}" method="post" action="save">
 		
-		<g:form controller="${propertyName}" method="post" class="aui">
+			<div class="row mb-4">
+				<div class="col-8">
+					<h4>\${ ${propertyName}.id ? '${className} : ' + ${propertyName}.'TODO' : 'Nouveau ${propertyName}' }</h4>
+				</div>
+				<div class="col-4 text-right">
+					<div class="btn-toolbar">
+						<div class="btn-group">
+						</div>
+					</div>
+				</div>
+			</div>
+		
 			<g:hiddenField name="id" value="\${${propertyName}.id}" />
 	
 			<g:render template="form"/>
 			
 			<br/>
 	
-			<div class="buttons-container">
-				<div class="buttons">
-					<g:if test="\${${propertyName}.id }">
-						<g:actionSubmit value="Mettre à jour" action="saveEdit" class="aui-button aui-button-primary" />
-					</g:if>
-					<g:else>
-						<g:actionSubmit value="Créer" action="saveCreate" class="aui-button aui-button-primary" />
-					</g:else>
-					
-					<g:link action="${propertyName}s" class="cancel">Annuler</g:link>
-				</div>
-			</div>
+			<button class="btn btn-primary">Enregistrer</button>
+			<g:link action="${propertyName}s" class="btn btn-link">Annuler</g:link>
 		</g:form>
 		
 	</g:applyLayout>
