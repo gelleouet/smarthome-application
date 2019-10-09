@@ -19,6 +19,8 @@ class GoogleChart {
 	List<Map> metaValues = []
 	List<Map> vAxis = []
 	GoogleChart joinChart
+	String hAxisFormat
+	String hAxisTicks
 
 
 

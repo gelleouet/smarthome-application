@@ -88,5 +88,8 @@
 	</div>
 </g:if>
 <g:else>
-	<p class="label">Profil incomplet : les objets par défaut ne sont pas renseignés</p>
+	<g:applyLayout name="messageWarning">
+		Profil incomplet : le compteur n'est pas renseigné
+		<g:link controller="compteur" action="compteur" class="btn btn-link"><app:icon name="settings"/> Configurer votre compteur</g:link>
+	</g:applyLayout>
 </g:else>

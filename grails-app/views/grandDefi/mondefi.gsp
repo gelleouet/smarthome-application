@@ -9,7 +9,7 @@
 		<div class="row mb-3">
 			<div class="col-8">
 				<h3>${ currentDefi?.libelle ?: 'Mon défi' }
-					<g:if test="${ currentDefi }">
+					<g:if test="${ false }">
 					 	<span class="text-muted" style="font-size:small;">du <app:formatUser date="${ currentDefi.actionDebut }"/> au <app:formatUser date="${ currentDefi.actionFin }"/></span>
 					</g:if>
 				</h3>
@@ -59,7 +59,9 @@
 			<div class="card flex-fill w-100">
 				<div class="card-body">
 					<h4><app:icon name="bar-chart-2"/> Consommations globales</h4>
-					
+					<g:render template="mondefi" model="[chartId: currentDefi.id + '-global',
+						chartTotal: global.chartTotal, chartConso: global.chartConso,
+						consos: global.consos, error: '', defi: currentDefi]"/>	
 				</div>
 			</div>
 		</g:else>

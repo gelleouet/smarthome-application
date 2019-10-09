@@ -793,3 +793,7 @@ input.form-control.medium {
 	height: 70px;
 	width: 50px;
 }
+
+.color-secondary {
+	color: #d8dadc;
+}

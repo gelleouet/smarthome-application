@@ -12,7 +12,7 @@
 			<div class="col d-flex">
 				<div class="card flex-fill w-100">
 					<div class="card-body">
-						<g:set var="lastDate" value="${ house?.compteur?.dateValue ?: new Date() }"/>
+						<g:set var="lastDate" value="${ house?.compteur?.dateValue?.clone() ?: new Date() }"/>
 						<g:set var="titre" value="Consommation d'électricité du ${ g.formatDate(date: lastDate, format: 'dd/MM/yyyy') }"/>
 						
 						<g:render template="/widget/syntheseConsommationDay"

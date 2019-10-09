@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="col-4">
 				
-				<div style="margin-top:20px">
+				<div class="mt-4">
 					<div class="separator-bottom">
 						<div class="row">
 							<div class="col-8">
@@ -106,5 +106,8 @@
 	</div>
 </g:if>
 <g:else>
-	<p class="label">Profil incomplet : le compteur n'est pas renseigné</p>
+	<g:applyLayout name="messageWarning">
+			Profil incomplet : le compteur n'est pas renseigné
+			<g:link controller="compteur" action="compteur" class="btn btn-link"><app:icon name="settings"/> Configurer votre compteur</g:link>
+		</g:applyLayout>
 </g:else>

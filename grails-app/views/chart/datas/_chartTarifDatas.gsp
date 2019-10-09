@@ -13,6 +13,7 @@
    	</g:if>
    	
 	chartOptions = {
+		'title': '${ chart.title }',
 		'pointSize': '2',
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',

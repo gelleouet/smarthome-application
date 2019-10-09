@@ -9,7 +9,7 @@
 	
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		chartOptions = {
-			  title: '${label }',
+			  title: '${ chart.title }',
 			  pointSize: '2',
 		      width: '${ params.chartWidth ?: '100%' }',
 	          height: '${ params.chartHeight ?: '600' }',
@@ -50,7 +50,7 @@
 	      	<g:render template="/chart/google/annotation" model="[chart: chart]"/>
 		    	
 			chartOptions = {
-				  'title': '${label }',
+				  'title': '${ chart.title }',
 			      'width': '${ params.chartWidth ?: '100%' }',
 		          'height': '${ params.chartHeight ?: '600' }',
 		          legend: {position: 'top'},
@@ -78,7 +78,7 @@
 	  	</g:if>
 	  	<g:else>
 			chartOptions = {
-				  'title': '${label }',
+				  'title': '${ chart.title }',
 			      'width': '${ params.chartWidth ?: '100%' }',
 		          'height': '${ params.chartHeight ?: '600' }',
 		          legend: {position: 'top'},

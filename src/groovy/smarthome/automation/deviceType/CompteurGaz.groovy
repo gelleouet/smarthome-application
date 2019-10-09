@@ -123,6 +123,7 @@ class CompteurGaz extends Compteur {
 		GoogleChart chart = new GoogleChart()
 		command.device.extrasToJson()
 		chart.values = values
+		chart.title = device.label
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
 

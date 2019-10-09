@@ -21,7 +21,7 @@
 	chartOptions = {
 		<g:if test="${ chart?.title }">
 		'title': '${ chart.title }',
-		'titleTextStyle': {fontSize: '20'},
+		'titleTextStyle': {fontSize: 'auto'},
 		</g:if>
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',

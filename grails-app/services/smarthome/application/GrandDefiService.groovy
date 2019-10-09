@@ -4,7 +4,10 @@
 package smarthome.application
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
+
+import grails.transaction.NotTransactional
 
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import smarthome.application.granddefi.AccountCommand
@@ -69,29 +72,56 @@ class GrandDefiService extends AbstractService {
 
 		if (model.currentDefi) {
 			// charge les données elec et construit les graphes
+			// on passe dans des transactions séparées car le service appelé peut
+			// déclencher une SmartHomeException qui va péter un rollabck alors que
+			// lecture seule sur la transaction principale. Même avec un @NotTransaction
+			// ca ne marche pas
 			try {
-				model.electricite.consos = defiService.loadUserConso(model.currentDefi, model.user,
-						DefiCompteurEnum.electricite)
-				model.electricite.chartTotal = defiService.chartUserTotalPeriode(model.currentDefi,
-						model.user, model.electricite.consos)
-				model.electricite.chartConso = defiService.chartUserPeriode(model.currentDefi,
-						model.user, model.electricite.consos)
+				Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
+					// un seul chargement de données qui est passé ensuite aux graphes
+					// pour ne pas devoir charger à chaque graphe
+					model.electricite.consos = defiService.loadUserConso(model.currentDefi, model.user,
+							DefiCompteurEnum.electricite)
+
+					model.electricite.chartTotal = defiService.chartUserTotal(model.currentDefi,
+							model.user, model.electricite.consos)
+					model.electricite.chartConso = defiService.chartUserDay(model.currentDefi,
+							model.user, model.electricite.consos)
+				}
 			} catch (SmartHomeException ex) {
 				model.electricite.error = ex.message
 			}
 
 
 			// charge les données gaz et construit les graphes
+			// on passe dans des transactions séparées car le service appelé peut
+			// déclencher une SmartHomeException qui va péter un rollabck alors que
+			// lecture seule sur la transaction principale. Même avec un @NotTransaction
+			// ca ne marche pas
 			try {
-				model.gaz.consos = defiService.loadUserConso(model.currentDefi, model.user,
-						DefiCompteurEnum.gaz)
-				model.gaz.chartTotal = defiService.chartUserTotalPeriode(model.currentDefi,
-						model.user, model.gaz.consos)
-				model.gaz.chartConso = defiService.chartUserPeriode(model.currentDefi,
-						model.user, model.gaz.consos)
+				Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
+					// un seul chargement de données qui est passé ensuite aux graphes
+					// pour ne pas devoir charger à chaque graphe
+					model.gaz.consos = defiService.loadUserConso(model.currentDefi, model.user,
+							DefiCompteurEnum.gaz)
+
+					model.gaz.chartTotal = defiService.chartUserTotal(model.currentDefi,
+							model.user, model.gaz.consos)
+					model.gaz.chartConso = defiService.chartUserDay(model.currentDefi,
+							model.user, model.gaz.consos)
+				}
 			} catch (SmartHomeException ex) {
 				model.gaz.error = ex.message
 			}
+
+			// passer toutes les consos de chaque compteur dans cette méthode
+			// pour calculer les consos globales et créer les chart correspondants
+			model.global.consos = defiService.groupConsos(model.electricite.consos,
+					model.gaz.consos)
+			model.global.chartTotal = defiService.chartUserTotal(model.currentDefi,
+					model.user, model.global.consos)
+			model.global.chartConso = defiService.chartUserDay(model.currentDefi,
+					model.user, model.global.consos)
 		}
 
 		return model

@@ -11,6 +11,7 @@ import smarthome.automation.House
 import smarthome.automation.HouseService
 import smarthome.automation.deviceType.Compteur
 import smarthome.core.AbstractService
+import smarthome.core.CompteurUtils
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -116,7 +117,7 @@ class DefiService extends AbstractService {
 	 * 
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserTotalPeriode(Defi defi, User user, Map consos) {
+	GoogleChart chartUserTotal(Defi defi, User user, Map consos) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Column.factory
@@ -152,41 +153,45 @@ class DefiService extends AbstractService {
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserPeriode(Defi defi, User user, Map consos) {
+	GoogleChart chartUserDay(Defi defi, User user, Map consos) {
 		GoogleChart chart = new GoogleChart()
-
 		chart.chartType = ChartTypeEnum.Column.factory
+		chart.hAxisFormat = "EE"
 
 		// réorganisation avec une liste de N jours correspondant à la période de référence
 		// ensuite, les valeurs d'action sont injectée sur ces jours
 		// on convertit aussi les consos en kWh
 		chart.values = []
-		int index = 0
 
 		for (def reference : consos.reference) {
-			chart.values << [name: index++, dateValue: reference.dateValue,
-				reference: (reference.value / 1000.0).round(1)]
+			chart.values << [dateValue: reference.dateValue,
+				reference: CompteurUtils.convertWhTokWh(reference.value)]
 		}
 
 		// injecte les valeurs d'action en tenant compte de "trous"
 		// l'index est calculé à partir du jour de départ de la période
 		if (consos.action) {
 			Date debutAction = consos.action[0].dateValue
+			int index
 
 			for (def action : consos.action) {
 				index = action.dateValue - debutAction
 
 				if (index >= 0 && index < chart.values.size()) {
-					chart.values[index].action = (action.value / 1000.0).round(1)
+					chart.values[index].action = CompteurUtils.convertWhTokWh(action.value)
 				}
 			}
 		}
+
+		chart.hAxisTicks = chart.values.collect {
+			"new Date(${it.dateValue[Calendar.YEAR]}, ${it.dateValue[Calendar.MONTH]}, ${it.dateValue[Calendar.DAY_OF_MONTH]})"
+		}.join(",")
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime")
 		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
 		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
 
-		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: false]
+		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
 		chart.vAxis << [title: 'Consommation (kWh)']
@@ -224,13 +229,55 @@ class DefiService extends AbstractService {
 
 		Compteur compteur = device.newDeviceImpl()
 
+		// garde une trace du type de compteur
+		result.type = compteurType
+
 		// charge les consos sur les 2 périodes
 		result.reference = compteur.consommationTotalByDay(defi.referenceDebut, defi.referenceFin)
 		result.action = compteur.consommationTotalByDay(defi.actionDebut, defi.actionFin)
 
 		// calcul les totaux et diff
-		result.totalReference = ((result.reference.sum { it.value } ?: 0.0) / 1000.0).round(1)
-		result.totalAction = ((result.action.sum { it.value } ?: 0) / 1000.0).round(1)
+		result.totalReference = CompteurUtils.convertWhTokWh(result.reference.sum { it.value })
+		result.totalAction = CompteurUtils.convertWhTokWh(result.action.sum { it.value })
+		result.totalDiff = result.totalAction - result.totalReference
+
+		return result
+	}
+
+
+	/**
+	 * Regroupe des consos chargées depuis la méthode #loadUserConso et calcule
+	 * le consos globales
+	 * 
+	 * @param consos 1 ou plusieurs datas
+	 * 
+	 * @return
+	 */
+	Map groupConsos(Map... consos) {
+		Map result = [reference: [], action: []]
+
+		// la liste peut contenir des valeurs nulles
+		// ajoute toutes les consos des compteurs dans 2 buffers reference et action
+		// A ce stade, il y a des doublons sur les dates
+		consos?.each { conso ->
+			if (conso) {
+				result.reference.addAll(conso.reference)
+				result.action.addAll(conso.action)
+			}
+		}
+
+		// 2e passe, regroupement des valeurs par date et sum des valeurs trouvées
+		// pour les 2 buffers
+		result.reference = result.reference.groupBy { it.dateValue }.collect { key, values ->
+			[dateValue: key, value: values.sum{ it.value }]
+		}
+		result.action = result.action.groupBy { it.dateValue }.collect { key, values ->
+			[dateValue: key, value: values.sum{ it.value }]
+		}
+
+		// calcul les totaux et diff
+		result.totalReference = CompteurUtils.convertWhTokWh(result.reference.sum { it.value })
+		result.totalAction = CompteurUtils.convertWhTokWh(result.action.sum { it.value })
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result

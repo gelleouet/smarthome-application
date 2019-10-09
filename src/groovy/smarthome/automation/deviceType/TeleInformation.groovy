@@ -37,7 +37,7 @@ class TeleInformation extends Compteur {
 		'hp': '#dc3912',
 		'base': '#47bac1',
 		'puissance': '#ff9900', //'#a180da',
-		'total': '#e8eaed'
+		'total': '#d8dadc' //'#e8eaed'
 	]
 
 	/**
@@ -101,7 +101,7 @@ class TeleInformation extends Compteur {
 		GoogleChart chart = new GoogleChart()
 		def opttarif = command.device.metavalue("opttarif")?.value
 		int coefPuissance = command.device.unite == "W" ? 1 : 220
-
+		chart.title = device.label
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.values = values.groupBy { it.dateValue }
@@ -191,6 +191,7 @@ class TeleInformation extends Compteur {
 	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
 		def opttarif = command.device.metavalue("opttarif")?.value
+		chart.title = device.label
 
 		//chart.vAxis << [title: 'Coût (€)']
 

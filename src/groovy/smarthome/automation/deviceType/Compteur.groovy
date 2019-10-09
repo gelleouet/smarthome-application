@@ -32,7 +32,7 @@ class Compteur extends AbstractDeviceType {
 
 	public static final SERIES_COLOR = [
 		'conso': '#47bac1',
-		'total': '#e8eaed'
+		'total': '#d8dadc'
 	]
 
 	protected DeviceTypeProvider fournisseurCache
