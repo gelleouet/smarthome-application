@@ -128,7 +128,7 @@ class CompteurGaz extends Compteur {
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.colonnes << new GoogleDataTableCol(label: "Consommation (Wh)", property: "value", type: "number")
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, targetAxisIndex: 0]
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, targetAxisIndex: 0]
 		} else {
 			// les consos sont conveties en kWh
 			chart.colonnes << new GoogleDataTableCol(label: "Consommation (kWh)", type: "number", value: { deviceValue, index, currentChart ->

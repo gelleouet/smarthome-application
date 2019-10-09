@@ -117,13 +117,13 @@ class TeleInformation extends Compteur {
 					deviceValue.value.find{ it.name == "hpinst" }?.value
 				})
 
-				chart.series << [type: 'bars', color: SERIES_COLOR.hc, targetAxisIndex: 0]
-				chart.series << [type: 'bars', color: SERIES_COLOR.hp, targetAxisIndex: 0]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc, targetAxisIndex: 0]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp, targetAxisIndex: 0]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "baseinst" }?.value
 				})
-				chart.series << [type: 'bars', color: SERIES_COLOR.base, targetAxisIndex: 0]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, targetAxisIndex: 0]
 			}
 
 			chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
@@ -233,13 +233,13 @@ class TeleInformation extends Compteur {
 					deviceValue.value["prixHP"]
 				})
 
-				chart.series << [type: 'bars', color: SERIES_COLOR.hc]
-				chart.series << [type: 'bars', color: SERIES_COLOR.hp]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
-				chart.series << [type: 'bars', color: SERIES_COLOR.base]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base]
 			}
 		} else {
 			chart.values = values.collectEntries { entry ->
