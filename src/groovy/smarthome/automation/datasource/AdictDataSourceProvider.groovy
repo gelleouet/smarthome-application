@@ -30,27 +30,10 @@ class AdictDataSourceProvider extends AbstractDataSourceProvider {
 	 */
 	@Override
 	void execute(NotificationAccount notificationAccount) throws SmartHomeException {
-		// les autres appels sont indépendants. on peut tous les lancer même si un plante
-		// on log tout de même les erreurs
-
 		try {
-			dataConnectService.consumptionLoadCurve(notificationAccount)
+			adictService.consommationInformative(notificationAccount)
 		} catch (SmartHomeException ex) {
-			log.error("consumptionLoadCurve : ${ex.message}")
+			log.error("ADICT.consommationInformative : ${ex.message}")
 		}
-
-		try {
-			dataConnectService.dailyConsumption(notificationAccount)
-		} catch (SmartHomeException ex) {
-			log.error("dailyConsumption : ${ex.message}")
-		}
-
-		try {
-			dataConnectService.consumptionMaxPower(notificationAccount)
-		} catch (SmartHomeException ex) {
-			log.error("consumptionMaxPower : ${ex.message}")
-		}
-
-
 	}
 }
