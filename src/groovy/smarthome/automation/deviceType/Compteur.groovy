@@ -30,7 +30,7 @@ class Compteur extends AbstractDeviceType {
 	protected static final String META_METRIC_NAME = "conso"
 	protected static final String DEFAULT_CONTRAT = "BASE"
 
-	protected static final SERIES_COLOR = [
+	public static final SERIES_COLOR = [
 		'conso': '#47bac1',
 		'total': '#e8eaed'
 	]
@@ -336,6 +336,14 @@ class Compteur extends AbstractDeviceType {
 
 
 	/**
+	 * Les noms des metavalue associées aux consos
+	 * 
+	 * @return
+	 */
+	protected List consoAggregateMetanames() {
+		[aggregateMetaName()]}
+
+	/**
 	 * Les consos du jour
 	 *
 	 * @return
@@ -463,6 +471,30 @@ class Compteur extends AbstractDeviceType {
 			}
 		} else {
 			return null
+		}
+	}
+
+
+	/**
+	 * Les consos journalières totales sur une période
+	 * Si le contrat a plusieurs tarifs, les consos sont ajoutées pour avoir
+	 * le total à la journée
+	 * 
+	 * @param dateDebut
+	 * @param dateFin
+	 * @return
+	 */
+	List consommationTotalByDay(Date dateDebut, Date dateFin) {
+		return DeviceValueDay.createCriteria().list() {
+			between 'dateValue', dateDebut, dateFin
+			eq 'device', device
+			'in' 'name', consoAggregateMetanames()
+			projections {
+				sum 'value', 'value'
+				groupProperty 'dateValue', 'dateValue'
+			}
+			order 'dateValue'
+			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
 		}
 	}
 

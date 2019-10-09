@@ -749,4 +749,15 @@ class TeleInformation extends Compteur {
 
 		return consos
 	}
+
+
+	/** 
+	 * (non-Javadoc)
+	 *
+	 * @see smarthome.automation.deviceType.Compteur#consoAggregateMetanames()
+	 */
+	@Override
+	protected List consoAggregateMetanames() {
+		['basesum', 'hchcsum', 'hchpsum']
+	}
 }

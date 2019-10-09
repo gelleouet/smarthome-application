@@ -51,6 +51,54 @@ class GrandDefiService extends AbstractService {
 
 
 	/**
+	 * Modèle affichage Mon Défi
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Map modelMonDefi(DefiCommand command) throws SmartHomeException {
+		Map model = [user: command.user, command: command]
+
+		model.defis = defiService.listByUser(command, [max: 5])
+		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
+
+		model.electricite = [:]
+		model.gaz = [:]
+		model.global = [:]
+
+		if (model.currentDefi) {
+			// charge les données elec et construit les graphes
+			try {
+				model.electricite.consos = defiService.loadUserConso(model.currentDefi, model.user,
+						DefiCompteurEnum.electricite)
+				model.electricite.chartTotal = defiService.chartUserTotalPeriode(model.currentDefi,
+						model.user, model.electricite.consos)
+				model.electricite.chartConso = defiService.chartUserPeriode(model.currentDefi,
+						model.user, model.electricite.consos)
+			} catch (SmartHomeException ex) {
+				model.electricite.error = ex.message
+			}
+
+
+			// charge les données gaz et construit les graphes
+			try {
+				model.gaz.consos = defiService.loadUserConso(model.currentDefi, model.user,
+						DefiCompteurEnum.gaz)
+				model.gaz.chartTotal = defiService.chartUserTotalPeriode(model.currentDefi,
+						model.user, model.gaz.consos)
+				model.gaz.chartConso = defiService.chartUserPeriode(model.currentDefi,
+						model.user, model.gaz.consos)
+			} catch (SmartHomeException ex) {
+				model.gaz.error = ex.message
+			}
+		}
+
+		return model
+	}
+
+
+	/**
 	 * Création d'un compte
 	 *
 	 * @param username

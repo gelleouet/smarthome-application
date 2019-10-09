@@ -1,14 +1,8 @@
 package smarthome.application
 
-import smarthome.api.DataConnectService
 import smarthome.application.granddefi.AccountCommand
-import smarthome.application.granddefi.RegisterCompteurCommand
 import smarthome.automation.Chauffage
-import smarthome.automation.DeviceService
 import smarthome.automation.ECS
-import smarthome.automation.HouseService
-import smarthome.automation.NotificationAccountSenderService
-import smarthome.automation.NotificationAccountService
 import smarthome.common.Commune
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -28,7 +22,6 @@ import grails.plugin.springsecurity.annotation.Secured
 class GrandDefiController extends AbstractController {
 
 	GrandDefiService grandDefiService
-	DefiService defiService
 
 
 	/**
@@ -88,9 +81,7 @@ class GrandDefiController extends AbstractController {
 	header = "Grand Défi", icon = "award")
 	def mondefi(DefiCommand command) {
 		command.user = authenticatedUser // spring security plugin
-		def defis = defiService.listByUser(command, [max: 5])
-
-		render(view: 'mondefi', model: [command: command, defis: defis,
-			currentDefi: defis ? defis[0] : null])
+		def model = grandDefiService.modelMonDefi(command)
+		render(view: 'mondefi', model: model)
 	}
 }

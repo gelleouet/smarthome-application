@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="Gregory (generated)" id="1570612051514-1">
+        <createTable tableName="defi">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actif" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_debut" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_fin" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_debut" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_fin" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-2">
+        <createTable tableName="defi_equipe">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_elec" type="FLOAT8"/>
+            <column name="action_gaz" type="FLOAT8"/>
+            <column name="defi_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_elec" type="FLOAT8"/>
+            <column name="reference_gaz" type="FLOAT8"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-3">
+        <createTable tableName="defi_participant">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action_elec" type="FLOAT8"/>
+            <column name="action_gaz" type="FLOAT8"/>
+            <column name="defi_equipe_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_elec" type="FLOAT8"/>
+            <column name="reference_gaz" type="FLOAT8"/>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-4">
+        <addColumn tableName="utilisateur">
+            <column name="id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-5">
+        <addPrimaryKey columnNames="id" constraintName="defi_equipe_pkey" tableName="defi_equipe"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-6">
+        <addPrimaryKey columnNames="id" constraintName="defi_participant_pkey" tableName="defi_participant"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-7">
+        <addPrimaryKey columnNames="id" constraintName="defi_pkey" tableName="defi"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-8">
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_b9ap722dj9uv34y31p67kepkh" deferrable="false" disabled="false" initiallyDeferred="false" tableName="defi"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-9">
+        <addUniqueConstraint columnNames="user_id, defi_equipe_id" constraintName="unique_defi_equipe_id" deferrable="false" disabled="false" initiallyDeferred="false" tableName="defi_participant"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-10">
+        <addUniqueConstraint columnNames="defi_id, libelle" constraintName="unique_libelle" deferrable="false" disabled="false" initiallyDeferred="false" tableName="defi_equipe"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-11">
+        <addForeignKeyConstraint baseColumnNames="defi_equipe_id" baseTableName="defi_participant" constraintName="fk_3413qklvr4l5x05hni1wggumb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="defi_equipe"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-12">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="defi_participant" constraintName="fk_h8iehl13qm6g9yb71y3exq1bs" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableCatalogName="smarthome" referencedTableName="utilisateur" referencedTableSchemaName="smarthome"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-13">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="defi" constraintName="fk_mp4r3wtkt2apjrtavo615uvfk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableCatalogName="smarthome" referencedTableName="utilisateur" referencedTableSchemaName="smarthome"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-14">
+        <addForeignKeyConstraint baseColumnNames="defi_id" baseTableName="defi_equipe" constraintName="fk_srs7shurfr54rdcfsdj3g3mbb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="defi"/>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-15">
+        <createIndex indexName="defi_idx" tableName="defi" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-16">
+        <createIndex indexName="defiequipe_idx" tableName="defi_equipe" unique="false">
+            <column name="defi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-17">
+        <createIndex indexName="defiparticipant_idx" tableName="defi_participant" unique="false">
+            <column name="defi_equipe_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1570612051514-18">
+        <createIndex indexName="defiparticipant_user_idx" tableName="defi_participant" unique="false">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

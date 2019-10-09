@@ -42,9 +42,7 @@
 			<g:render template="/chart/google/series" model="[chart: chart]"/>
 		},
 		'vAxes': {
-			<g:each var="axis" in="${ chart.vAxis }" status="status">
-				${ status }: {title: '${ axis.title }', maxValue: '${ axis.maxValue ?: 'automatic' }'},
-			</g:each>
+			<g:render template="/chart/google/vaxis" model="[chart: chart]"/>
 	    },
 	    'hAxis': {
 	    	title: '${ chart.hAxisTitle(command) }',

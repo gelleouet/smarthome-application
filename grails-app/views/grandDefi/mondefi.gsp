@@ -10,7 +10,7 @@
 			<div class="col-8">
 				<h3>${ currentDefi?.libelle ?: 'Mon défi' }
 					<g:if test="${ currentDefi }">
-					 	<span class="text-muted" style="font-size:small;">du <app:formatUser date="${ currentDefi.referenceDebut }"/> au <app:formatUser date="${ currentDefi.referenceFin }"/></span>
+					 	<span class="text-muted" style="font-size:small;">du <app:formatUser date="${ currentDefi.actionDebut }"/> au <app:formatUser date="${ currentDefi.actionFin }"/></span>
 					</g:if>
 				</h3>
 			</div>
@@ -41,14 +41,18 @@
 			<div class="card flex-fill w-100">
 				<div class="card-body">
 					<h4><app:icon name="zap"/> Consommations d'électricité</h4>
-					<g:render template="mondefi"/>					
+					<g:render template="mondefi" model="[chartId: currentDefi.id + '-electricite',
+						chartTotal: electricite.chartTotal, chartConso: electricite.chartConso,
+						consos: electricite.consos, error: electricite.error, defi: currentDefi]"/>					
 				</div>
 			</div>
 			
 			<div class="card flex-fill w-100">
 				<div class="card-body">
 					<h4><app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
-					
+					<g:render template="mondefi" model="[chartId: currentDefi.id + '-gaz',
+						chartTotal: gaz.chartTotal, chartConso: gaz.chartConso,
+						consos: gaz.consos, error: gaz.error, defi: currentDefi]"/>	
 				</div>
 			</div>
 			
