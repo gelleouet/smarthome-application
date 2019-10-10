@@ -24,12 +24,12 @@ class DataConnectController extends AbstractController {
 	 * @return
 	 */
 	@Secured("permitAll()")
-	@ExceptionNavigationHandler(controllerName = "notificationAccount", actionName = "notificationAccounts")
+	@ExceptionNavigationHandler(controllerName = "compteur", actionName = "compteur")
 	def redirect(String code, String usage_point_id) {
 		User user = authenticatedUser // spring security plugin
 		dataConnectService.authorization_code(user, code, usage_point_id)
 		setInfo("Votre consentement sur le service Enedis DataConnect est validé avec succès !")
-		forward(controller: 'notificationAccount', action: 'notificationAccounts')
+		forward(controller: 'compteur', action: 'compteur')
 	}
 
 
