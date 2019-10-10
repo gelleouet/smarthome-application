@@ -116,12 +116,23 @@ class GrandDefiService extends AbstractService {
 
 			// passer toutes les consos de chaque compteur dans cette méthode
 			// pour calculer les consos globales et créer les chart correspondants
-			model.global.consos = defiService.groupConsos(model.electricite.consos,
-					model.gaz.consos)
+			model.global.consos = defiService.groupConsos(model.currentDefi,
+					model.electricite.consos, model.gaz.consos)
 			model.global.chartTotal = defiService.chartUserTotal(model.currentDefi,
 					model.user, model.global.consos)
-			model.global.chartConso = defiService.chartUserDay(model.currentDefi,
-					model.user, model.global.consos)
+			// le graphe détaillé est différent selon la granularité des consos
+			// entre les différents compteurs. si un compteur elec est connecté
+			// et le connecteur gaz non, alors beaucoup plus de valeurs sur l'élec et
+			// les consos gaz seront toutes enregistrées sur une seule date. donc
+			// le graphe à la journée ne sera pas représentatif. On passe dans ce
+			// cas à un graphe à la semaine
+			if (model.global.consos.bestView == "day") {
+				model.global.chartConso = defiService.chartUserDay(model.currentDefi,
+						model.user, model.global.consos)
+			} else {
+				model.global.chartConso = defiService.chartUserWeek(model.currentDefi,
+						model.user, model.global.consos)
+			}
 		}
 
 		return model

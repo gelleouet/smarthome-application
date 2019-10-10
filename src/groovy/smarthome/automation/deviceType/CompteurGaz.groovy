@@ -1,11 +1,13 @@
 package smarthome.automation.deviceType
 
+import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
 import smarthome.automation.DeviceChartCommand
 import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
+import smarthome.core.CompteurUtils
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -124,31 +126,70 @@ class CompteurGaz extends Compteur {
 		command.device.extrasToJson()
 		chart.values = values
 		chart.title = device.label
+		chart.chartType = ChartTypeEnum.Combo.factory
+		chart.selectionField = "selectionConso"
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
 
 		if (command.viewMode == ChartViewEnum.day) {
-			chart.colonnes << new GoogleDataTableCol(label: "Consommation (Wh)", property: "value", type: "number")
-			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, targetAxisIndex: 0]
+			chart.colonnes << new GoogleDataTableCol(label: "Heures base", property: "value", type: "number")
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+
+			chart.vAxis << [title: 'Consommation (Wh)']
 		} else {
-			// les consos sont conveties en kWh
-			chart.colonnes << new GoogleDataTableCol(label: "Consommation (kWh)", type: "number", value: { deviceValue, index, currentChart ->
-				return (deviceValue.value / 1000.0).round(1)
+			// les consos sont converties en kWh
+			chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", value: { deviceValue, index, currentChart ->
+				return CompteurUtils.convertWhTokWh(deviceValue.value)
 			})
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, targetAxisIndex: 0, annotation: true]
+			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
+
+			chart.vAxis << [title: 'Consommation (kWh)']
 		}
 
 		return chart
 	}
 
 
-	/** (non-Javadoc)
+	/** 
+	 * Construction d'un graphe avec les tarifs
+	 * Les impls doivent formattées les valeurs en une map contenant en clé la date
+	 * et différents champs pour les prix par période tarifaire. Celles par défaut 
+	 * sont 'kwh' pour la conso et 'prix' . Grâce à ce format, les données seront
+	 * compatibles pour s'afficher aussi en format Table avec tout le détail
 	 *
-	 * @see smarthome.automation.deviceType.Compteur#chartDataTemplate()
+	 * @see smarthome.automation.deviceType.Compteur#googleChartTarif(smarthome.automation.DeviceChartCommand, java.lang.Object)
 	 */
 	@Override
-	def chartDataTemplate() {
-		'/chart/datas/chartQualitatifDatas'
+	GoogleChart googleChartTarif(DeviceChartCommand command, Object values) {
+		GoogleChart chart = new GoogleChart()
+		command.device.extrasToJson()
+		chart.title = device.label
+		chart.chartType = ChartTypeEnum.Combo.factory
+		chart.selectionField = "selectionCout"
+		def contrat = getContrat()
+
+		chart.vAxis << [title: 'Coût (€)']
+
+		// transforme les valeurs en Map. Avec cette impl, il n'y qu'une seule
+		// métrique chargée. donc le regroupement de renvoit qu'une seule valeur
+		// par groupe
+		chart.values = values.groupBy { it.dateValue }.collectEntries { entry ->
+			def conso = CompteurUtils.convertWhTokWh(entry.value[0].value)
+			[(entry.key): [kwh: conso, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
+		}.sort { it.key }
+
+		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
+		chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+			deviceValue.value.prix
+		})
+
+		if (command.viewMode == ChartViewEnum.day) {
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+		} else {
+			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
+		}
+
+		return chart
 	}
 
 

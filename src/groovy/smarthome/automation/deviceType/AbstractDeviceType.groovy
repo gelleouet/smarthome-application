@@ -194,20 +194,6 @@ abstract class AbstractDeviceType implements Serializable {
 
 
 	/**
-	 * Le template par défaut pour préparer les données du chart
-	 *
-	 * @return
-	 */
-	def chartDataTemplate() {
-		if (isQualitatif()) {
-			'/chart/datas/chartQualitatifDatas'
-		} else {
-			'/chart/datas/chartQuantitatifDatas'
-		}
-	}
-
-
-	/**
 	 * Utilisation d'un google chart préparé
 	 * 
 	 * @param command

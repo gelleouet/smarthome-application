@@ -157,6 +157,7 @@ class DefiService extends AbstractService {
 		GoogleChart chart = new GoogleChart()
 		chart.chartType = ChartTypeEnum.Column.factory
 		chart.hAxisFormat = "EE"
+		chart.slantedText = true
 
 		// réorganisation avec une liste de N jours correspondant à la période de référence
 		// ensuite, les valeurs d'action sont injectée sur ces jours
@@ -188,6 +189,70 @@ class DefiService extends AbstractService {
 		}.join(",")
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+
+		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
+		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
+
+		chart.vAxis << [title: 'Consommation (kWh)']
+
+		return chart
+	}
+
+
+	/**
+	 * Graphe comparatif des consommations sur les 2 périodes pour un user en fonction d'un compteur
+	 * L'abscisse est en affichée en semaine. C'est utilisé surtout pour les
+	 * compteurs avec saisie manuelle pour lesquels la saisie est enregistrée sur
+	 * un jour quelconque de la semaine et qui fausse le résultat par jour
+	 *
+	 * IMPORTANT !!! il faut bien sur que les 2 périodes aient la même durée
+	 *
+	 * @param defi
+	 * @param user
+	 * @param consos données issues de la méthode #loadUserConso
+	 *
+	 * @return GoogleChart
+	 */
+	GoogleChart chartUserWeek(Defi defi, User user, Map consos) {
+		GoogleChart chart = new GoogleChart()
+		chart.chartType = ChartTypeEnum.Column.factory
+
+		// réorganisation les valeurs de référence par semaine
+		// on convertit aussi les consos en kWh
+		chart.values = []
+
+		consos.reference.groupBy {
+			it.dateValue[Calendar.WEEK_OF_YEAR]
+		}.eachWithIndex { key, values, statut ->
+			chart.values << [week: "S${statut + 1}", reference: CompteurUtils.convertWhTokWh(
+				values.sum { it.value })]
+		}
+
+		// injecte les valeurs d'action en tenant compte de "trous"
+		// l'index est calculé à partir du jour de départ de la période
+		// les valeurs sont d'abord regroupées par semaine avant d'être injectées
+		if (consos.action) {
+			int debutSemaine = consos.action[0].dateValue[Calendar.WEEK_OF_YEAR]
+			int index
+
+			consos.action.groupBy {
+				it.dateValue[Calendar.WEEK_OF_YEAR]
+			}.eachWithIndex { key, values, statut ->
+				index = key - debutSemaine
+
+				if (index >= 0 && index < chart.values.size()) {
+					chart.values[index].action = CompteurUtils.convertWhTokWh(
+							values.sum { it.value })
+				}
+			}
+		}
+
+		int statut = 1
+		chart.hAxisTicks = chart.values.collect { "'S${ statut++}'" }.join(",")
+
+		chart.colonnes << new GoogleDataTableCol(label: "Semaine", property: "week", type: "string")
 		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
 		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
 
@@ -253,8 +318,16 @@ class DefiService extends AbstractService {
 	 * 
 	 * @return
 	 */
-	Map groupConsos(Map... consos) {
+	Map groupConsos(Defi defi, Map... consos) {
 		Map result = [reference: [], action: []]
+
+		// calcul l'affichage approprié pour les consos globales détaillées
+		// si gros écart de fréquence entre les périodes de référence entre les
+		// compteurs, on passe sur une vue semaine sinon on peut rester sur une
+		// vue journalière
+		result.bestView = "day"
+
+		int limitDuree = (defi.referenceFin - defi.referenceDebut) / 2
 
 		// la liste peut contenir des valeurs nulles
 		// ajoute toutes les consos des compteurs dans 2 buffers reference et action
@@ -263,6 +336,10 @@ class DefiService extends AbstractService {
 			if (conso) {
 				result.reference.addAll(conso.reference)
 				result.action.addAll(conso.action)
+
+				if (conso.reference.size() <= limitDuree) {
+					result.bestView = "week"
+				}
 			}
 		}
 

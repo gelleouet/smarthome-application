@@ -4,6 +4,7 @@ import java.util.Date
 import java.util.List
 import java.util.Map
 
+import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
 import smarthome.automation.DeviceChartCommand
@@ -40,13 +41,13 @@ class Compteur extends AbstractDeviceType {
 
 
 	/**
-	 * @see smarthome.automation.deviceType.AbstractDeviceType.chartDataTemplate()
+	 * (non-Javadoc)
+	 * @see smarthome.automation.deviceType.AbstractDeviceType#viewChart()
 	 */
 	@Override
-	def chartDataTemplate() {
-		'/deviceType/compteur/compteurChartDatas'
+	String viewChart() {
+		'/deviceType/compteur/compteurChart'
 	}
-
 
 
 	/**
@@ -89,17 +90,21 @@ class Compteur extends AbstractDeviceType {
 		GoogleChart chart = new GoogleChart()
 		command.device.extrasToJson()
 		chart.values = values
+		chart.title = device.label
+		chart.chartType = ChartTypeEnum.Combo.factory
+		chart.selectionField = "selectionConso"
+
+		def unite = device.metavalue(META_METRIC_NAME)?.unite
+
+		chart.vAxis << [title: 'Consommation (${ unite })']
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
-		chart.colonnes << new GoogleDataTableCol(label: "Index", property: "value", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Heures base", property: "value", type: "number")
 
-		// Convertit les valeurs si besoin
-		def coefConversion = command.device.metadata('coefConversion')
-
-		if (coefConversion?.value) {
-			chart.values.each {
-				it.value = it.value * coefConversion.value.toDouble()
-			}
+		if (command.viewMode == ChartViewEnum.day) {
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+		} else {
+			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
 		}
 
 		return chart
@@ -108,6 +113,10 @@ class Compteur extends AbstractDeviceType {
 
 	/**
 	 * Construction d'un graphe avec les tarifs
+	 * Les impls doivent formattées les valeurs en une map contenant en clé la date
+	 * et différents champs pour les prix par période tarifaire. Celles par défaut 
+	 * sont 'kwh' pour la conso et 'prix' . Grâce à ce format, les données seront
+	 * compatibles pour s'afficher aussi en format Table avec tout le détail
 	 *
 	 * @param command
 	 * @param values
@@ -115,6 +124,32 @@ class Compteur extends AbstractDeviceType {
 	 */
 	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
+		command.device.extrasToJson()
+		chart.title = device.label
+		chart.chartType = ChartTypeEnum.Combo.factory
+		chart.selectionField = "selectionCout"
+		def contrat = getContrat()
+
+		chart.vAxis << [title: 'Coût (€)']
+
+		// transforme les valeurs en Map. Avec cette impl, il n'y qu'une seule
+		// métrique chargée. donc le regroupement de renvoit qu'une seule valeur
+		// par groupe
+		chart.values = values.groupBy { it.dateValue }.collectEntries { entry ->
+			def conso = entry.value[0].value
+			[(entry.key): [kwh: conso, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
+		}.sort { it.key }
+
+		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
+		chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+			deviceValue.value.prix
+		})
+
+		if (command.viewMode == ChartViewEnum.day) {
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+		} else {
+			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
+		}
 
 		return chart
 	}

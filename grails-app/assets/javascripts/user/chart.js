@@ -80,7 +80,22 @@ function buildGoogleChart(divChart) {
 				chart.draw(chartDatas, chartOptions);
 			}
 			
-			if (chartSelectFunction) {
+			var selectField = $divData.attr('data-selection-field')
+			
+			if (selectField) {
+				var chartSelectFunction = function(event) {
+					$('#' + selectField).val('')
+			  		var interval = chartSelectionInterval(chart)
+			  		var sum = chartSelectionSumInterval(chartDatas, interval)
+			  		$('#' + selectField).val(sum ? sum : '')
+			  	}
+				
+				// attache un listener sur le bouton de suppression selection
+				$('#' + selectField + '-clear-button').on('click', function(event) {
+					$('#' + selectField).val('')
+					chart.setSelection()
+				})
+				
 				google.visualization.events.addListener(chart, 'select', chartSelectFunction)
 			}
 	      	

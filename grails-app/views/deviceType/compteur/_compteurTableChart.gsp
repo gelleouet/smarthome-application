@@ -2,7 +2,8 @@
 
 <g:set var="compteur" value="${ command.device.newDeviceImpl() }"/>
 
-<p class="separator" style="text-align:center; font-weight:bold; font-size: medium;">Synthèse
+<h4>
+	<app:icon name="bar-chart-2"/> Consommations
 	<g:if test="${ command.viewMode == ChartViewEnum.day }">
 		<g:formatDate date="${ command.dateChart }" format="dd/MM/yyyy"/>
 	</g:if>
@@ -12,9 +13,9 @@
 	<g:else>
 		<g:formatDate date="${ command.dateChart }" format="yyyy"/>
 	</g:else>
-</p>
+</h4>
 
-<table class="aui app-datatable" style="margin-top:20px;" data-client-pagination="true">
+<table class="table table-hover app-datatable" style="margin-top:20px;" data-client-pagination="true">
 	<thead>
 		<tr>
 			<th></th>

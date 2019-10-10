@@ -66,18 +66,14 @@
 			  			<h5>Différence</h5>
 			  		</div>
 			  		<div class="col-5 text-right">
-			  			<g:if test="${ consos.totalDiff > 0 }">
-			  				<h4 class="font-weight-bold"><app:icon name="arrow-up-right"/> +${ consos.totalDiff }<span style="font-size: x-small;">kWh</span></h4>
-			  			</g:if>
-			  			<g:else>
-			  				<h4 class="font-weight-bold"><g:if test="${ consos.totalDiff < 0 }"><app:icon name="arrow-down-right"/></g:if> ${ consos.totalDiff }<span style="font-size: x-small;">kWh</span></h4>
-			  			</g:else>
+			  			<h4 class="font-weight-bold">
+			  				<g:applyLayout name="arrow" model="[value: consos.totalDiff, reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
+			  			</h4>
 			  		</div>
 			  	</div>
 			  </li>
 			</ul>
-		</div>
-		
+		</div> <!-- div.col -->
 		
 		<div class="col-8">
 			<div id="chartDiv-conso-${ chartId }" data-chart-type="${ chartConso.chartType }">
@@ -105,11 +101,37 @@
 					    	gridlines: { color: 'none'},
 					    	format: '${ chartConso.hAxisFormat }',
 					    	ticks: [${ chartConso.hAxisTicks }],
-					    	slantedText: true,	
+					    	slantedText: ${ chartConso.slantedText },	
 					    }
 					}
 				</div>
+			</div> <!-- div.chart -->
+			
+			<div class="row ml-4 mr-4" style="margin-top:-40px;">
+				<div class="col-4 border-bottom border-right text-center">
+					<h5 class="font-weight-bold">Evolution</h5>
+				</div>
+				<div class="col-4 border-bottom border-right text-center">
+					<h5 class="font-weight-bold">Economie</h5>
+				</div>
+				<div class="col-4 border-bottom text-center">
+					<h5 class="font-weight-bold">Classement</h5>
+				</div>
+				
+				<div class="col-4 border-right text-center pt-4">
+					<h3 class="font-weight-bold text-secondary">
+						<g:applyLayout name="arrow" model="[value: '?', reference: 0]">%</g:applyLayout>
+					</h3>
+				</div>
+				<div class="col-4 border-right text-center pt-4">
+					<h3 class="font-weight-bold text-secondary">
+						<g:applyLayout name="arrow" model="[value: '?', reference: 0]">%</g:applyLayout>
+					</h3>
+				</div>
+				<div class="col-4 text-center pt-4">
+					<h3 class="font-weight-bold text-secondary">?/?</h3>
+				</div>
 			</div>
-		</div>
-	</div>
+		</div> <!-- div.col -->
+	</div> <!-- div.row -->
 </g:else>

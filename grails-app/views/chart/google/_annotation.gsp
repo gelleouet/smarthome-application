@@ -1,3 +1,7 @@
+<g:if test="${ chart.series.find{ it.annotation } }">
+
+chartDatas = new google.visualization.DataView(chartDatas)
+
 chartDatas.setColumns([0,
 	<g:each var="serie" in="${ chart.series }" status="status">
 		${status+1},
@@ -9,3 +13,5 @@ chartDatas.setColumns([0,
         </g:if>
     </g:each>
 ])
+
+</g:if>

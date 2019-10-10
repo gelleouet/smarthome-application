@@ -7,16 +7,21 @@
 <div data-chart-datas="true" class="d-none" data-on-build-chart="onBuildQualitatifChart"
 	data-url-delete-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'deleteDeviceValue') : '' }"
 	data-url-change-value="${ hasChartAction ? g.createLink(controller: 'device', action: 'dialogDeviceValue') : '' }"
-	data-immediate="true">	
+	data-immediate="true" data-selection-field="${ chart.selectionField }">	
 
    	chartDatas = new google.visualization.DataTable(${ raw(chart.toJsonDataTable().toString(false)) });
-   	chartDatas = new google.visualization.DataView(chartDatas)
    	
    	<g:if test="${ chart.joinChart }">
    		chartJoinDatas = new google.visualization.DataTable(${ raw(chart.joinChart.toJsonDataTable().toString(false)) });	
    	</g:if>
    	
-   	<g:render template="/chart/google/annotation" model="[chart: chart]"/>
+   	<g:if test="${ compareChart }">
+		chartOldDatas = new google.visualization.DataTable(${ raw(compareChart.toJsonDataTable().toString(false)) })
+	</g:if>
+	<g:else>
+		<g:render template="/chart/google/annotation" model="[chart: chart]"/>
+	</g:else>
+   	
    	
 	chartOptions = {
 		<g:if test="${ chart?.title }">
@@ -26,9 +31,10 @@
 		'width': '${ params.chartWidth ?: '100%' }',
         'height': '${ params.chartHeight ?: '600' }',
         'legend': {position: 'top'},
+        'selectionMode': 'multiple',
         'curveType': 'function',
         'chartArea': {
-        	width: '90%'
+        	width: '85%'
         },
         'tooltip': {
 			'isHtml': true,
@@ -36,6 +42,7 @@
 		},
 		'explorer': {
 			'axis': 'horizontal',
+			keepInBounds: true,
 			'actions': ['dragToZoom', 'rightClickToReset']
 		},
 		'series': {
@@ -47,13 +54,29 @@
 	    'hAxis': {
 	    	title: '${ chart.hAxisTitle(command) }',
 	    	gridlines: { color: 'none'},
-		    slantedText: true,
-		    format: '${ new GoogleChart().format(command) }',
-	        ticks: [${ new GoogleChart().ticks(command) }]
-	    }
+		    slantedText: ${ chart.slantedText },
+		    format: '${ chart.hAxisFormat ?: chart.format(command) }',
+	        ticks: [${ chart.hAxisTicks ?: chart.ticks(command) }]
+	    },
+	    
 	    <g:if test="${ chart.joinChart }">
 	    'interpolateNulls': true,
 	    </g:if>
+	   
+	    <g:if test="${ compareChart }">
+	    diff: {
+		  	oldData: {
+		  		tooltip: {
+		  			prefix: null
+		  		}
+		  	},
+		  	newData: {
+		  		tooltip: {
+		  			prefix: null
+		  		}
+		  	},
+		},
+		</g:if>
 	}
 	
 	<g:if test="${ chart.chartType }">

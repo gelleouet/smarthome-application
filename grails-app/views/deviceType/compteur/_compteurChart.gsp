@@ -3,19 +3,19 @@
 
 <div class="card card-margin-top">
     <div class="card-body">
-     	<g:render template="/deviceType/teleInformation/teleInformationChartConso"/>
+     	<g:render template="/deviceType/compteur/compteurConsoChart"/>
     </div>
 </div>
 
 <div class="card">
     <div class="card-body">
-     	<g:render template="/deviceType/teleInformation/teleInformationChartCout"/>
+     	<g:render template="/deviceType/compteur/compteurTarifChart"/>
     </div>
 </div>
 
 <div class="card">
     <div class="card-body">
-     	<g:render template="/deviceType/teleInformation/teleInformationChartSynthese"/>
+     	<g:render template="/deviceType/compteur/compteurTableChart"/>
     </div>
 </div>
 

@@ -21,6 +21,9 @@ class GoogleChart {
 	GoogleChart joinChart
 	String hAxisFormat
 	String hAxisTicks
+	boolean slantedText = false
+	boolean isStacked = false
+	String selectionField
 
 
 

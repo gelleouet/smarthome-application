@@ -6,7 +6,7 @@
 	<div class="aui-progress-indicator">
 	    <span class="aui-progress-indicator-value"></span>
 	</div>
-	<g:render template="${ command.deviceImpl.chartDataTemplate() }" model="[command: command,
+	<g:render template="/chart/datas/chartDatas" model="[command: command,
 		datas: chart.values, chart: chart, compareChart: compareChart]"/>
 </div> 
 
@@ -17,6 +17,7 @@
 				Consommation sur la sélection
 			</label>
 			<g:textField name="selectionConso" class="form-control" readonly="true"/> ${ command.viewMode == ChartViewEnum.day ? 'Wh' : 'kWh' }
+			<a id="selectionConso-clear-button" class="btn btn-light ml-2" title="Effacer"><app:icon name="x"/></a>
 		</div>
 	</form>
 	

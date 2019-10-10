@@ -73,15 +73,55 @@ class GrandDefiController extends AbstractController {
 
 
 	/**
-	 * Page "Mon Défi" avec les résultats du défi en individuel
+	 * Point d'entrée des défis
 	 * 
 	 * @return
 	 */
 	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary,
 	header = "Grand Défi", icon = "award")
-	def mondefi(DefiCommand command) {
+	def defis(DefiCommand command) {
+		mesresultats(command)
+	}
+
+
+	/**
+	 * Résultats individuels
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def mesresultats(DefiCommand command) {
 		command.user = authenticatedUser // spring security plugin
 		def model = grandDefiService.modelMonDefi(command)
-		render(view: 'mondefi', model: model)
+		model.viewName = "mesresultats"
+		render(view: 'mesresultats', model: model)
+	}
+
+
+	/**
+	 * Résultats de l'équipe
+	 *
+	 * @param command
+	 * @return
+	 */
+	def resultatsequipe(DefiCommand command) {
+		command.user = authenticatedUser // spring security plugin
+		def model = grandDefiService.modelMonDefi(command)
+		model.viewName = "resultatsequipe"
+		render(view: 'mesresultats', model: model)
+	}
+
+
+	/**
+	 * Résultats du défi
+	 *
+	 * @param command
+	 * @return
+	 */
+	def resultatsdefi(DefiCommand command) {
+		command.user = authenticatedUser // spring security plugin
+		def model = grandDefiService.modelMonDefi(command)
+		model.viewName = "resultatsdefi"
+		render(view: 'mesresultats', model: model)
 	}
 }
