@@ -1,7 +1,7 @@
-<g:if test="${ error }">
+<g:if test="${ data.error }">
 	<div class="mt-4">
 		<g:applyLayout name="messageWarning">
-			${ error } 
+			${ data.error } 
 			<g:link controller="compteur" action="compteur" class="btn btn-link"><app:icon name="settings"/> Configurer votre compteur</g:link>
 		</g:applyLayout>
 	</div>
@@ -10,12 +10,12 @@
 	<div class="row mt-4">
 		<div class="col-4">
 			
-			<div id="chartDiv-total-${ chartId }" data-chart-type="${ chartTotal.chartType }">
+			<div id="chartDiv-total-${ data.type }-${ defi?.id }" data-chart-type="${ data.chartTotal.chartType }">
 				<div data-chart-datas="true" class="d-none">	
-					chartDatas = new google.visualization.DataTable(${ raw(chartTotal.toJsonDataTable().toString(false)) });
+					chartDatas = new google.visualization.DataTable(${ raw(data.chartTotal.toJsonDataTable().toString(false)) });
 	   				chartDatas = new google.visualization.DataView(chartDatas)
 				   	
-				   	<g:render template="/chart/google/annotation" model="[chart: chartTotal]"/>
+				   	<g:render template="/chart/google/annotation" model="[chart: data.chartTotal]"/>
 				   	
 					chartOptions = {
 						'width': '100%',
@@ -25,10 +25,10 @@
 				        	width: '60%',
 				        },
 				        'vAxes': {
-							<g:render template="/chart/google/vaxis" model="[chart: chartTotal]"/>
+							<g:render template="/chart/google/vaxis" model="[chart: data.chartTotal]"/>
 					    },
 				        'series': {
-							<g:render template="/chart/google/series" model="[chart: chartTotal]"/>
+							<g:render template="/chart/google/series" model="[chart: data.chartTotal]"/>
 						},
 					    'hAxis': {
 					    	gridlines: { color: 'none'},
@@ -40,34 +40,34 @@
 			<ul class="list-group list-group-flush">
 			  <li class="list-group-item">
 			  	<div class="row">
-			  		<div class="col-7">
+			  		<div class="col-6">
 			  			<h5>Référence</h5>
 			  		</div>
-			  		<div class="col-5 text-right">
-			  			<h4 class="text-black-50 font-weight-bold">${ consos.totalReference }<span style="font-size: x-small;">kWh</span></h4>
+			  		<div class="col-6 text-right">
+			  			<h4 class="text-black-50 font-weight-bold">${ data.consos.reference != null ? data.consos.reference : '-' }<span style="font-size: x-small;">kWh</span></h4>
 			  		</div>
 			  	</div>
-			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi.referenceDebut }"/> au <app:formatUser date="${ defi.referenceFin }"/></small>
+			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
 			  </li>
 			  <li class="list-group-item">
 			  	<div class="row">
-			  		<div class="col-7">
+			  		<div class="col-6">
 			  			<h5>Action</h5>
 			  		</div>
-			  		<div class="col-5 text-right">
-			  			<h4 class="text-primary font-weight-bold">${ consos.totalAction }<span style="font-size: x-small;">kWh</span></h4>
+			  		<div class="col-6 text-right">
+			  			<h4 class="text-primary font-weight-bold">${ data.consos.action != null ? data.consos.action : '-' }<span style="font-size: x-small;">kWh</span></h4>
 			  		</div>
 			  	</div>
-			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi.actionDebut }"/> au <app:formatUser date="${ defi.referenceFin }"/></small>
+			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
 			  </li>
 			  <li class="list-group-item">
 			  	<div class="row">
-			  		<div class="col-7">
+			  		<div class="col-6">
 			  			<h5>Différence</h5>
 			  		</div>
-			  		<div class="col-5 text-right">
+			  		<div class="col-6 text-right">
 			  			<h4 class="font-weight-bold">
-			  				<g:applyLayout name="arrow" model="[value: consos.totalDiff, reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
+			  				<g:applyLayout name="arrow" model="[value: data.consos.difference != null ? data.consos.difference : '-', reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
 			  			</h4>
 			  		</div>
 			  	</div>
@@ -76,12 +76,12 @@
 		</div> <!-- div.col -->
 		
 		<div class="col-8">
-			<div id="chartDiv-conso-${ chartId }" data-chart-type="${ chartConso.chartType }">
+			<div id="chartDiv-conso-${ data.type }-${ defi?.id }" data-chart-type="${ data.chartConso.chartType }">
 				<div data-chart-datas="true" class="d-none">	
-					chartDatas = new google.visualization.DataTable(${ raw(chartConso.toJsonDataTable().toString(false)) });
+					chartDatas = new google.visualization.DataTable(${ raw(data.chartConso.toJsonDataTable().toString(false)) });
 	   				chartDatas = new google.visualization.DataView(chartDatas)
 				   	
-				   	<g:render template="/chart/google/annotation" model="[chart: chartConso]"/>
+				   	<g:render template="/chart/google/annotation" model="[chart: data.chartConso]"/>
 				   	
 					chartOptions = {
 						'width': '100%',
@@ -92,44 +92,44 @@
 				        	width: '85%'
 				        },
 				        'vAxes': {
-							<g:render template="/chart/google/vaxis" model="[chart: chartConso]"/>
+							<g:render template="/chart/google/vaxis" model="[chart: data.chartConso]"/>
 					    },
 				        'series': {
-							<g:render template="/chart/google/series" model="[chart: chartConso]"/>
+							<g:render template="/chart/google/series" model="[chart: data.chartConso]"/>
 						},
 					    'hAxis': {
 					    	gridlines: { color: 'none'},
-					    	format: '${ chartConso.hAxisFormat }',
-					    	ticks: [${ chartConso.hAxisTicks }],
-					    	slantedText: ${ chartConso.slantedText },	
+					    	format: '${ data.chartConso.hAxisFormat }',
+					    	ticks: [${ data.chartConso.hAxisTicks }],
+					    	slantedText: ${ data.chartConso.slantedText },	
 					    }
 					}
 				</div>
 			</div> <!-- div.chart -->
 			
 			<div class="row ml-4 mr-4" style="margin-top:-40px;">
-				<div class="col-4 border-bottom border-right text-center">
+				<div class="col-4 border-bottom border-right text-center p-2">
 					<h5 class="font-weight-bold">Evolution</h5>
 				</div>
-				<div class="col-4 border-bottom border-right text-center">
-					<h5 class="font-weight-bold">Economie</h5>
-				</div>
-				<div class="col-4 border-bottom text-center">
+				<div class="col-4 border-bottom border-right text-center p-2">
 					<h5 class="font-weight-bold">Classement</h5>
 				</div>
+				<div class="col-4 border-bottom text-center p-2 bg-secondary">
+					<h4 class="font-weight-bold">Economie</h4>
+				</div>
 				
-				<div class="col-4 border-right text-center pt-4">
+				<div class="col-4 border-right text-center p-2">
 					<h3 class="font-weight-bold text-secondary">
-						<g:applyLayout name="arrow" model="[value: '?', reference: 0]">%</g:applyLayout>
+						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
 					</h3>
 				</div>
-				<div class="col-4 border-right text-center pt-4">
-					<h3 class="font-weight-bold text-secondary">
-						<g:applyLayout name="arrow" model="[value: '?', reference: 0]">%</g:applyLayout>
-					</h3>
+				<div class="col-4 border-right text-center p-2">
+					<h3 class="font-weight-bold text-secondary">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h3>
 				</div>
-				<div class="col-4 text-center pt-4">
-					<h3 class="font-weight-bold text-secondary">?/?</h3>
+				<div class="col-4 text-center p-2 bg-secondary">
+					<h3 class="font-weight-bold">
+						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
+					</h3>
 				</div>
 			</div>
 		</div> <!-- div.col -->

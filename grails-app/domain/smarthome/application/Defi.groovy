@@ -5,7 +5,7 @@ import smarthome.security.User
 import grails.validation.Validateable
 
 @Validateable
-class Defi implements Serializable {
+class Defi extends AbstractDefiResultat {
 
 	User user
 	String libelle

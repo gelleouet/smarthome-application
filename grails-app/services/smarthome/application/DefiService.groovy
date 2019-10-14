@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.Device
 import smarthome.automation.House
-import smarthome.automation.HouseService
 import smarthome.automation.deviceType.Compteur
 import smarthome.core.AbstractService
 import smarthome.core.CompteurUtils
+import smarthome.core.NumberUtils
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -24,8 +24,6 @@ import smarthome.security.User
  *
  */
 class DefiService extends AbstractService {
-
-	HouseService houseService
 
 
 	/**
@@ -68,6 +66,84 @@ class DefiService extends AbstractService {
 
 
 	/**
+	 * Les résultats d'une équipe
+	 *
+	 * @param defi
+	 * @param user
+	 * @return
+	 */
+	DefiEquipe findEquipeResultat(Defi defi, User user) {
+		// on passe par une HQL pour éviter le fetch auto du criteria sur
+		// les jointures
+		def results = DefiEquipeParticipant.executeQuery("""\
+			SELECT equipe
+			FROM DefiEquipeParticipant dep
+			JOIN dep.defiEquipe equipe
+			WHERE dep.user = :user AND equipe.defi = :defi""",
+				[defi: defi, user: user])
+
+		return results ? results[0] : null
+	}
+
+
+	/**
+	 * Les sous-résultats d'une équipe par profil d'utilisateur
+	 * 
+	 * @param defiEquipe
+	 * @return
+	 */
+	List<DefiEquipeProfil> listEquipeProfilResultat(DefiEquipe defiEquipe) {
+		DefiEquipeProfil.createCriteria().list() {
+			eq 'defiEquipe', defiEquipe
+			join 'profil'
+		}
+	}
+
+
+	/**
+	 * Les résultats individuels d'un user
+	 * 
+	 * @param defi
+	 * @param user
+	 * @return
+	 */
+	DefiEquipeParticipant findUserResultat(Defi defi, User user) {
+		// on passe par une HQL pour éviter le fetch auto du criteria sur
+		// les jointures
+		def results = DefiEquipeParticipant.executeQuery("""\
+			SELECT dep
+			FROM DefiEquipeParticipant dep
+			JOIN dep.defiEquipe equipe
+			WHERE dep.user = :user AND equipe.defi = :defi""",
+				[defi: defi, user: user])
+
+		return results ? results[0] : null
+	}
+
+
+	/**
+	 * Le nombre d'équipes pour le défi
+	 *
+	 * @param defi
+	 * @return
+	 */
+	Long countEquipe(Defi defi) {
+		return DefiEquipe.countByDefi(defi)
+	}
+
+
+	/**
+	 * Le nombre de participants d'une équipe
+	 * 
+	 * @param defiEquipe
+	 * @return
+	 */
+	Long countParticipantEquipe(DefiEquipe defiEquipe) {
+		return DefiEquipeParticipant.countByDefiEquipe(defiEquipe)
+	}
+
+
+	/**
 	 * Inscription d'un user à un défi et une équipe
 	 * L'équipe est créé et associée au défi et son nom n'est pas trouvée
 	 * Le statut du défi est checké pour savoir si toujours ouvert
@@ -81,7 +157,7 @@ class DefiService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	DefiParticipant inscription(User user, Long defiId, String equipeName) throws SmartHomeException {
+	DefiEquipeParticipant inscription(User user, Long defiId, String equipeName) throws SmartHomeException {
 		// vérifie le statut du défi
 		Defi defi = Defi.read(defiId)
 
@@ -104,27 +180,66 @@ class DefiService extends AbstractService {
 		}
 
 		// Association du user avec l'équipe du défi
-		return super.save(new DefiParticipant(user: user, defiEquipe: defiEquipe))
+		return super.save(new DefiEquipeParticipant(user: user, defiEquipe: defiEquipe))
 	}
 
 
 	/**
-	 * Graphe comparatif total des périodes pour un user en fonction d'un compteur
+	 * Graphe comparatif total des périodes
 	 * 
 	 * @param defi
-	 * @param user
-	 * @param consos données issues de la méthode #loadUserConso
+	 * @param consos données contenant 2 fields : reference et action
 	 * 
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserTotal(Defi defi, User user, Map consos) {
+	GoogleChart chartTotal(Defi defi, Map consos) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Column.factory
+		chart.values = []
 
-		chart.values = [
-			[name: "Total", reference: consos.totalReference, action: consos.totalAction]
-		]
+		if (consos.resultat?.canDisplay()) {
+			chart.values = [
+				[name: "Total", reference: consos.reference, action: consos.action]
+			]
+		}
+
+		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+
+		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
+		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
+
+		chart.vAxis << [title: 'Consommation (kWh)']
+
+		return chart
+	}
+
+
+	/**
+	 * Graphe comparatif total des périodes par profil
+	 *
+	 * @param defi
+	 * @param consos
+	 * @param defiCompteur
+	 *
+	 * @return GoogleChart
+	 */
+	GoogleChart chartProfil(Defi defi, Map consos, DefiCompteurEnum defiCompteur) {
+		GoogleChart chart = new GoogleChart()
+
+		chart.chartType = ChartTypeEnum.Column.factory
+		chart.values = []
+
+		// regroupe les données par profil et pour chacun récupère le
+		if (consos.resultat?.canDisplay()) {
+			consos?.values?.sort { it.profil.libelle }?.each {
+				chart.values << [name: it.profil.libelle,
+					reference: it."reference_${ defiCompteur}"(),
+					action: it."action_${ defiCompteur}"()]
+			}
+		}
 
 		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
 		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
@@ -148,12 +263,11 @@ class DefiService extends AbstractService {
 	 * de la semaine (ie lundi) et aient la même durée en jour
 	 *
 	 * @param defi
-	 * @param user
 	 * @param consos données issues de la méthode #loadUserConso
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserDay(Defi defi, User user, Map consos) {
+	GoogleChart chartUserDay(Defi defi, Map consos) {
 		GoogleChart chart = new GoogleChart()
 		chart.chartType = ChartTypeEnum.Column.factory
 		chart.hAxisFormat = "EE"
@@ -164,22 +278,24 @@ class DefiService extends AbstractService {
 		// on convertit aussi les consos en kWh
 		chart.values = []
 
-		for (def reference : consos.reference) {
-			chart.values << [dateValue: reference.dateValue,
-				reference: CompteurUtils.convertWhTokWh(reference.value)]
-		}
+		if (consos.resultat?.canDisplay()) {
+			for (def reference : consos.referenceValues) {
+				chart.values << [dateValue: reference.dateValue,
+					reference: CompteurUtils.convertWhTokWh(reference.value)]
+			}
 
-		// injecte les valeurs d'action en tenant compte de "trous"
-		// l'index est calculé à partir du jour de départ de la période
-		if (consos.action) {
-			Date debutAction = consos.action[0].dateValue
-			int index
+			// injecte les valeurs d'action en tenant compte de "trous"
+			// l'index est calculé à partir du jour de départ de la période
+			if (consos.actionValues) {
+				Date debutAction = consos.actionValues[0].dateValue
+				int index
 
-			for (def action : consos.action) {
-				index = action.dateValue - debutAction
+				for (def action : consos.actionValues) {
+					index = action.dateValue - debutAction
 
-				if (index >= 0 && index < chart.values.size()) {
-					chart.values[index].action = CompteurUtils.convertWhTokWh(action.value)
+					if (index >= 0 && index < chart.values.size()) {
+						chart.values[index].action = CompteurUtils.convertWhTokWh(action.value)
+					}
 				}
 			}
 		}
@@ -210,12 +326,11 @@ class DefiService extends AbstractService {
 	 * IMPORTANT !!! il faut bien sur que les 2 périodes aient la même durée
 	 *
 	 * @param defi
-	 * @param user
 	 * @param consos données issues de la méthode #loadUserConso
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserWeek(Defi defi, User user, Map consos) {
+	GoogleChart chartUserWeek(Defi defi, Map consos) {
 		GoogleChart chart = new GoogleChart()
 		chart.chartType = ChartTypeEnum.Column.factory
 
@@ -223,28 +338,30 @@ class DefiService extends AbstractService {
 		// on convertit aussi les consos en kWh
 		chart.values = []
 
-		consos.reference.groupBy {
-			it.dateValue[Calendar.WEEK_OF_YEAR]
-		}.eachWithIndex { key, values, statut ->
-			chart.values << [week: "S${statut + 1}", reference: CompteurUtils.convertWhTokWh(
-				values.sum { it.value })]
-		}
-
-		// injecte les valeurs d'action en tenant compte de "trous"
-		// l'index est calculé à partir du jour de départ de la période
-		// les valeurs sont d'abord regroupées par semaine avant d'être injectées
-		if (consos.action) {
-			int debutSemaine = consos.action[0].dateValue[Calendar.WEEK_OF_YEAR]
-			int index
-
-			consos.action.groupBy {
+		if (consos.resultat?.canDisplay()) {
+			consos.referenceValues?.groupBy {
 				it.dateValue[Calendar.WEEK_OF_YEAR]
-			}.eachWithIndex { key, values, statut ->
-				index = key - debutSemaine
+			}?.eachWithIndex { key, values, statut ->
+				chart.values << [week: "S${statut + 1}", reference: CompteurUtils.convertWhTokWh(
+					values.sum { it.value })]
+			}
 
-				if (index >= 0 && index < chart.values.size()) {
-					chart.values[index].action = CompteurUtils.convertWhTokWh(
-							values.sum { it.value })
+			// injecte les valeurs d'action en tenant compte de "trous"
+			// l'index est calculé à partir du jour de départ de la période
+			// les valeurs sont d'abord regroupées par semaine avant d'être injectées
+			if (consos.actionValues) {
+				int debutSemaine = consos.actionValues[0].dateValue[Calendar.WEEK_OF_YEAR]
+				int index
+
+				consos.actionValues.groupBy {
+					it.dateValue[Calendar.WEEK_OF_YEAR]
+				}.eachWithIndex { key, values, statut ->
+					index = key - debutSemaine
+
+					if (index >= 0 && index < chart.values.size()) {
+						chart.values[index].action = CompteurUtils.convertWhTokWh(
+								values.sum { it.value })
+					}
 				}
 			}
 		}
@@ -271,20 +388,13 @@ class DefiService extends AbstractService {
 	 * et retourne le tout sous forme de Map.
 	 * 
 	 * @param defi
-	 * @param user
+	 * @param house
 	 * @param compteurType
 	 * 
 	 * @return Map avec les fields : reference, action, totalReference, totalAction
 	 */
-	Map loadUserConso(Defi defi, User user, DefiCompteurEnum compteurType) throws SmartHomeException {
+	Map loadUserConso(Defi defi, House house, DefiCompteurEnum compteurType) throws SmartHomeException {
 		Map result = [:]
-
-		// recherche du compteur avec les consos
-		House house = houseService.findDefaultByUser(user)
-
-		if (!house) {
-			throw new SmartHomeException("Profil incomplet !")
-		}
 
 		Device device = house[compteurType.property]
 
@@ -296,14 +406,15 @@ class DefiService extends AbstractService {
 
 		// garde une trace du type de compteur
 		result.type = compteurType
+		result.compteur = device
 
 		// charge les consos sur les 2 périodes
-		result.reference = compteur.consommationTotalByDay(defi.referenceDebut, defi.referenceFin)
-		result.action = compteur.consommationTotalByDay(defi.actionDebut, defi.actionFin)
+		result.referenceValues = compteur.consommationTotalByDay(defi.referenceDebut, defi.referenceFin)
+		result.actionValues = compteur.consommationTotalByDay(defi.actionDebut, defi.actionFin)
 
-		// calcul les totaux et diff
-		result.totalReference = CompteurUtils.convertWhTokWh(result.reference.sum { it.value })
-		result.totalAction = CompteurUtils.convertWhTokWh(result.action.sum { it.value })
+		// calcul temporaire des totaux et diff
+		result.totalReference = CompteurUtils.convertWhTokWh(result.referenceValues.sum { it.value })
+		result.totalAction = CompteurUtils.convertWhTokWh(result.actionValues.sum { it.value })
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result
@@ -319,7 +430,10 @@ class DefiService extends AbstractService {
 	 * @return
 	 */
 	Map groupConsos(Defi defi, Map... consos) {
-		Map result = [reference: [], action: []]
+		Map result = [referenceValues: [], actionValues: []]
+
+		// garde une trace du type de compteur
+		result.type = DefiCompteurEnum.global
 
 		// calcul l'affichage approprié pour les consos globales détaillées
 		// si gros écart de fréquence entre les périodes de référence entre les
@@ -334,10 +448,10 @@ class DefiService extends AbstractService {
 		// A ce stade, il y a des doublons sur les dates
 		consos?.each { conso ->
 			if (conso) {
-				result.reference.addAll(conso.reference)
-				result.action.addAll(conso.action)
+				result.referenceValues.addAll(conso.referenceValues)
+				result.actionValues.addAll(conso.actionValues)
 
-				if (conso.reference.size() <= limitDuree) {
+				if (conso.referenceValues.size() <= limitDuree) {
 					result.bestView = "week"
 				}
 			}
@@ -345,16 +459,16 @@ class DefiService extends AbstractService {
 
 		// 2e passe, regroupement des valeurs par date et sum des valeurs trouvées
 		// pour les 2 buffers
-		result.reference = result.reference.groupBy { it.dateValue }.collect { key, values ->
+		result.referenceValues = result.referenceValues.groupBy { it.dateValue }.collect { key, values ->
 			[dateValue: key, value: values.sum{ it.value }]
 		}
-		result.action = result.action.groupBy { it.dateValue }.collect { key, values ->
+		result.actionValues = result.actionValues.groupBy { it.dateValue }.collect { key, values ->
 			[dateValue: key, value: values.sum{ it.value }]
 		}
 
-		// calcul les totaux et diff
-		result.totalReference = CompteurUtils.convertWhTokWh(result.reference.sum { it.value })
-		result.totalAction = CompteurUtils.convertWhTokWh(result.action.sum { it.value })
+		// calcul temporaire des totaux et diff
+		result.totalReference = CompteurUtils.convertWhTokWh(result.referenceValues.sum { it.value })
+		result.totalAction = CompteurUtils.convertWhTokWh(result.actionValues.sum { it.value })
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result

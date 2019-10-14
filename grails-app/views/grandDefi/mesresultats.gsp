@@ -12,40 +12,41 @@
 			<div class="card flex-fill w-100">
 				<div class="card-body">
 					<g:applyLayout name="messageWarning">
-						Vous n'êtes enregistrés sur aucun défi !
+						Vous n'êtes enregistrés sur aucun défi.
 					</g:applyLayout>
 				</div>
 			</div>
 		</g:if>
-		<g:else>
+		<g:elseif test="${ ! resultat?.canDisplay() }">
 			<div class="card flex-fill w-100">
 				<div class="card-body">
-					<h4><app:icon name="zap"/> Consommations d'électricité</h4>
-					<g:render template="resultatUser" model="[chartId: currentDefi.id + '-electricite',
-						chartTotal: electricite.chartTotal, chartConso: electricite.chartConso,
-						consos: electricite.consos, error: electricite.error, defi: currentDefi]"/>					
+					<g:applyLayout name="messageWarning">
+						Les résultats ne sont pas encore calculés.
+					</g:applyLayout>
 				</div>
 			</div>
-			
-			<div class="card flex-fill w-100">
-				<div class="card-body">
-					<h4><app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
-					<g:render template="resultatUser" model="[chartId: currentDefi.id + '-gaz',
-						chartTotal: gaz.chartTotal, chartConso: gaz.chartConso,
-						consos: gaz.consos, error: gaz.error, defi: currentDefi]"/>	
-				</div>
-			</div>
-			
-			<div class="card flex-fill w-100">
-				<div class="card-body">
-					<h4><app:icon name="bar-chart-2"/> Consommations globales</h4>
-					<g:render template="resultatUser" model="[chartId: currentDefi.id + '-global',
-						chartTotal: global.chartTotal, chartConso: global.chartConso,
-						consos: global.consos, error: '', defi: currentDefi]"/>	
-				</div>
-			</div>
-		</g:else>
+		</g:elseif>
 		
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="bar-chart-2"/> Consommations globales</h4>
+				<g:render template="resultatUser" model="[data: global, defi: currentDefi]"/>	
+			</div>
+		</div>
+		
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="zap"/> Consommations d'électricité</h4>
+				<g:render template="resultatUser" model="[data: electricite, defi: currentDefi]"/>					
+			</div>
+		</div>
+		
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
+				<g:render template="resultatUser" model="[data: gaz, defi: currentDefi]"/>	
+			</div>
+		</div>
 		
 	</g:applyLayout>
 </body>

@@ -53,87 +53,171 @@ class GrandDefiService extends AbstractService {
 	}
 
 
+	private Map defaultModelResultat(DefiCommand command) throws SmartHomeException {
+		Map model = [user: command.user, command: command]
+
+		// recherche du compteur avec les consos
+		model.house = houseService.findDefaultByUser(command.user)
+
+		if (!model.house) {
+			throw new SmartHomeException("Profil incomplet !")
+		}
+
+		model.defis = defiService.listByUser(command, [max: 5])
+		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
+
+		// prépare le modèle par compteur
+		// on duplique le total classement pour q'il soit accessible depuis la map
+		// principale de chaque compteur qui sera délèguée à des templates
+		model.electricite = [type: DefiCompteurEnum.electricite, consos: [:]]
+		model.gaz = [type: DefiCompteurEnum.gaz, consos: [:]]
+		model.global = [type: DefiCompteurEnum.global, consos: [:]]
+
+		return model
+	}
+
+
 	/**
-	 * Modèle affichage Mon Défi
+	 * Défi Résultats Equipe
+	 *
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Map modelResultatsEquipe(DefiCommand command) throws SmartHomeException {
+		Map model = defaultModelResultat(command)
+
+		// charge les données uniquement si défi activé
+		if (model.currentDefi) {
+			model.resultat = defiService.findEquipeResultat(model.currentDefi, command.user)
+
+			if (model.resultat) {
+				model.totalClassement = defiService.countEquipe(model.resultat.defi)
+
+				model.global.consos.values = defiService.listEquipeProfilResultat(model.resultat)
+				model.global.totalClassement = model.totalClassement
+				model.resultat.injectResultat(model.global.consos, DefiCompteurEnum.global)
+
+				model.electricite.consos.values = model.global.consos.values
+				model.resultat.injectResultat(model.electricite.consos, DefiCompteurEnum.electricite)
+
+				model.gaz.consos.values = model.global.consos.values
+				model.resultat.injectResultat(model.gaz.consos, DefiCompteurEnum.gaz)
+			}
+		}
+
+		// lance dans tous les cas, les charts pour avoir des vues un minimum
+		// complétées (sinon page vide et c'est moins fun)
+		model.global.chartTotal = defiService.chartTotal(model.currentDefi,
+				model.global.consos)
+		model.global.chartConso = defiService.chartProfil(model.currentDefi,
+				model.global.consos, DefiCompteurEnum.global)
+
+		model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
+				model.global.electricite)
+		model.electricite.chartConso = defiService.chartProfil(model.currentDefi,
+				model.electricite.consos, DefiCompteurEnum.electricite)
+
+		return model
+	}
+
+
+	/**
+	 * Défi Mes Résultats
 	 * 
 	 * @param command
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	Map modelMonDefi(DefiCommand command) throws SmartHomeException {
-		Map model = [user: command.user, command: command]
+	Map modelMesResultats(DefiCommand command) throws SmartHomeException {
+		Map model = defaultModelResultat(command)
 
-		model.defis = defiService.listByUser(command, [max: 5])
-		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
-
-		model.electricite = [:]
-		model.gaz = [:]
-		model.global = [:]
-
+		// les résultats individuels
 		if (model.currentDefi) {
-			// charge les données elec et construit les graphes
-			// on passe dans des transactions séparées car le service appelé peut
-			// déclencher une SmartHomeException qui va péter un rollabck alors que
-			// lecture seule sur la transaction principale. Même avec un @NotTransaction
-			// ca ne marche pas
-			try {
-				Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
-					// un seul chargement de données qui est passé ensuite aux graphes
-					// pour ne pas devoir charger à chaque graphe
-					model.electricite.consos = defiService.loadUserConso(model.currentDefi, model.user,
-							DefiCompteurEnum.electricite)
+			model.resultat = defiService.findUserResultat(model.currentDefi, command.user)
 
-					model.electricite.chartTotal = defiService.chartUserTotal(model.currentDefi,
-							model.user, model.electricite.consos)
-					model.electricite.chartConso = defiService.chartUserDay(model.currentDefi,
-							model.user, model.electricite.consos)
-				}
-			} catch (SmartHomeException ex) {
-				model.electricite.error = ex.message
-			}
-
-
-			// charge les données gaz et construit les graphes
-			// on passe dans des transactions séparées car le service appelé peut
-			// déclencher une SmartHomeException qui va péter un rollabck alors que
-			// lecture seule sur la transaction principale. Même avec un @NotTransaction
-			// ca ne marche pas
-			try {
-				Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
-					// un seul chargement de données qui est passé ensuite aux graphes
-					// pour ne pas devoir charger à chaque graphe
-					model.gaz.consos = defiService.loadUserConso(model.currentDefi, model.user,
-							DefiCompteurEnum.gaz)
-
-					model.gaz.chartTotal = defiService.chartUserTotal(model.currentDefi,
-							model.user, model.gaz.consos)
-					model.gaz.chartConso = defiService.chartUserDay(model.currentDefi,
-							model.user, model.gaz.consos)
-				}
-			} catch (SmartHomeException ex) {
-				model.gaz.error = ex.message
-			}
-
-			// passer toutes les consos de chaque compteur dans cette méthode
-			// pour calculer les consos globales et créer les chart correspondants
-			model.global.consos = defiService.groupConsos(model.currentDefi,
-					model.electricite.consos, model.gaz.consos)
-			model.global.chartTotal = defiService.chartUserTotal(model.currentDefi,
-					model.user, model.global.consos)
-			// le graphe détaillé est différent selon la granularité des consos
-			// entre les différents compteurs. si un compteur elec est connecté
-			// et le connecteur gaz non, alors beaucoup plus de valeurs sur l'élec et
-			// les consos gaz seront toutes enregistrées sur une seule date. donc
-			// le graphe à la journée ne sera pas représentatif. On passe dans ce
-			// cas à un graphe à la semaine
-			if (model.global.consos.bestView == "day") {
-				model.global.chartConso = defiService.chartUserDay(model.currentDefi,
-						model.user, model.global.consos)
-			} else {
-				model.global.chartConso = defiService.chartUserWeek(model.currentDefi,
-						model.user, model.global.consos)
+			if (model.resultat) {
+				model.totalClassement = defiService.countParticipantEquipe(model.resultat.defiEquipe)
 			}
 		}
+
+
+		// charge les données elec et construit les graphes
+		// on passe dans des transactions séparées car le service appelé peut
+		// déclencher une SmartHomeException qui va péter un rollabck alors que
+		// lecture seule sur la transaction principale. Même avec un @NotTransaction
+		// ca ne marche pas
+		try {
+			Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
+				// un seul chargement de données qui est passé ensuite aux graphes
+				// pour ne pas devoir charger à chaque graphe
+				if (model.currentDefi) {
+					model.electricite.consos = defiService.loadUserConso(model.currentDefi,
+							model.house, DefiCompteurEnum.electricite)
+					model.resultat?.injectResultat(model.electricite.consos, DefiCompteurEnum.electricite)
+					model.electricite.totalClassement = model.totalClassement
+				}
+
+				model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
+						model.electricite.consos)
+				model.electricite.chartConso = defiService.chartUserDay(model.currentDefi,
+						model.electricite.consos)
+			}
+		} catch (SmartHomeException ex) {
+			model.electricite.error = ex.message
+		}
+
+
+		// charge les données gaz et construit les graphes
+		// on passe dans des transactions séparées car le service appelé peut
+		// déclencher une SmartHomeException qui va péter un rollabck alors que
+		// lecture seule sur la transaction principale. Même avec un @NotTransaction
+		// ca ne marche pas
+		try {
+			Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
+				// un seul chargement de données qui est passé ensuite aux graphes
+				// pour ne pas devoir charger à chaque graphe
+				if (model.currentDefi) {
+					model.gaz.consos = defiService.loadUserConso(model.currentDefi,
+							model.house, DefiCompteurEnum.gaz)
+					model.resultat?.injectResultat(model.gaz.consos, DefiCompteurEnum.gaz)
+					model.gaz.totalClassement = model.totalClassement
+				}
+
+				model.gaz.chartTotal = defiService.chartTotal(model.currentDefi,
+						model.gaz.consos)
+				model.gaz.chartConso = defiService.chartUserDay(model.currentDefi,
+						model.gaz.consos)
+			}
+		} catch (SmartHomeException ex) {
+			model.gaz.error = ex.message
+		}
+
+		// passer toutes les consos de chaque compteur dans cette méthode
+		// pour calculer les consos globales et créer les chart correspondants
+		if (model.currentDefi) {
+			model.global.consos = defiService.groupConsos(model.currentDefi,
+					model.electricite.consos, model.gaz.consos)
+			model.resultat?.injectResultat(model.global.consos, DefiCompteurEnum.global)
+			model.global.totalClassement = model.totalClassement
+		}
+
+		model.global.chartTotal = defiService.chartTotal(model.currentDefi,
+				model.global.consos)
+		// le graphe détaillé est différent selon la granularité des consos
+		// entre les différents compteurs. si un compteur elec est connecté
+		// et le connecteur gaz non, alors beaucoup plus de valeurs sur l'élec et
+		// les consos gaz seront toutes enregistrées sur une seule date. donc
+		// le graphe à la journée ne sera pas représentatif. On passe dans ce
+		// cas à un graphe à la semaine
+		if (model.global.consos.bestView == "day") {
+			model.global.chartConso = defiService.chartUserDay(model.currentDefi,
+					model.global.consos)
+		} else {
+			model.global.chartConso = defiService.chartUserWeek(model.currentDefi,
+					model.global.consos)
+		}
+
 
 		return model
 	}

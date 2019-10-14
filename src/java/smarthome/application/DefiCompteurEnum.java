@@ -6,7 +6,12 @@ package smarthome.application;
  */
 public enum DefiCompteurEnum {
 	electricite("compteur"),
-	gaz("compteurGaz");
+	gaz("compteurGaz"),
+	/**
+	 * virtuel non associé à un compteur Utilisé pour l'accès dynamique aux
+	 * propriétés de la classe @see AbstractDefiResultat
+	 */
+	global("");
 	
 	
 	private DefiCompteurEnum(String property) {

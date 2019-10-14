@@ -1,32 +1,31 @@
 package smarthome.application
 
 import smarthome.core.SmartHomeCoreConstantes
+import smarthome.security.Profil
+import smarthome.security.User
 import grails.validation.Validateable
 
 /**
- * Résultats du défi pour une équipe
+ * Résultats du défi par profil de participant
  * 
  * @author gelleouet <gregory.elleouet@gmail.com>
  *
  */
 @Validateable
-class DefiEquipe extends AbstractDefiResultat {
+class DefiProfil extends AbstractDefiResultat {
 
 	Defi defi
-	String libelle
-	Set participants = []
+	Profil profil
 
 
-	static hasMany = [participants: DefiEquipeParticipant]
-
-	static belongsTo = [defi: Defi]
+	static belongsTo = [defi: Defi, profil: Profil]
 
 	static constraints = {
-		libelle unique: 'defi'
+		defi unique: 'profil'
 	}
 
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.APPLICATION_SCHEMA
-		defi index: 'DefiEquipe_Idx'
+		defi index: 'DefiProfil_Idx'
 	}
 }
