@@ -120,7 +120,7 @@ class GrandDefiController extends AbstractController {
 	 */
 	def resultatsdefi(DefiCommand command) {
 		command.user = authenticatedUser // spring security plugin
-		def model = grandDefiService.modelMonDefi(command)
+		def model = grandDefiService.modelResultatsDefi(command)
 		model.viewName = "resultatsdefi"
 		render(view: 'resultatsdefi', model: model)
 	}

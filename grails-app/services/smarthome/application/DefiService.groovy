@@ -16,6 +16,7 @@ import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
 import smarthome.core.chart.GoogleDataTableCol
+import smarthome.security.Profil
 import smarthome.security.User
 
 /**
@@ -66,6 +67,58 @@ class DefiService extends AbstractService {
 
 
 	/**
+	 * Liste les profils disctincts des participants
+	 * 
+	 * @param defi
+	 * @return
+	 */
+	List<Profil> listDistinctProfil(Defi defi) {
+		return DefiEquipeParticipant.executeQuery("""\
+			SELECT distinct profil
+			FROM DefiEquipeParticipant dep
+			JOIN dep.defiEquipe equipe
+			JOIN dep.user user
+			JOIN user.profil profil
+			WHERE equipe.defi = :defi""", [defi: defi])
+	}
+
+
+	/**
+	 * Le classement général des équipes d'un défi
+	 * 
+	 * @param defi
+	 * @param pagination
+	 * @return
+	 */
+	List<DefiEquipe> classementEquipe(Defi defi, Map pagination) {
+		return DefiEquipe.executeQuery("""\
+			SELECT defiEquipe
+			FROM DefiEquipe defiEquipe
+			WHERE defiEquipe.defi = :defi
+			ORDER BY defiEquipe.classement_global""", [defi: defi], pagination)
+	}
+
+
+	/**
+	 * Le classement général des équipes par profil  d'un défi
+	 *
+	 * @param defi
+	 * @param profil
+	 * @param pagination
+	 * @return
+	 */
+	List<DefiEquipeProfil> classementEquipeProfil(Defi defi, Profil profil, Map pagination) {
+		return DefiEquipeProfil.executeQuery("""\
+			SELECT defiEquipeProfil
+			FROM DefiEquipeProfil defiEquipeProfil
+			JOIN FETCH defiEquipeProfil.defiEquipe defiEquipe
+			WHERE defiEquipe.defi = :defi AND defiEquipeProfil.profil = :profil
+			ORDER BY defiEquipeProfil.classement_global""",
+				[defi: defi, profil: profil], pagination)
+	}
+
+
+	/**
 	 * Les résultats d'une équipe
 	 *
 	 * @param defi
@@ -93,7 +146,7 @@ class DefiService extends AbstractService {
 	 * @return
 	 */
 	List<DefiEquipeProfil> listEquipeProfilResultat(DefiEquipe defiEquipe) {
-		DefiEquipeProfil.createCriteria().list() {
+		return DefiEquipeProfil.createCriteria().list() {
 			eq 'defiEquipe', defiEquipe
 			join 'profil'
 		}

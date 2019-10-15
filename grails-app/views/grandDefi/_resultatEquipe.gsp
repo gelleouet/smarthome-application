@@ -29,7 +29,7 @@
 		</div>
 		
 		<ul class="list-group list-group-flush">
-		  <li class="list-group-item">
+		  <li class="list-group-item border-top-0">
 		  	<div class="row">
 		  		<div class="col-6">
 		  			<h5>Référence</h5>
@@ -105,7 +105,10 @@
 			</div>
 			<g:each var="conso" in="${ consos }" status="status">
 				<div class="col border-bottom border-right p-2 text-center">
-					<h5 class="font-weight-bold">${ conso.profil.libelle }</h5>
+					<h5 class="font-weight-bold">
+						${ conso.profil.libelle }
+						<g:if test="${ conso.profil.icon }"><asset:image src="${conso.profil.icon }" class="gd-icon-profil"/></g:if>
+					</h5>
 				</div>
 			</g:each>
 			<div class="col border-bottom p-2 text-center bg-secondary">
@@ -132,16 +135,16 @@
 			</div>
 		</div>
 		<div class="row ml-4 mr-4">
-			<div class="col border-bottom border-right p-2">
+			<div class="col border-right p-2">
 				<h5 class="text-muted">Classement</h5>
 			</div>
 			<g:each var="conso" in="${ consos }" status="status">
-				<div class="col border-bottom border-right p-2 text-center">
+				<div class="col border-right p-2 text-center">
 					<g:set var="classement" value="${ conso."classement_${data.consos.type}"()  }"/>
 					<h3 class="font-weight-bold text-secondary">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h3>
 				</div>
 			</g:each>
-			<div class="col border-bottom p-2 text-center bg-secondary">
+			<div class="col p-2 text-center bg-secondary">
 				<g:set var="classement" value="${ data.consos.classement  }"/>
 				<h3 class="font-weight-bold">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h3>
 			</div>

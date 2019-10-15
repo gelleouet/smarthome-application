@@ -17,6 +17,7 @@ import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
 import smarthome.core.ConfigService
 import smarthome.core.SmartHomeException
+import smarthome.security.Profil
 import smarthome.security.RegistrationCode
 import smarthome.security.Role
 import smarthome.security.User
@@ -78,6 +79,27 @@ class GrandDefiService extends AbstractService {
 
 
 	/**
+	 * Défi Résultats Défi
+	 *
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Map modelResultatsDefi(DefiCommand command) throws SmartHomeException {
+		Map model = defaultModelResultat(command)
+
+		if (model.currentDefi) {
+			model.profils = defiService.listDistinctProfil(model.currentDefi)
+
+			// charge les classements des équipes en global et pour chaque profil
+			model.global.classement = defiService.classementEquipe(model.currentDefi, pagination)
+		}
+
+		return model
+	}
+
+
+	/**
 	 * Défi Résultats Equipe
 	 *
 	 * @param command
@@ -114,9 +136,14 @@ class GrandDefiService extends AbstractService {
 				model.global.consos, DefiCompteurEnum.global)
 
 		model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
-				model.global.electricite)
+				model.electricite.consos)
 		model.electricite.chartConso = defiService.chartProfil(model.currentDefi,
 				model.electricite.consos, DefiCompteurEnum.electricite)
+
+		model.gaz.chartTotal = defiService.chartTotal(model.currentDefi,
+				model.gaz.consos)
+		model.gaz.chartConso = defiService.chartProfil(model.currentDefi,
+				model.gaz.consos, DefiCompteurEnum.gaz)
 
 		return model
 	}

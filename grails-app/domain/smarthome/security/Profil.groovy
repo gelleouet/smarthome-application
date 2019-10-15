@@ -8,10 +8,12 @@ class Profil {
 
 	String libelle
 	String view
+	String icon
 
 
 	static constraints = {
 		libelle unique: true
+		icon nullable: true
 	}
 
 	static mapping = {

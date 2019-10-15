@@ -41,6 +41,13 @@
 			</div>
 		</div>
 		
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
+				<g:render template="resultatEquipe" model="[data: gaz, defi: currentDefi]"/>	
+			</div>
+		</div>
+		
 	</g:applyLayout>
 </body>
 </html>

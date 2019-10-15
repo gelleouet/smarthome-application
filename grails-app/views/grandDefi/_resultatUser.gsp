@@ -38,7 +38,7 @@
 			</div>
 			
 			<ul class="list-group list-group-flush">
-			  <li class="list-group-item">
+			  <li class="list-group-item border-top-0">
 			  	<div class="row">
 			  		<div class="col-6">
 			  			<h5>Référence</h5>
