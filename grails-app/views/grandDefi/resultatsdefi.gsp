@@ -8,25 +8,28 @@
 	
 		<g:render template="defiMenu"/>
 		
-		<g:if test="${ !currentDefi }">
-			<div class="card flex-fill w-100">
-				<div class="card-body">
-					<g:applyLayout name="messageWarning">
-						Vous n'êtes enregistrés sur aucun défi.
-					</g:applyLayout>
-				</div>
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="bar-chart-2"/> Consommations globales</h4>
+				<g:render template="resultatConsoDefi" model="[data: global, defi: currentDefi]"/>	
 			</div>
-		</g:if>
-		<g:elseif test="${ ! resultat?.canDisplay() }">
-			<div class="card flex-fill w-100">
-				<div class="card-body">
-					<g:applyLayout name="messageWarning">
-						Les résultats ne sont pas encore calculés.
-					</g:applyLayout>
-				</div>
-			</div>
-		</g:elseif>
+		</div>
 		
+		<div class="card flex-fill w-100">
+			<div class="card-body">
+				<h4><app:icon name="award"/> Classement global par économie</h4>
+				<g:render template="resultatClassementDefi" model="[data: global, defi: currentDefi]"/>	
+			</div>
+		</div>
+		
+		<g:each var="profil" in="${ profils }">
+			<div class="card flex-fill w-100">
+				<div class="card-body">
+					<h4><g:if test="${ profil.icon }"><asset:image src="${profil.icon }" class="gd-icon-profil"/></g:if> Classement ${ profil.libelle } par économie</h4>
+					<g:render template="resultatClassementDefi" model="[data: request["profil${ profil.id }"], defi: currentDefi]"/>	
+				</div>
+			</div>
+		</g:each>
 		
 	</g:applyLayout>
 </body>

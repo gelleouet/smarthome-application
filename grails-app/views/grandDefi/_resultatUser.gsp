@@ -1,3 +1,5 @@
+<%@ page import="smarthome.core.chart.GoogleChart" %>
+
 <g:if test="${ data.error }">
 	<div class="mt-4">
 		<g:applyLayout name="messageWarning">
@@ -10,7 +12,7 @@
 	<div class="row mt-4">
 		<div class="col-4">
 			
-			<div id="chartDiv-total-${ data.type }-${ defi?.id }" data-chart-type="${ data.chartTotal.chartType }">
+			<div id="${ GoogleChart.randomChartId() }" data-chart-type="${ data.chartTotal.chartType }">
 				<div data-chart-datas="true" class="d-none">	
 					chartDatas = new google.visualization.DataTable(${ raw(data.chartTotal.toJsonDataTable().toString(false)) });
 	   				chartDatas = new google.visualization.DataView(chartDatas)
@@ -58,7 +60,7 @@
 			  			<h4 class="text-primary font-weight-bold">${ data.consos.action != null ? data.consos.action : '-' }<span style="font-size: x-small;">kWh</span></h4>
 			  		</div>
 			  	</div>
-			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
+			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>
 			  </li>
 			  <li class="list-group-item">
 			  	<div class="row">
@@ -67,7 +69,9 @@
 			  		</div>
 			  		<div class="col-6 text-right">
 			  			<h4 class="font-weight-bold">
-			  				<g:applyLayout name="arrow" model="[value: data.consos.difference != null ? data.consos.difference : '-', reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
+			  				<g:applyLayout name="arrow" model="[value: data.consos.difference != null ? data.consos.difference : '-', reference: 0]">
+			  					<span style="font-size: x-small;">kWh</span>
+			  				</g:applyLayout>
 			  			</h4>
 			  		</div>
 			  	</div>
@@ -76,7 +80,7 @@
 		</div> <!-- div.col -->
 		
 		<div class="col-8">
-			<div id="chartDiv-conso-${ data.type }-${ defi?.id }" data-chart-type="${ data.chartConso.chartType }">
+			<div id="${ GoogleChart.randomChartId() }" data-chart-type="${ data.chartConso.chartType }">
 				<div data-chart-datas="true" class="d-none">	
 					chartDatas = new google.visualization.DataTable(${ raw(data.chartConso.toJsonDataTable().toString(false)) });
 	   				chartDatas = new google.visualization.DataView(chartDatas)
@@ -115,21 +119,23 @@
 					<h5 class="font-weight-bold">Classement</h5>
 				</div>
 				<div class="col-4 border-bottom text-center p-2 bg-secondary">
-					<h4 class="font-weight-bold">Economie</h4>
+					<h5 class="font-weight-bold">Economie</h5>
 				</div>
 				
 				<div class="col-4 border-right text-center p-2">
-					<h3 class="font-weight-bold text-secondary">
+					<h4 class="font-weight-bold text-secondary">
 						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
-					</h3>
+					</h4>
 				</div>
 				<div class="col-4 border-right text-center p-2">
-					<h3 class="font-weight-bold text-secondary">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h3>
+					<h4 class="font-weight-bold text-secondary">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h4>
 				</div>
 				<div class="col-4 text-center p-2 bg-secondary">
-					<h3 class="font-weight-bold">
-						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
-					</h3>
+					<h4 class="font-weight-bold">
+						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]">
+							<span style="font-size:small;">%</span>
+						</g:applyLayout>
+					</h4>
 				</div>
 			</div>
 		</div> <!-- div.col -->

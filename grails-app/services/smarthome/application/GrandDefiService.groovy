@@ -30,6 +30,8 @@ import smarthome.security.UserService
  */
 class GrandDefiService extends AbstractService {
 
+	private static final int MAX_CLASSEMENT = 3
+
 	HouseService houseService
 	GrailsApplication grailsApplication
 	UserService userService
@@ -88,11 +90,43 @@ class GrandDefiService extends AbstractService {
 	Map modelResultatsDefi(DefiCommand command) throws SmartHomeException {
 		Map model = defaultModelResultat(command)
 
+		model.global.classement = []
+
+		// récupère le nombre d'entrées dans le classement (par défaut MAX_CLASSEMENT)
+		// construction des équipes "à la volée" et association avec une équipe
+		// et le grand défi en cours
+		String configMaxClassement = configService.value("GRAND_DEFI_MAX_CLASSEMENT")
+		int maxClassement = configMaxClassement ? configMaxClassement.toInteger() : MAX_CLASSEMENT
+
 		if (model.currentDefi) {
+			// charge les résultats globals du défi
+			model.global.consos.values = defiService.listDefiProfilResultat(model.currentDefi)
+			model.currentDefi.injectResultat(model.global.consos, DefiCompteurEnum.global)
+
 			model.profils = defiService.listDistinctProfil(model.currentDefi)
 
 			// charge les classements des équipes en global et pour chaque profil
-			model.global.classement = defiService.classementEquipe(model.currentDefi, pagination)
+			model.global.classement = defiService.classementEquipe(model.currentDefi,
+					[max: maxClassement])
+
+			for (Profil profil : model.profils) {
+				model["profil${ profil.id }"] = [:]
+				model["profil${ profil.id }"].classement = defiService.classementEquipeProfil(
+						model.currentDefi, profil, [max: maxClassement])
+			}
+		}
+
+		// création des charts dans tous les cas pour ne pas avoir de page vide
+		model.global.chartTotal = defiService.chartTotal(model.currentDefi, model.global.consos)
+		model.global.chartConso = defiService.chartProfil(model.currentDefi, model.global.consos,
+				DefiCompteurEnum.global)
+
+		model.global.chartClassement = defiService.chartClassement(model.currentDefi,
+				model.global.classement)
+
+		for (Profil profil : model.profils) {
+			model["profil${ profil.id }"].chartClassement = defiService.chartClassement(model.currentDefi,
+					model["profil${ profil.id }"].classement)
 		}
 
 		return model

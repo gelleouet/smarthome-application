@@ -26,7 +26,7 @@ $( document ).ready(function() {
 	formatDataTable();
 	ajaxPagination();
 	combobox();
-	//initDragAndDrop();
+	initDragula();
 	initToggle()
 	selectHashTab()
 	divAsyncUrl()
@@ -78,6 +78,11 @@ function initDragAndDrop() {
 			}
 		}
 	})
+}
+
+
+function initDragula() {
+	dragula([$('#smart-droppable')]);
 }
 
 

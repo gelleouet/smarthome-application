@@ -92,7 +92,8 @@ class DefiService extends AbstractService {
 	 */
 	List<DefiEquipe> classementEquipe(Defi defi, Map pagination) {
 		return DefiEquipe.executeQuery("""\
-			SELECT defiEquipe
+			SELECT new map(defiEquipe.libelle as libelle, defiEquipe.economie_global as economie,
+			defiEquipe as resultat)
 			FROM DefiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi
 			ORDER BY defiEquipe.classement_global""", [defi: defi], pagination)
@@ -109,9 +110,10 @@ class DefiService extends AbstractService {
 	 */
 	List<DefiEquipeProfil> classementEquipeProfil(Defi defi, Profil profil, Map pagination) {
 		return DefiEquipeProfil.executeQuery("""\
-			SELECT defiEquipeProfil
+			SELECT new map(defiEquipe.libelle as libelle, defiEquipeProfil.economie_global as economie,
+			defiEquipeProfil as resultat)
 			FROM DefiEquipeProfil defiEquipeProfil
-			JOIN FETCH defiEquipeProfil.defiEquipe defiEquipe
+			JOIN defiEquipeProfil.defiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi AND defiEquipeProfil.profil = :profil
 			ORDER BY defiEquipeProfil.classement_global""",
 				[defi: defi, profil: profil], pagination)
@@ -148,6 +150,20 @@ class DefiService extends AbstractService {
 	List<DefiEquipeProfil> listEquipeProfilResultat(DefiEquipe defiEquipe) {
 		return DefiEquipeProfil.createCriteria().list() {
 			eq 'defiEquipe', defiEquipe
+			join 'profil'
+		}
+	}
+
+
+	/**
+	 * Les sous-résultats du défi par profil d'utilisateur
+	 *
+	 * @param defi
+	 * @return
+	 */
+	List<DefiProfil> listDefiProfilResultat(Defi defi) {
+		return DefiProfil.createCriteria().list() {
+			eq 'defi', defi
 			join 'profil'
 		}
 	}
@@ -302,6 +318,55 @@ class DefiService extends AbstractService {
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
 		chart.vAxis << [title: 'Consommation (kWh)']
+
+		return chart
+	}
+
+
+	/**
+	 * Graphe classement des équipes
+	 *
+	 * @param defi
+	 * @param classement
+	 *
+	 * @return GoogleChart
+	 */
+	GoogleChart chartClassement(Defi defi, List classement) {
+		GoogleChart chart = new GoogleChart()
+
+		chart.chartType = ChartTypeEnum.Bar.factory
+		chart.hAxisTitle = 'Economie (%)'
+		chart.values = []
+
+		// regroupe les données par profil et pour chacun récupère le
+		if (defi?.canDisplay()) {
+			classement?.each {
+				chart.values << [equipe: it.libelle, economie: it.economie]
+			}
+		}
+
+		chart.colonnes << new GoogleDataTableCol(label: "Equipe", property: "equipe", type: "string")
+		chart.colonnes << new GoogleDataTableCol(label: "Economie", property: "economie", type: "number")
+		chart.colonnes << new GoogleDataTableCol(role: "style", type: "string", value: { deviceValue, index, currentChart ->
+			"color:${ index == 0 ? '#a180da' : Compteur.SERIES_COLOR.total }"
+		})
+
+		chart.series << [type: 'bars', annotation: true]
+		chart.series << [type: 'bars']
+
+		return chart
+	}
+
+
+	/**
+	 * Représentation graphique du défi avec les équipes et les participants
+	 * 
+	 * @param defi
+	 * @return
+	 */
+	GoogleChart chartOrganization(Defi defi) {
+		GoogleChart chart = new GoogleChart()
+		chart.chartType = ChartTypeEnum.Org.factory
 
 		return chart
 	}

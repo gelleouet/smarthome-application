@@ -14,7 +14,7 @@
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<g:layoutHead/>
 	</head>
-	<body onload="${pageProperty(name: 'body.onload')}">
+	<body onload="${pageProperty(name: 'body.onload')}" data-chart-package="${pageProperty(name: 'body.data-chart-package')}">
 	
 		<main id="content" role="main d-flex w-100" <%= app.stateInsertAttr()  %>>
 			<div id="ajaxDialog"></div>

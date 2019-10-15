@@ -33,3 +33,23 @@
 		</ul>
 	</div>
 </div>
+
+
+<g:if test="${ !currentDefi }">
+	<div class="card flex-fill w-100">
+		<div class="card-body">
+			<g:applyLayout name="messageWarning">
+				Vous n'êtes enregistrés sur aucun défi.
+			</g:applyLayout>
+		</div>
+	</div>
+</g:if>
+<g:elseif test="${ ! currentDefi?.canDisplay() }">
+	<div class="card flex-fill w-100">
+		<div class="card-body">
+			<g:applyLayout name="messageWarning">
+				Les résultats ne sont pas encore calculés.
+			</g:applyLayout>
+		</div>
+	</div>
+</g:elseif>

@@ -18,13 +18,24 @@ class GoogleChart {
 	List<Map> series = []
 	List<Map> metaValues = []
 	List<Map> vAxis = []
+	List<Map> hAxis = []
 	GoogleChart joinChart
 	String hAxisFormat
 	String hAxisTicks
+	String hAxisTitle
 	boolean slantedText = false
 	boolean isStacked = false
 	String selectionField
 
+
+
+	/**
+	 * Générateur d'id pour les charts
+	 * @return
+	 */
+	static String randomChartId() {
+		UUID.randomUUID()
+	}
 
 
 	/**
@@ -47,6 +58,7 @@ class GoogleChart {
 
 			for (GoogleDataTableCol col : colonnes) {
 				def value = null
+				def cellStyle = null
 
 				if (col.staticValue) {
 					value = col.staticValue
@@ -70,7 +82,12 @@ class GoogleChart {
 					}
 				}
 
-				values << [v: value]
+				// formattage au niveau cellule
+				if (col.cellStyle) {
+					cellStyle = col.cellStyle(deviceValue, index, this)
+				}
+
+				values << [v: value, p: cellStyle]
 			}
 
 			def row = ["c": values]

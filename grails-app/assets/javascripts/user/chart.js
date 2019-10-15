@@ -21,7 +21,18 @@ $(window).on('load', function() {
 
 
 function onLoadGoogleChart() {
-	google.load("visualization", "1.0", {packages:["corechart","gauge"]});
+	var chartPackages = new Array()
+	chartPackages.push('corechart')
+	
+	if ($('body').attr('data-chart-package')) {
+		$('body').attr('data-chart-package').split(",").forEach(function(item) {
+			chartPackages.push(item)
+		})
+	}
+	
+	google.load("visualization", "1.0", {
+		packages: chartPackages
+	})
 	google.setOnLoadCallback(buildGoogleCharts);
 }
 
