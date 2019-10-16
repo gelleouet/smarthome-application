@@ -85,8 +85,8 @@ class AdictApi {
 				.queryParam("titulaireType", accreditation.titulaireType)
 				.queryParam("titulaireValeur", accreditation.titulaireValeur)
 				.queryParam("emailTitulaire", accreditation.emailTitulaire)
-				.queryParam("dateDebutAutorisation", DateUtils.formatDateIso(new Date()))
-				.queryParam("dateFinAutorisation", DateUtils.formatDateIso(new Date() + 365))
+				.queryParam("dateDebutAutorisation", DateUtils.formatDateIso(accreditation.debutAutorisation))
+				.queryParam("dateFinAutorisation", DateUtils.formatDateIso(accreditation.finAutorisation))
 
 		JSONElement result = httpRequest.execute(new JsonResponseTransformer("error_message"))?.content
 

@@ -294,6 +294,29 @@ abstract class AbstractDefiResultat implements Serializable {
 
 
 	/**
+	 * Efface les résultats
+	 * 
+	 * @return
+	 */
+	AbstractDefiResultat cleanResultat() {
+		reference_electricite = null
+		action_electricite = null
+		economie_electricite = null
+		classement_electricite = null
+
+		reference_gaz = null
+		action_gaz = null
+		economie_gaz = null
+		classement_gaz = null
+
+		economie_global = null
+		classement_global = null
+
+		return this
+	}
+
+
+	/**
 	 * Les résultats peuvent-ils être affichés
 	 * 
 	 * @return

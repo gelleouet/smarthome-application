@@ -66,6 +66,14 @@ class AdictService extends AbstractService {
 	void accreditation(User user, AdictAccreditation accreditation) throws SmartHomeException {
 		String token = this.token()
 
+		// au 1er appel des consos, on va essayer de remonter 6 mois de données.
+		// donc l'autorisation doit démarrer au moins à cette date
+		// on veut que cette accréditation dure 1 an à partir de maintenant
+		use(TimeCategory) {
+			accreditation.debutAutorisation = new Date() - 6.months
+			accreditation.finAutorisation = new Date() + 1.year
+		}
+
 		JSONElement result = adictApi.accreditation(token, accreditation)
 
 		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.grdf.appName)
@@ -81,6 +89,8 @@ class AdictService extends AbstractService {
 		notificationAccount.jsonConfig.titulaireType = accreditation.titulaireType
 		notificationAccount.jsonConfig.titulaireValeur = accreditation.titulaireValeur
 		notificationAccount.jsonConfig.emailTitulaire = accreditation.emailTitulaire
+		notificationAccount.jsonConfig.debutAutorisation = DateUtils.formatDateUser(accreditation.debutAutorisation)
+		notificationAccount.jsonConfig.finAutorisation = DateUtils.formatDateUser(accreditation.finAutorisation)
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
 

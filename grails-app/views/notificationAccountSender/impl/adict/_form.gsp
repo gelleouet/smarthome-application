@@ -49,6 +49,20 @@
 	
 	<div class="form-group">
 		<label>
+			Début autorisation
+		</label>
+		<g:textField name="jsonConfig.debutAutorisation" value="${ notificationAccount?.jsonConfig?.debutAutorisation }" class="form-control" readonly="true"/>
+	</div>
+	
+	<div class="form-group">
+		<label>
+			Fin autorisation
+		</label>
+		<g:textField name="jsonConfig.finAutorisation" value="${ notificationAccount?.jsonConfig?.finAutorisation }" class="form-control" readonly="true"/>
+	</div>
+	
+	<div class="form-group">
+		<label>
 			Last consommationInformative
 		</label>
 		<g:textField name="jsonConfig.last_consommationInformative" value="${ notificationAccount?.jsonConfig?.last_consommationInformative }" class="form-control"/>

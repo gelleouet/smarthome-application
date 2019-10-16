@@ -11,9 +11,7 @@
 				<h4>${ defi?.id ? 'Défi : ' + defi.libelle : 'Nouveau défi' }</h4>
 			</div>
 			<div class="col-4 text-right">
-				<div class="btn-toolbar">
-					<div class="btn-group">
-					</div>
+				<div class="btn-group">
 				</div>
 			</div>
 		</div>
@@ -24,7 +22,7 @@
 	
 			<div class="nav nav-tabs" role="tablist">
 	            <a class="nav-item nav-link active" data-toggle="tab" role="tab" href="#tabs-defi-general">Général</a>
-	            <a class="nav-item nav-link" data-toggle="tab" role="tab" href="#tabs-defi-organisation">Organisation</a>
+	            <a class="nav-item nav-link" data-toggle="tab" role="tab" href="#tabs-defi-organisation">Participants</a>
 		    </div>
 	
 			<div class="tab-content">
@@ -36,7 +34,7 @@
 			    <div class="tab-pane" id="tabs-defi-organisation" role="tabpanel">
 			    	<div class="smart-tabs-content">
 			    		<g:if test="${ defi?.id }">
-			    			<g:render template="organisation"/>
+			    			<g:render template="participants"/>
 			    		</g:if>
 			    	</div>
 			    </div>

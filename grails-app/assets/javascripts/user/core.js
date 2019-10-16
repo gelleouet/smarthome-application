@@ -82,7 +82,9 @@ function initDragAndDrop() {
 
 
 function initDragula() {
-	dragula([$('#smart-droppable')]);
+	dragula([
+		document.querySelector('.smart-droppable')
+	]);
 }
 
 

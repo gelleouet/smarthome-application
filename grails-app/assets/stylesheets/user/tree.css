@@ -102,9 +102,7 @@ right connector from last child*/
 	 -moz-box-sizing: border-box;
 	 box-sizing: border-box;
 }
-.wrapper {
-	position: relative;
-}
+
 .branch {
 	 position: relative;
 	 margin-left: 250px;

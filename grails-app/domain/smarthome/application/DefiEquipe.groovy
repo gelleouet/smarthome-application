@@ -15,9 +15,10 @@ class DefiEquipe extends AbstractDefiResultat {
 	Defi defi
 	String libelle
 	Set participants = []
+	Set profils = []
 
 
-	static hasMany = [participants: DefiEquipeParticipant]
+	static hasMany = [participants: DefiEquipeParticipant, profils: DefiEquipeProfil]
 
 	static belongsTo = [defi: Defi]
 

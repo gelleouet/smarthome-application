@@ -15,9 +15,10 @@ class Defi extends AbstractDefiResultat {
 	Date actionFin
 	boolean actif
 	Set equipes = []
+	Set profils = []
 
 
-	static hasMany = [equipes: DefiEquipe]
+	static hasMany = [equipes: DefiEquipe, profils: DefiProfil]
 
 	static belongsTo = [user: User]
 

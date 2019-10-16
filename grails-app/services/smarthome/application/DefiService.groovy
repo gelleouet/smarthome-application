@@ -5,11 +5,14 @@ package smarthome.application
 
 import org.springframework.transaction.annotation.Transactional
 
+import groovyx.gpars.GParsPool
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.Device
 import smarthome.automation.House
+import smarthome.automation.HouseService
 import smarthome.automation.deviceType.Compteur
 import smarthome.core.AbstractService
+import smarthome.core.Chronometre
 import smarthome.core.CompteurUtils
 import smarthome.core.NumberUtils
 import smarthome.core.QueryUtils
@@ -25,6 +28,8 @@ import smarthome.security.User
  *
  */
 class DefiService extends AbstractService {
+
+	HouseService houseService
 
 
 	/**
@@ -142,6 +147,33 @@ class DefiService extends AbstractService {
 
 
 	/**
+	 * Liste tous les participants d'un défi
+	 * 
+	 * @param command
+	 * @param pagination
+	 * @return
+	 */
+	List<DefiEquipeParticipant> listParticipantResultat(DefiCommand command, Map pagination) {
+		DefiEquipeParticipant.createCriteria().list(pagination) {
+			defiEquipe {
+				eq 'defi', command.defi
+
+				if (command.defiEquipe) {
+					eq 'id', command.defiEquipe.id
+				}
+			}
+			user {
+				profil {
+				}
+
+				order "prenom"
+				order "nom"
+			}
+		}
+	}
+
+
+	/**
 	 * Les sous-résultats d'une équipe par profil d'utilisateur
 	 * 
 	 * @param defiEquipe
@@ -152,6 +184,23 @@ class DefiService extends AbstractService {
 			eq 'defiEquipe', defiEquipe
 			join 'profil'
 		}
+	}
+
+
+	/**
+	 * Les sous-résultats de toutes les équipes d'un défi
+	 *
+	 * @param defi
+	 * @return
+	 */
+	List<DefiEquipeProfil> listEquipeProfilResultat(Defi defi) {
+		// passe par le hql pour ne pas activer les fetch auto du criteria
+		return DefiEquipeProfil.executeQuery("""\
+			SELECT defiEquipeProfil
+			FROM DefiEquipeProfil defiEquipeProfil
+			JOIN FETCH defiEquipeProfil.defiEquipe defiEquipe
+			JOIN FETCH defiEquipeProfil.profil profil
+			WHERE defiEquipe.defi = :defi""", [defi: defi])
 	}
 
 
@@ -590,5 +639,202 @@ class DefiService extends AbstractService {
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result
+	}
+
+
+	/**
+	 * Efface les résultats d'un participant
+	 * 
+	 * @param participant
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DefiEquipeParticipant effacerParticipant(DefiEquipeParticipant participant) throws SmartHomeException {
+		participant.cleanResultat()
+		return super.save(participant)
+	}
+
+
+	/**
+	 * Efface les résultats entiers d'une équipe
+	 *
+	 * @param equipe
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DefiEquipe effacerEquipe(DefiEquipe equipe) throws SmartHomeException {
+		equipe.cleanResultat()
+
+		equipe.participants?.each {
+			effacerParticipant(it)
+		}
+
+		equipe.profils?.each {
+			it.cleanResultat()
+		}
+
+		return super.save(equipe)
+	}
+
+
+	/**
+	 * Extrait les objets équipe à partir des résultats des participants
+	 * et réinjecte le participant dans la liste de l'équipe pour reformer l'arbo
+	 * 
+	 * @param participants
+	 * @return
+	 */
+	private List<DefiEquipe> extractDefiEquipe(List<DefiEquipeParticipant> participants) {
+		List<DefiEquipe> defiEquipeList = []
+
+		participants.each {
+			if (!defiEquipeList.contains(it.defiEquipe)) {
+				it.defiEquipe.participants = []
+				defiEquipeList << it.defiEquipe
+			}
+
+			// réinjecte le participant dans son équipe
+			it.defiEquipe.participants << it
+		}
+
+		return defiEquipeList
+	}
+
+
+	/**
+	 * Calcul des consommations du défi à chacun des niveaux
+	 * Supprime également tous les résultats car ceux-ci dépendent des consos
+	 * 
+	 * @param defi
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Defi calculerConsommations(Defi defi) throws SmartHomeException {
+		Chronometre chrono = new Chronometre()
+		defi.profils = listDefiProfilResultat(defi)
+		defi.equipes = []
+
+		// charge tous les participants "à plat" et les réorganise par équipe
+		// pour une structure en arbre
+		List<DefiEquipeParticipant> participants = listParticipantResultat(new DefiCommand(defi: defi), [:])
+		List<DefiEquipe> defiEquipeList = extractDefiEquipe(participants)
+
+		// charge les résultats au niveau des profils (défi + équipe)
+		// ces listes seront complétées si des éléments manquent au moment des
+		// enregistrements de résultat
+		List<DefiEquipeProfil> defiEquipeProfilList = listEquipeProfilResultat(defi)
+
+		// parallélise le traitement de la liste (ie 4 cores)
+		// gpars rajoute aux méthodes d'itération des collection le suffixe Parallel
+		GParsPool.withPool(4) {
+
+			// 1ère passe, calcul simple des consos par participant
+			// on passe sur la liste entière sans tenir compte des équipes car cette étape
+			// nécessite de charger les consos en base. C'est l'étape la plus gourmande
+			// en temps et ressource
+			// le traitement de la liste est partagé entre 4 threads
+			participants.eachParallel { DefiEquipeParticipant participant ->
+				participant.cleanResultat()
+
+				// le traitement est threadé avec gpars, donc hors thread courant
+				// sur lequel est associé la session par défaut. il faut donc la
+				// gérer manuellement. Il y en aura autant que de pool alloué
+				DefiEquipeParticipant.withNewSession {
+					House house = houseService.findDefaultByUser(participant.user)
+					Map consos
+
+					if (house) {
+						// calcul conso elec
+						if (house[DefiCompteurEnum.electricite.property]) {
+							consos = loadUserConso(defi, house, DefiCompteurEnum.electricite)
+							participant.reference_electricite = consos.totalReference
+							participant.action_electricite = consos.totalAction
+						}
+
+						// calcul conso gaz
+						if (house[DefiCompteurEnum.gaz.property]) {
+							consos = loadUserConso(defi, house, DefiCompteurEnum.gaz)
+							participant.reference_gaz = consos.totalReference
+							participant.action_gaz = consos.totalAction
+						}
+					}
+				}
+			}
+
+			// on a toutes les données au niveau le plus bas. on peut aggréger les
+			// données aux niveaux supérieurs, ie aux équipes à cette étape
+			// le traitement de la liste est partagé entre 4 threads
+			defiEquipeList.eachParallel { DefiEquipe defiEquipe ->
+				defiEquipe.cleanResultat()
+
+				// récupère les profils liés à l'équipe pour ne pas devoir ensuite
+				// modifier la liste principale depuis ce thread car non thread-safe
+				// en lecture ca ne pose pas souci
+				defiEquipe.profils = defiEquipeProfilList.findAll { it.defiEquipe == defiEquipe }
+
+				// calcul total au niveau équipe
+				defiEquipe.reference_electricite = NumberUtils.round(defiEquipe.participants.sum { it.reference_electricite ?: 0 })
+				defiEquipe.reference_gaz = NumberUtils.round(defiEquipe.participants.sum { it.reference_gaz ?: 0 })
+				defiEquipe.action_electricite = NumberUtils.round(defiEquipe.participants.sum { it.action_electricite ?: 0 })
+				defiEquipe.action_gaz = NumberUtils.round(defiEquipe.participants.sum { it.action_gaz ?: 0 })
+
+				// calcul au niveau équipe-profil. ajout des éléments manquans
+				// en fonction des groupes calculés au niveau des participants
+				defiEquipe.participants.groupBy { it.user.profil }.each { entry ->
+					// recherche du profil équipe juste par le profil
+					DefiEquipeProfil defiEquipeProfil = defiEquipe.profils.find { it.profil == entry.key }
+
+					// création à la volée d'un nouvel élément et ajout dans la liste de l'équipe
+					if (!defiEquipeProfil) {
+						defiEquipeProfil = new DefiEquipeProfil(profil: entry.key, defiEquipe: defiEquipe)
+						defiEquipe.profils << defiEquipeProfil
+					}
+
+					defiEquipeProfil.cleanResultat()
+					defiEquipeProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
+					defiEquipeProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 })
+					defiEquipeProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 })
+					defiEquipeProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 })
+				}
+			}
+
+			// dernière passe pour le calcul total du défi avec les sous-résultats par profil
+			// on est toujours dans le pool gpars, on en profite pour lancer les aggrégrations
+			// en parallélisant les calculs
+			defi.cleanResultat()
+			defi.reference_electricite = NumberUtils.round(defiEquipeList.sum { it.reference_electricite ?: 0 })
+			defi.reference_gaz = NumberUtils.round(defiEquipeList.sum { it.reference_gaz ?: 0 })
+			defi.action_electricite = NumberUtils.round(defiEquipeList.sum { it.action_electricite ?: 0 })
+			defi.action_gaz = NumberUtils.round(defiEquipeList.sum { it.action_gaz ?: 0 })
+
+			participants.groupByParallel { it.user.profil }.each { entry ->
+				// attention !! le groupBy est threadé mais pas le each.
+				// donc on peut sans souci (car un seul thread) modifier l'instance
+				// défi depuis cette closure
+				DefiProfil defiProfil = defi.profils.find { it.profil == entry.key }
+
+				// création à la volée d'un nouvel élément et ajout dans la liste du défi
+				if (!defiProfil) {
+					defiProfil = new DefiProfil(defi: defi, profil: entry.key)
+					defi.profils << defiProfil
+				}
+
+				defiProfil.cleanResultat()
+				defiProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
+				defiProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 })
+				defiProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 })
+				defiProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 })
+			}
+		}
+
+		log.info "Calcul défi : ${chrono.stop()}ms"
+
+		// comme tout est réorganisé en arbre (chaque objet parent contient les enfants
+		// défi -> equipe -> participant, et bien on peut lancer l'enregistrement
+		// depuis le défi et le cascade fait le reste
+		return super.save(defi)
 	}
 }

@@ -55,11 +55,13 @@ class DefiController extends AbstractController {
 	def fetchModelEdit(userModel) {
 		def model = [:]
 
-		// TODO Compléter le model
-		// model.toto = 'toto'
-
 		// on remplit avec les infos du user
 		model << userModel
+
+		if (model.defi.id) {
+			model.participants = defiService.listParticipantResultat(new DefiCommand(defi: model.defi), [:])
+			model.equipeProfils = defiService.listEquipeProfilResultat(model.defi)
+		}
 
 		return model
 	}
@@ -92,5 +94,42 @@ class DefiController extends AbstractController {
 	def delete(Defi defi) {
 		defiService.delete(defi)
 		redirect(action: COMMAND_NAME + 's')
+	}
+
+
+	/**
+	 * Efface les résultats
+	 * 
+	 * @param command
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
+	def effacerResultat(DefiCommand command) {
+		Defi defi
+
+		if (command.defiEquipeParticipant) {
+			defi = command.defiEquipeParticipant.defiEquipe.defi
+			defiService.effacerParticipant(command.defiEquipeParticipant)
+		} else if (command.defiEquipe) {
+			defi = command.defiEquipe.defi
+			defiService.effacerEquipe(command.defiEquipe)
+		} else if (command.defi) {
+			defi = command.defi
+		}
+
+		redirect(action: 'edit', id: defi?.id)
+	}
+
+
+	/**
+	 * Efface les résultats
+	 *
+	 * @param command
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
+	def calculerResultat(DefiCommand command) {
+		defiService.calculerConsommations(command.defi)
+		redirect(action: 'edit', id: command.defi.id)
 	}
 }

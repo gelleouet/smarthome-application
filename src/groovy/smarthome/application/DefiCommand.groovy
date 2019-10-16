@@ -1,6 +1,7 @@
 package smarthome.application
 
 import grails.validation.Validateable
+import smarthome.security.Profil
 import smarthome.security.User
 
 /**
@@ -12,10 +13,14 @@ class DefiCommand {
 	String search
 	User user
 	Defi defi
+	DefiEquipe defiEquipe
+	DefiEquipeParticipant defiEquipeParticipant
 
 
 	static constraints = {
 		search nullable: true
 		defi nullable: true
+		defiEquipe nullable: true
+		defiEquipeParticipant nullable: true
 	}
 }

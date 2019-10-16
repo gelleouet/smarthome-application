@@ -11,6 +11,18 @@ class DateUtils {
 	static final String FORMAT_DATE_ISO = "yyyy-MM-dd"
 	static final String JSON_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 	static final String FORMAT_DATETIME_USER = "dd/MM/yyyy HH:mm"
+	static final String FORMAT_DATE_USER = "dd/MM/yyyy"
+
+
+	/**
+	 * Format d'une date user
+	 *
+	 * @param date
+	 * @return
+	 */
+	static String formatDateUser(Date date) {
+		return date?.format(FORMAT_DATE_USER)
+	}
 
 
 	/**
