@@ -10,25 +10,32 @@ import smarthome.security.SmartHomeUserDetailsService
 // Place your Spring DSL code here
 beans = {
 	xmlns context:"http://www.springframework.org/schema/context"
+	xmlns util:"http://www.springframework.org/schema/util"
 	xmlns camel:"http://camel.apache.org/schema/spring"
 
+	// juste utilisé pour injecter le context dans variable static accessible depuis n'importe où
+	applicationUtils(smarthome.core.ApplicationUtils)
 
 	context.'component-scan'('base-package': "smarthome")
 
+	transactionAttributeSource(org.springframework.transaction.annotation.AnnotationTransactionAttributeSource)
+
+	"defaultGrailsjava.lang.DoubleConverter"(smarthome.core.DoubleValueConverter)
+
+	// -------------------------------------------------------------------------
+	// Route ESB
 
 	// Auto détection des routes Camel depuis le contexte Spring
 	camel.camelContext(id: "camelContext") {
 		camel.package "smarthome.esb.routes"
 	}
 
-	transactionAttributeSource(org.springframework.transaction.annotation.AnnotationTransactionAttributeSource)
-
-	"defaultGrailsjava.lang.DoubleConverter"(smarthome.core.DoubleValueConverter)
-
+	// -------------------------------------------------------------------------
 	// gestionnaire de crons
 	// seconde | minute | heure | jour du mois (1-31) | mois | jour semaine (1-7) | année
-	smarthomeScheduler(SmarthomeScheduler) {
-		jobs = [
+	// Jobs pouvant être injectés dans d'autres services
+	smarthomeJobMap(org.springframework.beans.factory.config.MapFactoryBean) {
+		sourceMap = [
 			// monitoring des devices toutes les minutes
 			'smarthome.automation.scheduler.DeviceAlertMonitoringCronMainJob' : "0 * * * * ?",
 			// les providers de datasource associés à un cron. Le gestionnaire est
@@ -43,11 +50,30 @@ beans = {
 		]
 	}
 
+	smarthomeScheduler(SmarthomeScheduler) {
+		jobs = ref('smarthomeJobMap')
+	}
+
+	// -------------------------------------------------------------------------
+	// Spring Security
+
 	userDetailsService(SmartHomeUserDetailsService)
 
 	permissionEvaluator(smarthome.security.SmartHomePermissionEvaluator) {
 		permissionFactory = ref('aclPermissionFactory')
 	}
+
+	// surchage pour supprimer le cache optimizer
+	expressionHandler(DefaultMethodSecurityExpressionHandler) {
+		parameterNameDiscoverer = ref('parameterNameDiscoverer')
+		expressionParser = ref('expressionParser')
+		//permissionCacheOptimizer = ref('aclPermissionCacheOptimizer')
+		roleHierarchy = ref('roleHierarchy')
+		permissionEvaluator = ref('permissionEvaluator')
+	}
+
+	// -------------------------------------------------------------------------
+	// Activiti Engine
 
 	// Démarre une instance Activiti Workflow
 	processEngineConfiguration(SpringProcessEngineConfiguration) {
@@ -80,18 +106,8 @@ beans = {
 	runtimeService(processEngine: "getRuntimeService")
 
 
-	// surchage pour supprimer le cache optimizer
-	expressionHandler(DefaultMethodSecurityExpressionHandler) {
-		parameterNameDiscoverer = ref('parameterNameDiscoverer')
-		expressionParser = ref('expressionParser')
-		//permissionCacheOptimizer = ref('aclPermissionCacheOptimizer')
-		roleHierarchy = ref('roleHierarchy')
-		permissionEvaluator = ref('permissionEvaluator')
-	}
-
-	// juste utilisé pour injecter le context dans variable static accessible depuis n'importe où
-	applicationUtils(smarthome.core.ApplicationUtils)
-
+	// -------------------------------------------------------------------------
+	// Application APIs
 
 	dataConnectApi(smarthome.api.DataConnectApi) {
 		grailsApplication = ref('grailsApplication')
