@@ -1,13 +1,13 @@
 package smarthome.automation
 
-import java.io.Serializable;
+import java.io.Serializable
 
-import smarthome.automation.notification.NotificationSender;
-import smarthome.core.SmartHomeCoreConstantes;
-import smarthome.core.SmartHomeException;
-import smarthome.security.User;
-import grails.converters.JSON;
-import grails.validation.Validateable;
+import smarthome.automation.notification.NotificationSender
+import smarthome.core.SmartHomeCoreConstantes
+import smarthome.core.SmartHomeException
+import smarthome.security.User
+import grails.converters.JSON
+import grails.validation.Validateable
 
 /**
  * Compte pour les notifications (SMS, email, ...)
@@ -17,37 +17,39 @@ import grails.validation.Validateable;
  */
 @Validateable
 class NotificationAccount implements Serializable {
-	static belongsTo = [user: User]
-	
+
 	NotificationAccountSender notificationAccountSender
 	String config
-	
-	
-	static transients = ['jsonConfig']
+	User user
+
+	// transients properties
 	def jsonConfig = [:]
-	
-	
-	
-    static constraints = {
+
+
+	static belongsTo = [user: User]
+
+	static transients = ['jsonConfig']
+
+	static constraints = {
 		notificationAccountSender unique: ['user']
 		config nullable: true
 		jsonConfig bindable: true
-    }
-	
+	}
+
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "NotificationAccount_User_Idx"
 	}
-	
-	
+
+
 	void configToJson() {
 		jsonConfig = config ? JSON.parse(config) : [:]
 	}
-	
+
 	void configFromJson() {
 		config = jsonConfig as JSON
 	}
-	
+
 	/**
 	 * Vérifie si autorisation pour utiliser le le service
 	 *

@@ -205,15 +205,13 @@ class DataConnectService extends AbstractService {
 
 		// insère les données sur le device et historise les valeur
 		for (JSONElement datapoint : datapoints) {
-			deviceValueService.save(new DeviceValue(
-					device: dataDevice,
-					value: DeviceValue.parseDoubleValue(datapoint.value),
-					dateValue: datapoint.timestamp))
+			// enregistre la puissance sur la meta principale (sans nom)
+			deviceValueService.addDeviceValue(dataDevice, datapoint.timestamp,
+					null, DeviceValue.parseDoubleValue(datapoint.value))
 
-			deviceValueService.save(new DeviceValue(
-					device: dataDevice,
-					name: 'baseinst', value: datapoint.wh,
-					dateValue: datapoint.timestamp))
+			// enregistre la conso sur la meta associée
+			deviceValueService.addDeviceValue(dataDevice, datapoint.timestamp,
+					'baseinst', datapoint.wh)
 		}
 
 		notificationAccount.jsonConfig.last_consumption_load_curve = dataDevice.dateValue.time
@@ -298,13 +296,11 @@ class DataConnectService extends AbstractService {
 
 		// insère les données sur les valeurs aggrégées jour du device
 		for (JSONElement datapoint : datapoints) {
-			deviceValueService.save(new DeviceValueDay(
-					name: 'basesum',
-					device: dataDevice,
-					value: DeviceValue.parseDoubleValue(datapoint.value),
-					dateValue: datapoint.timestamp))
+			deviceValueService.addDeviceValueDay(dataDevice, datapoint.timestamp,
+					'basesum', DeviceValue.parseDoubleValue(datapoint.value))
 		}
 
+		// aggrége les données sur le mois
 		Date dateFirstValue = datapoints.first().timestamp
 		Date dateLastValue = datapoints.last().timestamp
 		deviceValueService.sumValueMonthFromValueDay(dataDevice, 'basesum',
@@ -391,13 +387,11 @@ class DataConnectService extends AbstractService {
 
 		// insère les données sur les valeurs aggrégées jour du device
 		for (JSONElement datapoint : datapoints) {
-			deviceValueService.save(new DeviceValueDay(
-					name: 'max',
-					device: dataDevice,
-					value: DeviceValue.parseDoubleValue(datapoint.value),
-					dateValue: datapoint.timestamp))
+			deviceValueService.addDeviceValueDay(dataDevice, datapoint.timestamp,
+					'max', DeviceValue.parseDoubleValue(datapoint.value))
 		}
 
+		// aggrège les données sur le mois
 		Date dateFirstValue = datapoints.first().timestamp
 		Date dateLastValue = datapoints.last().timestamp
 		deviceValueService.maxValueMonthFromValueDay(dataDevice, 'max',
