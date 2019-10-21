@@ -17,9 +17,7 @@ email.message = """
 	&lt;br/&gt;
 	&lt;p&gt;Vous avez fait une demande pour créer un compte $appCode avec l'adresse suivante &lt;strong style="text-decoration:none;"&gt;$context.arg0.username&lt;/strong&gt;.&lt;/p&gt;
 	&lt;p&gt;Veuillez cliquer sur le lien suivant : &lt;a style="text-decoration:none;" href="$context.result.serverUrl"&gt;-- activation de votre compte --&lt;/a&gt;&lt;/p&gt;
-	&lt;p&gt;Vous serez alors redirigés vers l'application Web et vous pourrez vous connecter avec vos identifiants.&lt;/p&gt;
-	&lt;br/&gt;
-	&lt;p&gt;Pour installer votre agent Raspberry, veuillez suivre la notice d'installation sur le wiki https://github.com/gelleouet/smarthome-raspberry/wiki&lt;/p&gt;
+	&lt;p&gt;Vous serez alors redirigé vers l'application Web et vous pourrez vous connecter avec vos identifiants.&lt;/p&gt;
 """
 
 notificationService.sendEmail(email)</script>

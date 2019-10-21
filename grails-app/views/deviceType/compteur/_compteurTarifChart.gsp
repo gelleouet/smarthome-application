@@ -20,6 +20,9 @@
 		<g:render template="/chart/datas/chartDatas" model="[chart: googleChartTarif]"/>
 	</div>  
 	
+	<small class="form-text text-muted">L’estimation financière en € de votre consommation se base sur le prix du kWh heures pleines du tarif réglementé, hors abonnement.</small>
+	<br/>
+	
 	<g:if test="${ !mobileAgent }">
 		<form class="form-inline">
 			<div class="form-group">

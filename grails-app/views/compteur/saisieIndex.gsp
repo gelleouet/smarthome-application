@@ -40,9 +40,9 @@
 								
 								<g:render template="formIndex"/>
 								
-								<div class="form-group required mt-2">
+								<div class="form-group mt-2">
 									<label for="photo-file">Importer une photo du compteur</label>
-									<input name="photo" type="file" required="true" id="photo-file"/>
+									<input name="photo" type="file" id="photo-file"/>
 									<small class="form-text text-muted">Veuillez à ce que les index soient lisibles sur la photo pour que l'administrateur puisse valider votre saisie.</small>
 								</div>
 								

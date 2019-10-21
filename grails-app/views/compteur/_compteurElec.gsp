@@ -10,9 +10,11 @@
 					<g:if test="${ dataConnect }">
 						<g:link class="dropdown-item" action="edit" controller="notificationAccount" id="${ dataConnect.id }">Service DataConnect</g:link>
 					</g:if>
-					<g:if test="${ house?.compteur }">
-						<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteur.id }">Compteur</g:link>
-					</g:if>
+					<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
+						<g:if test="${ house?.compteur }">
+							<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteur.id }">Compteur</g:link>
+						</g:if>
+					</sec:ifNotGranted>
 					<g:link class="dropdown-item" action="resetCompteurElec">Réinitialiser</g:link>
 				</div>
 			</div>
@@ -75,7 +77,7 @@
 					</div>
 					
 					<label class="custom-control custom-radio mt-4">
-						<g:radio name="compteurModel" value="Electronique" class="custom-control-input"/>
+						<g:radio id="radioCompteurElecNew" name="compteurModel" value="Electronique" class="custom-control-input"/>
 						<span class="custom-control-label">Compteur non communicant</span>
 					</label>
 					<div class="row">
@@ -84,12 +86,15 @@
 							<asset:image src="compteur-elec-mecanique.png" class="ml-1 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les index de consommation seront saisis manuellement ou envoyés automatiquement par le bus téléinformation</small>
+							<small class="font-text text-muted">Les index de consommation seront saisis manuellement. Veuillez indiquer votre contrat tarifaire :</small>
+							
+							<g:select class="form-control" name="contrat" from="${ contratElecs }"
+         								optionKey="key" optionValue="value" onchange="selectRadio('radioCompteurElecNew', true)"/>
 						</div>
 					</div>
 					
 					<label class="custom-control custom-radio mt-4">
-						<g:radio name="compteurModel" value="_exist" class="custom-control-input"/>
+						<g:radio id="radioCompteurElecExist" name="compteurModel" value="_exist" class="custom-control-input"/>
 						<span class="custom-control-label">Compteur existant</span>
 					</label>
 					<div class="row">
@@ -101,7 +106,8 @@
 							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>
 							
 							<g:select class="form-control" name="compteurElec.id" from="${ compteurElecs }"
-         								optionKey="id" optionValue="label" noSelection="[null: ' ']"/>
+         								optionKey="id" optionValue="label" noSelection="[null: ' ']"
+         								onchange="selectRadio('radioCompteurElecExist', true)"/>
 						</div>
 					</div>
 					

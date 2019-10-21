@@ -3,6 +3,8 @@ package smarthome.application
 import smarthome.application.granddefi.AccountCommand
 import smarthome.automation.Chauffage
 import smarthome.automation.ECS
+import smarthome.automation.House
+import smarthome.automation.HouseService
 import smarthome.common.Commune
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
@@ -10,6 +12,7 @@ import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
 import smarthome.security.Profil
 import grails.plugin.springsecurity.annotation.Secured
+import smarthome.automation.CompteurIndexCommand
 
 
 /**
@@ -18,10 +21,29 @@ import grails.plugin.springsecurity.annotation.Secured
  * @author gregory
  *
  */
-@Secured("hasAnyRole('ROLE_GRAND_DEFI', 'ROLE_ADMIN_GRAND_DEFI')")
+@Secured("hasAnyRole('ROLE_GRAND_DEFI', 'ROLE_ADMIN_GRAND_DEFI', 'ROLE_ADMIN')")
 class GrandDefiController extends AbstractController {
 
 	GrandDefiService grandDefiService
+	HouseService houseService
+
+
+	/**
+	 * Accueil GDE
+	 * 
+	 * @return
+	 */
+	@Secured("isAuthenticated()")
+	def index() {
+		def user = authenticatedUser
+		House house = houseService.findDefaultByUser(user)
+
+		if (house?.compteur || house?.compteurGaz) {
+			redirect(action: 'consommation')
+		} else {
+			redirect(controller: 'compteur', action: 'compteur')
+		}
+	}
 
 
 	/**
@@ -37,6 +59,11 @@ class GrandDefiController extends AbstractController {
 		model.chauffages = Chauffage.list()
 		model.ecs = ECS.list()
 		model.command = parseFlashCommand('command', new AccountCommand())
+
+		// sélection du profil par défaut
+		if (!model.command.profil) {
+			model.command.profil = model.profils.find { it.id == 1L }
+		}
 
 		render(view: 'account', model: model)
 	}
@@ -59,11 +86,36 @@ class GrandDefiController extends AbstractController {
 
 
 	/**
+	 * Affichage page config/résumé des compteurs
+	 *
+	 * @return
+	 */
+	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary,
+	header = "Grand Défi Energie 2019", icon = "tool")
+	def compteur() {
+		redirect(controller: 'compteur', action: 'compteur')
+	}
+
+
+	/**
+	 * Les index en cours de validation par un admin
+	 *
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	@NavigableAction(label = "Validation des index", navigation = NavigationEnum.navbarPrimary,
+	header = "Grand Défi Energie 2019", icon = "check-square")
+	def compteurIndexs(CompteurIndexCommand command) {
+		redirect(controller: 'compteur', action: 'compteurIndexs')
+	}
+
+
+	/**
 	 * Affichage des consommations élec et gaz
 	 * @return
 	 */
 	@NavigableAction(label = "Mes consommations", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi", icon = "bar-chart")
+	header = "Grand Défi Energie 2019", icon = "bar-chart")
 	def consommation() {
 		def user = authenticatedUser
 		def model = grandDefiService.modelConsommation(user)
@@ -78,7 +130,7 @@ class GrandDefiController extends AbstractController {
 	 * @return
 	 */
 	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi", icon = "award")
+	header = "Grand Défi Energie 2019", icon = "award")
 	def defis(DefiCommand command) {
 		mesresultats(command)
 	}

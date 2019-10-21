@@ -40,6 +40,23 @@ class TeleInformation extends Compteur {
 		'total': '#d8dadc' //'#e8eaed'
 	]
 
+	protected static final Map CONTRATS = [
+		(DEFAULT_CONTRAT): 'Heures de base',
+		'HC': 'Heures creuses / pleines',
+		'EJP': 'Heures pointe mobile / normales'
+	]
+
+
+
+	/**
+	 * Liste des contrats
+	 *
+	 * @return
+	 */
+	static Map contrats() {
+		return CONTRATS
+	}
+
 
 	/**
 	 * (non-Javadoc)
@@ -631,7 +648,7 @@ class TeleInformation extends Compteur {
 		Date firstHour = DateUtils.firstTimeInDay(currentDate)
 		Date lastHour = DateUtils.lastTimeInDay(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
+		if (isDoubleTarification()) {
 			consos.hchp = ((DeviceValue.values(device, firstHour, lastHour, 'hpinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.hchc = ((DeviceValue.values(device, firstHour, lastHour, 'hcinst').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.total = (consos.hchp + consos.hchc as Double).round(1)
@@ -667,7 +684,7 @@ class TeleInformation extends Compteur {
 		int duree = (dateEnd - dateStart) + 1
 
 		if (duree) {
-			if (consos.optTarif in ['HC', 'EJP']) {
+			if (isDoubleTarification()) {
 				def hchp = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 				def hchc = ((DeviceValueDay.values(device, dateStart, dateEnd, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 				consoMoyenne = ((hchp + hchc) / duree as Double).round(1)
@@ -694,7 +711,7 @@ class TeleInformation extends Compteur {
 		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
 		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
+		if (isDoubleTarification()) {
 			consos.hchp = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.hchc = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.total = (consos.hchp + consos.hchc as Double).round(1)
@@ -727,7 +744,7 @@ class TeleInformation extends Compteur {
 		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
 		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
 
-		if (consos.optTarif in ['HC', 'EJP']) {
+		if (isDoubleTarification()) {
 			consos.hchp = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchpsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.hchc = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, 'hchcsum').sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
 			consos.total = (consos.hchp + consos.hchc as Double).round(1)

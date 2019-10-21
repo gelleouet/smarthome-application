@@ -72,7 +72,7 @@
 				        	</span>
 				        </label>
 	     
-	     				<h4 class="mt-4">Construction</h4>
+	     				<h4 class="mt-4">Habitation</h4>
 	     				
 	     				<div class="form-group required">
 				        	<label>Commune</label>
@@ -101,6 +101,8 @@
 					     	Après avoir cliqué sur "Démarrer", vous allez recevoir un mail contenant un lien vers une page Web.
 	     					Ce lien permettra d'activer votre compte. Cette action permet aussi de vérifier que vous êtes bien le propriétaire de l'adresse email.
 	     				</h6>
+	     				
+	     				<h6><span class="required">*</span> : champs obligatoires</h6>
 
 	     				<br/>
 	     

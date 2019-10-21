@@ -17,22 +17,4 @@
 			</li>
 		</g:each>
 	</g:each>
-	<!-- 
-	<li class="sidebar-header">
-		Je surveille
-	</li>
-	
-	<li class="sidebar-item">
-		<g:link class="sidebar-link" action="consommationElec" controller="house"><i class="align-middle" data-feather="zap"></i> Consommations Ã©lectricitÃ©</g:link>
-	</li>
-	<li class="sidebar-item">
-		<g:link class="sidebar-link"><i class="align-middle" data-feather="compass"></i> Consommations gaz</g:link>
-	</li>
-	<li class="sidebar-item">
-		<g:link class="sidebar-link"><i class="align-middle" data-feather="droplet"></i> Consommations eau</g:link>
-	</li>
-	<li class="sidebar-item">
-		<g:link class="sidebar-link" action="chartsGrid" controller="chart"><i class="align-middle" data-feather="bar-chart"></i> Graphiques personnalisÃ©s</g:link>
-	</li>
-	 -->
 </ul>

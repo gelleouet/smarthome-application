@@ -6,7 +6,7 @@ class UrlMappings {
 				// apply constraints here
 			}
 		}
-		"/"(controller: 'tableauBord', action: 'index')
+		"/"(controller: 'grandDefi', action: 'index')
 		"500"(view:'/error')
 		"404"(view:'/error404')
 

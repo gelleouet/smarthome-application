@@ -3,7 +3,7 @@
 <meta name='layout' content='main' />
 </head>
 
-<body>
+<body onload="onLoadCompteur();">
 	<g:applyLayout name="page-default">
 	
 		<h3 class="mb-3">Mes compteurs</h3>

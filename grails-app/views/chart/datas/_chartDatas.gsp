@@ -32,13 +32,13 @@
         'height': '${ params.chartHeight ?: '600' }',
         'legend': {position: 'top'},
         'selectionMode': 'multiple',
-        'curveType': 'function',
+        'curveType': '${ chart.curveType ?: 'none' }',
         'chartArea': {
         	width: '85%'
         },
         'tooltip': {
 			'isHtml': true,
-			'trigger': 'selection'
+			'trigger': 'focus'
 		},
 		'explorer': {
 			'axis': 'horizontal',

@@ -26,6 +26,7 @@ class GoogleChart {
 	boolean slantedText = false
 	boolean isStacked = false
 	String selectionField
+	String curveType
 
 
 

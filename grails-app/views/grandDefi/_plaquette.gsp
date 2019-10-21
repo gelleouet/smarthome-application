@@ -6,8 +6,8 @@
 	
 	<div class="card-body">
 		<div class="text-center">
-			<a href="https://www.alec-rennes.org/legranddefienergie2019/" target="granddefi">
-				<asset:image src="grand-defi.gif"/>
+			<a href="https://www.alec-rennes.org/usager/conseil-energie-particuliers-coproprietaire/le-grand-defi-economie-energie-des-communes-2019/" target="granddefi">
+				<asset:image src="grand-defi.gif" height="185px"/>
 				Plus d'informations
 			</a>
 			

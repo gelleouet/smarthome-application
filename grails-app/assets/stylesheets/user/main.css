@@ -769,6 +769,11 @@ tr.planning-day-row td {
 	font-size: 12px;
 }
 
+span.required {
+	color: #de350b;
+	font-size: 12px;
+}
+
 table.table tr:first-child th {
 	border-top:0;
 }

@@ -10,9 +10,11 @@
 					<g:if test="${ adict }">
 						<g:link class="dropdown-item" action="edit" controller="notificationAccount" id="${ adict.id }">Service ADICT</g:link>
 					</g:if>
-					<g:if test="${ house?.compteurGaz }">
-						<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteurGaz.id }">Compteur</g:link>
-					</g:if>
+					<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
+						<g:if test="${ house?.compteurGaz }">
+							<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteurGaz.id }">Compteur</g:link>
+						</g:if>
+					</sec:ifNotGranted>
 					<g:link class="dropdown-item" action="resetCompteurGaz">Réinitialiser</g:link>
 				</div>
 			</div>
@@ -83,12 +85,12 @@
 							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les index de consommation seront saisis manuellement ou envoyés automatiquement par impulsions</small>
+							<small class="font-text text-muted">Les index de consommation seront saisis manuellement</small>
 						</div>
 					</div>
 					
 					<label class="custom-control custom-radio mt-4">
-						<g:radio name="compteurModel" value="_exist" class="custom-control-input"/>
+						<g:radio id="radioCompteurGazExist" name="compteurModel" value="_exist" class="custom-control-input"/>
 						<span class="custom-control-label">Compteur existant</span>
 					</label>
 					<div class="row">
@@ -100,7 +102,8 @@
 							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>
 							
 							<g:select class="form-control" name="compteurGaz.id" from="${ compteurGazs }"
-         								optionKey="id" optionValue="label" noSelection="[null: ' ']"/>
+         								optionKey="id" optionValue="label" noSelection="[null: ' ']"
+         								onchange="selectRadio('radioCompteurGazExist', true)"/>
 						</div>
 					</div>
 					

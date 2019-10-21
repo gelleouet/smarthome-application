@@ -13,14 +13,19 @@
 				<asset:image src="/gandi-ssl.png" />
 				
 				<ul class="list-inline" style="margin-top:10px;">
+					<g:if test="${ false }">
+						<li class="list-inline-item">
+							<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application"><i class="align-middle fab fa-github"></i> Github</a>
+						</li>
+						<li class="list-inline-item">
+							<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application/wiki"><i class="align-middle fab fa-github"></i> Wiki</a>
+						</li>
+					</g:if>
 					<li class="list-inline-item">
-						<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application"><i class="align-middle fab fa-github"></i> Github</a>
+						<a class="btn mb-1 btn-twitter" href="${g.meta(name: 'app.twitter') }"><i class="align-middle fab fa-twitter"></i> Twitter</a>
 					</li>
 					<li class="list-inline-item">
-						<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application/wiki"><i class="align-middle fab fa-github"></i> Wiki</a>
-					</li>
-					<li class="list-inline-item">
-						<a class="btn mb-1 btn-twitter" href="https://twitter.com/gelleouet"><i class="align-middle fab fa-twitter"></i> Twitter</a>
+						<a class="btn mb-1 btn-facebook" href="${g.meta(name: 'app.facebook') }"><i class="align-middle fab fa-facebook"></i> Facebook</a>
 					</li>
 				</ul>
 		    </div>

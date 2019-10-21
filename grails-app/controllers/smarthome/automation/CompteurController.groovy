@@ -30,8 +30,6 @@ class CompteurController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi", icon = "tool")
 	def compteur() {
 		def user = authenticatedUser
 		def model = compteurService.modelCompteur(user)
@@ -136,8 +134,6 @@ class CompteurController extends AbstractController {
 	 * @return
 	 */
 	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
-	@NavigableAction(label = "Validation des index", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi", icon = "check-square")
 	def compteurIndexs(CompteurIndexCommand command) {
 		command.admin(authenticatedUser) // plugin spring security
 		checkErrors(this, command)

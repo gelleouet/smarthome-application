@@ -17,7 +17,7 @@
 	<small class="form-text text-muted">Utilisé pour le calcul du classement énergétique</small>
 </div>
 <div class="form-group">
-	<label>Chauffage</label>
+	<label>Energie chauffage</label>
 	<g:select name="house.chauffage.id" value="${house?.chauffage?.id}" from="${ smarthome.automation.Chauffage.list() }" optionKey="id" 
 		optionValue="libelle" class="form-control combobox" noSelection="[null: ' ']"/>
 </div>

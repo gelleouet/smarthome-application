@@ -3,8 +3,8 @@
 		<tr>
 			<th>Principale?</th>
 			<th>Nom</th>
-			<th>Unité</th>
 			<th>Valeur</th>
+			<th>Unité</th>
 			<th>Type</th>
 			<th>Historisation</th>
 			<th>Objet séparé</th>
@@ -13,22 +13,22 @@
 	<tbody>
 		<g:each var="metadata" in="${ device.metavalues?.sort{ (it.type ?: '') + it.label } }" status="status">
 			<tr>
-				<td>
+				<td class="text-center">
 					<g:if test="${ metadata.id }">
 						<g:hiddenField name="metavalues[${ status }].id" value="${ metadata.id }"/>
 					</g:if>
-					<g:checkBox name="metavalues[${ status }].main" value="${ metadata.main }" class="form-check-input"/>
+					<g:checkBox name="metavalues[${ status }].main" value="${ metadata.main }"/>
 				</td>
 				<td><label title="API : device.metavalue('${ metadata.name }')?.value">${ metadata.label }</label></td>
-				<td><g:textField name="metavalues[${ status }].unite" value="${ metadata.unite }" class="form-control"/></td>
 				<td><g:textField name="metavalues[${ status }].value" value="${ metadata.value }" class="form-control" disabled="true"/></td>
+				<td><g:textField name="metavalues[${ status }].unite" value="${ metadata.unite }" class="form-control"/></td>
 				<td>
 					<g:if test="${ metadata.type }">
 						<span class="aui-lozenge aui-lozenge-complete aui-lozenge-subtle">${ metadata.type }</span>
 					</g:if>
 				</td>	
-				<td><g:checkBox name="metavalues[${ status }].trace" value="${ metadata.trace }" class="form-check-input"/></td>				
-				<td><g:checkBox name="metavalues[${ status }].virtualDevice" value="${ metadata.virtualDevice }" class="form-check-input"/></td>				
+				<td class="text-center"><g:checkBox name="metavalues[${ status }].trace" value="${ metadata.trace }"/></td>				
+				<td class="text-center"><g:checkBox name="metavalues[${ status }].virtualDevice" value="${ metadata.virtualDevice }"/></td>				
 			</tr>
 		</g:each>	
 	</tbody>

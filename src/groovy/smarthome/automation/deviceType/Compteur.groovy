@@ -31,6 +31,10 @@ class Compteur extends AbstractDeviceType {
 	protected static final String META_METRIC_NAME = "conso"
 	protected static final String DEFAULT_CONTRAT = "BASE"
 
+	protected static final Map CONTRATS = [
+		(DEFAULT_CONTRAT): 'Heures de base'
+	]
+
 	public static final SERIES_COLOR = [
 		'conso': '#47bac1',
 		'total': '#d8dadc'
@@ -38,6 +42,16 @@ class Compteur extends AbstractDeviceType {
 
 	protected DeviceTypeProvider fournisseurCache
 	protected String contratCache
+
+
+	/**
+	 * Liste des contrats
+	 * 
+	 * @return
+	 */
+	static Map contrats() {
+		CONTRATS
+	}
 
 
 	/**

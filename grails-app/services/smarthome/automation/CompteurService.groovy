@@ -48,6 +48,8 @@ class CompteurService extends AbstractService {
 		// --------------------------------------------------------------------
 		// Compteur élec
 
+		model.contratElecs = TeleInformation.contrats()
+
 		// recherche des services associés
 		model.dataConnect = notificationAccountService.findByUserAndLibelleSender(user,
 				grailsApplication.config.enedis.appName)
@@ -63,6 +65,8 @@ class CompteurService extends AbstractService {
 
 		// --------------------------------------------------------------------
 		// Compteur gaz
+
+		model.contratGaz = CompteurGaz.contrats()
 
 		// recherche des services associés
 		model.adict = notificationAccountService.findByUserAndLibelleSender(user,
@@ -111,7 +115,7 @@ class CompteurService extends AbstractService {
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 				compteur.addMetadata('aggregate', [value: 'sum-conso', label: 'Calcul des données aggrégées'])
-				compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: 'BASE'])
+				compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: command.contrat ?: Compteur.DEFAULT_CONTRAT])
 				compteur.addMetavalue('baseinst', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
 		}
@@ -210,9 +214,9 @@ class CompteurService extends AbstractService {
 		}
 
 		// quit si au moins un index est trouvé pour le user
-		if (countCompteurIndexForDevice(device)) {
-			throw new SmartHomeException("Un index en attente de validation existe déjà pour ce compteur !")
-		}
+		//		if (countCompteurIndexForDevice(device)) {
+		//			throw new SmartHomeException("Un index en attente de validation existe déjà pour ce compteur !")
+		//		}
 
 		// construction d'un objet Index
 		CompteurIndex index = new CompteurIndex(device: device,

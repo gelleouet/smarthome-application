@@ -59,3 +59,8 @@ function initPickList() {
 		removeAllClass: "pick-button",
 	});
 }
+
+
+function selectRadio(elementId, value) {
+	$("#" + elementId).prop("checked", value)
+}
