@@ -69,6 +69,10 @@ class GrandDefiService extends AbstractService {
 		model.defis = defiService.listByUser(command, [max: 5])
 		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
 
+		if (model.currentDefi) {
+			defiService.checkUserDefi(model.currentDefi, command.user)
+		}
+
 		// prépare le modèle par compteur
 		// on duplique le total classement pour q'il soit accessible depuis la map
 		// principale de chaque compteur qui sera délèguée à des templates

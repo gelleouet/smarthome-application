@@ -43,6 +43,11 @@ class DefiController extends AbstractController {
 	 */
 	def edit(Defi defi) {
 		def editDefi = parseFlashCommand(COMMAND_NAME, defi)
+
+		if (defi?.id) {
+			defiService.edit(defi)
+		}
+
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDefi]))
 	}
 
@@ -58,7 +63,7 @@ class DefiController extends AbstractController {
 		// on remplit avec les infos du user
 		model << userModel
 
-		if (model.defi.id) {
+		if (model.defi?.id) {
 			model.participants = defiService.listParticipantResultat(new DefiCommand(defi: model.defi), [:])
 			model.equipeProfils = defiService.listEquipeProfilResultat(model.defi)
 		}

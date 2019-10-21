@@ -3,6 +3,7 @@
  */
 package smarthome.application
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 
 import groovyx.gpars.GParsPool
@@ -30,6 +31,19 @@ import smarthome.security.User
 class DefiService extends AbstractService {
 
 	HouseService houseService
+
+
+	/**
+	 * Edition d'un défi
+	 * 
+	 * @param defi
+	 * @return
+	 */
+	@PreAuthorize("hasPermission(#defi, 'OWNER')")
+	Defi edit(Defi defi) {
+		return defi
+	}
+
 
 
 	/**
@@ -236,6 +250,19 @@ class DefiService extends AbstractService {
 				[defi: defi, user: user])
 
 		return results ? results[0] : null
+	}
+
+
+	/**
+	 * Vérifie qu"un user est bien enregistré sur un défi
+	 * 
+	 * @param defi
+	 * @param user
+	 */
+	void checkUserDefi(Defi defi, User user) throws SmartHomeException {
+		if (!findUserResultat(defi, user)) {
+			throw new SmartHomeException("Accès refusé au défi !")
+		}
 	}
 
 

@@ -50,4 +50,15 @@
     <changeSet author="Gregory (generated)" id="1570612047449-6">
         <addForeignKeyConstraint baseColumnNames="device_id" baseTableName="compteur_index" constraintName="fk_bwp6gdc66vqrpxtbg66vkk4je" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="device"/>
     </changeSet>
+    <changeSet author="Gregory (generated)" id="1571669179883-1">
+        <addColumn tableName="profil">
+            <column name="icon" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Gregory (generated)" id="1571669179883-2">
+        <dropIndex indexName="config_idx" tableName="config"/>
+        <createIndex indexName="config_idx" tableName="config">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
