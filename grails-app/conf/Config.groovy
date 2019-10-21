@@ -103,7 +103,9 @@ environments {
 					'org.apache.camel.component'
 
 			trace 'org.springframework.security.web.authentication.rememberme',
-					'org.springframework.security.web.authentication'
+					'org.springframework.security.web.authentication',
+					'org.springframework.transaction.interceptor'
+
 
 			info 'org.hibernate',
 					'net.sf.ehcache.hibernate',

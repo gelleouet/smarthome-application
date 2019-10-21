@@ -28,6 +28,16 @@
 	
 	<div class="form-group">
 		<label>
+			Last token
+		</label>
+		<g:textField name="jsonConfig.last_token" value="${ notificationAccount?.jsonConfig?.last_token }" class="form-control"/>
+		<g:if test="${ notificationAccount?.jsonConfig?.last_token }">
+			<small class="form-text text-muted">ie : <g:formatDate date="${ new Date(notificationAccount?.jsonConfig?.last_token as Long) }" format="dd/MM/yyyy HH:mm"/></small>
+		</g:if>
+	</div>
+	
+	<div class="form-group">
+		<label>
 			Last consumption_load_curve
 		</label>
 		<g:textField name="jsonConfig.last_consumption_load_curve" value="${ notificationAccount?.jsonConfig?.last_consumption_load_curve }" class="form-control"/>
@@ -59,6 +69,7 @@
 	<h4 class="mt-4">Tester les APIs</h4>
 	
 	<div class="btn-group mb-4">
+		<g:link class="btn btn-light" action="authorize" controller="dataConnect" target="dataconnect">authorize</g:link>
 		<g:link class="btn btn-light" action="refresh_token" controller="dataConnect" target="dataconnect">refresh_token</g:link>
 		<g:link class="btn btn-light" action="consumption_load_curve" controller="dataConnect" target="dataconnect">consumption_load_curve</g:link>
 		<g:link class="btn btn-light" action="daily_consumption" controller="dataConnect" target="dataconnect">daily_consumption</g:link>

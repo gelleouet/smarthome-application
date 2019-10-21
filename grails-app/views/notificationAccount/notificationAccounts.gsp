@@ -24,7 +24,7 @@
 		    <thead>
 		        <tr>
 		            <th>Libellé</th>
-		            <th class="column-1-buttons"></th>
+		            <th class="column-2-buttons"></th>
 		        </tr>
 		    </thead>
 		    <tbody>
@@ -34,6 +34,9 @@
 			            <td class="command-column">
 			            	<g:link class="btn btn-light confirm-button" title="Suppimer" action="delete" id="${ bean.id }">
 			            		<app:icon name="trash"/>
+			            	</g:link>
+			            	<g:link class="btn btn-light confirm-button" title="Exécuter" action="execute" id="${ bean.id }">
+			            		<app:icon name="play"/>
 			            	</g:link>
 			            </td>
 			        </tr>

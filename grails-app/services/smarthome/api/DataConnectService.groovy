@@ -1,7 +1,10 @@
 package smarthome.api
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 import groovy.time.TimeCategory
@@ -71,6 +74,7 @@ class DataConnectService extends AbstractService {
 
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
+		notificationAccount.jsonConfig.last_token = (new Date()).time
 		notificationAccount.jsonConfig.usage_point_id = usage_point_id
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
@@ -85,7 +89,11 @@ class DataConnectService extends AbstractService {
 
 
 	/**
-	 *
+	 * Cette transaction est exécutée à part car dès lors qu'un nouveau token est
+	 * récupéré, il doit être absolument enregistré car l'ancien est invalidé. Donc
+	 * si un autre service déclenche une exception après cette action, la transaction
+	 * sera rollbackée et le nouveau token sera perdu
+	 * 
 	 * @param user
 	 * @throws SmartHomeException
 	 */
@@ -103,6 +111,10 @@ class DataConnectService extends AbstractService {
 
 
 	/**
+	 * Cette transaction est exécutée à part car dès lors qu'un nouveau token est
+	 * récupéré, il doit être absolument enregistré car l'ancien est invalidé. Donc
+	 * si un autre service déclenche une exception après cette action, la transaction
+	 * sera rollbackée et le nouveau token sera perdu
 	 * 
 	 * @param notificationAccount
 	 * @throws SmartHomeException
@@ -120,6 +132,7 @@ class DataConnectService extends AbstractService {
 
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
+		notificationAccount.jsonConfig.last_token = (new Date()).time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
 

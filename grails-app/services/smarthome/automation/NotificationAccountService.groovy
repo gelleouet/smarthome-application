@@ -4,11 +4,15 @@ import java.io.Serializable
 import java.util.List
 import java.util.Map
 import grails.converters.JSON
+import grails.transaction.NotTransactional
+
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+
+import smarthome.automation.datasource.AbstractDataSourceProvider
 import smarthome.automation.notification.EmailNotificationSender
 import smarthome.automation.notification.NotificationSender
 import smarthome.core.AbstractService
@@ -21,6 +25,26 @@ import smarthome.security.User
 
 
 class NotificationAccountService extends AbstractService {
+
+
+
+	/**
+	 * Exécution type provider
+	 * 
+	 * @param notificationAccount
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@NotTransactional
+	void execute(NotificationAccount notificationAccount) throws SmartHomeException {
+		def providerImpl = notificationAccount.notificationAccountSender.newNotificationSender()
+
+		if (providerImpl instanceof AbstractDataSourceProvider) {
+			providerImpl.execute(notificationAccount)
+		} else {
+			throw new SmartHomeException("Not a provider !")
+		}
+	}
 
 
 	/**
@@ -78,8 +102,8 @@ class NotificationAccountService extends AbstractService {
 			eq 'notificationAccountSender', sender
 		}
 	}
-	
-	
+
+
 	NotificationAccount findByUserAndLibelleSender(User user, String senderLibelle) {
 		return NotificationAccount.createCriteria().get {
 			eq 'user', user

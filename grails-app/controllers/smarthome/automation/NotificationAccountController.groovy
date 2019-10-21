@@ -107,4 +107,17 @@ class NotificationAccountController extends AbstractController {
 		notificationAccountService.delete(notificationAccount)
 		redirect(action: 'notificationAccounts')
 	}
+
+
+	/**
+	 * Exécution
+	 *
+	 * @param notification
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "notificationAccounts", modelName = "")
+	def execute(NotificationAccount notificationAccount) {
+		notificationAccountService.execute(notificationAccount)
+		redirect(action: 'notificationAccounts')
+	}
 }

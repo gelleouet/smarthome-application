@@ -11,10 +11,9 @@ import smarthome.core.SmartHomeException
 
 class JobService extends AbstractService {
 
-	@Autowired
-	Map smarthomeJobMap
-
-	AutowireCapableBeanFactory beanFactory
+	/*@Autowired
+	 Map smarthomeJobMap
+	 AutowireCapableBeanFactory beanFactory*/
 
 
 	/**
@@ -23,7 +22,7 @@ class JobService extends AbstractService {
 	 * @return
 	 */
 	Map list() {
-		return smarthomeJobMap
+		//return smarthomeJobMap
 	}
 
 
@@ -34,8 +33,8 @@ class JobService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	void execute(String jobInstance) throws SmartHomeException {
-		Job job = ClassUtils.forNameInstance(jobInstance)
-		beanFactory.autowireBean(job)
-		job.execute(null)
+		/*Job job = ClassUtils.forNameInstance(jobInstance)
+		 beanFactory.autowireBean(job)
+		 job.execute(null)*/
 	}
 }
