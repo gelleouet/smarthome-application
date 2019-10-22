@@ -213,6 +213,24 @@ group by chauffage.libelle
 	House findDefaultByUser(User user) {
 		return House.findByUserAndDefaut(user, true)
 	}
+	
+	
+	/**
+	 * Recherche de la maison principale d'un user avec activation de jointure
+	 *
+	 * @param user
+	 * @return
+	 */
+	House findDefaultByUserFetch(User user, List<String> fetchs) {
+		return House.createCriteria().get {
+			eq 'user', user
+			eq 'defaut', true
+			
+			for (String fetch : fetchs) {
+				join fetch
+			}
+		}
+	}
 
 
 	/**

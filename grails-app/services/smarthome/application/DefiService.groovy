@@ -20,6 +20,7 @@ import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
 import smarthome.core.chart.GoogleDataTableCol
+import smarthome.rule.DefiCalculRuleService
 import smarthome.security.Profil
 import smarthome.security.Role
 import smarthome.security.User
@@ -32,6 +33,7 @@ import smarthome.security.User
 class DefiService extends AbstractService {
 
 	HouseService houseService
+	DefiCalculRuleService defiCalculRuleService
 
 
 	/**
@@ -732,6 +734,35 @@ class DefiService extends AbstractService {
 
 
 	/**
+	 * Calcul des résultats à partir des consommations.
+	 * La méthode calculConsommations doit être appelée avant pour enregistrer
+	 * les consos et surtourt pour charger tous les éléments nécessaires et les
+	 * organiser dans les associations
+	 * Le calcul, comme il peut évoluer, va être délégué à une règle métier
+	 * 
+	 * @param defi
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Defi calculerResultats(Defi defi) throws SmartHomeException {
+		// pour faciliter le calcul, remet "à plat" la liste des participants
+		// pour calcul éventuellement refaire des groupements
+		List<DefiEquipeParticipant> participants = []
+		
+		defi.equipes.each { DefiEquipe equipe -> 
+			equipe.participants.each { participant -> 
+				participants << participant
+			}
+		}
+		
+		defiCalculRuleService.execute(defi, true, [participants: participants])
+		
+		return super.save(defi)
+	}
+	
+	
+	/**
 	 * Calcul des consommations du défi à chacun des niveaux
 	 * Supprime également tous les résultats car ceux-ci dépendent des consos
 	 * 
@@ -771,10 +802,15 @@ class DefiService extends AbstractService {
 				// sur lequel est associé la session par défaut. il faut donc la
 				// gérer manuellement. Il y en aura autant que de pool alloué
 				DefiEquipeParticipant.withNewSession {
-					House house = houseService.findDefaultByUser(participant.user)
+					// on charge la maison principale avec le chauffage car il sera 
+					// utilisé pour le calcul des notes. Cela évitera d'autres 
+					// requêtes en activant l'association
+					House house = houseService.findDefaultByUserFetch(participant.user, ['chauffage'])
 					Map consos
 
 					if (house) {
+						participant.house = house
+						
 						// calcul conso elec
 						if (house[DefiCompteurEnum.electricite.property]) {
 							consos = loadUserConso(defi, house, DefiCompteurEnum.electricite)

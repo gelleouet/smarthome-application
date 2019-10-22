@@ -1,5 +1,6 @@
 package smarthome.application
 
+import smarthome.automation.House
 import smarthome.core.SmartHomeCoreConstantes
 import smarthome.security.User
 import grails.validation.Validateable
@@ -16,8 +17,12 @@ class DefiEquipeParticipant extends AbstractDefiResultat {
 	DefiEquipe defiEquipe
 	User user
 
+	// propriétés utilisateur
+	House house
 
-
+	
+	static transients = ['house']
+	
 	static belongsTo = [defiEquipe: DefiEquipe, user: User]
 
 	static constraints = {
