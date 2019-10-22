@@ -21,6 +21,7 @@ import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
 import smarthome.core.chart.GoogleDataTableCol
 import smarthome.security.Profil
+import smarthome.security.Role
 import smarthome.security.User
 
 /**
@@ -863,5 +864,84 @@ class DefiService extends AbstractService {
 		// défi -> equipe -> participant, et bien on peut lancer l'enregistrement
 		// depuis le défi et le cascade fait le reste
 		return super.save(defi)
+	}
+
+
+	/**
+	 * Enregistrement défi équipe sur défi
+	 * 
+	 * @param DefiEquipe
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DefiEquipe saveDefiEquipe(DefiEquipe defiEquipe) throws SmartHomeException {
+		return super.save(defiEquipe)
+	}
+
+
+	/**
+	 * Enregistrement participant sur défi équipe
+	 * Création auto des équipes
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DefiParticipantCommand saveDefiParticipant(DefiParticipantCommand command) throws SmartHomeException {
+		if (!command.defiEquipeName) {
+			throw new SmartHomeException("Veuillez saisir un nom d'équipe !", command)
+		}
+
+		// recherche de l'équipe en fonction du nom et création auto
+		DefiEquipe defiEquipe = DefiEquipe.findByDefiAndLibelle(command.defi, command.defiEquipeName)
+
+		if (!defiEquipe) {
+			defiEquipe = new DefiEquipe(defi: command.defi, libelle: command.defiEquipeName)
+			super.save(defiEquipe)
+		}
+
+		// cas modif d'un participant : transfert dans une autre équipe
+		if (command.defiParticipant) {
+			command.defiParticipant.defiEquipe = defiEquipe
+		} else if (command.participants) {
+			// les participants proposés ne sont pas enregistrés dans ce défi
+			// donc il faut créer un nouvel objet sans vérifier si existe déjà
+			command.participants.each { userId ->
+				DefiEquipeParticipant participant = new DefiEquipeParticipant(user: User.read(userId),
+				defiEquipe: defiEquipe)
+				super.save(participant)
+			}
+		} else {
+			throw new SmartHomeException("Veuillez sélectionner au moins un participant !", command)
+		}
+
+		return command
+	}
+
+
+	/**
+	 * Liste tous les users avec role GRAND_DEFI qui ne sont pas encore associés
+	 * à ce défi
+	 * 
+	 * @param defi
+	 * @return
+	 */
+	List<User> listAvailableParticipants(Defi defi) {
+		return User.executeQuery("""SELECT user
+		FROM UserRole userRole
+		JOIN userRole.user user
+		JOIN FETCH user.profil profil
+		JOIN userRole.role role
+		WHERE role.authority = :role
+		AND user.id not in (
+			SELECT user1.id
+			FROM DefiEquipeParticipant participant
+			JOIN participant.user user1
+			JOIN participant.defiEquipe defiEquipe
+			WHERE defiEquipe.defi = :defi
+		)
+		ORDER BY user.prenom, user.nom""", [defi: defi, role: Role.ROLE_GRAND_DEFI])
 	}
 }

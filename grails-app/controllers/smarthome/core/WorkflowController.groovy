@@ -159,6 +159,6 @@ class WorkflowController extends AbstractController {
 	 * @return
 	 */
 	def dialogDiagram(Workflow workflow) {
-		render(view: 'dialogDiagram', model: [workflow: workflow])
+		render(template: 'dialogDiagram', model: [workflow: workflow])
 	}
 }

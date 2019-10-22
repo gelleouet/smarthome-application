@@ -122,7 +122,7 @@ class DefiController extends AbstractController {
 			defi = command.defi
 		}
 
-		redirect(action: 'edit', id: defi?.id)
+		renderTemplateParticipants(defi)
 	}
 
 
@@ -135,6 +135,82 @@ class DefiController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
 	def calculerResultat(DefiCommand command) {
 		defiService.calculerConsommations(command.defi)
-		redirect(action: 'edit', id: command.defi.id)
+		renderTemplateParticipants(command.defi)
+	}
+
+
+	/**
+	 * Dialogue défi equipe : ajout/modif
+	 * 
+	 * @param defiEquipe
+	 * @return
+	 */
+	def dialogDefiEquipe(DefiEquipe defiEquipe) {
+		render(template: 'dialogDefiEquipe', model: [defiEquipe: defiEquipe])
+	}
+
+
+	/**
+	 * Dialogue défi participant
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def dialogDefiParticipant(DefiParticipantCommand command) {
+		render(template: 'dialogDefiParticipant', model: [command: command,
+			participants: defiService.listAvailableParticipants(command.defi),
+			equipes: command.defi.equipes])
+	}
+
+
+	/**
+	 * Enregistrement modif défi équipe
+	 * 
+	 * @param defiEquipe
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
+	def saveDefiEquipe(DefiEquipe defiEquipe) {
+		checkErrors(this, defiEquipe)
+		defiService.saveDefiEquipe(defiEquipe)
+		renderTemplateParticipants(defiEquipe.defi)
+	}
+
+
+	/**
+	 * Enregistrement modif défi participant
+	 *
+	 * @param defiEquipe
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
+	def saveDefiParticipant(DefiParticipantCommand command) {
+		checkErrors(this, command)
+		defiService.saveDefiParticipant(command)
+		renderTemplateParticipants(command.defi)
+	}
+
+
+	/**
+	 * Template participants
+	 * 
+	 * @param defi
+	 * @return
+	 */
+	def renderTemplateParticipants(Defi defi) {
+		render(template: 'participants', model: fetchModelEdit([defi: defi]))
+	}
+
+
+	/**
+	 * Suppression d'un participant
+	 *  
+	 * @param defiEquipeParticipant
+	 * @return
+	 */
+	def deleteParticipant(DefiEquipeParticipant defiEquipeParticipant) {
+		Defi defi = defiEquipeParticipant.defiEquipe.defi
+		defiService.delete(defiEquipeParticipant)
+		renderTemplateParticipants(defi)
 	}
 }

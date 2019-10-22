@@ -3,7 +3,7 @@
 
 <div class="form-group required">
 	<label for="libelle">Libellé</label>
-	<g:textField name="libelle" required="true" value="${defi?.libelle}"class="form-control"/>
+	<g:textField name="libelle" required="true" value="${defi?.libelle}" class="form-control"/>
 </div>
 
 <div class="form-group required">

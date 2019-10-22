@@ -10,6 +10,11 @@ import grails.validation.Validateable
  */
 @Validateable
 class Config {
+	static final String GRAND_DEFI_ID = "GRAND_DEFI_ID"
+	static final String GRAND_DEFI_ADMIN_IDS = "GRAND_DEFI_ADMIN_IDS"
+	static final String GRAND_DEFI_MAX_CLASSEMENT = "GRAND_DEFI_MAX_CLASSEMENT"
+
+
 	String name
 	String value
 

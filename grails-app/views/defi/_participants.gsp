@@ -20,8 +20,9 @@
 			<td class="text-right">${ defi.action_global() }</td>
 			<td class="text-right">${ defi.economie_global }</td>
 			<td class="text-right">${ defi.classement_global }</td>
-			<td class="command-column column-2-buttons">
-				<g:link action="calculerResultat" params="['defi.id': defi.id]" class="btn btn-light confirm-button" title="Calculer"><app:icon name="cpu"/></g:link>
+			<td class="column-2-buttons">
+				<a id="calculer-resultat-defi-button" data-url="${ g.createLink(action: 'calculerResultat', params: ['defi.id': defi.id]) }" class="btn btn-light" title="Calculer résultat"><app:icon name="cpu"/></a>
+				<a id="defi-participant-button" class="btn btn-light" data-url="${ g.createLink(action: 'dialogDefiParticipant', params:['defi.id': defi.id]) }" title="Ajouter participant"><app:icon name="user"/></a>
 			</td>
 		</tr>
 	
@@ -32,13 +33,17 @@
 		<g:each var="equipe" in="${ equipes }">
 		
 			<tr class="bg-primary text-white">
-				<td><h5 class="font-weight-bold text-white"><app:icon name="users"/> ${ equipe.key.libelle }</h5></td>
+				<td>
+					<h5 class="font-weight-bold text-white">
+						<a id="defi-equipe-button" data-url="${ g.createLink(action: 'dialogDefiEquipe', id: equipe.key.id) }"><app:icon name="users"/> ${ equipe.key.libelle }</a>
+					</h5>
+				</td>
 				<td class="text-right">${ equipe.key.reference_global() }</td>
 				<td class="text-right">${ equipe.key.action_global() }</td>
 				<td class="text-right">${ equipe.key.economie_global }</td>
 				<td class="text-right">${ equipe.key.classement_global }</td>
-				<td class="command-column column-2-buttons">
-					<g:link action="effacerResultat" params="['defiEquipe.id': equipe.key.id]" class="btn btn-light ml-1 confirm-button" title="Effacer"><app:icon name="delete"/></g:link>
+				<td class="column-2-buttons">
+					<a id="effacer-resultat-defi-button" data-url="${ g.createLink(action: 'effacerResultat', params:['defiEquipe.id': equipe.key.id]) }" class="btn btn-light ml-1" title="Effacer résultat"><app:icon name="delete"/></a>
 				</td>
 			</tr>
 			
@@ -56,7 +61,7 @@
 					<td class="text-right">${ equipeProfil?.action_global() }</td>
 					<td class="text-right">${ equipeProfil?.economie_global }</td>
 					<td class="text-right">${ equipeProfil?.classement_global }</td>
-					<td class="command-column column-2-buttons">
+					<td class="column-2-buttons">
 					</td>
 				</tr>
 			
@@ -70,8 +75,9 @@
 						<td class="text-right">${ participant.action_global() }</td>
 						<td class="text-right">${ participant.economie_global }</td>
 						<td class="text-right">${ participant.classement_global }</td>
-						<td class="command-column column-2-buttons">
-							<g:link action="effacerResultat" params="['defiEquipeParticipant.id': participant.id]" class="btn btn-light ml-1 confirm-button" title="Effacer"><app:icon name="delete"/></g:link>
+						<td class="column-2-buttons">
+							<a id="effacer-resultat-defi-button" data-url="${ g.createLink(action: 'effacerResultat', params: ['defiEquipeParticipant.id': participant.id]) }" class="btn btn-light ml-1" title="Effacer résultat"><app:icon name="delete"/></a>
+							<a id="delete-participant-button" data-url="${ g.createLink(action: 'deleteParticipant', id: participant.id) }" class="btn btn-light ml-1" title="Supprimer"><app:icon name="trash"/></a>
 						</td>
 					</tr>
 				</g:each>

@@ -2,19 +2,24 @@
  * Transforme un select simple en combobox avec recherche intégrée
  */
 function combobox() {
-	$("select.combobox").select2({
-		openOnEnter: false,
-		/*matcher: function(term, text, option) {
-			// rien n'est saisi, tout passe
-			if (! term) {
-				return true;
-			} else {
-				// si rien trouvé plus haut : recherche normale
-				
-				return text.toLowerCase().indexOf(term.toLowerCase()) != -1;
-			}
-		}*/
-	});
+	$("select.combobox").each(function() {
+		var $this = $(this)
+		
+		$this.select2({
+			openOnEnter: false,
+			tags: $this.attr('data-tags') == 'true'
+			/*matcher: function(term, text, option) {
+				// rien n'est saisi, tout passe
+				if (! term) {
+					return true;
+				} else {
+					// si rien trouvé plus haut : recherche normale
+					
+					return text.toLowerCase().indexOf(term.toLowerCase()) != -1;
+				}
+			}*/
+		})
+	})
 }
 
 

@@ -100,11 +100,11 @@ environments {
 
 			debug 'smarthome',
 					'org.hibernate.SQL',
-					'org.apache.camel.component'
+					'org.apache.camel.component',
+					'org.springframework.transaction.interceptor'
 
 			trace 'org.springframework.security.web.authentication.rememberme',
-					'org.springframework.security.web.authentication',
-					'org.springframework.transaction.interceptor'
+					'org.springframework.security.web.authentication'
 
 
 			info 'org.hibernate',

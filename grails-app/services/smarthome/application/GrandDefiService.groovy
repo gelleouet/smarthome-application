@@ -15,6 +15,7 @@ import smarthome.automation.House
 import smarthome.automation.HouseService
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
+import smarthome.core.Config
 import smarthome.core.ConfigService
 import smarthome.core.SmartHomeException
 import smarthome.security.Profil
@@ -99,7 +100,7 @@ class GrandDefiService extends AbstractService {
 		// récupère le nombre d'entrées dans le classement (par défaut MAX_CLASSEMENT)
 		// construction des équipes "à la volée" et association avec une équipe
 		// et le grand défi en cours
-		String configMaxClassement = configService.value("GRAND_DEFI_MAX_CLASSEMENT")
+		String configMaxClassement = configService.value(Config.GRAND_DEFI_MAX_CLASSEMENT)
 		int maxClassement = configMaxClassement ? configMaxClassement.toInteger() : MAX_CLASSEMENT
 
 		if (model.currentDefi) {
@@ -321,7 +322,7 @@ class GrandDefiService extends AbstractService {
 		nom: account.nom, lastActivation: new Date(), accountLocked: true,
 		applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
 		profil: account.profil)
-		user.roles << Role.findByAuthority('ROLE_GRAND_DEFI').id
+		user.roles << Role.findByAuthority(Role.ROLE_GRAND_DEFI).id
 		try {
 			userService.save(user, true)
 		} catch (SmartHomeException ex) {
@@ -330,7 +331,7 @@ class GrandDefiService extends AbstractService {
 		}
 
 		// Association à un admin (pour la validation des index)
-		String adminIds = configService.value("GRAND_DEFI_ADMIN_IDS")
+		String adminIds = configService.value(Config.GRAND_DEFI_ADMIN_IDS)
 
 		if (adminIds) {
 			for (String adminId : adminIds.split(",")) {
@@ -350,7 +351,7 @@ class GrandDefiService extends AbstractService {
 
 		// construction des équipes "à la volée" et association avec une équipe
 		// et le grand défi en cours
-		String grandDefiId = configService.value("GRAND_DEFI_ID")
+		String grandDefiId = configService.value(Config.GRAND_DEFI_ID)
 
 		if (!grandDefiId) {
 			throw new SmartHomeException("Les inscriptions pour le Grand Défi ne sont plus autorisées", account)

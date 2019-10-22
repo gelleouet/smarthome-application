@@ -3,7 +3,7 @@
 <meta name='layout' content='main' />
 </head>
 
-<body data-chart-package="orgchart">
+<body onload="onLoadEditDefi();">
 	<g:applyLayout name="page-settings" model="[titre: 'Défis', navigation: 'Compte']">
 	
 		<div class="row mb-4">
@@ -33,9 +33,11 @@
 			    </div>
 			    <div class="tab-pane" id="tabs-defi-organisation" role="tabpanel">
 			    	<div class="smart-tabs-content">
-			    		<g:if test="${ defi?.id }">
-			    			<g:render template="participants"/>
-			    		</g:if>
+			    		<div id="participant-defi-div">
+				    		<g:if test="${ defi?.id }">
+				    			<g:render template="participants"/>
+				    		</g:if>
+			    		</div>
 			    	</div>
 			    </div>
 			</div> <!-- div.tab-content -->
