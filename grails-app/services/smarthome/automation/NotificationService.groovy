@@ -130,9 +130,14 @@ class NotificationService extends AbstractService {
 		// inject des infos sur l'appli
 		email.appCode = grailsApplication.metadata['app.code']
 		email.appVersion = grailsApplication.metadata['app.version']
+		email.appTwitter = grailsApplication.metadata['app.twitter']
+		email.appFacebook = grailsApplication.metadata['app.facebook']
 		email.contextPath = grailsLinkGenerator.serverBaseURL
 
+		// Envoi des messages sur une instance applicative identique !!
+		// suffixe avec le nom de l'application
 		asyncSendMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
-				SmartHomeCoreConstantes.EMAIL_QUEUE, email, ExchangeType.DIRECT)
+				SmartHomeCoreConstantes.EMAIL_QUEUE + "." + grailsApplication.metadata['app.name'],
+				email, ExchangeType.DIRECT)
 	}
 }

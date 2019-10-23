@@ -34,6 +34,14 @@
 							<g:link class="btn btn-primary mb-2" action="dataconnect" controller="dataConnect"><app:icon name="user-check"/> DataConnect</g:link>
 							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
+						
+						<g:if test="${ house.compteur.metadata('fournisseur') }">
+							<div class="mt-4">
+								<span class="text-muted">Votre fournisseur d'électricité : </span>
+								<br/>
+								<span class="badge badge-primary">${ house.compteur.metadata('fournisseur').value }</span>
+							</div>
+						</g:if>
 					</div>
 				</div>
 				
@@ -50,6 +58,14 @@
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="[deviceId: house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
+						
+						<g:if test="${ house.compteur.metadata('fournisseur') }">
+							<div class="mt-4">
+								<span class="text-muted">Votre fournisseur d'électricité : </span>
+								<br/>
+								<span class="badge badge-primary">${ house.compteur.metadata('fournisseur').value }</span>
+							</div>
+						</g:if>
 					</div>
 				</div>
 				
@@ -110,6 +126,13 @@
          								onchange="selectRadio('radioCompteurElecExist', true)"/>
 						</div>
 					</div>
+					
+					
+					<h5 class="mt-4 font-weight-bold">Vous pouvez également sélectionner votre fournisseur d'électricité
+						pour visualiser les coûts de consommation <span class="text-muted">(hors abonnement)</span> :</h5>
+					
+					<g:select class="form-control" name="fournisseur" from="${ fournisseurElecs }"
+         				optionKey="libelle" optionValue="libelle" noSelection="['': ' ']"/>
 					
 					<div class="mt-4 text-right">
 						<button class="btn btn-primary"><app:icon name="chevron-right"/> Suivant</button>

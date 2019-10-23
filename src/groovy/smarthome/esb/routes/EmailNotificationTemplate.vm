@@ -12,7 +12,7 @@
 				<span style="color:#f8f9fa;font-weight:700;display:block;font-size:1.15rem;margin-top:-6px;padding:0.875rem 0px;white-space:nowrap;text-decoration:none;">$body.appCode</span>
 				
 				<div style="flex-direction:row;margin-left:auto;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;">
-					<a href="$body.contextPath/login/auth" style="text-align:center;vertical-align: middle;border-width:1px;border-style:solid;padding:0.25rem 0.7rem;border-radius:0.2rem;font-size:0.875rem;line-height:1.5;font-weight:400;text-decoration:none;color:#47bac1;border-color:#47bac1;margin-left:0.5rem;">Connexion</a>
+					<a href="${body.contextPath}/login/auth" style="text-align:center;vertical-align: middle;border-width:1px;border-style:solid;padding:0.25rem 0.7rem;border-radius:0.2rem;font-size:0.875rem;line-height:1.5;font-weight:400;text-decoration:none;color:#47bac1;border-color:#47bac1;margin-left:0.5rem;">Connexion</a>
 				</div>
 			</div>
 			
@@ -34,7 +34,7 @@
 			<h6 style="color:#707070;font-size:10px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">
 			$body.appCode $body.appVersion
 			<br/>
-			<a href="">Twitter</a> <a href="">Facebook</a>
+			<a href="${body.appTwitter}">Twitter</a> - <a href="${body.appFacebook}">Facebook</a>
 			</h6>
 		</div>
 		

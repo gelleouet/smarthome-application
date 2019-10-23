@@ -19,10 +19,10 @@
 					<h6 class="text-muted text-center">ALEC du pays de Rennes</h6>
 					<div class="row mb-5">
 						<div class="col">
-							<asset:image src="grand-defi.gif" height="132"/>
+							<asset:image src="granddefi/logo.gif" height="132"/>
 						</div>
 						<div class="col">
-							<asset:image src="grand-defi-partenaire.png" height="125"/>
+							<asset:image src="granddefi/partenaire.png"/>
 						</div>
 					</div>
 					

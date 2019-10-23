@@ -202,6 +202,12 @@ class DataConnectService extends AbstractService {
 			}
 		}
 
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#consumptionLoadCurve : start = end !")
+		}
+
 		List<JSONElement> datapoints = dataConnectApi.consumption_load_curve(
 				start, end,
 				notificationAccount.jsonConfig.usage_point_id,
@@ -298,6 +304,12 @@ class DataConnectService extends AbstractService {
 			}
 		}
 
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#dailyConsumption : start = end !")
+		}
+
 		List<JSONElement> datapoints = dataConnectApi.daily_consumption(
 				start, end,
 				notificationAccount.jsonConfig.usage_point_id,
@@ -387,6 +399,12 @@ class DataConnectService extends AbstractService {
 				// un appel ne peut porter que sur 365 jours consécutifs
 				start = end - 365.days
 			}
+		}
+
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#consumptionMaxPower : start = end !")
 		}
 
 		List<JSONElement> datapoints = dataConnectApi.consumption_max_power(

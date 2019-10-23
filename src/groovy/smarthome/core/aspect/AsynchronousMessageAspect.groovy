@@ -1,34 +1,35 @@
 package smarthome.core.aspect
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.annotation.Annotation
+import java.lang.reflect.Method
 
-import smarthome.core.AsynchronousMessage;
-import smarthome.core.AsynchronousWorkflow;
-import smarthome.core.ExchangeType;
-import smarthome.core.SmartHomeCoreConstantes;
-import smarthome.core.SmartHomeException;
+import smarthome.core.AsynchronousMessage
+import smarthome.core.AsynchronousWorkflow
+import smarthome.core.ExchangeType
+import smarthome.core.SmartHomeCoreConstantes
+import smarthome.core.SmartHomeException
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.codehaus.groovy.grails.orm.support.GrailsTransactionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAttributeSource;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.logging.LogFactory
+import org.aspectj.lang.JoinPoint
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.AfterReturning
+import org.aspectj.lang.annotation.Around
+import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.annotation.Pointcut
+import org.aspectj.lang.reflect.MethodSignature
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.orm.support.GrailsTransactionTemplate
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAttributeSource
+import org.springframework.transaction.support.TransactionSynchronizationAdapter
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
-import smarthome.core.AbstractService;
-import smarthome.core.ClassUtils;
+import smarthome.core.AbstractService
+import smarthome.core.ClassUtils
 
 /**
  * AOP pour déclencher l'envoi de messages AMQP
@@ -45,14 +46,17 @@ import smarthome.core.ClassUtils;
 @Aspect
 @Component
 class AsynchronousMessageAspect {
-	
+
 	@Autowired
 	TransactionAttributeSource transactionAttributeSource
-	
+
+	@Autowired
+	GrailsApplication grailsApplication
+
 	private static final log = LogFactory.getLog(this)
-	
-	
-	
+
+
+
 	/**
 	 * FIXME : Le pointcut "@annotation(AsynchronousMessage)" ne fonctionne plus quand un service
 	 * contient une annotation Spring ACL (Postfilter, Preauthorise, etc.).
@@ -65,21 +69,21 @@ class AsynchronousMessageAspect {
 	 */
 	@Pointcut("execution(* smarthome..*Service.*(..))")
 	void smarthomeServiceMethod() {}
-	
-	
-	
+
+
+
 	@AfterReturning(value = "smarthomeServiceMethod()", returning = "result")
 	void afterAsynchronousMessage(JoinPoint joinPoint, Object result) {
 		MethodSignature signature = (MethodSignature) joinPoint.signature
 		Method method = signature.method
 		Annotation asyncMessage = method.getAnnotation(AsynchronousMessage)
 		Annotation asyncWorkflow = method.getAnnotation(AsynchronousWorkflow)
-		
+
 		if (asyncMessage || asyncWorkflow) {
 			Map payload = createPayload(joinPoint, result)
-			
+
 			def transactionAttribute = transactionAttributeSource.getTransactionAttribute(joinPoint.signature.method, joinPoint.target.class)
-			
+
 			def closure = {
 				if (asyncMessage) {
 					sendAsyncMessage(joinPoint, asyncMessage, payload)
@@ -91,18 +95,18 @@ class AsynchronousMessageAspect {
 
 			if (transactionAttribute) {
 				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						closure()	
-					}
-				});
+							@Override
+							public void afterCommit() {
+								closure()
+							}
+						})
 			} else {
 				closure()
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Envoi le message AMQP
 	 * 
@@ -113,19 +117,23 @@ class AsynchronousMessageAspect {
 	 */
 	private void sendAsyncMessage(ProceedingJoinPoint joinPoint, AsynchronousMessage asynchronousMessage, Map payload) {
 		def routingKey
-		
+
 		// détermination du routing key : par défaut = package.nameService.nameMethod
 		if (asynchronousMessage.routingKey() != "") {
 			routingKey = asynchronousMessage.routingKey()
 		} else {
 			routingKey = ClassUtils.prefixAMQ(joinPoint.target) + '.' + joinPoint.signature.name
 		}
-		
-		joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(), routingKey, payload,
-			asynchronousMessage.exchangeType())
+
+		// les messages sont exécutés pour des instances applicatives identiques
+		// c'est pourquoi on suffixe le nom de la queue par le nom de l'application
+		//routingKey = routingKey + "." + grailsApplication.metadata['app.name']
+
+		joinPoint.target.sendAsynchronousMessage(asynchronousMessage.exchange(),
+				routingKey, payload, asynchronousMessage.exchangeType())
 	}
-	
-	
+
+
 	/**
 	 * Exécution d'un workflow en mode asynchrone
 	 * 
@@ -135,16 +143,21 @@ class AsynchronousMessageAspect {
 	 */
 	private void sendAsyncWorkflow(ProceedingJoinPoint joinPoint, AsynchronousWorkflow asynchronousWorkflow, Map payload) {
 		payload.workflowName = asynchronousWorkflow.value()
-		
+
 		// envoi en même temps vers le exchange prévu pour le workflow
 		// on a un seul exchange workflow, cela permet d'avoir une seule route pour exécuter les workflow
 		// plutot que définir une route pour chaque workflow à exécuter. Cela évite de la configuration
 		// pour démarrer le système workflow
+
+		// les workflows sont exécutés pour des instances applicatives identiques
+		// c'est pourquoi on suffixe le nom de la queue par le nom de l'application
+
 		joinPoint.target.sendAsynchronousMessage(SmartHomeCoreConstantes.DIRECT_EXCHANGE,
-			SmartHomeCoreConstantes.WORKFLOW_QUEUE, payload, ExchangeType.DIRECT)
+				SmartHomeCoreConstantes.WORKFLOW_QUEUE + "." + grailsApplication.metadata['app.name'],
+				payload, ExchangeType.DIRECT)
 	}
-	
-	
+
+
 	/**
 	 * Création du message
 	 * 
@@ -155,13 +168,13 @@ class AsynchronousMessageAspect {
 	private Map createPayload(ProceedingJoinPoint joinPoint, Object result) {
 		Map payload = [result: result, serviceMethodName: StringUtils.uncapitalize(joinPoint.target.class.simpleName) + '.' + joinPoint.signature.name,
 			methodName: joinPoint.signature.name]
-		
+
 		if (joinPoint.args) {
 			joinPoint.args.eachWithIndex { arg, index ->
 				payload."arg$index" = arg
 			}
 		}
-		
+
 		return payload
 	}
 }

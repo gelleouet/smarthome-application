@@ -7,14 +7,14 @@
 	<div class="card-body">
 		<div class="text-center">
 			<a href="https://www.alec-rennes.org/usager/conseil-energie-particuliers-coproprietaire/le-grand-defi-economie-energie-des-communes-2019/" target="granddefi">
-				<asset:image src="grand-defi.gif" height="185px"/>
-				Plus d'informations
+				<asset:image src="granddefi/logo.gif" height="185px"/>
+				<div>Plus d'informations</div>
 			</a>
 			
 		</div>
 		
 		<div class="text-center mt-4">
-			<asset:image src="grand-defi-partenaire.png"/>
+			<asset:image src="granddefi/partenaire.png" height="95px"/>
 		</div>
 		
 		<g:if test="${ withAccountButton }">

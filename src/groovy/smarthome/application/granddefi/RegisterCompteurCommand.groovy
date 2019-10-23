@@ -19,4 +19,5 @@ class RegisterCompteurCommand {
 	Device compteurElec
 	Device compteurGaz
 	String contrat
+	String fournisseur
 }

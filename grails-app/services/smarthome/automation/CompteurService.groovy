@@ -32,6 +32,7 @@ class CompteurService extends AbstractService {
 	DataConnectService dataConnectService
 	GrailsApplication grailsApplication
 	AdictService adictService
+	DeviceTypeProviderService deviceTypeProviderService
 
 
 	/**
@@ -49,6 +50,7 @@ class CompteurService extends AbstractService {
 		// Compteur élec
 
 		model.contratElecs = TeleInformation.contrats()
+		model.fournisseurElecs = deviceTypeProviderService.listByDeviceTypeImpl(TeleInformation.name)
 
 		// recherche des services associés
 		model.dataConnect = notificationAccountService.findByUserAndLibelleSender(user,
@@ -67,6 +69,7 @@ class CompteurService extends AbstractService {
 		// Compteur gaz
 
 		model.contratGaz = CompteurGaz.contrats()
+		model.fournisseurGaz = deviceTypeProviderService.listByDeviceTypeImpl(CompteurGaz.name)
 
 		// recherche des services associés
 		model.adict = notificationAccountService.findByUserAndLibelleSender(user,
@@ -115,9 +118,15 @@ class CompteurService extends AbstractService {
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 				compteur.addMetadata('aggregate', [value: 'sum-conso', label: 'Calcul des données aggrégées'])
+
 				compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: command.contrat ?: Compteur.DEFAULT_CONTRAT])
 				compteur.addMetavalue('baseinst', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
+		}
+
+		// ne pas écraser l'ancienne valeur si pas renseigné
+		if (command.fournisseur) {
+			compteur.addMetadata('fournisseur', [value: command.fournisseur, label: 'Fournisseur'])
 		}
 
 		deviceService.save(compteur)
@@ -156,8 +165,14 @@ class CompteurService extends AbstractService {
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 				compteur.addMetadata('coefConversion', [label: 'Coefficient conversion'])
+
 				compteur.addMetavalue('conso', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
+		}
+
+		// ne pas écraser l'ancienne valeur si pas renseigné
+		if (command.fournisseur) {
+			compteur.addMetadata('fournisseur', [value: command.fournisseur, label: 'Fournisseur'])
 		}
 
 		// ajout ou update config device

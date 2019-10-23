@@ -4,15 +4,15 @@
 package smarthome.esb.routes
 
 import org.apache.camel.CamelContext
-import org.apache.camel.RoutesBuilder;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.apache.camel.RoutesBuilder
+import org.apache.camel.builder.RouteBuilder
+import org.apache.camel.model.dataformat.JsonLibrary
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
-import smarthome.core.SmartHomeCoreConstantes;
+import smarthome.core.SmartHomeCoreConstantes
 
 /**
  * Gestionnaire envoi de mails avec template
@@ -23,14 +23,12 @@ import smarthome.core.SmartHomeCoreConstantes;
 class EmailRouteBuilder extends RouteBuilder {
 
 	private static final log = LogFactory.getLog(this)
-	
-	final String EXCHANGE = SmartHomeCoreConstantes.DIRECT_EXCHANGE
-	final String QUEUE = SmartHomeCoreConstantes.EMAIL_QUEUE
-	
-	
+
+
 	@Autowired
 	GrailsApplication grailsApplication
-	
+
+
 	/**
 	 * 
 	 */
@@ -44,20 +42,26 @@ class EmailRouteBuilder extends RouteBuilder {
 		String smtpPort = grailsApplication.config.smtp.port
 		String smtpPassword = grailsApplication.config.smtp.password
 		String smtpUsername = grailsApplication.config.smtp.username
-		String smtpFrom = grailsApplication.config.smtp.from
-		
+		String smtpFrom = grailsApplication.metadata['app.smtpFrom'] ?: grailsApplication.config.smtp.from
+
+		// Les emails sont envoyés par des instances applicatives identifiques
+		// donc suffixer la queue avec  le nom de l'application
+		// au moment de l'envoi du message, le même principe est utilisé
+		// @see #smarthome.automation.NotificationService.sendEmail(Map)
+		def queueName = SmartHomeCoreConstantes.EMAIL_QUEUE + "." + grailsApplication.metadata['app.name']
+
 		// lecture depuis la queue AMQP
-		from("rabbitmq://$rabbitHostname/$EXCHANGE?queue=$QUEUE&routingKey=$QUEUE&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
-		// Décodage du JSON dans une map
-		.unmarshal().json(JsonLibrary.Gson, Map.class)
-		.setHeader("to").groovy("body.to")
-		.setHeader("subject").groovy("body.subject")
-		.setHeader("cc").groovy("body.cc ?: null")
-		.setHeader("BCC").groovy("body.bcc ?: null")
-		.setHeader("from", constant(smtpFrom))
-		// template mail
-		.to("velocity:/smarthome/esb/routes/EmailNotificationTemplate.vm")
-		// envoi mail SMTP
-		.to("smtp://$smtpHostname:$smtpPort?password=RAW($smtpPassword)&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
+		from("rabbitmq://$rabbitHostname/${SmartHomeCoreConstantes.DIRECT_EXCHANGE}?queue=$queueName&routingKey=$queueName&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
+				// Décodage du JSON dans une map
+				.unmarshal().json(JsonLibrary.Gson, Map.class)
+				.setHeader("to").groovy("body.to")
+				.setHeader("subject").groovy("body.subject")
+				.setHeader("cc").groovy("body.cc ?: null")
+				.setHeader("BCC").groovy("body.bcc ?: null")
+				.setHeader("from", constant(smtpFrom))
+				// template mail
+				.to("velocity:/smarthome/esb/routes/EmailNotificationTemplate.vm")
+				// envoi mail SMTP
+				.to("smtp://$smtpHostname:$smtpPort?password=RAW($smtpPassword)&username=$smtpUsername&mail.smtp.starttls.enable=true&mail.smtp.auth=true&contentType=text/html")
 	}
 }

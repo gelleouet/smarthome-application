@@ -34,6 +34,14 @@
 							<g:link class="btn btn-primary mb-2" action="adict" controller="adict"><app:icon name="user-check"/> ADICT</g:link>
 							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
+						
+						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
+							<div class="mt-4">
+								<span class="text-muted">Votre fournisseur de gaz : </span>
+								<br/>
+								<span class="badge badge-primary">${ house.compteurGaz.metadata('fournisseur').value }</span>
+							</div>
+						</g:if>
 					</div>
 				</div>
 				
@@ -50,6 +58,14 @@
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" params="[deviceId: house.compteurGaz.id]"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
+						
+						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
+							<div class="mt-4">
+								<span class="text-muted">Votre fournisseur de gaz : </span>
+								<br/>
+								<span class="badge badge-primary">${ house.compteurGaz.metadata('fournisseur').value }</span>
+							</div>
+						</g:if>
 					</div>
 				</div>
 				
@@ -77,7 +93,7 @@
 					</div>
 					
 					<label class="custom-control custom-radio mt-4">
-						<g:radio name="compteurModel" value="Gaz" class="custom-control-input"/>
+						<g:radio id="radioCompteurGazNew" name="compteurModel" value="Gaz" class="custom-control-input"/>
 						<span class="custom-control-label">Compteur non communicant</span>
 					</label>
 					<div class="row">
@@ -85,7 +101,10 @@
 							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les index de consommation seront saisis manuellement</small>
+							<small class="font-text text-muted">Les index de consommation seront saisis manuellement. Veuillez indiquer votre contrat tarifaire :</small>
+							
+							<g:select class="form-control" name="contrat" from="${ contratGaz }"
+         								optionKey="key" optionValue="value" onchange="selectRadio('radioCompteurGazNew', true)"/>
 						</div>
 					</div>
 					
@@ -106,6 +125,12 @@
          								onchange="selectRadio('radioCompteurGazExist', true)"/>
 						</div>
 					</div>
+					
+					<h5 class="mt-4 font-weight-bold">Vous pouvez également sélectionner votre fournisseur de gaz
+						pour visualiser les coûts de consommation <span class="text-muted">(hors abonnement)</span> :</h5>
+					
+					<g:select class="form-control" name="fournisseur" from="${ fournisseurGaz }"
+         				optionKey="libelle" optionValue="libelle" noSelection="['': ' ']"/>
 					
 					<div class="mt-4 text-right">
 						<button class="btn btn-primary"><app:icon name="chevron-right"/> Suivant</button>
