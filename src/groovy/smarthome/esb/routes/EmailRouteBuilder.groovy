@@ -50,6 +50,8 @@ class EmailRouteBuilder extends RouteBuilder {
 		// @see #smarthome.automation.NotificationService.sendEmail(Map)
 		def queueName = SmartHomeCoreConstantes.EMAIL_QUEUE + "." + grailsApplication.metadata['app.name']
 
+		log.info "Build Email Camel route : $queueName"
+
 		// lecture depuis la queue AMQP
 		from("rabbitmq://$rabbitHostname/${SmartHomeCoreConstantes.DIRECT_EXCHANGE}?queue=$queueName&routingKey=$queueName&username=$rabbitUsername&password=$rabbitPassword&declare=true&automaticRecoveryEnabled=true&autoDelete=false")
 				// Décodage du JSON dans une map

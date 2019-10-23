@@ -4,6 +4,7 @@
 			<th></th>
 			<th class="text-right">Référence (kWh)</th>
 			<th class="text-right">Action (kWh)</th>
+			<th class="text-right">Evolution (%)</th>
 			<th class="text-right">Economie (%)</th>
 			<th class="text-right">Classement</th>
 			<th class="column-2-buttons"></th>
@@ -18,7 +19,8 @@
 			<td><h4 class="font-weight-bold">${ defi.libelle }</h4></td>
 			<td class="text-right">${ defi.reference_global() }</td>
 			<td class="text-right">${ defi.action_global() }</td>
-			<td class="text-right">${ defi.economie_global }</td>
+			<td class="text-right">${ defi.evolution_global() }</td>
+			<td class="text-right ${ defi.economie_global < 0 ? 'text-danger' : '' }">${ defi.economie_global }</td>
 			<td class="text-right">${ defi.classement_global }</td>
 			<td class="column-2-buttons">
 				<a id="calculer-resultat-defi-button" data-url="${ g.createLink(action: 'calculerResultat', params: ['defi.id': defi.id]) }" class="btn btn-light" title="Calculer résultat"><app:icon name="cpu"/></a>
@@ -40,7 +42,8 @@
 				</td>
 				<td class="text-right">${ equipe.key.reference_global() }</td>
 				<td class="text-right">${ equipe.key.action_global() }</td>
-				<td class="text-right">${ equipe.key.economie_global }</td>
+				<td class="text-right">${ equipe.key.evolution_global() }</td>
+				<td class="text-right ${ equipe.key.economie_global < 0 ? 'text-danger' : '' }">${ equipe.key.economie_global }</td>
 				<td class="text-right">${ equipe.key.classement_global }</td>
 				<td class="column-2-buttons">
 					<a id="effacer-resultat-defi-button" data-url="${ g.createLink(action: 'effacerResultat', params:['defiEquipe.id': equipe.key.id]) }" class="btn btn-light ml-1" title="Effacer résultat"><app:icon name="delete"/></a>
@@ -59,7 +62,8 @@
 					<td><asset:image src="${profil.key.icon }" style="width:30px"/> ${ profil.key.libelle }</td>
 					<td class="text-right">${ equipeProfil?.reference_global() }</td>
 					<td class="text-right">${ equipeProfil?.action_global() }</td>
-					<td class="text-right">${ equipeProfil?.economie_global }</td>
+					<td class="text-right">${ equipeProfil?.evolution_global() }</td>
+					<td class="text-right ${ equipeProfil?.economie_global < 0 ? 'text-danger' : '' }">${ equipeProfil?.economie_global }</td>
 					<td class="text-right">${ equipeProfil?.classement_global }</td>
 					<td class="column-2-buttons">
 					</td>
@@ -73,7 +77,8 @@
 						<td class="pl-6"><app:icon name="user"/> ${ participant.user.prenomNom }</td>
 						<td class="text-right">${ participant.reference_global() }</td>
 						<td class="text-right">${ participant.action_global() }</td>
-						<td class="text-right">${ participant.economie_global }</td>
+						<td class="text-right">${ participant.evolution_global() }</td>
+						<td class="text-right ${ participant.economie_global < 0 ? 'text-danger' : '' }">${ participant.economie_global }</td>
 						<td class="text-right">${ participant.classement_global }</td>
 						<td class="column-2-buttons">
 							<a id="effacer-resultat-defi-button" data-url="${ g.createLink(action: 'effacerResultat', params: ['defiEquipeParticipant.id': participant.id]) }" class="btn btn-light ml-1" title="Effacer résultat"><app:icon name="delete"/></a>

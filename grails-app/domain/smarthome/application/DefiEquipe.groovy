@@ -29,5 +29,7 @@ class DefiEquipe extends AbstractDefiResultat {
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.APPLICATION_SCHEMA
 		defi index: 'DefiEquipe_Idx'
+		//profils cascade: 'all-delete-orphan'
+		//participants cascade: 'all-delete-orphan'
 	}
 }

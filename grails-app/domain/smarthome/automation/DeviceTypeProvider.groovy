@@ -1,9 +1,9 @@
 package smarthome.automation
 
-import java.io.Serializable;
+import java.io.Serializable
 
-import smarthome.core.SmartHomeCoreConstantes;
-import grails.validation.Validateable;
+import smarthome.core.SmartHomeCoreConstantes
+import grails.validation.Validateable
 
 /**
  * Fournissuer pour un type de device
@@ -17,12 +17,12 @@ import grails.validation.Validateable;
 class DeviceTypeProvider implements Serializable {
 	String libelle
 	DeviceType deviceType
-	
-	
-    static constraints = {
-		libelle unique: true
-    }
-	
+
+
+	static constraints = {
+		libelle unique: 'deviceType'
+	}
+
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		sort 'libelle'

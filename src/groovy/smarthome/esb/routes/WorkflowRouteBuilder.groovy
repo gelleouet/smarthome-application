@@ -41,7 +41,7 @@ class WorkflowRouteBuilder extends RouteBuilder {
 		// @see #smarthome.core.aspect.AsynchronousMessageAspect.sendAsyncWorkflow(ProceedingJoinPoint, AsynchronousWorkflow, Map)
 		def queueName = SmartHomeCoreConstantes.WORKFLOW_QUEUE + "." + grailsApplication.metadata['app.name']
 
-		log.info "Build workflow Camel route : $queueName"
+		log.info "Build Workflow Camel route : $queueName"
 
 		// IMPORTANT : utiliser bridgeEndpoint=true sur le endpoint final RabbitMQ sinon,
 		// ca tourne en boucle sur la route

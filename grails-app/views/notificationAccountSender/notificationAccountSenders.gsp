@@ -1,41 +1,27 @@
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='main' />
 </head>
 
 <body>
-	<g:applyLayout name="applicationConfigure">
+	<g:applyLayout name="page-settings" model="[titre: 'Connecteurs', navigation: 'Système']">
 	
-		<div class="aui-toolbar2">
-		    <div class="aui-toolbar2-inner">
-		        <div class="aui-toolbar2-primary">
-		            <div>
-		                <h3>Connecteurs</h3>
-		            </div>		            
-		        </div>
-		        <div class="aui-toolbar2-secondary">
-		        	<g:form >
-		            <div class="aui-buttons">
-						<g:actionSubmit class="aui-button" value="Ajouter" action="edit"/>
-		            </div>
-		            </g:form>
-		        </div>
-		    </div><!-- .aui-toolbar-inner -->
+		<div class="row">
+			<div class="col-8">
+				<g:form class="form-inline" action="notificationAccountSenders">
+					<fieldset>
+						<input autofocus="true" class="form-control" type="text" placeholder="Rechercher ..." name="notificationAccountSenderSearch" value="${ notificationAccountSenderSearch }"/>
+						<button class="btn btn-light"><app:icon name="search"/></button>
+					</fieldset>
+				</g:form>
+			</div>
+			<div class="col-4 text-right">
+				<g:link action="edit" class="btn btn-light"><app:icon name="plus"/> Ajouter</g:link>
+			</div>
 		</div>
-
-		
-		<h4>
-			<g:form class="aui" action="notificationAccountSenders">
-				<fieldset>
-					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher ..." name="notificationAccountSenderSearch" value="${ notificationAccountSenderSearch }"/>
-					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
-				</fieldset>
-			</g:form>
-		</h4>
-		
+	
 		<br/>
 		
-		<div style="overflow-x:auto;">
 		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
 		    <thead>
 		        <tr>
@@ -56,7 +42,6 @@
 		        </g:each>
 		    </tbody>
 		</app:datatable>
-		</div>
 		
 	</g:applyLayout>
 	

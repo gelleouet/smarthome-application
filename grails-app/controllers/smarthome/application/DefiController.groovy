@@ -135,6 +135,7 @@ class DefiController extends AbstractController {
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DefiController.COMMAND_NAME)
 	def calculerResultat(DefiCommand command) {
 		defiService.calculerConsommations(command.defi)
+		defiService.calculerResultats(command.defi)
 		renderTemplateParticipants(command.defi)
 	}
 

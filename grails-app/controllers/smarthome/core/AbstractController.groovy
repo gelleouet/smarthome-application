@@ -173,7 +173,10 @@ abstract class AbstractController {
 		Method method = this.getClass().getDeclaredMethod(actionName)
 		ExceptionNavigationHandler metaHandler = method.getAnnotation(ExceptionNavigationHandler)
 
-		if (metaHandler) {
+		if (request.xhr) {
+			// rendu erreur uniquement pour les appels Ajax
+			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
+		} else if (metaHandler) {
 			if (metaHandler.json()) {
 				render(status: 400, contentType: "application/json") {
 					[error: exception.message, details: request.errors]
@@ -189,9 +192,6 @@ abstract class AbstractController {
 
 				forward (controller: controller, action : metaHandler.actionName())
 			}
-		} else if (request.xhr) {
-			// rendu erreur uniquement pour les appels Ajax
-			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
 		}
 	}
 

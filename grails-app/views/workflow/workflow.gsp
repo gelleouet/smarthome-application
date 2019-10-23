@@ -5,7 +5,7 @@
 
 <body>
 	<g:applyLayout name="page-settings" model="[titre: 'Workflows', navigation: 'Système']">
-		<g:uploadForm controller="workflow" method="post" class="aui" name="workflow-form">
+		<g:uploadForm controller="workflow" method="post" name="workflow-form">
 		
 			<div class="row mb-4">
 				<div class="col-8">
@@ -22,7 +22,8 @@
 			<g:hiddenField name="id" value="${workflow.id}" />
 	
 			<g:render template="form"/>
-			
+	
+			<br/>		
 	
 			<g:if test="${workflow.id }">
 				<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />

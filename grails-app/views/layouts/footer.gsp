@@ -27,6 +27,9 @@
 					<li class="list-inline-item">
 						<a class="btn mb-1 btn-facebook" href="${g.meta(name: 'app.facebook') }"><i class="align-middle fab fa-facebook"></i> Facebook</a>
 					</li>
+					<li class="list-inline-item">
+						<a class="btn mb-1 btn-instagram" href="${g.meta(name: 'app.instagram') }"><i class="align-middle fab fa-instagram"></i> Instagram</a>
+					</li>
 				</ul>
 		    </div>
 			<div class="col text-right">

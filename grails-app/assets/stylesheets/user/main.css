@@ -83,24 +83,22 @@ table {
 	display: none;
 }
 
-form.aui textarea.script {
+form textarea.script {
 	font-size: 8pt; 
 	width:100%; 
-	max-width: 800px;
 	height: 600px;
 }
 
-
-form.aui textarea.short-script {
+form textarea.medium-script {
 	font-size: 8pt; 
 	width:100%; 
-	max-width: 800px;
-	height: 100px;
+	height: 350px;
 }
 
-form.aui textarea.textarea {
+form textarea.short-script {
+	font-size: 8pt; 
 	width:100%; 
-	max-width: 800px;
+	height: 100px;
 }
 
 h6 {

@@ -749,19 +749,19 @@ class DefiService extends AbstractService {
 		// pour faciliter le calcul, remet "à plat" la liste des participants
 		// pour calcul éventuellement refaire des groupements
 		List<DefiEquipeParticipant> participants = []
-		
-		defi.equipes.each { DefiEquipe equipe -> 
-			equipe.participants.each { participant -> 
+
+		defi.equipes.each { DefiEquipe equipe ->
+			equipe.participants.each { participant ->
 				participants << participant
 			}
 		}
-		
+
 		defiCalculRuleService.execute(defi, true, [participants: participants])
-		
+
 		return super.save(defi)
 	}
-	
-	
+
+
 	/**
 	 * Calcul des consommations du défi à chacun des niveaux
 	 * Supprime également tous les résultats car ceux-ci dépendent des consos
@@ -773,13 +773,16 @@ class DefiService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Defi calculerConsommations(Defi defi) throws SmartHomeException {
 		Chronometre chrono = new Chronometre()
-		defi.profils = listDefiProfilResultat(defi)
-		defi.equipes = []
+
+		// charge tous les profils défi et reset sur la liste du défi
+		// pour au final détecter les orphelins
+		List<DefiProfil> defiProfils = listDefiProfilResultat(defi)
+		defi.profils = []
 
 		// charge tous les participants "à plat" et les réorganise par équipe
 		// pour une structure en arbre
 		List<DefiEquipeParticipant> participants = listParticipantResultat(new DefiCommand(defi: defi), [:])
-		List<DefiEquipe> defiEquipeList = extractDefiEquipe(participants)
+		List<DefiEquipe> defiEquipes = extractDefiEquipe(participants)
 
 		// charge les résultats au niveau des profils (défi + équipe)
 		// ces listes seront complétées si des éléments manquent au moment des
@@ -802,15 +805,15 @@ class DefiService extends AbstractService {
 				// sur lequel est associé la session par défaut. il faut donc la
 				// gérer manuellement. Il y en aura autant que de pool alloué
 				DefiEquipeParticipant.withNewSession {
-					// on charge la maison principale avec le chauffage car il sera 
-					// utilisé pour le calcul des notes. Cela évitera d'autres 
+					// on charge la maison principale avec le chauffage car il sera
+					// utilisé pour le calcul des notes. Cela évitera d'autres
 					// requêtes en activant l'association
 					House house = houseService.findDefaultByUserFetch(participant.user, ['chauffage'])
 					Map consos
 
 					if (house) {
 						participant.house = house
-						
+
 						// calcul conso elec
 						if (house[DefiCompteurEnum.electricite.property]) {
 							consos = loadUserConso(defi, house, DefiCompteurEnum.electricite)
@@ -831,13 +834,10 @@ class DefiService extends AbstractService {
 			// on a toutes les données au niveau le plus bas. on peut aggréger les
 			// données aux niveaux supérieurs, ie aux équipes à cette étape
 			// le traitement de la liste est partagé entre 4 threads
-			defiEquipeList.eachParallel { DefiEquipe defiEquipe ->
+			defiEquipes.eachParallel { DefiEquipe defiEquipe ->
+				// reset des profils pour détecter les orphelins
+				defiEquipe.profils = []
 				defiEquipe.cleanResultat()
-
-				// récupère les profils liés à l'équipe pour ne pas devoir ensuite
-				// modifier la liste principale depuis ce thread car non thread-safe
-				// en lecture ca ne pose pas souci
-				defiEquipe.profils = defiEquipeProfilList.findAll { it.defiEquipe == defiEquipe }
 
 				// calcul total au niveau équipe
 				defiEquipe.reference_electricite = NumberUtils.round(defiEquipe.participants.sum { it.reference_electricite ?: 0 })
@@ -848,14 +848,18 @@ class DefiService extends AbstractService {
 				// calcul au niveau équipe-profil. ajout des éléments manquans
 				// en fonction des groupes calculés au niveau des participants
 				defiEquipe.participants.groupBy { it.user.profil }.each { entry ->
-					// recherche du profil équipe juste par le profil
-					DefiEquipeProfil defiEquipeProfil = defiEquipe.profils.find { it.profil == entry.key }
+					// recherche du profil équipe existant
+					DefiEquipeProfil defiEquipeProfil = defiEquipeProfilList.find {
+						it.defiEquipe == defiEquipe && it.profil == entry.key
+					}
 
 					// création à la volée d'un nouvel élément et ajout dans la liste de l'équipe
 					if (!defiEquipeProfil) {
 						defiEquipeProfil = new DefiEquipeProfil(profil: entry.key, defiEquipe: defiEquipe)
-						defiEquipe.profils << defiEquipeProfil
 					}
+
+					// ajout systématique dans la liste de l'équipe pour la reconstruire
+					defiEquipe.profils << defiEquipeProfil
 
 					defiEquipeProfil.cleanResultat()
 					defiEquipeProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
@@ -865,26 +869,20 @@ class DefiService extends AbstractService {
 				}
 			}
 
-			// dernière passe pour le calcul total du défi avec les sous-résultats par profil
-			// on est toujours dans le pool gpars, on en profite pour lancer les aggrégrations
-			// en parallélisant les calculs
-			defi.cleanResultat()
-			defi.reference_electricite = NumberUtils.round(defiEquipeList.sum { it.reference_electricite ?: 0 })
-			defi.reference_gaz = NumberUtils.round(defiEquipeList.sum { it.reference_gaz ?: 0 })
-			defi.action_electricite = NumberUtils.round(defiEquipeList.sum { it.action_electricite ?: 0 })
-			defi.action_gaz = NumberUtils.round(defiEquipeList.sum { it.action_gaz ?: 0 })
-
+			// calcul au niveau global profil
 			participants.groupByParallel { it.user.profil }.each { entry ->
 				// attention !! le groupBy est threadé mais pas le each.
 				// donc on peut sans souci (car un seul thread) modifier l'instance
 				// défi depuis cette closure
-				DefiProfil defiProfil = defi.profils.find { it.profil == entry.key }
+				DefiProfil defiProfil = defiProfils.find { it.profil == entry.key }
 
 				// création à la volée d'un nouvel élément et ajout dans la liste du défi
 				if (!defiProfil) {
 					defiProfil = new DefiProfil(defi: defi, profil: entry.key)
-					defi.profils << defiProfil
 				}
+
+				// ajout systématique dans la liste du défi pour la reconstruire
+				defi.profils << defiProfil
 
 				defiProfil.cleanResultat()
 				defiProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
@@ -893,6 +891,27 @@ class DefiService extends AbstractService {
 				defiProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 })
 			}
 		}
+
+		// dernière passe pour le calcul total du défi avec les sous-résultats par équipe
+		defi.cleanResultat()
+		defi.reference_electricite = NumberUtils.round(defiEquipes.sum { it.reference_electricite ?: 0 })
+		defi.reference_gaz = NumberUtils.round(defiEquipes.sum { it.reference_gaz ?: 0 })
+		defi.action_electricite = NumberUtils.round(defiEquipes.sum { it.action_electricite ?: 0 })
+		defi.action_gaz = NumberUtils.round(defiEquipes.sum { it.action_gaz ?: 0 })
+
+		// gestion des orphelins : équipe sans participant, ancien profil équipe
+		// ou défi d'un ancien calcul et après modification des participants du
+		// défi
+		// les orphelins se trouvent dans les listes chargés en début de méthode
+		(defiProfils - defi.profils).each { it.delete() }
+		// pour les équipes on doit toutes les passer en revue pour gérer les profils
+		defiEquipes.each { defiEquipe ->
+			defiEquipeProfilList.removeAll(defiEquipe.profils)
+		}
+		defiEquipeProfilList.each { it.delete() }
+		// équipes orphelines + réassociation de la bonne liste sur le défi
+		(defi.equipes - defiEquipes).each { it.delete() }
+		defi.equipes = defiEquipes
 
 		log.info "Calcul défi : ${chrono.stop()}ms"
 
