@@ -20,6 +20,7 @@ import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
 import smarthome.core.chart.GoogleDataTableCol
+import smarthome.core.query.HQL
 import smarthome.rule.DefiCalculRuleService
 import smarthome.security.Profil
 import smarthome.security.Role
@@ -171,22 +172,47 @@ class DefiService extends AbstractService {
 	 * @return
 	 */
 	List<DefiEquipeParticipant> listParticipantResultat(DefiCommand command, Map pagination) {
-		DefiEquipeParticipant.createCriteria().list(pagination) {
-			defiEquipe {
-				eq 'defi', command.defi
+		def results = []
+		def hql = new HQL("participant, house", """
+			FROM DefiEquipeParticipant participant, House house
+			JOIN FETCH participant.defiEquipe defiEquipe
+			JOIN FETCH participant.user user
+			JOIN FETCH user.profil profil
+			LEFT JOIN FETCH house.chauffage
+		""")
 
-				if (command.defiEquipe) {
-					eq 'id', command.defiEquipe.id
-				}
-			}
-			user {
-				profil {
-				}
+		hql.addCriterion("defiEquipe.defi = :defi", [defi: command.defi])
+		hql.addCriterion("house is null OR (house.user = user AND house.defaut = true)")
 
-				order "prenom"
-				order "nom"
-			}
+		if (command.defiEquipe) {
+			hql.addCriterion("defiEquipe.id = :defiEquipeId", [defiEquipeId: command.defiEquipe.id])
 		}
+
+		hql.addOrder("user.prenom")
+		hql.addOrder("user.nom")
+
+		DefiEquipeParticipant.withSession { session ->
+			results = hql.list(session, pagination)
+		}
+
+		results.collect {
+			it[0].house = it[1]
+			it[0]
+		}
+		/*DefiEquipeParticipant.createCriteria().list(pagination) {
+		 defiEquipe {
+		 eq 'defi', command.defi
+		 if (command.defiEquipe) {
+		 eq 'id', command.defiEquipe.id
+		 }
+		 }
+		 user {
+		 profil {
+		 }
+		 order "prenom"
+		 order "nom"
+		 }
+		 }*/
 	}
 
 

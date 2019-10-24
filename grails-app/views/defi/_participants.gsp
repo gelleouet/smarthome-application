@@ -74,7 +74,12 @@
 					<!-- Niveau 4 : données par participants -->
 				
 					<tr>
-						<td class="pl-6"><app:icon name="user"/> ${ participant.user.prenomNom }</td>
+						<td class="pl-6">
+							<app:icon name="user"/> ${ participant.user.prenomNom }
+							<g:if test="${ participant.house?.chauffage }">
+								<span class="badge badge-primary">${ participant.house.chauffage.libelle }</span>
+							</g:if>
+						</td>
 						<td class="text-right">${ participant.reference_global() }</td>
 						<td class="text-right">${ participant.action_global() }</td>
 						<td class="text-right">${ participant.evolution_global() }</td>
