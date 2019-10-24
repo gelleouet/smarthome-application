@@ -22,8 +22,8 @@ class JobController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Jobs", navigation = NavigationEnum.configuration,
-	header = "Système")
+	//@NavigableAction(label = "Jobs", navigation = NavigationEnum.configuration,
+	//header = "Système")
 	def jobs() {
 		def jobs = jobService.list()
 		def recordsTotal = jobs.size()

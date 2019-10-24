@@ -800,3 +800,20 @@ input.form-control.medium {
 .color-secondary {
 	color: #d8dadc;
 }
+
+.bg-menu {
+	background-color: #354052;
+	color: #ced4da;
+}
+
+.text-menu {
+	color: #ced4da;
+}
+
+.bg-linky {
+	/*content: url(../linky.png);
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;*/
+}

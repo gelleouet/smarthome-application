@@ -1,14 +1,5 @@
 <div class="wrapper">
-	<nav id="sidebar" class="sidebar">
-		<div class="sidebar-content">
-			<g:link class="sidebar-brand" uri="/">
-				<app:icon name="home"/>
-				<span class="align-middle"><g:meta name="app.code"/></span>
-			</g:link>
-			
-			<g:applyLayout name="menu"/>
-		</div>
-	</nav>
+	<g:applyLayout name="menu"/>
 	
 	<div class="main">
 		<nav class="navbar navbar-expand navbar-light bg-white">

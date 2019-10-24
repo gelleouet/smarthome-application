@@ -31,7 +31,6 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="dataconnect" controller="dataConnect"><app:icon name="user-check"/> DataConnect</g:link>
 							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						

@@ -17,7 +17,7 @@
 		
 		<div class="card flex-fill w-100">
 			<div class="card-body">
-				<h4><app:icon name="award"/> Classement global par économie</h4>
+				<h4><app:icon name="award"/> Classement équipe</h4>
 				<g:render template="resultatClassementDefi" model="[data: global, defi: currentDefi]"/>	
 			</div>
 		</div>
@@ -25,7 +25,7 @@
 		<g:each var="profil" in="${ profils }">
 			<div class="card flex-fill w-100">
 				<div class="card-body">
-					<h4><g:if test="${ profil.icon }"><asset:image src="${profil.icon }" class="gd-icon-profil"/></g:if> Classement ${ profil.libelle } par économie</h4>
+					<h4><g:if test="${ profil.icon }"><asset:image src="${profil.icon }" class="gd-icon-profil"/></g:if> Classement ${ profil.libelle }</h4>
 					<g:render template="resultatClassementDefi" model="[data: request["profil${ profil.id }"], defi: currentDefi]"/>	
 				</div>
 			</div>

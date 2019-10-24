@@ -561,9 +561,12 @@ class TeleInformation extends Compteur {
 	@Override
 	DeviceValue lastIndex() {
 		if (device.dateValue) {
+			// on balaye max sur 1 an pour éviter de scanner toute la base
+			// même si index sur les champs requetes
 			if (isDoubleTarification()) {
 				return DeviceValue.createCriteria().get {
 					eq 'device', device
+					ge 'dateValue', DateUtils.incYear(new Date(), -1)
 					eq 'name', 'hchp'
 					maxResults 1
 					order 'dateValue', 'desc'
@@ -571,6 +574,7 @@ class TeleInformation extends Compteur {
 			} else {
 				return DeviceValue.createCriteria().get {
 					eq 'device', device
+					ge 'dateValue', DateUtils.incYear(new Date(), -1)
 					eq 'name', 'base'
 					maxResults 1
 					order 'dateValue', 'desc'
@@ -600,8 +604,11 @@ class TeleInformation extends Compteur {
 	 */
 	DeviceValue lastIndexHC() {
 		if (device.dateValue && isDoubleTarification()) {
+			// on balaye max sur 1 an pour éviter de scanner toute la base
+			// même si index sur les champs requetes
 			return DeviceValue.createCriteria().get {
 				eq 'device', device
+				ge 'dateValue', DateUtils.incYear(new Date(), -1)
 				eq 'name', 'hchc'
 				maxResults 1
 				order 'dateValue', 'desc'

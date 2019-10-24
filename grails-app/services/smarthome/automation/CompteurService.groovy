@@ -260,9 +260,6 @@ class CompteurService extends AbstractService {
 			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", compteurIndex)
 		}
 
-		// mise à jour des champs communs
-		device.dateValue = compteurIndex.dateIndex
-
 		// on passe les données du compteur dans l'impl associée pour mettre à
 		// jour les bonnes données
 		try {
@@ -272,6 +269,14 @@ class CompteurService extends AbstractService {
 			// on recatche l'erreur pour passer l'objet command
 			throw new SmartHomeException(ex.message, compteurIndex)
 		}
+
+		// mise à jour des champs communs
+		// IMPORTANT : faire après le parseIndex qui cherche les derniers index
+		// et qui peut se base sur la date value précédente du device.
+		// surtout quand elle est nulle (pas de valeur), on dirait que Postgtesql
+		// est obligé de scanner une bonne partie de la base pour essayer de trouver
+		// une valeur qui n'existe pas
+		device.dateValue = compteurIndex.dateIndex
 
 		deviceService.saveAndTriggerChange(device)
 

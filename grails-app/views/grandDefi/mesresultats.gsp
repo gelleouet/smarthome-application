@@ -17,7 +17,7 @@
 		</div>
 		
 		<div class="card flex-fill w-100">
-			<div class="card-body">
+			<div class="card-body bg-linky">
 				<h4><app:icon name="zap"/> Consommations d'électricité</h4>
 				<g:render template="resultatUser" model="[data: electricite, defi: currentDefi]"/>					
 			</div>

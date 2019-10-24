@@ -390,4 +390,24 @@ class DateUtils {
 		return endDate
 	}
 
+
+	/**
+	 * Décale l'année sur la date
+	 * 
+	 * @param date
+	 * @param year
+	 * @return
+	 */
+	static Date incYear(Date date, int inc) {
+		Date result
+
+		if (date) {
+			use(TimeCategory) {
+				result = date + inc.year
+			}
+		}
+
+		return result
+	}
+
 }

@@ -74,8 +74,10 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 
 			if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
 				result.gaz = moyenneGeneraleEvolution(values, DefiCompteurEnum.gaz)
+				println "Moyenne générale ${key} gaz : ${result.gaz}"
 			} else {
 				result.electricite = moyenneGeneraleEvolution(values, DefiCompteurEnum.electricite)
+				println "Moyenne générale ${key} elec : ${result.electricite}"
 			}
 
 			[(key): result]
@@ -104,9 +106,11 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 					def result = [electricite: null, gaz: null]
 
 					if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
-						result.gaz = moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.gaz)
+						result.gaz = noteEconomie(moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.gaz))
+						println "Moyenne équipe ${equipe.libelle} ${key} gaz : ${result.gaz}"
 					} else {
-						result.electricite = moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.electricite)
+						result.electricite = noteEconomie(moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.electricite))
+						println "Moyenne équipe ${equipe.libelle} ${key} elec : ${result.electricite}"
 					}
 
 					[(key): result]
@@ -143,13 +147,13 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		defi.economie_global = noteEconomie(defi.evolution_global())
 
 		// classement des équipes au niveau global, elec e gaz
-		defi.equipes.sort { (it.economie_global() ?: -Integer.MAX_VALUE) * -1 }.eachWithIndex { equipe, index ->
+		defi.equipes.sort { it.economie_global() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
 			equipe.classement_global = (index + 1)
 		}
-		defi.equipes.sort { (it.economie_electricite() ?: -Integer.MAX_VALUE) * -1 }.eachWithIndex { equipe, index ->
+		defi.equipes.sort { it.economie_electricite() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
 			equipe.classement_electricite = (index + 1)
 		}
-		defi.equipes.sort { (it.economie_gaz() ?: -Integer.MAX_VALUE) * -1 }.eachWithIndex { equipe, index ->
+		defi.equipes.sort { it.economie_gaz() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
 			equipe.classement_gaz = (index + 1)
 		}
 
@@ -307,7 +311,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		if (evolution == null) {
 			return null
 		} else {
-			return evolution * -1.0
+			return evolution
 		}
 	}
 

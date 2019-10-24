@@ -34,10 +34,10 @@
 							<div class="vignette-synthese" style="background: radial-gradient(#47bac1 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
 								${ consos.total }<span class="vignette-unite">${ defaultUnite }</span>
 								<g:if test="${ consos.total < consoMoyenne }">
-									<br/><app:icon name="arrow-down-right"/>
+									<br/><app:icon name="arrow-down" lib="awesome" style="fa-lg"/>
 								</g:if>
 								<g:elseif test="${ consos.total > consoMoyenne }">
-									<br/><app:icon name="arrow-up-right"/>
+									<br/><app:icon name="arrow-up" lib="awesome" style="fa-lg"/>
 								</g:elseif>
 							</div>
 						</g:link>
@@ -46,7 +46,7 @@
 					</div>
 					
 					<div class="mt-4">
-						<div class="row">
+						<div class="row bg-menu rounded p-2">
 							<div class="col-7">
 								<strong>Consommation moyenne sur les 7 derniers jours</strong>
 							</div>

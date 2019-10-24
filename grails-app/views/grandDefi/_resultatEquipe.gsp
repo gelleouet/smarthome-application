@@ -115,8 +115,8 @@
 					</h5>
 				</div>
 			</g:each>
-			<div class="col border-bottom p-2 text-center bg-secondary">
-				<h5 class="font-weight-bold">Equipe</h5>
+			<div class="col border-bottom p-2 text-center bg-menu">
+				<h5 class="font-weight-bold text-menu">Equipe</h5>
 			</div>
 		</div>
 		<div class="row ml-4 mr-4">
@@ -126,16 +126,16 @@
 			<g:each var="conso" in="${ consos }" status="status">
 				<div class="col border-bottom border-right p-2 text-center">
 					<g:set var="value" value="${ conso."economie_${data.consos.type}"()  }"/>
-					<h4 class="font-weight-bold text-secondary">
+					<h4 class="font-weight-bold">
 						<g:applyLayout name="arrow" model="[value: value != null ? value : '-', reference: 0]">
 							<span style="font-size:small;">%</span>
 						</g:applyLayout>
 					</h4>
 				</div>
 			</g:each>
-			<div class="col border-bottom p-2 text-center bg-secondary">
+			<div class="col border-bottom p-2 text-center bg-menu">
 				<g:set var="value" value="${ data.consos.economie  }"/>
-				<h4 class="font-weight-bold">
+				<h4 class="font-weight-bold text-menu">
 					<g:applyLayout name="arrow" model="[value: value != null ? value : '-', reference: 0]">
 						<span style="font-size:small;">%</span>
 					</g:applyLayout>
@@ -149,12 +149,12 @@
 			<g:each var="conso" in="${ consos }" status="status">
 				<div class="col border-right p-2 text-center">
 					<g:set var="classement" value="${ conso."classement_${data.consos.type}"()  }"/>
-					<h4 class="font-weight-bold text-secondary">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
+					<h4 class="font-weight-bold">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
 				</div>
 			</g:each>
-			<div class="col p-2 text-center bg-secondary">
+			<div class="col p-2 text-center bg-menu">
 				<g:set var="classement" value="${ data.consos.classement  }"/>
-				<h4 class="font-weight-bold">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
+				<h4 class="font-weight-bold text-menu">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
 			</div>
 		</div>
 	</div> <!-- div.col -->

@@ -31,7 +31,6 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="adict" controller="adict"><app:icon name="user-check"/> ADICT</g:link>
 							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						

@@ -78,8 +78,8 @@
 			</h5>
 		</div>
 	</g:each>
-	<div class="col border-bottom p-2 text-center bg-secondary">
-		<h5 class="font-weight-bold">Défi</h5>
+	<div class="col border-bottom p-2 text-center bg-menu">
+		<h5 class="font-weight-bold text-menu">Défi</h5>
 	</div>
 </div>
 <div class="row">
@@ -92,8 +92,8 @@
 			<h4 class="text-black-50 font-weight-bold">${ conso.reference_global() != null ? conso.reference_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
 		</div>
 	</g:each>
-	<div class="col border-bottom p-2 text-center bg-secondary">
-		<h4 class="font-weight-bold">${ defi?.reference_global() != null ? defi?.reference_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
+	<div class="col border-bottom p-2 text-center bg-menu">
+		<h4 class="font-weight-bold text-menu">${ defi?.reference_global() != null ? defi?.reference_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
 	</div>
 </div>
 <div class="row">
@@ -106,8 +106,8 @@
 			<h4 class="text-primary font-weight-bold">${ conso.action_global() != null ? conso.action_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
 		</div>
 	</g:each>
-	<div class="col border-bottom p-2 text-center bg-secondary">
-		<h4 class="font-weight-bold">${ defi?.action_global() != null ? defi?.action_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
+	<div class="col border-bottom p-2 text-center bg-menu">
+		<h4 class="font-weight-bold text-menu">${ defi?.action_global() != null ? defi?.action_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
 	</div>
 </div>
 <div class="row">
@@ -123,8 +123,8 @@
 			</h4>
 		</div>
 	</g:each>
-	<div class="col border-bottom p-2 text-center bg-secondary">
-		<h4 class="font-weight-bold">
+	<div class="col border-bottom p-2 text-center bg-menu">
+		<h4 class="font-weight-bold text-menu">
 			<g:applyLayout name="arrow" model="[value: defi?.difference_global() != null ? defi?.difference_global()  : '-', reference: 0]">
 				<span style="font-size: x-small;">kWh</span>
 			</g:applyLayout>

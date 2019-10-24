@@ -4,6 +4,7 @@ import java.util.Date
 import java.util.List
 import java.util.Map
 
+import groovy.time.TimeCategory
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
@@ -512,8 +513,11 @@ class Compteur extends AbstractDeviceType {
 	DeviceValue lastIndex() {
 		// si aucune date sur le device, alors aucune value
 		if (device.dateValue) {
+			// on balaye max sur 1 an pour éviter de scanner toute la base
+			// même si index sur les champs requetes
 			return DeviceValue.createCriteria().get {
 				eq 'device', device
+				ge 'dateValue', DateUtils.incYear(new Date(), -1)
 				isNull 'name'
 				maxResults 1
 				order 'dateValue', 'desc'

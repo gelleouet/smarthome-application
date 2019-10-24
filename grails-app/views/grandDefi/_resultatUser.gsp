@@ -20,6 +20,7 @@
 				   	<g:render template="/chart/google/annotation" model="[chart: data.chartTotal]"/>
 				   	
 					chartOptions = {
+						backgroundColor: 'transparent',
 						'width': '100%',
 				        'height': '300',
 				        'legend': {position: 'top'},
@@ -88,6 +89,7 @@
 				   	<g:render template="/chart/google/annotation" model="[chart: data.chartConso]"/>
 				   	
 					chartOptions = {
+						backgroundColor: 'transparent',
 						'width': '100%',
 				        'height': '450',
 				        'legend': {position: 'top'},
@@ -118,20 +120,20 @@
 				<div class="col-4 border-bottom border-right text-center p-2">
 					<h5 class="font-weight-bold">Classement</h5>
 				</div>
-				<div class="col-4 border-bottom text-center p-2 bg-secondary">
-					<h5 class="font-weight-bold">Economie</h5>
+				<div class="col-4 border-bottom text-center p-2 bg-menu">
+					<h5 class="font-weight-bold text-menu">Economie</h5>
 				</div>
 				
 				<div class="col-4 border-right text-center p-2">
-					<h4 class="font-weight-bold text-secondary">
+					<h4 class="font-weight-bold">
 						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
 					</h4>
 				</div>
 				<div class="col-4 border-right text-center p-2">
-					<h4 class="font-weight-bold text-secondary">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h4>
+					<h4 class="font-weight-bold">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h4>
 				</div>
-				<div class="col-4 text-center p-2 bg-secondary">
-					<h4 class="font-weight-bold">
+				<div class="col-4 text-center p-2 bg-menu">
+					<h4 class="font-weight-bold text-menu">
 						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]">
 							<span style="font-size:small;">%</span>
 						</g:applyLayout>
