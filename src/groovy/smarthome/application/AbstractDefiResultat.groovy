@@ -13,14 +13,17 @@ abstract class AbstractDefiResultat implements Serializable {
 	Double action_electricite
 	Double economie_electricite
 	Integer classement_electricite
+	Integer total_electricite
 
 	Double reference_gaz
 	Double action_gaz
 	Double economie_gaz
 	Integer classement_gaz
+	Integer total_gaz
 
 	Double economie_global
 	Integer classement_global
+	Integer total_global
 
 
 	static constraints = {
@@ -28,12 +31,15 @@ abstract class AbstractDefiResultat implements Serializable {
 		action_electricite nullable: true
 		economie_electricite nullable: true
 		classement_electricite nullable: true
+		total_electricite nullable: true
 		reference_gaz nullable: true
 		action_gaz nullable: true
 		economie_gaz nullable: true
 		classement_gaz nullable: true
+		total_gaz nullable: true
 		economie_global nullable: true
 		classement_global nullable: true
+		total_global nullable: true
 	}
 
 
@@ -54,6 +60,16 @@ abstract class AbstractDefiResultat implements Serializable {
 	 */
 	Integer classement_global() {
 		return classement_global
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer total_global() {
+		return total_global
 	}
 
 
@@ -137,6 +153,16 @@ abstract class AbstractDefiResultat implements Serializable {
 	 */
 	Integer classement_electricite() {
 		return classement_electricite
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer total_electricite() {
+		return total_electricite
 	}
 
 
@@ -271,6 +297,16 @@ abstract class AbstractDefiResultat implements Serializable {
 
 
 	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer total_gaz() {
+		return total_gaz
+	}
+
+
+	/**
 	 * Injecte les résultats relatifs au compteur dans la map result sous les fields
 	 * sans suffixe (ie reference_electricite => reference)
 	 * 
@@ -286,6 +322,7 @@ abstract class AbstractDefiResultat implements Serializable {
 			result.evolution = this."evolution_${ defiCompteur.toString() }"()
 			result.economie = this."economie_${ defiCompteur.toString() }"()
 			result.classement = this."classement_${ defiCompteur.toString() }"()
+			result.total = this."total_${ defiCompteur.toString() }"()
 			result.type = defiCompteur
 			result.resultat = this
 		}
@@ -303,14 +340,17 @@ abstract class AbstractDefiResultat implements Serializable {
 		action_electricite = null
 		economie_electricite = null
 		classement_electricite = null
+		total_electricite = null
 
 		reference_gaz = null
 		action_gaz = null
 		economie_gaz = null
 		classement_gaz = null
+		total_gaz = null
 
 		economie_global = null
 		classement_global = null
+		total_global = null
 
 		return this
 	}

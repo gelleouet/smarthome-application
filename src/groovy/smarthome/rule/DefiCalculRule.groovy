@@ -51,6 +51,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		// récupère la liste des participants "à plat" depuis les paramètres
 		// de la règle
 		List<DefiEquipeParticipant> participants = parameters.participants
+		List equipeProfils = []
 
 		// calcul des notes simples au niveau participant
 		participants.each {
@@ -93,6 +94,8 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 			// par catégorie
 			// EXCEL = ligne 7, 13 et 19
 			equipe.profils.each { DefiEquipeProfil defiEquipeProfil ->
+				equipeProfils << defiEquipeProfil
+
 				// filtre les participants par profil
 				def participantsProfil = equipe.participants.findAll {
 					it.user.profil == defiEquipeProfil.profil
@@ -146,16 +149,36 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		defi.economie_gaz = noteEconomie(defi.evolution_gaz())
 		defi.economie_global = noteEconomie(defi.evolution_global())
 
-		// classement des équipes au niveau global, elec e gaz
-		defi.equipes.sort { it.economie_global() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
-			equipe.classement_global = (index + 1)
+		// ---------------------------------------------------------------------
+		// CLASSEMENTS
+		// ---------------------------------------------------------------------
+
+		// classement des équipes selon les types de consommation
+		classementList(defi.equipes, DefiCompteurEnum.electricite)
+		classementList(defi.equipes, DefiCompteurEnum.gaz)
+		classementList(defi.equipes, DefiCompteurEnum.global)
+
+		// classement des équipes profil selon les types de consommation
+		def equipeProfilGroup = equipeProfils.groupBy { it.profil }.each { key, value ->
+			classementList(value, DefiCompteurEnum.electricite)
+			classementList(value, DefiCompteurEnum.gaz)
+			classementList(value, DefiCompteurEnum.global)
 		}
-		defi.equipes.sort { it.economie_electricite() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
-			equipe.classement_electricite = (index + 1)
+
+		// classement des participants en fonction de leurs profils
+		participantsGroup.each { key, value ->
+			// pas de classement elec pour le profil gaz
+			// et inversement
+			// on effectue le classement global que les catégories US et ELEC
+			// car la catégorie GAZ est incluse dans US
+			if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
+				classementList(value, DefiCompteurEnum.gaz)
+			} else {
+				classementList(value, DefiCompteurEnum.electricite)
+				classementList(value, DefiCompteurEnum.global)
+			}
 		}
-		defi.equipes.sort { it.economie_gaz() ?: Integer.MAX_VALUE }.eachWithIndex { equipe, index ->
-			equipe.classement_gaz = (index + 1)
-		}
+
 
 		return defi
 	}
@@ -352,5 +375,22 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		}
 
 		return result
+	}
+
+
+	/**
+	 * Calcul des classements sur des résultats (équipes, participants)
+	 * Les listes sont filtrées et les résultats sans valeur sont écartés
+	 * 
+	 * @param values
+	 * @param compteurType
+	 */
+	private void classementList(Collection values, DefiCompteurEnum compteurType) {
+		def filterList = values.findAll { it."economie_${compteurType}"() != null }
+
+		filterList.sort { it."economie_${compteurType}"() }.eachWithIndex {  resultat, index ->
+			resultat."classement_${compteurType}" = index + 1
+			resultat."total_${compteurType}" = filterList.size()
+		}
 	}
 }

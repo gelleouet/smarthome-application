@@ -102,8 +102,16 @@ class GrandDefiService extends AbstractService {
 		// et le grand défi en cours
 		String configMaxClassement = configService.value(Config.GRAND_DEFI_MAX_CLASSEMENT)
 		int maxClassement = configMaxClassement ? configMaxClassement.toInteger() : MAX_CLASSEMENT
+		String libelleCurrentEquipe = null
 
 		if (model.currentDefi) {
+			// charge l'équipe du user
+			model.equipe = defiService.findEquipeResultat(model.currentDefi, command.user)
+			if (model.equipe) {
+				model.equipe.profils = defiService.listEquipeProfilResultat(model.equipe)
+				libelleCurrentEquipe = model.equipe.libelle
+			}
+
 			// charge les résultats globals du défi
 			model.global.consos.values = defiService.listDefiProfilResultat(model.currentDefi)
 			model.currentDefi.injectResultat(model.global.consos, DefiCompteurEnum.global)
@@ -113,11 +121,14 @@ class GrandDefiService extends AbstractService {
 			// charge les classements des équipes en global et pour chaque profil
 			model.global.classement = defiService.classementEquipe(model.currentDefi,
 					[max: maxClassement])
+			defiService.addEquipeClassement(model.global.classement, model.equipe)
 
 			for (Profil profil : model.profils) {
 				model["profil${ profil.id }"] = [:]
 				model["profil${ profil.id }"].classement = defiService.classementEquipeProfil(
 						model.currentDefi, profil, [max: maxClassement])
+				defiService.addEquipeProfilClassement(model["profil${ profil.id }"].classement,
+						model.equipe, profil)
 			}
 		}
 
@@ -127,11 +138,11 @@ class GrandDefiService extends AbstractService {
 				DefiCompteurEnum.global)
 
 		model.global.chartClassement = defiService.chartClassement(model.currentDefi,
-				model.global.classement)
+				model.global.classement, libelleCurrentEquipe)
 
 		for (Profil profil : model.profils) {
 			model["profil${ profil.id }"].chartClassement = defiService.chartClassement(model.currentDefi,
-					model["profil${ profil.id }"].classement)
+					model["profil${ profil.id }"].classement, libelleCurrentEquipe)
 		}
 
 		return model
@@ -153,10 +164,7 @@ class GrandDefiService extends AbstractService {
 			model.resultat = defiService.findEquipeResultat(model.currentDefi, command.user)
 
 			if (model.resultat) {
-				model.totalClassement = defiService.countEquipe(model.resultat.defi)
-
 				model.global.consos.values = defiService.listEquipeProfilResultat(model.resultat)
-				model.global.totalClassement = model.totalClassement
 				model.resultat.injectResultat(model.global.consos, DefiCompteurEnum.global)
 
 				model.electricite.consos.values = model.global.consos.values
@@ -201,10 +209,6 @@ class GrandDefiService extends AbstractService {
 		// les résultats individuels
 		if (model.currentDefi) {
 			model.resultat = defiService.findUserResultat(model.currentDefi, command.user)
-
-			if (model.resultat) {
-				model.totalClassement = defiService.countParticipantEquipe(model.resultat.defiEquipe)
-			}
 		}
 
 
@@ -221,7 +225,6 @@ class GrandDefiService extends AbstractService {
 					model.electricite.consos = defiService.loadUserConso(model.currentDefi,
 							model.house, DefiCompteurEnum.electricite)
 					model.resultat?.injectResultat(model.electricite.consos, DefiCompteurEnum.electricite)
-					model.electricite.totalClassement = model.totalClassement
 				}
 
 				model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
@@ -247,7 +250,6 @@ class GrandDefiService extends AbstractService {
 					model.gaz.consos = defiService.loadUserConso(model.currentDefi,
 							model.house, DefiCompteurEnum.gaz)
 					model.resultat?.injectResultat(model.gaz.consos, DefiCompteurEnum.gaz)
-					model.gaz.totalClassement = model.totalClassement
 				}
 
 				model.gaz.chartTotal = defiService.chartTotal(model.currentDefi,
@@ -265,7 +267,6 @@ class GrandDefiService extends AbstractService {
 			model.global.consos = defiService.groupConsos(model.currentDefi,
 					model.electricite.consos, model.gaz.consos)
 			model.resultat?.injectResultat(model.global.consos, DefiCompteurEnum.global)
-			model.global.totalClassement = model.totalClassement
 		}
 
 		model.global.chartTotal = defiService.chartTotal(model.currentDefi,

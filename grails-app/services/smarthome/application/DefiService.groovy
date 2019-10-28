@@ -3,6 +3,8 @@
  */
 package smarthome.application
 
+import java.text.DecimalFormat
+
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 
@@ -113,13 +115,62 @@ class DefiService extends AbstractService {
 	 * @param pagination
 	 * @return
 	 */
-	List<DefiEquipe> classementEquipe(Defi defi, Map pagination) {
+	List<Map> classementEquipe(Defi defi, Map pagination) {
 		return DefiEquipe.executeQuery("""\
 			SELECT new map(defiEquipe.libelle as libelle, defiEquipe.economie_global as economie,
 			defiEquipe as resultat)
 			FROM DefiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi
 			ORDER BY defiEquipe.classement_global""", [defi: defi], pagination)
+	}
+
+
+	/**
+	 * Ajoute une équipe dans le classement si pas présente.
+	 * Le classement retourné doit être à nouveau trié
+	 * L'équipe doit être classée pour pouvoir être insérée
+	 * 
+	 * @param classement
+	 * @param defiEquipe
+	 * @return
+	 */
+	List<Map> addEquipeClassement(List<Map> classement, DefiEquipe defiEquipe) {
+		if (defiEquipe?.classement_global) {
+			def existEquipe = classement.find { it.libelle == defiEquipe.libelle }
+
+			if (!existEquipe) {
+				classement << [libelle: defiEquipe.libelle, economie: defiEquipe.economie_global,
+					resultat: defiEquipe]
+			}
+		}
+
+		return classement
+	}
+
+
+	/**
+	 * Ajoute une équipe/profil dans le classement si pas présente.
+	 * Le classement retourné doit être à nouveau trié
+	 * L'équipe doit être classée pour pouvoir être insérée
+	 *
+	 * @param classement
+	 * @param defiEquipe
+	 * @param profil
+	 * @return
+	 */
+	List<Map> addEquipeProfilClassement(List<Map> classement, DefiEquipe defiEquipe, Profil profil) {
+		def equipeProfil = defiEquipe?.profils?.find { it.profil == profil }
+
+		if (equipeProfil?.classement_global) {
+			def existEquipe = classement.find { it.libelle == defiEquipe.libelle }
+
+			if (!existEquipe) {
+				classement << [libelle: defiEquipe.libelle, economie: equipeProfil.economie_global,
+					resultat: equipeProfil]
+			}
+		}
+
+		return classement
 	}
 
 
@@ -131,7 +182,7 @@ class DefiService extends AbstractService {
 	 * @param pagination
 	 * @return
 	 */
-	List<DefiEquipeProfil> classementEquipeProfil(Defi defi, Profil profil, Map pagination) {
+	List<Map> classementEquipeProfil(Defi defi, Profil profil, Map pagination) {
 		return DefiEquipeProfil.executeQuery("""\
 			SELECT new map(defiEquipe.libelle as libelle, defiEquipeProfil.economie_global as economie,
 			defiEquipeProfil as resultat)
@@ -436,7 +487,7 @@ class DefiService extends AbstractService {
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartClassement(Defi defi, List classement) {
+	GoogleChart chartClassement(Defi defi, List classement, String currentEquipe) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Bar.factory
@@ -450,13 +501,19 @@ class DefiService extends AbstractService {
 			}
 		}
 
+		DecimalFormat format = new DecimalFormat("0.#'%'")
+
 		chart.colonnes << new GoogleDataTableCol(label: "Equipe", property: "equipe", type: "string")
 		chart.colonnes << new GoogleDataTableCol(label: "Economie", property: "economie", type: "number")
 		chart.colonnes << new GoogleDataTableCol(role: "style", type: "string", value: { deviceValue, index, currentChart ->
-			"color:${ index == 0 ? '#a180da' : Compteur.SERIES_COLOR.total }"
+			"color:${ deviceValue.equipe == currentEquipe ? Compteur.SERIES_COLOR.conso : Compteur.SERIES_COLOR.total }"
+		})
+		chart.colonnes << new GoogleDataTableCol(role: "annotation", type: "string", value: { deviceValue, index, currentChart ->
+			deviceValue.economie == null ? "" : format.format(deviceValue.economie)
 		})
 
-		chart.series << [type: 'bars', annotation: true]
+		chart.series << [type: 'bars', minValue: 0]
+		chart.series << [type: 'bars']
 		chart.series << [type: 'bars']
 
 		return chart

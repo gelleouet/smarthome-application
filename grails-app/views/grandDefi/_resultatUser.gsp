@@ -47,7 +47,9 @@
 			  			<h5>Référence</h5>
 			  		</div>
 			  		<div class="col-6 text-right">
-			  			<h4 class="text-black-50 font-weight-bold">${ data.consos.reference != null ? data.consos.reference : '-' }<span style="font-size: x-small;">kWh</span></h4>
+			  			<h4 class="text-black-50 font-weight-bold">
+			  				<g:render template="formatConsommation" model="[value: data.consos.reference]"/>
+			  			</h4>
 			  		</div>
 			  	</div>
 			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
@@ -58,7 +60,9 @@
 			  			<h5>Action</h5>
 			  		</div>
 			  		<div class="col-6 text-right">
-			  			<h4 class="text-primary font-weight-bold">${ data.consos.action != null ? data.consos.action : '-' }<span style="font-size: x-small;">kWh</span></h4>
+			  			<h4 class="text-primary font-weight-bold">
+			  				<g:render template="formatConsommation" model="[value: data.consos.action]"/>
+			  			</h4>
 			  		</div>
 			  	</div>
 			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>
@@ -114,25 +118,30 @@
 			</div> <!-- div.chart -->
 			
 			<div class="row ml-4 mr-4" style="margin-top:-40px;">
-				<div class="col-4 border-bottom border-right text-center p-2">
+				<div class="col border-bottom border-right text-center p-2">
 					<h5 class="font-weight-bold">Evolution</h5>
 				</div>
-				<div class="col-4 border-bottom border-right text-center p-2">
-					<h5 class="font-weight-bold">Classement</h5>
+				<g:if test="${ data.consos.classement }">
+					<div class="col border-bottom border-right text-center p-2">
+						<h5 class="font-weight-bold">Classement</h5>
+					</div>
+				</g:if>
+				<div class="col border-bottom text-center p-2">
+					<h5 class="font-weight-bold">Economie</h5>
 				</div>
-				<div class="col-4 border-bottom text-center p-2 bg-menu">
-					<h5 class="font-weight-bold text-menu">Economie</h5>
-				</div>
-				
-				<div class="col-4 border-right text-center p-2">
+			</div>
+			<div class="row ml-4 mr-4">
+				<div class="col border-right text-center p-2">
 					<h4 class="font-weight-bold">
 						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
 					</h4>
 				</div>
-				<div class="col-4 border-right text-center p-2">
-					<h4 class="font-weight-bold">${ data.consos.classement != null ? data.consos.classement : '-' } / ${ data.totalClassement != null ? data.totalClassement : '-' }</h4>
-				</div>
-				<div class="col-4 text-center p-2 bg-menu">
+				<g:if test="${ data.consos.classement }">
+					<div class="col border-right text-center p-2">
+						<h4 class="font-weight-bold">${ data.consos.classement } / ${ data.consos.total }</h4>
+					</div>
+				</g:if>
+				<div class="col text-center p-2 bg-menu">
 					<h4 class="font-weight-bold text-menu">
 						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]">
 							<span style="font-size:small;">%</span>

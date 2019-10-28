@@ -37,7 +37,9 @@
 		  			<h5>Référence</h5>
 		  		</div>
 		  		<div class="col-6 text-right">
-		  			<h4 class="text-black-50 font-weight-bold">${ data.consos.reference != null ? data.consos.reference : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		  			<h4 class="text-black-50 font-weight-bold">
+		  				<g:render template="formatConsommation" model="[value: data.consos.reference, precision: 0]"/>
+		  			</h4>
 		  		</div>
 		  	</div>
 		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
@@ -48,7 +50,9 @@
 		  			<h5>Action</h5>
 		  		</div>
 		  		<div class="col-6 text-right">
-		  			<h4 class="text-primary font-weight-bold">${ data.consos.action != null ? data.consos.action : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		  			<h4 class="text-primary font-weight-bold">
+		  				<g:render template="formatConsommation" model="[value: data.consos.action, precision: 0]"/>
+		  			</h4>
 		  		</div>
 		  	</div>
 		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>
@@ -115,8 +119,8 @@
 					</h5>
 				</div>
 			</g:each>
-			<div class="col border-bottom p-2 text-center bg-menu">
-				<h5 class="font-weight-bold text-menu">Equipe</h5>
+			<div class="col border-bottom p-2 text-center">
+				<h5 class="font-weight-bold">Equipe</h5>
 			</div>
 		</div>
 		<div class="row ml-4 mr-4">
@@ -142,20 +146,24 @@
 				</h4>
 			</div>
 		</div>
-		<div class="row ml-4 mr-4">
-			<div class="col border-right p-2">
-				<h5 class="text-muted">Classement</h5>
-			</div>
-			<g:each var="conso" in="${ consos }" status="status">
-				<div class="col border-right p-2 text-center">
-					<g:set var="classement" value="${ conso."classement_${data.consos.type}"()  }"/>
-					<h4 class="font-weight-bold">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
+		<g:if test="${ data.consos.classement }">
+			<div class="row ml-4 mr-4">
+				<div class="col border-right p-2">
+					<h5 class="text-muted">Classement</h5>
 				</div>
-			</g:each>
-			<div class="col p-2 text-center bg-menu">
-				<g:set var="classement" value="${ data.consos.classement  }"/>
-				<h4 class="font-weight-bold text-menu">${ classement != null ? classement : '-' } / ${ data.totalClassement ?: '-' }</h4>
+				<g:each var="conso" in="${ consos }" status="status">
+					<div class="col border-right p-2 text-center">
+						<g:set var="classement" value="${ conso."classement_${data.consos.type}"()  }"/>
+						<g:set var="total" value="${ conso."total_${data.consos.type}"()  }"/>
+						<g:if test="${ classement }">
+							<h4 class="font-weight-bold">${ classement } / ${ total }</h4>
+						</g:if>
+					</div>
+				</g:each>
+				<div class="col p-2 text-center bg-menu">
+					<h4 class="font-weight-bold text-menu">${ data.consos.classement } / ${ data.consos.total }</h4>
+				</div>
 			</div>
-		</div>
+		</g:if>
 	</div> <!-- div.col -->
 </div> <!-- div.row -->

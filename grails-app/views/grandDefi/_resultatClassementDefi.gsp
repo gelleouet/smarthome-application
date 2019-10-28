@@ -46,7 +46,9 @@
 		  			<h5>Référence</h5>
 		  		</div>
 		  		<div class="col-6 text-right">
-		  			<h4 class="font-weight-bold">${ equipe1?.reference_global() != null ? equipe1?.reference_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		  			<h4 class="font-weight-bold">
+		  				<g:render template="formatConsommation" model="[value: equipe1?.reference_global(), precision: 0]"/>
+		  			</h4>
 		  		</div>
 		  	</div>
 		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
@@ -57,7 +59,9 @@
 		  			<h5>Action</h5>
 		  		</div>
 		  		<div class="col-6 text-right">
-		  			<h4 class="font-weight-bold">${ equipe1?.action_global() != null ? equipe1?.action_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		  			<h4 class="font-weight-bold">
+		  				<g:render template="formatConsommation" model="[value: equipe1?.action_global(), precision: 0]"/>
+		  			</h4>
 		  		</div>
 		  	</div>
 		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>

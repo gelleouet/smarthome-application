@@ -1,7 +1,10 @@
 <div class="row mb-3">
 	<div class="col-8">
-		<h3>${ currentDefi?.libelle ?: 'Mes défis' }
-		</h3>
+		<h3>${ currentDefi?.libelle ?: 'Mes défis' }</h3>
+		<g:if test="${ currentDefi }">
+			<h5 class="text-muted">Référence du <app:formatUser date="${ currentDefi.referenceDebut }"/> au <app:formatUser date="${ currentDefi.referenceFin }"/>
+			- Action du <app:formatUser date="${ currentDefi.actionDebut }"/> au <app:formatUser date="${ currentDefi.actionFin }"/></h5>
+		</g:if>
 	</div>
 	<div class="col-4">
 		<div class="btn-toolbar justify-content-end">

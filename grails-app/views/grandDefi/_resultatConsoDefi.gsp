@@ -78,8 +78,8 @@
 			</h5>
 		</div>
 	</g:each>
-	<div class="col border-bottom p-2 text-center bg-menu">
-		<h5 class="font-weight-bold text-menu">Défi</h5>
+	<div class="col border-bottom p-2 text-center">
+		<h5 class="font-weight-bold">Défi</h5>
 	</div>
 </div>
 <div class="row">
@@ -89,11 +89,15 @@
 	</div>
 	<g:each var="conso" in="${ consos }" status="status">
 		<div class="col border-bottom border-right p-2 text-center">
-			<h4 class="text-black-50 font-weight-bold">${ conso.reference_global() != null ? conso.reference_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
+			<h4 class="text-black-50 font-weight-bold">
+				<g:render template="formatConsommation" model="[value: conso.reference_global(), precision: 0]"/>
+			</h4>
 		</div>
 	</g:each>
 	<div class="col border-bottom p-2 text-center bg-menu">
-		<h4 class="font-weight-bold text-menu">${ defi?.reference_global() != null ? defi?.reference_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		<h4 class="font-weight-bold text-menu">
+			<g:render template="formatConsommation" model="[value: defi?.reference_global(), precision: 0]"/>
+		</h4>
 	</div>
 </div>
 <div class="row">
@@ -103,11 +107,15 @@
 	</div>
 	<g:each var="conso" in="${ consos }" status="status">
 		<div class="col border-bottom border-right p-2 text-center">
-			<h4 class="text-primary font-weight-bold">${ conso.action_global() != null ? conso.action_global() : '-' }<span style="font-size: x-small;">kWh</span></h4>
+			<h4 class="text-primary font-weight-bold">
+				<g:render template="formatConsommation" model="[value: conso.action_global(), precision: 0]"/>
+			</h4>
 		</div>
 	</g:each>
 	<div class="col border-bottom p-2 text-center bg-menu">
-		<h4 class="font-weight-bold text-menu">${ defi?.action_global() != null ? defi?.action_global()  : '-' }<span style="font-size: x-small;">kWh</span></h4>
+		<h4 class="font-weight-bold text-menu">
+			<g:render template="formatConsommation" model="[value: defi?.action_global(), precision: 0]"/>
+		</h4>
 	</div>
 </div>
 <div class="row">
