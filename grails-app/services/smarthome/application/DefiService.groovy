@@ -17,6 +17,8 @@ import smarthome.automation.deviceType.Compteur
 import smarthome.core.AbstractService
 import smarthome.core.Chronometre
 import smarthome.core.CompteurUtils
+import smarthome.core.Config
+import smarthome.core.ConfigService
 import smarthome.core.NumberUtils
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
@@ -37,6 +39,7 @@ class DefiService extends AbstractService {
 
 	HouseService houseService
 	DefiCalculRuleService defiCalculRuleService
+	ConfigService configService
 
 
 	/**
@@ -118,9 +121,10 @@ class DefiService extends AbstractService {
 	List<Map> classementEquipe(Defi defi, Map pagination) {
 		return DefiEquipe.executeQuery("""\
 			SELECT new map(defiEquipe.libelle as libelle, defiEquipe.economie_global as economie,
-			defiEquipe as resultat)
+			defiEquipe as resultat, defiEquipe.classement_global as classement)
 			FROM DefiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi
+			AND defiEquipe.classement_global is not null
 			ORDER BY defiEquipe.classement_global""", [defi: defi], pagination)
 	}
 
@@ -140,7 +144,7 @@ class DefiService extends AbstractService {
 
 			if (!existEquipe) {
 				classement << [libelle: defiEquipe.libelle, economie: defiEquipe.economie_global,
-					resultat: defiEquipe]
+					resultat: defiEquipe, classement: defiEquipe.classement_global]
 			}
 		}
 
@@ -166,7 +170,7 @@ class DefiService extends AbstractService {
 
 			if (!existEquipe) {
 				classement << [libelle: defiEquipe.libelle, economie: equipeProfil.economie_global,
-					resultat: equipeProfil]
+					resultat: equipeProfil, classement: equipeProfil.classement_global]
 			}
 		}
 
@@ -185,10 +189,11 @@ class DefiService extends AbstractService {
 	List<Map> classementEquipeProfil(Defi defi, Profil profil, Map pagination) {
 		return DefiEquipeProfil.executeQuery("""\
 			SELECT new map(defiEquipe.libelle as libelle, defiEquipeProfil.economie_global as economie,
-			defiEquipeProfil as resultat)
+			defiEquipeProfil as resultat, defiEquipeProfil.classement_global as classement)
 			FROM DefiEquipeProfil defiEquipeProfil
 			JOIN defiEquipeProfil.defiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi AND defiEquipeProfil.profil = :profil
+			AND defiEquipeProfil.classement_global is not null
 			ORDER BY defiEquipeProfil.classement_global""",
 				[defi: defi, profil: profil], pagination)
 	}
@@ -334,19 +339,6 @@ class DefiService extends AbstractService {
 
 
 	/**
-	 * Vérifie qu"un user est bien enregistré sur un défi
-	 * 
-	 * @param defi
-	 * @param user
-	 */
-	void checkUserDefi(Defi defi, User user) throws SmartHomeException {
-		if (!findUserResultat(defi, user)) {
-			throw new SmartHomeException("Accès refusé au défi !")
-		}
-	}
-
-
-	/**
 	 * Le nombre d'équipes pour le défi
 	 *
 	 * @param defi
@@ -430,13 +422,13 @@ class DefiService extends AbstractService {
 		}
 
 		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)']
+		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
 
 		return chart
 	}
@@ -467,13 +459,13 @@ class DefiService extends AbstractService {
 		}
 
 		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)']
+		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
 
 		return chart
 	}
@@ -497,7 +489,7 @@ class DefiService extends AbstractService {
 		// regroupe les données par profil et pour chacun récupère le
 		if (defi?.canDisplay()) {
 			classement?.each {
-				chart.values << [equipe: it.libelle, economie: it.economie]
+				chart.values << [equipe: "${it.classement} - ${it.libelle}", economie: it.economie]
 			}
 		}
 
@@ -584,14 +576,14 @@ class DefiService extends AbstractService {
 			"new Date(${it.dateValue[Calendar.YEAR]}, ${it.dateValue[Calendar.MONTH]}, ${it.dateValue[Calendar.DAY_OF_MONTH]})"
 		}.join(",")
 
-		chart.colonnes << new GoogleDataTableCol(label: "Date", property: "dateValue", type: "datetime")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Date", property: "dateValue", type: "date")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)']
+		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
 
 		return chart
 	}
@@ -650,13 +642,13 @@ class DefiService extends AbstractService {
 		chart.hAxisTicks = chart.values.collect { "'S${ statut++}'" }.join(",")
 
 		chart.colonnes << new GoogleDataTableCol(label: "Semaine", property: "week", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)']
+		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
 
 		return chart
 	}
@@ -846,6 +838,17 @@ class DefiService extends AbstractService {
 
 
 	/**
+	 * Le groupe d'un participant
+	 * 
+	 * @param defiEquipeParticipant
+	 * @return
+	 */
+	String groupKeyParticipant(DefiEquipeParticipant defiEquipeParticipant) {
+		return defiCalculRuleService.executeMethod(defiEquipeParticipant, "groupKeyParticipant", true, null)
+	}
+
+
+	/**
 	 * Calcul des consommations du défi à chacun des niveaux
 	 * Supprime également tous les résultats car ceux-ci dépendent des consos
 	 * 
@@ -856,6 +859,14 @@ class DefiService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Defi calculerConsommations(Defi defi) throws SmartHomeException {
 		Chronometre chrono = new Chronometre()
+
+		// precision des consos en config
+		int precision = 0
+		String configPrecision = configService.value(Config.GRAND_DEFI_CONSOMMATION_PRECISION)
+
+		if (configPrecision) {
+			precision = configPrecision.toInteger()
+		}
 
 		// charge tous les profils défi et reset sur la liste du défi
 		// pour au final détecter les orphelins
@@ -900,15 +911,15 @@ class DefiService extends AbstractService {
 						// calcul conso elec
 						if (house[DefiCompteurEnum.electricite.property]) {
 							consos = loadUserConso(defi, house, DefiCompteurEnum.electricite)
-							participant.reference_electricite = consos.totalReference
-							participant.action_electricite = consos.totalAction
+							participant.reference_electricite = NumberUtils.round(consos.totalReference, precision)
+							participant.action_electricite = NumberUtils.round(consos.totalAction, precision)
 						}
 
 						// calcul conso gaz
 						if (house[DefiCompteurEnum.gaz.property]) {
 							consos = loadUserConso(defi, house, DefiCompteurEnum.gaz)
-							participant.reference_gaz = consos.totalReference
-							participant.action_gaz = consos.totalAction
+							participant.reference_gaz = NumberUtils.round(consos.totalReference, precision)
+							participant.action_gaz = NumberUtils.round(consos.totalAction, precision)
 						}
 					}
 				}
@@ -923,10 +934,10 @@ class DefiService extends AbstractService {
 				defiEquipe.cleanResultat()
 
 				// calcul total au niveau équipe
-				defiEquipe.reference_electricite = NumberUtils.round(defiEquipe.participants.sum { it.reference_electricite ?: 0 })
-				defiEquipe.reference_gaz = NumberUtils.round(defiEquipe.participants.sum { it.reference_gaz ?: 0 })
-				defiEquipe.action_electricite = NumberUtils.round(defiEquipe.participants.sum { it.action_electricite ?: 0 })
-				defiEquipe.action_gaz = NumberUtils.round(defiEquipe.participants.sum { it.action_gaz ?: 0 })
+				defiEquipe.reference_electricite = NumberUtils.round(defiEquipe.participants.sum { it.reference_electricite ?: 0 }, precision)
+				defiEquipe.reference_gaz = NumberUtils.round(defiEquipe.participants.sum { it.reference_gaz ?: 0 }, precision)
+				defiEquipe.action_electricite = NumberUtils.round(defiEquipe.participants.sum { it.action_electricite ?: 0 }, precision)
+				defiEquipe.action_gaz = NumberUtils.round(defiEquipe.participants.sum { it.action_gaz ?: 0 }, precision)
 
 				// calcul au niveau équipe-profil. ajout des éléments manquans
 				// en fonction des groupes calculés au niveau des participants
@@ -945,10 +956,10 @@ class DefiService extends AbstractService {
 					defiEquipe.profils << defiEquipeProfil
 
 					defiEquipeProfil.cleanResultat()
-					defiEquipeProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
-					defiEquipeProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 })
-					defiEquipeProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 })
-					defiEquipeProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 })
+					defiEquipeProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 }, precision)
+					defiEquipeProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 }, precision)
+					defiEquipeProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 }, precision)
+					defiEquipeProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 }, precision)
 				}
 			}
 
@@ -968,19 +979,19 @@ class DefiService extends AbstractService {
 				defi.profils << defiProfil
 
 				defiProfil.cleanResultat()
-				defiProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 })
-				defiProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 })
-				defiProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 })
-				defiProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 })
+				defiProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 }, precision)
+				defiProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 }, precision)
+				defiProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 }, precision)
+				defiProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 }, precision)
 			}
 		}
 
 		// dernière passe pour le calcul total du défi avec les sous-résultats par équipe
 		defi.cleanResultat()
-		defi.reference_electricite = NumberUtils.round(defiEquipes.sum { it.reference_electricite ?: 0 })
-		defi.reference_gaz = NumberUtils.round(defiEquipes.sum { it.reference_gaz ?: 0 })
-		defi.action_electricite = NumberUtils.round(defiEquipes.sum { it.action_electricite ?: 0 })
-		defi.action_gaz = NumberUtils.round(defiEquipes.sum { it.action_gaz ?: 0 })
+		defi.reference_electricite = NumberUtils.round(defiEquipes.sum { it.reference_electricite ?: 0 }, precision)
+		defi.reference_gaz = NumberUtils.round(defiEquipes.sum { it.reference_gaz ?: 0 }, precision)
+		defi.action_electricite = NumberUtils.round(defiEquipes.sum { it.action_electricite ?: 0 }, precision)
+		defi.action_gaz = NumberUtils.round(defiEquipes.sum { it.action_gaz ?: 0 }, precision)
 
 		// gestion des orphelins : équipe sans participant, ancien profil équipe
 		// ou défi d'un ancien calcul et après modification des participants du

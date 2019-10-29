@@ -19,10 +19,11 @@ class DefiEquipeParticipant extends AbstractDefiResultat {
 
 	// propriétés utilisateur
 	House house
+	String groupKey
 
-	
-	static transients = ['house']
-	
+
+	static transients = ['house', 'groupKey']
+
 	static belongsTo = [defiEquipe: DefiEquipe, user: User]
 
 	static constraints = {

@@ -53,13 +53,6 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		List<DefiEquipeParticipant> participants = parameters.participants
 		List equipeProfils = []
 
-		// calcul des notes simples au niveau participant
-		participants.each {
-			it.economie_electricite = noteEconomie(it.evolution_electricite())
-			it.economie_gaz = noteEconomie(it.evolution_gaz())
-			it.economie_global = noteEconomie(it.evolution_global())
-		}
-
 		// regroupement des participants par catégorie (profil du user)
 		// et sous-catégorie (mode de chauffage en 3 groupes : ELEC, GN, US)
 		// on doit au maximum avoir 9 groupes : 3 profils x 3 catégories
@@ -75,13 +68,35 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 
 			if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
 				result.gaz = moyenneGeneraleEvolution(values, DefiCompteurEnum.gaz)
-				println "Moyenne générale ${key} gaz : ${result.gaz}"
 			} else {
 				result.electricite = moyenneGeneraleEvolution(values, DefiCompteurEnum.electricite)
-				println "Moyenne générale ${key} elec : ${result.electricite}"
 			}
 
 			[(key): result]
+		}
+
+		// calcul des notes au niveau participant. Les notes sont calculées par catégorie
+		// et le calcul dépend de la catégorie. Si ELEC ou GN, les notes dépendent
+		// de la moyenne générale (par catégorie et profil). Sinon si US, la note
+		// c'est simplement l'évolution
+		// la note globale, c'est la moyenne des notes elec et gaz
+		participantsGroup.each { key, value ->
+			value.each { participant ->
+				// ATTENTION : pas de calcul elec pour les GN car déjà pris en compte dans US
+				// et pas de calcul gaz pour les autres
+				if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
+					participant.economie_gaz = noteParticipant(key, participant, DefiCompteurEnum.gaz)
+				} else {
+					participant.economie_electricite = noteParticipant(key, participant, DefiCompteurEnum.electricite)
+				}
+				// on ne peut pas faire le calcul du global car le participant GN
+				// appartient aussi au groupe US, donc dans cette boucle il peut
+				// encore manquer l'une ou l'autre des valeurs pour faire la moyenne
+			}
+		}
+		participants.each { participant ->
+			participant.economie_global = moyenne(participant.economie_electricite,
+					participant.economie_gaz)
 		}
 
 		// calcul des notes par équipe / profil dans un 1er temps puis note finale
@@ -109,10 +124,10 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 					def result = [electricite: null, gaz: null]
 
 					if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
-						result.gaz = noteEconomie(moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.gaz))
+						result.gaz = noteCategorieEquipe(key, values, DefiCompteurEnum.gaz)
 						println "Moyenne équipe ${equipe.libelle} ${key} gaz : ${result.gaz}"
 					} else {
-						result.electricite = noteEconomie(moyenneEvolutionGroupeEquipe(key, values, DefiCompteurEnum.electricite))
+						result.electricite = noteCategorieEquipe(key, values, DefiCompteurEnum.electricite)
 						println "Moyenne équipe ${equipe.libelle} ${key} elec : ${result.electricite}"
 					}
 
@@ -139,15 +154,15 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 
 		// calcul note simple au niveau profil defi
 		defi.profils.each { DefiProfil defiProfil ->
-			defiProfil.economie_electricite = noteProfil(defiProfil.profil, noteEconomie(defiProfil.evolution_electricite()))
-			defiProfil.economie_gaz = noteProfil(defiProfil.profil, noteEconomie(defiProfil.evolution_gaz()))
-			defiProfil.economie_global = noteProfil(defiProfil.profil, noteEconomie(defiProfil.evolution_global()))
+			defiProfil.economie_electricite = noteProfil(defiProfil.profil, defiProfil.evolution_electricite())
+			defiProfil.economie_gaz = noteProfil(defiProfil.profil, defiProfil.evolution_gaz())
+			defiProfil.economie_global = noteProfil(defiProfil.profil, defiProfil.evolution_global())
 		}
 
 		// calcul note simple au niveau défi
-		defi.economie_electricite = noteEconomie(defi.evolution_electricite())
-		defi.economie_gaz = noteEconomie(defi.evolution_gaz())
-		defi.economie_global = noteEconomie(defi.evolution_global())
+		defi.economie_electricite = defi.evolution_electricite()
+		defi.economie_gaz = defi.evolution_gaz()
+		defi.economie_global = defi.evolution_global()
 
 		// ---------------------------------------------------------------------
 		// CLASSEMENTS
@@ -190,7 +205,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 	 * @param participant
 	 * @return
 	 */
-	private String groupKeyParticipant(DefiEquipeParticipant participant) {
+	String groupKeyParticipant(DefiEquipeParticipant participant) {
 		if (participant.house?.chauffage?.id == CHAUFFAGE_ELEC_ID) {
 			return "${participant.user.profil.id}${SUFFIX_ELECTRICITE}"
 		} else if (participant.house?.chauffage?.id == CHAUFFAGE_GN_ID) {
@@ -213,6 +228,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 
 		participants.each { participant ->
 			String groupKey = groupKeyParticipant(participant)
+			participant.groupKey = groupKey
 
 			if (result[(groupKey)] == null) {
 				result[(groupKey)] = []
@@ -298,7 +314,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	private Double moyenneEvolutionGroupeEquipe(String groupKey, def resultatList, DefiCompteurEnum compteurType) throws SmartHomeException {
+	private Double noteCategorieEquipe(String groupKey, def resultatList, DefiCompteurEnum compteurType) throws SmartHomeException {
 		def filterList = resultatList.findAll { it."evolution_${compteurType}"() != null }
 		Double note
 
@@ -324,18 +340,34 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 
 
 	/**
-	 * Calcul l'économie par rapport à l'évolution de la conso
-	 * C'est l'inverse (si 3% augmentation, alors c'est -3% d'économie)
+	 * Calcule la note d'un participant en fonction de son évolution et de sa
+	 * catégorie
 	 * 
-	 * @param evolution
+	 * @param groupKey
+	 * @param participant
+	 * @param compteurType
 	 * @return
 	 */
-	private Double noteEconomie(Double evolution) {
-		if (evolution == null) {
-			return null
-		} else {
-			return evolution
+	private Double noteParticipant(String groupKey, def participant, DefiCompteurEnum compteurType) {
+		Double note
+
+		if (participant."evolution_${compteurType}"() != null) {
+			note = participant."evolution_${compteurType}"()
+
+			if (! groupKey.endsWith(SUFFIX_USAGE_SPECIFIQUE)) {
+				// si il y a ce profil sur cette équipe, c'est que forcément
+				// il était présent dans la liste des participants et doit
+				// forcément apparaître dans les groupes de moyenne. S'il n'y
+				// est pas, c'est que problème quelque part
+				if (moyenneGeneraleGroup[(groupKey)] == null || moyenneGeneraleGroup[(groupKey)][(compteurType.toString())] == null) {
+					throw new SmartHomeException("La moyenne ${compteurType} du groupe ${groupKey} n'existe pas !")
+				}
+
+				note = note - moyenneGeneraleGroup[(groupKey)][(compteurType.toString())]
+			}
 		}
+
+		return note
 	}
 
 

@@ -1,16 +1,16 @@
 package smarthome.rule
 
-import java.util.List;
-import java.util.Map;
+import java.util.List
+import java.util.Map
 
-import smarthome.core.ApplicationUtils;
-import smarthome.core.ClassUtils;
-import smarthome.core.ScriptRule;
-import smarthome.core.SmartHomeException;
-import smarthome.rule.Rule;
-import grails.plugin.springsecurity.SpringSecurityService;
-import grails.util.Environment;
-import groovy.lang.Closure;
+import smarthome.core.ApplicationUtils
+import smarthome.core.ClassUtils
+import smarthome.core.ScriptRule
+import smarthome.core.SmartHomeException
+import smarthome.rule.Rule
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.util.Environment
+import groovy.lang.Closure
 
 /**
  * Exécution d'un script Groovy enregistré en base
@@ -21,45 +21,45 @@ import groovy.lang.Closure;
 class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 
 	SpringSecurityService springSecurityService
-	
-	
+
+
 	@Override
 	O executeFromScript(String script, I object) throws SmartHomeException {
 		return executeFromScript(script, object, [:])
 	}
-	
-	
+
+
 	@Override
 	O executeFromScript(String script, I object, Map parameters) throws SmartHomeException {
 		Rule rule = (Rule) ClassUtils.newInstance(script)
 		return this.executeRule(rule, object, parameters)
 	}
-	
-	
+
+
 	@Override
 	List<Map> executeBatch(List<Map> objects, boolean ruleObligatoire) throws SmartHomeException {
 		Rule rule = this.newRuleInstance(ruleObligatoire)
-		
+
 		if (rule) {
 			for (Map object : objects) {
 				object.result = this.executeRule(rule, object.object, object.parameters)
-			}	
+			}
 		}
-		
+
 		return objects
 	}
-	
-	
+
+
 	@Override
 	O execute(I object, boolean ruleObligatoire) throws SmartHomeException {
 		return execute(object, ruleObligatoire, [:])
 	}
-	
-	
+
+
 	@Override
 	O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
 		Rule rule = this.newRuleInstance(ruleObligatoire)
-		
+
 		if (rule) {
 			return executeRule(rule, object, parameters)
 		} else {
@@ -67,7 +67,25 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 		}
 	}
 
-	
+
+	@Override
+	Object executeMethod(Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
+		Rule rule = this.newRuleInstance(ruleObligatoire)
+
+		if (rule) {
+			injectParameters(rule, parameters)
+
+			try {
+				return rule."${method}"(object)
+			} catch (Exception e) {
+				throw new SmartHomeException(e)
+			}
+		} else {
+			return null
+		}
+	}
+
+
 	/**
 	 * Injecte les paramètres dans la règle
 	 * 
@@ -79,17 +97,17 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 			if (parameters == null) {
 				parameters = [:]
 			}
-			
+
 			// injecte par défaut le service spring security
 			parameters.springSecurityService = springSecurityService
-			
+
 			rule.parameters = parameters
 		}
-		
+
 		ApplicationUtils.autowireBean(rule)
-	} 
-	
-	
+	}
+
+
 	/**
 	 * Instancie la rule
 	 * 
@@ -97,11 +115,11 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	 */
 	private Rule newRuleInstance(boolean ruleObligatoire) throws SmartHomeException {
 		Rule rule
-		
+
 		// recherche de la règle via la nom de l'implémentation (sans le mot Service de fin)
 		def className = this.class.name.substring(0, this.class.name.length()-7)
-		
-		
+
+
 		if (Environment.getCurrent() != Environment.PRODUCTION) {
 			try {
 				rule = (Rule) ClassUtils.forNameInstance(className)
@@ -110,20 +128,20 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 			}
 		} else {
 			ScriptRule scriptRule = ScriptRule.findByRuleName(className)
-			
+
 			if (scriptRule) {
 				rule = (Rule) ClassUtils.newInstance(scriptRule.script)
 			}
 		}
-		
+
 		if (!rule && ruleObligatoire) {
 			throw new SmartHomeException("Règle obligatoire $className introuvable !")
 		}
-		
+
 		return rule
 	}
-	
-	
+
+
 	/**
 	 * Exécution de la règle
 	 * 
@@ -133,8 +151,9 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-    private O executeRule(Rule rule, I object, Map parameters) throws SmartHomeException {
+	private O executeRule(Rule rule, I object, Map parameters) throws SmartHomeException {
 		injectParameters(rule, parameters)
 		return rule.execute(object)
 	}
+
 }

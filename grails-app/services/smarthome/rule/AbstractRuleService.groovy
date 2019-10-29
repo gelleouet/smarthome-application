@@ -1,9 +1,9 @@
 package smarthome.rule
 
-import java.util.List;
-import java.util.Map;
+import java.util.List
+import java.util.Map
 
-import smarthome.core.SmartHomeException;
+import smarthome.core.SmartHomeException
 import grails.transaction.Transactional
 
 
@@ -16,6 +16,19 @@ import grails.transaction.Transactional
 abstract class AbstractRuleService<I, O> {
 
 	/**
+	 * Exécution d'une méthode publique dans la règle en dehors de la méthode
+	 * par défaut execute
+	 * 
+	 * @param object
+	 * @param method
+	 * @param parameters
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	abstract Object executeMethod(Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException
+
+
+	/**
 	 * Exécution d'une règle
 	 * 
 	 * @param object
@@ -23,9 +36,9 @@ abstract class AbstractRuleService<I, O> {
 	 * @return
 	 * @throws LimsException
 	 */
-    abstract O execute(I object, boolean ruleObligatoire) throws SmartHomeException;
-	
-	
+	abstract O execute(I object, boolean ruleObligatoire) throws SmartHomeException
+
+
 	/**
 	 * Exécution d'une règle en batch sur plusieurs objets.
 	 * Cela permet d'instancier une seule fois la règle et de l'utiliser plusieurs fois
@@ -39,9 +52,9 @@ abstract class AbstractRuleService<I, O> {
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	abstract List<Map> executeBatch(List<Map> objects, boolean ruleObligatoire) throws SmartHomeException;
-	
-	
+	abstract List<Map> executeBatch(List<Map> objects, boolean ruleObligatoire) throws SmartHomeException
+
+
 	/**
 	 * Exécution d'une règle avec des paramètres supplémentaires
 	 *
@@ -51,9 +64,9 @@ abstract class AbstractRuleService<I, O> {
 	 * @return
 	 * @throws LimsException
 	 */
-	abstract O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException;
-	
-	
+	abstract O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException
+
+
 	/**
 	 * Exécution d'une règle fournie via un script
 	 * 
@@ -62,9 +75,9 @@ abstract class AbstractRuleService<I, O> {
 	 * @return
 	 * @throws LimsException
 	 */
-	abstract O executeFromScript(String script, I Object) throws SmartHomeException;
-	
-	
+	abstract O executeFromScript(String script, I Object) throws SmartHomeException
+
+
 	/**
 	 * Exécution d'une règle fournie via un script avec des paramètres supplémentaires
 	 * 
@@ -74,5 +87,5 @@ abstract class AbstractRuleService<I, O> {
 	 * @return
 	 * @throws LimsException
 	 */
-	abstract O executeFromScript(String script, I Object, Map parameters) throws SmartHomeException;
+	abstract O executeFromScript(String script, I Object, Map parameters) throws SmartHomeException
 }

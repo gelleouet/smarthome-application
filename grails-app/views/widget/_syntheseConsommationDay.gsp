@@ -42,16 +42,16 @@
 							</div>
 						</g:link>
 						
-						<h6>Dernier relevé : ${ app.formatTimeAgo(date: compteur.dateValue) }</h6>
+						<h6 class="mt-2">Dernier relevé : ${ app.formatTimeAgo(date: compteur.dateValue) }</h6>
 					</div>
 					
 					<div class="mt-4">
 						<div class="row bg-menu rounded p-2">
-							<div class="col-7">
+							<div class="col-7 text-center">
 								<strong>Consommation moyenne sur les 7 derniers jours</strong>
 							</div>
-							<div class="col align-middle">
-								<strong>${ consoMoyenne }${ defaultUnite }</strong>
+							<div class="col text-center">
+								<strong>${ consoMoyenne } ${ defaultUnite }</strong>
 							</div>
 						</div>
 					</div>

@@ -132,13 +132,13 @@ class CompteurGaz extends Compteur {
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
 
 		if (command.viewMode == ChartViewEnum.day) {
-			chart.colonnes << new GoogleDataTableCol(label: "Heures base", property: "value", type: "number")
+			chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", property: "value", type: "number")
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
 
 			chart.vAxis << [title: 'Consommation (Wh)']
 		} else {
 			// les consos sont converties en kWh
-			chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes << new GoogleDataTableCol(label: "Heures base (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 				return CompteurUtils.convertWhTokWh(deviceValue.value)
 			})
 			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
@@ -179,7 +179,7 @@ class CompteurGaz extends Compteur {
 		}.sort { it.key }
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
-		chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+		chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 			deviceValue.value.prix
 		})
 

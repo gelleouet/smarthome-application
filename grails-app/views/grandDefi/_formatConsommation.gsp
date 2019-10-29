@@ -1,7 +1,7 @@
 <%@ page import="smarthome.core.NumberUtils" %>
 
 <g:if test="${ value != null }">
-	<g:formatNumber number="${ NumberUtils.round(value, precision != null ? precision : 1) }" format="### ### ### ###.#" groupingUsed="true"/>	
+	<g:formatNumber number="${ value }" format="###,###,###,###.##"/>	
 </g:if>
 <g:else>
 -

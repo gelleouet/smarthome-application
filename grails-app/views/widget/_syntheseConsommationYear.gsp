@@ -36,7 +36,7 @@
 							</div>
 						</g:link>
 						
-						<h6>Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
+						<h6 class="mt-2">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
 						
 						<table class="table table-hover" style="margin-bottom:20px;">
 							<thead>

@@ -109,23 +109,23 @@ class TeleInformation extends Compteur {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hcinst" }?.value
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hpinst" }?.value
 				})
 
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc, targetAxisIndex: 0]
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp, targetAxisIndex: 0]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "baseinst" }?.value
 				})
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, targetAxisIndex: 0]
 			}
 
-			chart.colonnes << new GoogleDataTableCol(label: "Puissance max", type: "number", value: { deviceValue, index, currentChart ->
+			chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
 				(deviceValue.value.find{ !it.name }?.value ?: 0) * coefPuissance
 			})
 			chart.series << [type: 'line', color: SERIES_COLOR.puissance, targetAxisIndex: 1]
@@ -140,7 +140,7 @@ class TeleInformation extends Compteur {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", property: "key")
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -148,7 +148,7 @@ class TeleInformation extends Compteur {
 						return null
 					}
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchpsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -160,7 +160,7 @@ class TeleInformation extends Compteur {
 				chart.series << [type: 'bars', color: SERIES_COLOR.hc, targetAxisIndex: 0, annotation: true]
 				chart.series << [type: 'bars', color: SERIES_COLOR.hp, targetAxisIndex: 0, annotation: true]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base (kWh)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "basesum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -174,7 +174,7 @@ class TeleInformation extends Compteur {
 			chart.vAxis << [title: 'Consommation (kWh)']
 
 			if (!command.comparePreviousYear) {
-				chart.colonnes << new GoogleDataTableCol(label: "Puissance max", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
 					(deviceValue.value.find{ it.name == "max" }?.value ?:0) * coefPuissance
 				})
 
@@ -239,17 +239,17 @@ class TeleInformation extends Compteur {
 			})
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
 				})
 
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc]
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base]
@@ -284,13 +284,13 @@ class TeleInformation extends Compteur {
 			})
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' }", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHC"]
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' }", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixHP"]
 				})
-				chart.colonnes <<  new GoogleDataTableCol(label: "Total", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
+				chart.colonnes <<  new GoogleDataTableCol(label: "Total (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prix"]
 				})
 
@@ -298,7 +298,7 @@ class TeleInformation extends Compteur {
 				chart.series << [type: 'bars', color: SERIES_COLOR.hp]
 				chart.series << [type: 'bars', color: SERIES_COLOR.total, annotation: true]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
 				chart.series << [type: 'bars', color: SERIES_COLOR.base, annotation: true]
