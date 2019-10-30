@@ -480,10 +480,11 @@ class DefiService extends AbstractService {
 	 *
 	 * @param defi
 	 * @param classement
+	 * @param currentEquipe
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartClassement(Defi defi, List classement, String currentEquipe) {
+	GoogleChart chartClassement(Defi defi, List classement, DefiEquipe currentEquipe) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Bar.factory
@@ -498,11 +499,12 @@ class DefiService extends AbstractService {
 		}
 
 		DecimalFormat format = new DecimalFormat("0.#'%'")
+		String libelleEquipe = "${currentEquipe?.classement_global} - ${ currentEquipe?.libelle}"
 
 		chart.colonnes << new GoogleDataTableCol(label: "Equipe", property: "equipe", type: "string")
 		chart.colonnes << new GoogleDataTableCol(label: "Economie", property: "economie", type: "number")
 		chart.colonnes << new GoogleDataTableCol(role: "style", type: "string", value: { deviceValue, index, currentChart ->
-			"color:${ deviceValue.equipe == currentEquipe ? Compteur.SERIES_COLOR.conso : Compteur.SERIES_COLOR.total }"
+			"color:${ deviceValue.equipe == libelleEquipe ? Compteur.SERIES_COLOR.conso : (index == 0 ? '#ff9900' : Compteur.SERIES_COLOR.total) }"
 		})
 		chart.colonnes << new GoogleDataTableCol(role: "annotation", type: "string", value: { deviceValue, index, currentChart ->
 			deviceValue.economie == null ? "" : format.format(deviceValue.economie)

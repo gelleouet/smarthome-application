@@ -49,7 +49,7 @@
 				</g:link>
 			</li>
 			<li class="nav-item">
-				<g:link action="resultatsdefi" params="['defi.id': currentDefi?.id]" class="nav-link ${ viewName == 'resultatsdefi' ? 'active' : '' }">
+				<g:link action="resultatsdefi" params="['defi.id': currentDefi?.id, 'defiEquipe.id': equipe?.id]" class="nav-link ${ viewName == 'resultatsdefi' ? 'active' : '' }">
 					<app:icon name="award"/> Résultats Défi
 					<g:if test="${ equipe?.canDisplay() }">
 						&nbsp;<span class="badge badge-pill bg-menu">${ equipe.classement_global() } / ${ equipe.total_global() }</span>

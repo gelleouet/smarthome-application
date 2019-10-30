@@ -151,11 +151,9 @@ class GrandDefiService extends AbstractService {
 		// et le grand défi en cours
 		String configMaxClassement = configService.value(Config.GRAND_DEFI_MAX_CLASSEMENT)
 		int maxClassement = configMaxClassement ? configMaxClassement.toInteger() : MAX_CLASSEMENT
-		String libelleCurrentEquipe = null
 
 		if (model.currentDefi) {
 			model.equipe.profils = defiService.listEquipeProfilResultat(model.equipe)
-			libelleCurrentEquipe = model.equipe.libelle
 
 			// charge les résultats globals du défi
 			model.global.consos.values = defiService.listDefiProfilResultat(model.currentDefi)
@@ -183,11 +181,11 @@ class GrandDefiService extends AbstractService {
 				DefiCompteurEnum.global)
 
 		model.global.chartClassement = defiService.chartClassement(model.currentDefi,
-				model.global.classement, libelleCurrentEquipe)
+				model.global.classement, model.equipe)
 
 		for (Profil profil : model.profils) {
 			model["profil${ profil.id }"].chartClassement = defiService.chartClassement(model.currentDefi,
-					model["profil${ profil.id }"].classement, libelleCurrentEquipe)
+					model["profil${ profil.id }"].classement, model.equipe)
 		}
 
 		return model
