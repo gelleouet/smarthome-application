@@ -176,4 +176,18 @@ class GrandDefiController extends AbstractController {
 		model.viewName = "resultatsdefi"
 		render(view: 'resultatsdefi', model: model)
 	}
+
+
+	/**
+	 * Les participants du GDE
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def participants(DefiCommand command) {
+		command.user = authenticatedUser // spring security plugin
+		def model = grandDefiService.modelParticipants(command)
+		model.viewName = "participants"
+		render(view: 'participants', model: model)
+	}
 }

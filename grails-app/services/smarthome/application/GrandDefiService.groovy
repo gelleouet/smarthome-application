@@ -60,28 +60,47 @@ class GrandDefiService extends AbstractService {
 	private Map defaultModelResultat(DefiCommand command) throws SmartHomeException {
 		Map model = [user: command.user, command: command]
 
-		// recherche du compteur avec les consos
-		model.house = houseService.findDefaultByUser(command.user)
-
-		if (!model.house) {
-			throw new SmartHomeException("Profil incomplet !")
-		}
-
 		model.defis = defiService.listByUser(command, [max: 5])
 		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
 
 		if (model.currentDefi) {
-			model.participant = defiService.findUserResultat(model.currentDefi, command.user)
+			def myResultat = defiService.findUserResultat(model.currentDefi, command.user)
 
-			if (!model.participant) {
+			if (!myResultat) {
 				throw new SmartHomeException("Accès refusé au défi !")
+			}
+
+			// on se branche soit sur ses propres résultats, soit sur les résultats
+			// d'un autre participant
+			// la recherche de la config de la house doit s'adapter (elle sert pour
+			// le chargement des consos individuelles à partir des compteurs)
+			if (command.defiEquipeParticipant) {
+				model.participant = command.defiEquipeParticipant
+				model.house = houseService.findDefaultByUser(model.participant.user)
+			} else {
+				model.participant = myResultat
+				model.house = houseService.findDefaultByUser(command.user)
+			}
+
+			if (!model.house) {
+				throw new SmartHomeException("Profil incomplet !")
 			}
 
 			model.participant.house = model.house
 			// IMPORTANT !! bien associé le house avant de calculer le groupKey
 			// car il se base sur cette info
 			model.participant.groupKey = defiService.groupKeyParticipant(model.participant)
-			model.equipe = defiService.findEquipeResultat(model.currentDefi, command.user)
+
+			// on se branche soit sur une équipe indiquée soit sur l'équipe
+			// du user connecté
+			if (command.defiEquipe) {
+				model.equipe = command.defiEquipe
+			} else {
+				// ATTENTION !! on recherche l'équipe du participant et non pas du
+				// user connecté, car si participant sélectionné, on doit afficher
+				// son équipe
+				model.equipe = defiService.findEquipeResultat(model.currentDefi, model.participant.user)
+			}
 		}
 
 		// prépare le modèle par compteur
@@ -90,6 +109,26 @@ class GrandDefiService extends AbstractService {
 		model.electricite = [type: DefiCompteurEnum.electricite, consos: [:]]
 		model.gaz = [type: DefiCompteurEnum.gaz, consos: [:]]
 		model.global = [type: DefiCompteurEnum.global, consos: [:]]
+
+		return model
+	}
+
+
+	/**
+	 * Affichage participants / équipe
+	 * 
+	 * @param command
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	Map modelParticipants(DefiCommand command) throws SmartHomeException {
+		Map model = defaultModelResultat(command)
+
+		// liste tous les participants avec profil public
+		if (model.currentDefi) {
+			model.participants = defiService.listParticipantResultat(
+					new DefiCommand(defi: model.currentDefi, profilPublic: true), [:])
+		}
 
 		return model
 	}

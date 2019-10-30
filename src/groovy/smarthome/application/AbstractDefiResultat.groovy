@@ -315,6 +315,9 @@ abstract class AbstractDefiResultat implements Serializable {
 	 * @return
 	 */
 	AbstractDefiResultat injectResultat(Map result, DefiCompteurEnum defiCompteur) {
+		result.type = defiCompteur
+		result.resultat = this
+
 		if (canDisplay()) {
 			result.reference = this."reference_${ defiCompteur.toString() }"()
 			result.action = this."action_${ defiCompteur.toString() }"()
@@ -323,9 +326,8 @@ abstract class AbstractDefiResultat implements Serializable {
 			result.economie = this."economie_${ defiCompteur.toString() }"()
 			result.classement = this."classement_${ defiCompteur.toString() }"()
 			result.total = this."total_${ defiCompteur.toString() }"()
-			result.type = defiCompteur
-			result.resultat = this
 		}
+
 		return this
 	}
 

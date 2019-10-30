@@ -72,6 +72,14 @@
 	display: none;
 }
 
+.coupe {
+	/*background: url(../images/coupe.png) 50% 50% no-repeat;*/
+}
+
+.coupe li {
+	background-color: transparent;
+}
+
 
 table {
 	font-size: 14px;

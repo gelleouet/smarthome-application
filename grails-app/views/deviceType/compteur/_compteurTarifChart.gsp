@@ -31,6 +31,7 @@
 				</label>
 				<g:textField name="selectionCout" class="form-control" readonly="true"/> €
 				<a id="selectionCout-clear-button" class="btn btn-light ml-2" title="Effacer"><app:icon name="x"/></a>
+				&nbsp;<span class="text-muted" id="selectionCout-label"></span>
 			</div>
 		</form>
 		

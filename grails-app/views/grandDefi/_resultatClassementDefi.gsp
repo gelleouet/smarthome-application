@@ -37,47 +37,63 @@
 		
 		<g:set var="equipe1" value="${ data.classement ? data.classement[0].resultat : null }"/>
 	
-		<h3 class="ml-3">${ data.classement ? data.classement[0].libelle : '' }</h3>
-	
-		<ul class="list-group list-group-flush">
-		  <li class="list-group-item border-top-0">
-		  	<div class="row">
-		  		<div class="col-6">
-		  			<h5>Référence</h5>
-		  		</div>
-		  		<div class="col-6 text-right">
-		  			<h4 class="font-weight-bold">
-		  				<g:render template="formatConsommation" model="[value: equipe1?.reference_global(), precision: 0]"/>
-		  			</h4>
-		  		</div>
-		  	</div>
-		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
-		  </li>
-		  <li class="list-group-item">
-		  	<div class="row">
-		  		<div class="col-6">
-		  			<h5>Action</h5>
-		  		</div>
-		  		<div class="col-6 text-right">
-		  			<h4 class="font-weight-bold">
-		  				<g:render template="formatConsommation" model="[value: equipe1?.action_global(), precision: 0]"/>
-		  			</h4>
-		  		</div>
-		  	</div>
-		  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>
-		  </li>
-		  <li class="list-group-item">
-		  	<div class="row">
-		  		<div class="col-6">
-		  			<h5>Différence</h5>
-		  		</div>
-		  		<div class="col-6 text-right">
-		  			<h4 class="font-weight-bold">
-		  				<g:applyLayout name="arrow" model="[value: equipe1?.difference_global() != null ? equipe1?.difference_global() : '-', reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
-		  			</h4>
-		  		</div>
-		  	</div>
-		  </li>
-		</ul>
+		<div class="row bg-menu rounded">
+			<div class="col-7 py-2">
+				<h3 class="text-menu">
+					 <g:if test="${ type == 'equipe' }">
+					 	1er au classement général
+					 </g:if>
+					 <g:else>
+					 	1er dans la catégorie ${ type }
+					 </g:else>
+				</h3>
+			</div>
+			<div class="col py-2 text-right">
+				<h3 class="text-menu">${ data.classement ? data.classement[0].libelle : '' }</h3>
+			</div>
+		</div>
+		
+		<div class="coupe">		
+			<ul class="list-group list-group-flush">
+			  <li class="list-group-item border-top-0">
+			  	<div class="row">
+			  		<div class="col-6">
+			  			<h5>Référence</h5>
+			  		</div>
+			  		<div class="col-6 text-right">
+			  			<h4 class="font-weight-bold">
+			  				<g:render template="formatConsommation" model="[value: equipe1?.reference_global(), precision: 0]"/>
+			  			</h4>
+			  		</div>
+			  	</div>
+			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.referenceDebut }"/> au <app:formatUser date="${ defi?.referenceFin }"/></small>
+			  </li>
+			  <li class="list-group-item">
+			  	<div class="row">
+			  		<div class="col-6">
+			  			<h5>Action</h5>
+			  		</div>
+			  		<div class="col-6 text-right">
+			  			<h4 class="font-weight-bold">
+			  				<g:render template="formatConsommation" model="[value: equipe1?.action_global(), precision: 0]"/>
+			  			</h4>
+			  		</div>
+			  	</div>
+			  	<small class="text-muted" style="font-size:9pt;">Du <app:formatUser date="${ defi?.actionDebut }"/> au <app:formatUser date="${ defi?.actionFin }"/></small>
+			  </li>
+			  <li class="list-group-item">
+			  	<div class="row">
+			  		<div class="col-6">
+			  			<h5>Différence</h5>
+			  		</div>
+			  		<div class="col-6 text-right">
+			  			<h4 class="font-weight-bold">
+			  				<g:applyLayout name="arrow" model="[value: equipe1?.difference_global() != null ? equipe1?.difference_global() : '-', reference: 0]"><span style="font-size: x-small;">kWh</span></g:applyLayout>
+			  			</h4>
+			  		</div>
+			  	</div>
+			  </li>
+			</ul>
+		</div>
 	</div> <!-- div.col -->
 </div> <!-- div.row -->

@@ -1,4 +1,5 @@
 <%@ page import="smarthome.automation.ChartViewEnum" %>
+<%@ page import="smarthome.core.CompteurUtils" %>
 
 <g:set var="compteur" value="${ command.device.newDeviceImpl() }"/>
 
@@ -56,13 +57,34 @@
 					</g:else>	
 				</td>
 				<g:if test="${ compteur.optTarif in ['HC', 'EJP'] }">
-					<td style="text-align:center"><span class="link">${ data.value['kwhHC']?.round(1) }kWh</span></td>
-					<td style="text-align:center"><span class="link">${ data.value['prixHC']?.round(3) }€</span></td>
-					<td style="text-align:center"><span class="link">${ data.value['kwhHP']?.round(1) }kWh</span></td>
-					<td style="text-align:center"><span class="link">${ data.value['prixHP']?.round(3) }€</span></td>
+					<td style="text-align:center">
+						<g:if test="${ command.viewMode != ChartViewEnum.day }">
+							<span>${ CompteurUtils.convertWhTokWh(data.value['kwhHC']) }kWh</span>
+						</g:if>
+						<g:else>
+							<span>${ data.value['kwhHC']?.round(1) }Wh</span>
+						</g:else>
+					</td>
+					<td style="text-align:center"><span >${ data.value['prixHC']?.round(3) }€</span></td>
+					<td style="text-align:center">
+						<g:if test="${ command.viewMode != ChartViewEnum.day }">
+							<span>${ CompteurUtils.convertWhTokWh(data.value['kwhHP']) }kWh</span>
+						</g:if>
+						<g:else>
+							<span>${ data.value['kwhHP']?.round(1) }Wh</span>
+						</g:else>
+					</td>
+					<td style="text-align:center"><span >${ data.value['prixHP']?.round(3) }€</span></td>
 				</g:if>
-				<td style="text-align:center; font-weight:bold;"><span class="link">${ data.value['kwh']?.round(1) }kWh</span></td>
-				<td style="text-align:center; font-weight:bold;"><span class="link">${ data.value['prix']?.round(3) }€</span></td>
+				<td style="text-align:center; font-weight:bold;">
+					<g:if test="${ command.viewMode != ChartViewEnum.day }">
+							<span>${ CompteurUtils.convertWhTokWh(data.value['kwh']) }kWh</span>
+						</g:if>
+						<g:else>
+							<span>${ data.value['kwh']?.round(1) }Wh</span>
+						</g:else>
+				</td>
+				<td style="text-align:center; font-weight:bold;"><span >${ data.value['prix']?.round(3) }€</span></td>
 			</tr>
 		</g:each>
 	</tbody>
@@ -73,20 +95,20 @@
 		<td><strong>TOTAL</strong></td>
 		<g:if test="${ compteur.optTarif in ['HC', 'EJP'] }">
 			<td style="text-align:center; font-weight:bold;">
-				<g:formatNumber number="${ googleChartTarifValues?.sum { it.kwhHC ?: 0d } }" maxFractionDigits="1"/>kWh
+				<g:formatNumber number="${ CompteurUtils.convertWhTokWh(googleChartTarifValues?.sum { it.kwhHC ?: 0d }) }" maxFractionDigits="1"/>kWh
 			</td>
 			<td style="text-align:center; font-weight:bold;">
 				<g:formatNumber number="${ googleChartTarifValues?.sum { it.prixHC ?: 0d } }" maxFractionDigits="3"/>€
 			</td>
 			<td style="text-align:center; font-weight:bold;">
-				<g:formatNumber number="${ googleChartTarifValues?.sum { it.kwhHP ?: 0d } }" maxFractionDigits="1"/>kWh
+				<g:formatNumber number="${ CompteurUtils.convertWhTokWh(googleChartTarifValues?.sum { it.kwhHP ?: 0d }) }" maxFractionDigits="1"/>kWh
 			</td>
 			<td style="text-align:center; font-weight:bold;">
 				<g:formatNumber number="${ googleChartTarifValues?.sum { it.prixHP ?: 0d } }" maxFractionDigits="3"/>€
 			</td>
 		</g:if>
 		<td style="text-align:center; font-weight:bold;">
-			<g:formatNumber number="${ googleChartTarifValues?.sum{ it.kwh ?: 0d } }" maxFractionDigits="1"/>kWh
+			<g:formatNumber number="${ CompteurUtils.convertWhTokWh(googleChartTarifValues?.sum{ it.kwh ?: 0d }) }" maxFractionDigits="1"/>kWh
 		</td>
 		<td style="text-align:center; font-weight:bold;">
 			<g:formatNumber number="${ googleChartTarifValues?.sum{ it.prix ?: 0d } }" maxFractionDigits="3"/>€

@@ -31,7 +31,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue)]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
@@ -55,7 +55,7 @@
 					<div class="col">
 						<div class="btn-group-vertical">
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" params="[deviceId: house.compteurGaz.id]"><app:icon name="edit"/> Saisie index</g:link>
-							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id]"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue)]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
@@ -73,7 +73,11 @@
 			
 			<g:else>
 				
-				<h5 class="mb-4 font-weight-bold">Votre compteur gaz n'est pas encore configuré. Veuillez choisir le type de compteur installé chez vous et cliquez sur suivant :</h5>
+				<h5 class="font-weight-bold">Votre compteur gaz n'est pas encore configuré. Veuillez choisir le type de compteur installé chez vous et cliquez sur suivant.
+				</h5>
+				<h5 class="mt-1 mb-4 font-weight-bold">
+					<app:icon name="alert-circle"/> Si vous ne possédez pas de compteur gaz, vous n'avez pas besoin d'utiliser ce formulaire.
+				</h5>
 				
 				<g:form action="registerCompteur">
 					<g:hiddenField name="compteurType" value="gaz"/>

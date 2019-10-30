@@ -10,6 +10,7 @@
 //= require jquery-picklist.min
 //= require jquery.datetimepicker.full.min
 //= require app-stack
+//= require moment.min
 //= require_full_tree ./user
 //= require_self
 

@@ -18,6 +18,7 @@
 			</label>
 			<g:textField name="selectionConso" class="form-control" readonly="true"/> ${ command.viewMode == ChartViewEnum.day ? 'Wh' : 'kWh' }
 			<a id="selectionConso-clear-button" class="btn btn-light ml-2" title="Effacer"><app:icon name="x"/></a>
+			&nbsp;<span class="text-muted" id="selectionConso-label"></span>
 		</div>
 	</form>
 	

@@ -19,6 +19,7 @@ import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
+import smarthome.core.CompteurUtils
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -223,8 +224,8 @@ class TeleInformation extends Compteur {
 						} else {
 							name = 'BASE'
 						}
-						def kwh = deviceValue.value / 1000.0
-						resultValues["kwh${name}"] = kwh
+						def kwh = deviceValue.value / 1000
+						resultValues["kwh${name}"] = deviceValue.value
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
 				}
@@ -269,7 +270,7 @@ class TeleInformation extends Compteur {
 							name = 'BASE'
 						}
 						def kwh = deviceValue.value / 1000.0
-						resultValues["kwh${name}"] = kwh
+						resultValues["kwh${name}"] = deviceValue.value
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
 				}

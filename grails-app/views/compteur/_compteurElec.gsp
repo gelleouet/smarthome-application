@@ -31,7 +31,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id, dateChart: app.formatPicker(date: house.compteur.dateValue)]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteur.metadata('fournisseur') }">
@@ -55,7 +55,7 @@
 					<div class="col">
 						<div class="btn-group-vertical">
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="[deviceId: house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
-							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id]"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id, dateChart: app.formatPicker(date: house.compteur.dateValue)]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteur.metadata('fournisseur') }">

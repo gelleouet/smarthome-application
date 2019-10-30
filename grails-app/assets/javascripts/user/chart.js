@@ -97,13 +97,13 @@ function buildGoogleChart(divChart) {
 				var chartSelectFunction = function(event) {
 					$('#' + selectField).val('')
 			  		var interval = chartSelectionInterval(chart)
-			  		var sum = chartSelectionSumInterval(chartDatas, interval)
-			  		$('#' + selectField).val(sum ? sum : '')
+			  		chartSelectionSumInterval(chartDatas, interval, selectField)
 			  	}
 				
 				// attache un listener sur le bouton de suppression selection
 				$('#' + selectField + '-clear-button').on('click', function(event) {
 					$('#' + selectField).val('')
+					$('#' + selectField + '-label').html('')
 					chart.setSelection()
 				})
 				
@@ -211,15 +211,24 @@ function chartSelectionInterval(chart) {
 }
 
 
-function chartSelectionSumInterval(chartDatas, interval) {
+function chartSelectionSumInterval(chartDatas, interval, selectField) {
 	var sum
+	var text = ""
 	
-	if (interval.column != undefined) {
+	if (interval.column) {
 		sum = 0
+		text = "Du " + datetimeToStr(chartDatas.getValue(interval.minRow, 0)) + 
+			" au " + datetimeToStr(chartDatas.getValue(interval.maxRow, 0))
+		
 		for (var idx=interval.minRow; idx<=interval.maxRow; idx++) {
 			sum += chartDatas.getValue(idx, interval.column)
 		}
+		
+		sum = Math.round(sum * 100) / 100
 	}
+	
+	$('#' + selectField).val(sum ? sum : '')
+	$('#' + selectField + '-label').html(text)
 	
 	return sum
 }

@@ -286,3 +286,12 @@ function initIcon() {
 }
 
 
+function dateToStr(date) {
+	var object = moment(date)
+	return object.format("DD/MM/YYYY")
+}
+
+function datetimeToStr(date) {
+	var object = moment(date)
+	return object.format("DD/MM/YYYY HH:mm:ss")
+}

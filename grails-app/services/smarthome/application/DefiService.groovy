@@ -244,6 +244,10 @@ class DefiService extends AbstractService {
 			hql.addCriterion("defiEquipe.id = :defiEquipeId", [defiEquipeId: command.defiEquipe.id])
 		}
 
+		if (command.profilPublic) {
+			hql.addCriterion("user.profilPublic = :profilPublic", [profilPublic: true])
+		}
+
 		hql.addOrder("user.prenom")
 		hql.addOrder("user.nom")
 

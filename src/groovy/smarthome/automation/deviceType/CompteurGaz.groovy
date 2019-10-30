@@ -174,8 +174,8 @@ class CompteurGaz extends Compteur {
 		// métrique chargée. donc le regroupement de renvoit qu'une seule valeur
 		// par groupe
 		chart.values = values.groupBy { it.dateValue }.collectEntries { entry ->
-			def conso = CompteurUtils.convertWhTokWh(entry.value[0].value)
-			[(entry.key): [kwh: conso, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
+			def kwh = entry.value[0].value / 1000
+			[(entry.key): [kwh: entry.value[0].value, prix: command.deviceImpl.calculTarif(contrat, kwh, entry.key[Calendar.YEAR])]]
 		}.sort { it.key }
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
