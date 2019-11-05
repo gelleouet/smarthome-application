@@ -21,15 +21,21 @@
 							<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application/wiki"><i class="align-middle fab fa-github"></i> Wiki</a>
 						</li>
 					</g:if>
-					<li class="list-inline-item">
-						<a class="btn mb-1 btn-twitter" href="${g.meta(name: 'app.twitter') }"><i class="align-middle fab fa-twitter"></i> Twitter</a>
-					</li>
-					<li class="list-inline-item">
-						<a class="btn mb-1 btn-facebook" href="${g.meta(name: 'app.facebook') }"><i class="align-middle fab fa-facebook"></i> Facebook</a>
-					</li>
-					<li class="list-inline-item">
-						<a class="btn mb-1 btn-instagram" href="${g.meta(name: 'app.instagram') }"><i class="align-middle fab fa-instagram"></i> Instagram</a>
-					</li>
+					<g:if test="${ g.meta(name: 'app.twitter') }">
+						<li class="list-inline-item">
+							<a class="btn mb-1 btn-twitter" href="${ g.meta(name: 'app.twitter') }"><i class="align-middle fab fa-twitter"></i> Twitter</a>
+						</li>
+					</g:if>
+					<g:if test="${ g.meta(name: 'app.facebook') }">
+						<li class="list-inline-item">
+							<a class="btn mb-1 btn-facebook" href="${g.meta(name: 'app.facebook') }"><i class="align-middle fab fa-facebook"></i> Facebook</a>
+						</li>
+					</g:if>
+					<g:if test="${ g.meta(name: 'app.instagram') }">
+						<li class="list-inline-item">
+							<a class="btn mb-1 btn-instagram" href="${g.meta(name: 'app.instagram') }"><i class="align-middle fab fa-instagram"></i> Instagram</a>
+						</li>
+					</g:if>
 				</ul>
 		    </div>
 			<div class="col text-right">
