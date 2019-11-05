@@ -825,3 +825,13 @@ input.form-control.medium {
 	left: 0;
 	opacity: 0;*/
 }
+
+ul.pagination {
+	display: inline-flex;
+}
+
+div.dataTables_paginate ul.pagination li.paginate_button {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}

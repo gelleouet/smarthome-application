@@ -4,34 +4,40 @@
 function formatDataTable() {
 	$('.app-datatable').each(function(index) {
 		var $element = $(this)
-		
+		var isPaginateClient = $element.attr('data-client-pagination') == 'true' 
+		var paginateInfo = ""
+			
+		if (isPaginateClient) {
+			paginateInfo = "_START_ à _END_ sur _TOTAL_"
+		} else if ($element.attr('paginatetotal') > 0 && $element.attr('paginatedebut') > 0) {
+			paginateInfo = $element.attr('paginatedebut') + ' à ' + $element.attr('paginatefin') + ' sur ' + $element.attr('paginatetotal');
+		}
+			
 		$element.DataTable({
 			'destroy': true,
 			'lengthMenu': 50,
-			'paging': $element.attr('data-client-pagination') == 'true',
+			'paging': isPaginateClient,
 			'lengthChange': false,
 			'searching': false,
 			'pageLength': 25,
 			'order': [],
 			'language': {
-			    'emptyTable': 'Aucune donnée trouvée'
+			    emptyTable: 'Aucune donnée trouvée',
+			    info : paginateInfo,
+			    paginate: {
+			    	first: 'Premier',
+			    	last: 'Dernier',
+			    	previous: 'Précédent',
+			    	next: 'Suivant'
+			    }
 			  }
 		});
 	}) 
 	
-	// réécriture des infos de pagination liées à chaque table
-	$('.dataTables_info').each(function() {
-		var datable = $(this).parents('div.dataTables_wrapper').first().find('table');
-		var msgInfo = '';
-		
-		if (datable.attr('paginatetotal') > 0 && datable.attr('paginatedebut') > 0) {
-			msgInfo = datable.attr('paginatedebut') + ' à ' + datable.attr('paginatefin') + ' sur ' + datable.attr('paginatetotal');
-		}
-		
-		$(this).html(msgInfo);
-	});
+	// englobage dans un un li
+	$('ul.pagination a:not([aria-controls])').addClass('page-link').wrap('<li class="page-item"></li>')
 	
-	$('ul.pagination').addClass('text-center')
-	$('ul.pagination span.currentStep').addClass('page-item page-link active')
-	$('ul.pagination a').addClass('page-item page-link')
+	// remplace le bouton en cours
+	$('ul.pagination span.currentStep').wrap('<li class="page-item active"></li>')
+	$('ul.pagination span.currentStep').contents().unwrap().wrap('<a class="page-link"></a>');
 }
