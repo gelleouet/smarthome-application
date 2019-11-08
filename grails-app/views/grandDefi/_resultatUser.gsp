@@ -121,17 +121,24 @@
 				<div class="col border-bottom border-right text-center p-2">
 					<h5 class="font-weight-bold">Evolution de mes consommations</h5>
 				</div>
+				<g:if test="${ data.consos.type?.toString() != 'global' }">
+					<div class="col border-bottom border-right text-center p-2">
+						<h5 class="font-weight-bold">Moyenne des évolutions des consommations</h5>
+					</div>
+				</g:if>
 				<div class="col border-bottom border-right text-center p-2">
-					<h5 class="font-weight-bold">Economie</h5>
-					<small class="text-muted">
-						<g:if test="${ data.consos.type?.toString() == 'global' }">
-							(Moyenne des économies électricité et gaz naturel)
-						</g:if>
-						<g:elseif test="${ (participant?.groupKey?.contains('ELEC') && data.consos.type?.toString() == 'electricite') || 
-							(participant?.groupKey?.contains('GN') && data.consos.type?.toString() == 'gaz') }">
-							(Ecart par rapport à la moyenne des évolutions)
-						</g:elseif>
-					</small>
+					<g:if test="${ data.consos.type?.toString() == 'global' }">
+						<h5 class="font-weight-bold">Mes "économies"</h5>
+						<small class="text-muted">(Moyenne des économies électricité et gaz naturel)</small>
+					</g:if>
+					<g:elseif test="${ (participant?.groupKey?.contains('ELEC') && data.consos.type?.toString() == 'electricite') || 
+						(participant?.groupKey?.contains('GN') && data.consos.type?.toString() == 'gaz') }">
+						<h5 class="font-weight-bold">Mes "économies"</h5>
+						<small class="text-muted">(Différence entre mon évolution et la moyenne des évolutions)</small>
+					</g:elseif>
+					<g:else>
+						<h5 class="font-weight-bold">Mes économies</h5>
+					</g:else>
 				</div>
 				<div class="col border-bottom text-center p-2">
 					<h5 class="font-weight-bold">Mon classement dans le Grand Défi Energie</h5>
@@ -143,6 +150,15 @@
 						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
 					</h4>
 				</div>
+				<g:if test="${ data.consos.type?.toString() != 'global' }">
+					<div class="col border-right text-center p-2">
+						<h4 class="font-weight-bold">
+							<g:applyLayout name="arrow" model="[value: data.consos.moyenne != null ? data.consos.moyenne : '-', reference: 0]">
+								<span style="font-size:small;">%</span>
+							</g:applyLayout>
+						</h4>
+					</div>
+				</g:if>
 				<div class="col border-right text-center p-2">
 					<h4 class="font-weight-bold">
 						<g:applyLayout name="arrow" model="[value: data.consos.economie != null ? data.consos.economie : '-', reference: 0]">

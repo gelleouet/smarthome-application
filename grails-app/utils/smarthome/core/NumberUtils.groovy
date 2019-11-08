@@ -19,4 +19,26 @@ class NumberUtils {
 
 		return (value as Double).round(precision)
 	}
+
+
+	/**
+	 * Fonction simple de moyenne sur plusieurs valeurs
+	 * Il peut y avoir des valeurs nulles à ne pas prendre en compte
+	 *
+	 * @param valeurs
+	 * @return
+	 */
+	static Double moyenne(Double... valeurs) {
+		Double result
+
+		if (valeurs) {
+			List<Double> filterValeurs = valeurs.findAll { it != null }
+
+			if (filterValeurs) {
+				result = NumberUtils.round(filterValeurs.sum { it } / filterValeurs.size())
+			}
+		}
+
+		return result
+	}
 }

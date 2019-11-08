@@ -3,7 +3,15 @@
 
 <g:set var="currentDate" value="${ currentDate ?: new Date() }"/>
 
-<h4><g:if test="${ icon }"><app:icon name="${ icon }" lib="${ iconLib }"/></g:if> ${ title ?: 'Consommations mois' }</h4>
+<h4>
+<g:if test="${ typeCompteur == 'electricite' }">
+<asset:image src="linky.png" height="40px" width="40px" class="img-thumbnail rounded"/>
+</g:if>
+<g:elseif test="${ typeCompteur == 'gaz' }">
+<asset:image src="gazpar.png" height="45px" width="45px" class="img-thumbnail rounded"/>
+</g:elseif>
+<g:if test="${ icon }"><app:icon name="${ icon }" lib="${ iconLib }"/></g:if> ${ title ?: 'Consommations mois' }
+</h4>
 
 <g:if test="${ compteur }">
 	<g:set var="compteurImpl" value="${ compteur.newDeviceImpl() }"/>

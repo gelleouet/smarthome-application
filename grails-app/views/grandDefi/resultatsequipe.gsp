@@ -17,28 +17,16 @@
 		
 		<div class="card flex-fill w-100">
 			<div class="card-body">
-				<div class="row">
-					<div class="col">
-						<h4><app:icon name="zap"/> Consommations d'électricité</h4>
-					</div>
-					<div class="col text-right">
-						<asset:image src="linky.png" height="50px"/>
-					</div>
-				</div>
+				<h4><asset:image src="linky.png" height="40px" width="40px" class="img-thumbnail rounded"/>
+				<app:icon name="zap"/> Consommations d'électricité</h4>
 				<g:render template="resultatEquipe" model="[data: electricite, defi: currentDefi]"/>					
 			</div>
 		</div>
 		
 		<div class="card flex-fill w-100">
 			<div class="card-body">
-				<div class="row">
-					<div class="col">
-						<h4><app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
-					</div>
-					<div class="col text-right">
-						<asset:image src="gazpar.png" height="50px"/>
-					</div>
-				</div>
+				<h4><asset:image src="gazpar.png" height="45px" width="45px" class="img-thumbnail rounded"/>
+				<app:icon name="fire" lib="awesome"/> Consommations de gaz</h4>
 				<g:render template="resultatEquipe" model="[data: gaz, defi: currentDefi]"/>	
 			</div>
 		</div>

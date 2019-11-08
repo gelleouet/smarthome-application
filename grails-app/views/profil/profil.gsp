@@ -51,6 +51,7 @@
 			
 			<g:include action="templateEditByUser" controller="house" params="[user: user]"/>
 			
+			<!-- 
 			<h4 class="mt-4">Modes</h4>
 			
 			<div id="ajaxModes">
@@ -64,6 +65,7 @@
 				<h5>${ user.applicationKey }</h5>
 				<small class="form-text text-muted">Utilisez cet ID pour connecter des agents à l'application <g:meta name="app.code"/>. Il vous sera demandé dans les identifiants de connexion.</small>
 			</div>
+			 -->
 	
 			<g:actionSubmit value="Enregistrer" action="saveProfil" class="btn btn-primary" />
 			

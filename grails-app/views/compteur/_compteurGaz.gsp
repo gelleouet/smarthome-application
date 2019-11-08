@@ -73,10 +73,11 @@
 			
 			<g:else>
 				
-				<h5 class="font-weight-bold">Votre compteur gaz n'est pas encore configuré. Veuillez choisir le type de compteur installé chez vous et cliquez sur suivant.
+				<h5 class="font-weight-bold">
+					<app:icon name="alert-circle"/> Si vous ne possédez pas de compteur gaz, vous n'avez pas besoin d'utiliser ce formulaire.
 				</h5>
 				<h5 class="mt-1 mb-4 font-weight-bold">
-					<app:icon name="alert-circle"/> Si vous ne possédez pas de compteur gaz, vous n'avez pas besoin d'utiliser ce formulaire.
+					Votre compteur gaz n'est pas encore configuré. Veuillez choisir le type de compteur installé chez vous et cliquez sur suivant.					
 				</h5>
 				
 				<g:form action="registerCompteur">

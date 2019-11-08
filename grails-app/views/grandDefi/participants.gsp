@@ -62,7 +62,8 @@
 									<div>
 										<asset:image src="${profil.key.icon }" style="width:30px"/> <span class="font-weight-bold">${ profil.key.libelle }</span>
 										: <g:each var="member" in="${ profil.value }">
-											<g:link action="mesresultats" params="['defi.id': currentDefi.id, 'defiEquipeParticipant.id': member.id]">${ member.user.prenomNom }</g:link>
+											<!-- <g:link action="mesresultats" params="['defi.id': currentDefi.id, 'defiEquipeParticipant.id': member.id]">${ member.user.prenomNom }</g:link> -->
+											<span class="text-muted">${ member.user.prenomNom }</span>
 										</g:each>
 									</div>
 								</li>

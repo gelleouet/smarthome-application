@@ -16,7 +16,7 @@
 		<!-- Niveau 1 : données du défi -->
 		
 		<tr class="">
-			<td><h4 class="font-weight-bold">${ defi.libelle }</h4></td>
+			<td><h4 class="font-weight-bold">${ defi.libelle } <g:link controller="grandDefi" action="defis" params="['defi.id': defi.id]" title="Résultats"><app:icon name="eye"/></g:link></h4></td>
 			<td class="text-right">${ defi.reference_global() }</td>
 			<td class="text-right">${ defi.action_global() }</td>
 			<td class="text-right">${ defi.evolution_global() }</td>

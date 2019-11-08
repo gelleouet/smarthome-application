@@ -48,7 +48,7 @@ class DefiService extends AbstractService {
 	 * @param defi
 	 * @return
 	 */
-	@PreAuthorize("hasPermission(#defi, 'OWNER')")
+	//@PreAuthorize("hasPermission(#defi, 'OWNER')")
 	Defi edit(Defi defi) {
 		return defi
 	}

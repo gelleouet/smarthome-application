@@ -8,6 +8,12 @@
 			<g:if test="${ participant && viewName == 'mesresultats' }">
 				&gt; ${ participant.user.prenomNom }
 			</g:if>
+			
+			<g:if test="${ currentDefi }">
+				<sec:ifAnyGranted roles="ROLE_ADMIN_GRAND_DEFI,ROLE_ADMIN">
+					<g:link controller="defi" action="edit" id="${ currentDefi.id }" title="Edition"><app:icon name="edit"/></g:link>
+				</sec:ifAnyGranted>
+			</g:if>
 		</h3>
 		<g:if test="${ currentDefi }">
 			<h5 class="text-muted">Référence du <app:formatUser date="${ currentDefi.referenceDebut }"/> au <app:formatUser date="${ currentDefi.referenceFin }"/>

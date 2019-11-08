@@ -12,16 +12,19 @@ abstract class AbstractDefiResultat implements Serializable {
 	Double reference_electricite
 	Double action_electricite
 	Double economie_electricite
+	Double moyenne_electricite
 	Integer classement_electricite
 	Integer total_electricite
 
 	Double reference_gaz
 	Double action_gaz
 	Double economie_gaz
+	Double moyenne_gaz
 	Integer classement_gaz
 	Integer total_gaz
 
 	Double economie_global
+	Double moyenne_global
 	Integer classement_global
 	Integer total_global
 
@@ -30,14 +33,17 @@ abstract class AbstractDefiResultat implements Serializable {
 		reference_electricite nullable: true
 		action_electricite nullable: true
 		economie_electricite nullable: true
+		moyenne_electricite nullable: true
 		classement_electricite nullable: true
 		total_electricite nullable: true
 		reference_gaz nullable: true
 		action_gaz nullable: true
 		economie_gaz nullable: true
+		moyenne_gaz nullable: true
 		classement_gaz nullable: true
 		total_gaz nullable: true
 		economie_global nullable: true
+		moyenne_global nullable: true
 		classement_global nullable: true
 		total_global nullable: true
 	}
@@ -50,6 +56,16 @@ abstract class AbstractDefiResultat implements Serializable {
 	 */
 	Double economie_global() {
 		return economie_global
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double moyenne_global() {
+		return moyenne_global
 	}
 
 
@@ -143,6 +159,16 @@ abstract class AbstractDefiResultat implements Serializable {
 	 */
 	Double economie_electricite() {
 		return economie_electricite
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double moyenne_electricite() {
+		return moyenne_electricite
 	}
 
 
@@ -291,6 +317,16 @@ abstract class AbstractDefiResultat implements Serializable {
 	 *
 	 * @return
 	 */
+	Double moyenne_gaz() {
+		return moyenne_gaz
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
 	Integer classement_gaz() {
 		return classement_gaz
 	}
@@ -324,6 +360,7 @@ abstract class AbstractDefiResultat implements Serializable {
 			result.difference = this."difference_${ defiCompteur.toString() }"()
 			result.evolution = this."evolution_${ defiCompteur.toString() }"()
 			result.economie = this."economie_${ defiCompteur.toString() }"()
+			result.moyenne = this."moyenne_${ defiCompteur.toString() }"()
 			result.classement = this."classement_${ defiCompteur.toString() }"()
 			result.total = this."total_${ defiCompteur.toString() }"()
 		}
@@ -341,16 +378,19 @@ abstract class AbstractDefiResultat implements Serializable {
 		reference_electricite = null
 		action_electricite = null
 		economie_electricite = null
+		moyenne_electricite = null
 		classement_electricite = null
 		total_electricite = null
 
 		reference_gaz = null
 		action_gaz = null
 		economie_gaz = null
+		moyenne_gaz = null
 		classement_gaz = null
 		total_gaz = null
 
 		economie_global = null
+		moyenne_global = null
 		classement_global = null
 		total_global = null
 

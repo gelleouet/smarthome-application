@@ -17,7 +17,7 @@
 						
 						<g:render template="/widget/syntheseConsommationDay"
 							model="[compteur: house?.compteur, title: titre,
-								currentDate: lastDate, icon: 'zap']"/>
+								currentDate: lastDate, icon: 'zap', typeCompteur: 'electricite']"/>
 					</div>
 				</div>
 			</div>
@@ -29,7 +29,7 @@
 					<div class="card-body">
 						<g:render template="/widget/syntheseConsommationMonth"
 							model="[compteur: house?.compteur, title: 'Consommation d\'électricité du mois',
-								icon: 'zap']"/>
+								icon: 'zap', typeCompteur: 'electricite']"/>
 					</div>
 				</div>
 			</div>
@@ -41,7 +41,7 @@
 					<div class="card-body">
 						<g:render template="/widget/syntheseConsommationMonth"
 							model="[compteur: house?.compteurGaz, title: 'Consommation de gaz du mois',
-								icon: 'fire', iconLib: 'awesome']"/>
+								icon: 'fire', iconLib: 'awesome', typeCompteur: 'gaz']"/>
 					</div>
 				</div>
 			</div>
