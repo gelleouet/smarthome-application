@@ -72,6 +72,7 @@ class DataConnectService extends AbstractService {
 			notificationAccount = new NotificationAccount(user: user, notificationAccountSender: accountSender)
 		}
 
+		notificationAccount.configToJson()
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
 		notificationAccount.jsonConfig.last_token = (new Date()).time
@@ -127,8 +128,9 @@ class DataConnectService extends AbstractService {
 			throw new SmartHomeException("refresh_token is required !")
 		}
 
-		JSONElement result = dataConnectApi.refresh_token(notificationAccount.jsonConfig.refresh_token)
 
+		JSONElement result = dataConnectApi.refresh_token(notificationAccount.jsonConfig.refresh_token)
+		log.info("refresh_token notification ${notificationAccount.id} : old[${notificationAccount.jsonConfig.refresh_token}] new[${result.refresh_token}]")
 
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
