@@ -1,7 +1,10 @@
 package smarthome.api
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 import groovy.time.TimeCategory
@@ -69,8 +72,10 @@ class DataConnectService extends AbstractService {
 			notificationAccount = new NotificationAccount(user: user, notificationAccountSender: accountSender)
 		}
 
+		notificationAccount.configToJson()
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
+		notificationAccount.jsonConfig.last_token = (new Date()).time
 		notificationAccount.jsonConfig.usage_point_id = usage_point_id
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
@@ -85,7 +90,11 @@ class DataConnectService extends AbstractService {
 
 
 	/**
-	 *
+	 * Cette transaction est exécutée à part car dès lors qu'un nouveau token est
+	 * récupéré, il doit être absolument enregistré car l'ancien est invalidé. Donc
+	 * si un autre service déclenche une exception après cette action, la transaction
+	 * sera rollbackée et le nouveau token sera perdu
+	 * 
 	 * @param user
 	 * @throws SmartHomeException
 	 */
@@ -103,6 +112,10 @@ class DataConnectService extends AbstractService {
 
 
 	/**
+	 * Cette transaction est exécutée à part car dès lors qu'un nouveau token est
+	 * récupéré, il doit être absolument enregistré car l'ancien est invalidé. Donc
+	 * si un autre service déclenche une exception après cette action, la transaction
+	 * sera rollbackée et le nouveau token sera perdu
 	 * 
 	 * @param notificationAccount
 	 * @throws SmartHomeException
@@ -115,11 +128,14 @@ class DataConnectService extends AbstractService {
 			throw new SmartHomeException("refresh_token is required !")
 		}
 
-		JSONElement result = dataConnectApi.refresh_token(notificationAccount.jsonConfig.refresh_token)
 
+		log.info("refresh_token notification ${notificationAccount.id} before : ${notificationAccount.jsonConfig.refresh_token}")
+		JSONElement result = dataConnectApi.refresh_token(notificationAccount.jsonConfig.refresh_token)
+		log.info("refresh_token notification ${notificationAccount.id} after : ${result.refresh_token}")
 
 		notificationAccount.jsonConfig.access_token = result.access_token
 		notificationAccount.jsonConfig.refresh_token = result.refresh_token
+		notificationAccount.jsonConfig.last_token = (new Date()).time
 		notificationAccount.configFromJson()
 		notificationAccountService.save(notificationAccount)
 
@@ -187,6 +203,12 @@ class DataConnectService extends AbstractService {
 				// un appel ne peut porter que sur 7 jours consécutifs
 				start = end - 7.days
 			}
+		}
+
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#consumptionLoadCurve : start = end !")
 		}
 
 		List<JSONElement> datapoints = dataConnectApi.consumption_load_curve(
@@ -285,6 +307,12 @@ class DataConnectService extends AbstractService {
 			}
 		}
 
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#dailyConsumption : start = end !")
+		}
+
 		List<JSONElement> datapoints = dataConnectApi.daily_consumption(
 				start, end,
 				notificationAccount.jsonConfig.usage_point_id,
@@ -374,6 +402,12 @@ class DataConnectService extends AbstractService {
 				// un appel ne peut porter que sur 365 jours consécutifs
 				start = end - 365.days
 			}
+		}
+
+		// l'API n'accepte pas que la date debut = fin
+		// => erreur 400 : start date should be before end date
+		if (start == end) {
+			throw new SmartHomeException("DataConnect#consumptionMaxPower : start = end !")
 		}
 
 		List<JSONElement> datapoints = dataConnectApi.consumption_max_power(
