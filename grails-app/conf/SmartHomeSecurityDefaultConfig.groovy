@@ -3,7 +3,7 @@
 
 grails.plugin.springsecurity.providerNames = ['daoAuthenticationProvider', 'rememberMeAuthenticationProvider'] // 'daoAuthenticationProvider', 'anonymousAuthenticationProvider', 'rememberMeAuthenticationProvider'
 grails.plugin.springsecurity.logout.handlerNames = ['rememberMeServices', 'securityContextLogoutHandler'] // 'rememberMeServices', 'securityContextLogoutHandler'
-grails.plugin.springsecurityrememberMe.alwaysRemember = true
+grails.plugin.springsecurity.rememberMe.alwaysRemember = true
 
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'smarthome.security.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'smarthome.security.UserRole'

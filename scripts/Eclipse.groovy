@@ -22,7 +22,8 @@ includeTargets << grailsScript("_GrailsClasspath")
 
 
 target(default: "Configure project and build path in current project") {
-	 println "Grails: $grailsHome"
+	 println "Grails Home: $grailsHome"
+	 println "Grails Plugins Home: $pluginsHome"
 	 
 	 initProjectFile(projectCompiler, projectCompiler.buildSettings.baseDir)
 	 initClasspathFile(projectCompiler, projectCompiler.buildSettings.baseDir)

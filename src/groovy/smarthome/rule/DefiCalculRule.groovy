@@ -104,31 +104,33 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		// il s'agit simplement de faire les moyennes des économies des participants
 		// à chaque niveau : catégorie puis équipe
 		defi.equipes.each { DefiEquipe equipe ->
-			// d'abord calcul des notes par profil
-			equipe.profils.each { DefiEquipeProfil defiEquipeProfil ->
-				// mise à plat des profils des équipes pour faire le calcul par
-				// profil au niveau racine défi
-				equipeProfils << defiEquipeProfil
-
-				// filtre les participants par profil
-				def participantsProfil = equipe.participants.findAll {
-					it.user.profil == defiEquipeProfil.profil
+			if (!equipe.libelle.contains("ALEC")) {
+				// d'abord calcul des notes par profil
+				equipe.profils.each { DefiEquipeProfil defiEquipeProfil ->
+					// mise à plat des profils des équipes pour faire le calcul par
+					// profil au niveau racine défi
+					equipeProfils << defiEquipeProfil
+	
+					// filtre les participants par profil
+					def participantsProfil = equipe.participants.findAll {
+						it.user.profil == defiEquipeProfil.profil
+					}
+	
+					// note profil = moyenne des participants
+					// on paramètre la note du profil avec noteProfil
+					defiEquipeProfil.economie_electricite = noteProfil(defiEquipeProfil.profil,
+							moyenneEconomie(participantsProfil, DefiCompteurEnum.electricite))
+					defiEquipeProfil.economie_gaz = noteProfil(defiEquipeProfil.profil,
+							moyenneEconomie(participantsProfil, DefiCompteurEnum.gaz))
+					defiEquipeProfil.economie_global = NumberUtils.moyenne(defiEquipeProfil.economie_electricite,
+							defiEquipeProfil.economie_gaz)
 				}
-
-				// note profil = moyenne des participants
-				// on paramètre la note du profil avec noteProfil
-				defiEquipeProfil.economie_electricite = noteProfil(defiEquipeProfil.profil,
-						moyenneEconomie(participantsProfil, DefiCompteurEnum.electricite))
-				defiEquipeProfil.economie_gaz = noteProfil(defiEquipeProfil.profil,
-						moyenneEconomie(participantsProfil, DefiCompteurEnum.gaz))
-				defiEquipeProfil.economie_global = NumberUtils.moyenne(defiEquipeProfil.economie_electricite,
-						defiEquipeProfil.economie_gaz)
+	
+				// note équipe = moyenne des profils
+				equipe.economie_electricite = moyenneEconomie(equipe.profils, DefiCompteurEnum.electricite)
+				equipe.economie_gaz = moyenneEconomie(equipe.profils, DefiCompteurEnum.gaz)
+				equipe.economie_global =  NumberUtils.moyenne(equipe.economie_electricite, equipe.economie_gaz)
 			}
-
-			// note équipe = moyenne des profils
-			equipe.economie_electricite = moyenneEconomie(equipe.profils, DefiCompteurEnum.electricite)
-			equipe.economie_gaz = moyenneEconomie(equipe.profils, DefiCompteurEnum.gaz)
-			equipe.economie_global =  NumberUtils.moyenne(equipe.economie_electricite, equipe.economie_gaz)
 		}
 
 		// calcul note simple au niveau profil defi
@@ -234,20 +236,6 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		}
 
 		return result
-	}
-
-
-	/**
-	 * Moyenne sur une Map avec les données aggrégées par compteur (elec, gaz, global)
-	 * Les éléments sans valeur ne sont pas pris en compte dans le calcul
-	 *
-	 * @param map
-	 * @param compteurType
-	 * @return
-	 */
-	private Double moyenneMap(def map, DefiCompteurEnum compteurType) {
-		def filterList = map.values().findAll { it[(compteurType.toString())] != null }
-		return filterList ? NumberUtils.round(filterList.sum { it[(compteurType.toString())] } / filterList.size()) : null
 	}
 
 
