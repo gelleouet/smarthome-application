@@ -45,10 +45,12 @@ class GrandDefiService extends AbstractService {
 	 * Création du modèle pour l'affichage des consommations
 	 * 
 	 * @param user
+	 * @param typeCompteur
+	 * 
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	Map modelConsommation(User user) throws SmartHomeException {
+	Map modelConsommation(User user, DefiCompteurEnum typeCompteur) throws SmartHomeException {
 		Map model = [user: user]
 
 		model.house = houseService.findDefaultByUser(user)

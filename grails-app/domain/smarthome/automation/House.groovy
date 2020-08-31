@@ -3,7 +3,8 @@ package smarthome.automation
 import java.io.Serializable
 
 import smarthome.automation.deviceType.AbstractDeviceType
-import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.CompteurEau
+import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.Humidite
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.automation.deviceType.Temperature
@@ -29,6 +30,7 @@ class House implements Serializable {
 	Double surface
 	Device compteur
 	Device compteurGaz
+	Device compteurEau
 	Device temperature
 	Device humidite
 	Chauffage chauffage
@@ -46,6 +48,7 @@ class House implements Serializable {
 		surface nullable: true
 		compteur nullable: true
 		compteurGaz nullable: true
+		compteurEau nullable: true
 		temperature nullable: true
 		humidite nullable: true
 		chauffage nullable: true
@@ -128,6 +131,19 @@ class House implements Serializable {
 		}
 		return null
 	}
+	
+	
+	/**
+	 * Retourne une instance du compteur eau principal
+	 *
+	 * @return
+	 */
+	AbstractDeviceType compteurEauImpl() {
+		if (compteurEau) {
+			return compteurEau.newDeviceImpl()
+		}
+		return null
+	}
 
 
 	/**
@@ -145,8 +161,10 @@ class House implements Serializable {
 			return this.humidite
 		} else if (deviceImpl instanceof TeleInformation) {
 			return this.compteur
-		} else if (deviceImpl instanceof Compteur) {
+		} else if (deviceImpl instanceof CompteurGaz) {
 			return this.compteurGaz
+		} else if (deviceImpl instanceof CompteurEau) {
+			return this.compteurEau
 		}
 
 		return null

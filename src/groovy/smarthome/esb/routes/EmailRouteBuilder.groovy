@@ -42,7 +42,7 @@ class EmailRouteBuilder extends RouteBuilder {
 		String smtpPort = grailsApplication.config.smtp.port
 		String smtpPassword = grailsApplication.config.smtp.password
 		String smtpUsername = grailsApplication.config.smtp.username
-		String smtpFrom = grailsApplication.metadata['app.smtpFrom'] ?: grailsApplication.config.smtp.from
+		String smtpFrom = grailsApplication.config.smtp.from
 
 		// Les emails sont envoyés par des instances applicatives identifiques
 		// donc suffixer la queue avec  le nom de l'application

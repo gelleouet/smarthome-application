@@ -3,6 +3,7 @@ package smarthome.automation
 import org.springframework.transaction.annotation.Transactional
 
 import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.CompteurEau
 import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
@@ -44,7 +45,7 @@ class DeviceTypeService extends AbstractService {
 	 * @return
 	 */
 	List<DeviceType> listCompteur() {
-		def impls = [TeleInformation.name, Compteur.name, CompteurGaz.name]
+		def impls = [TeleInformation.name, Compteur.name, CompteurGaz.name, CompteurEau.name]
 		return DeviceType.findAllByImplClassInList(impls, [sort: 'libelle'])
 	}
 }

@@ -2,6 +2,7 @@ package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured
 import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.CompteurEau
 import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.Humidite
 import smarthome.automation.deviceType.TeleInformation
@@ -27,18 +28,7 @@ class HouseController extends AbstractController {
 	def templateEditByUser() {
 		def user = params.user
 		def house = houseService.findDefaultByUser(user)
-
-		def compteurs = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
-			deviceTypeClass: TeleInformation.name]))
-		def compteursGaz = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
-			deviceTypeClass: CompteurGaz.name]))
-		def temperatures = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
-			deviceTypeClass: Temperature.name]))
-		def humidites = deviceService.listByUser(new DeviceSearchCommand([userId: user.id,
-			deviceTypeClass: Humidite.name]))
-
-		render(template: 'form', model: [house: house, compteurs: compteurs, user: user,
-			temperatures: temperatures, humidites: humidites, compteursGaz: compteursGaz])
+		render(template: 'form', model: [house: house, user: user])
 	}
 
 

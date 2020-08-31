@@ -62,6 +62,8 @@ class CompteurController extends AbstractController {
 			} else {
 				compteurService.registerCompteurGaz(command)
 			}
+		} else if (command.compteurType == 'eau') {
+			compteurService.registerCompteurEau(command)
 		}
 
 		redirect(action: 'compteur')
@@ -86,6 +88,17 @@ class CompteurController extends AbstractController {
 	 */
 	def resetCompteurGaz() {
 		compteurService.resetCompteurGaz(authenticatedUser)
+		redirect(action: 'compteur')
+	}
+	
+	
+	/**
+	 * Reset config compteur eau
+	 *
+	 * @return
+	 */
+	def resetCompteurEau() {
+		compteurService.resetCompteurEau(authenticatedUser)
 		redirect(action: 'compteur')
 	}
 

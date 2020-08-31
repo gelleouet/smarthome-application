@@ -42,8 +42,8 @@ import smarthome.core.SmartHomeException;
  * @author gregory
  *
  */
-@ServerEndpoint(value = AgentEndPoint.URL,
-	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
+//@ServerEndpoint(value = AgentEndPoint.URL,
+//	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
 class AgentEndPoint {
 
 	private static final log = LogFactory.getLog(this)

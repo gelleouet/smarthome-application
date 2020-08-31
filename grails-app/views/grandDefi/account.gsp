@@ -9,7 +9,7 @@
 	    <div class="text-center mt-4">
 			<h1 class="h2">Création d'un nouveau compte</h1>
 			<p class="lead">
-				Compléter le formulaire suivant pour démarrer le Grand Défi Energie 2019
+				Compléter le formulaire suivant pour démarrer le <g:meta name="app.code"/>
 			</p>
 		</div>
     
@@ -18,10 +18,10 @@
 				<div class="m-sm-4">
 					<h6 class="text-muted text-center">ALEC du pays de Rennes</h6>
 					<div class="row mb-5">
-						<div class="col">
-							<asset:image src="granddefi/logo.gif" height="132"/>
+						<div class="col-5">
+							<asset:image src="granddefi/logo.png" height="132"/>
 						</div>
-						<div class="col">
+						<div class="col-7">
 							<asset:image src="granddefi/partenaire.png"/>
 						</div>
 					</div>
@@ -68,7 +68,7 @@
 				        <label class="custom-control custom-checkbox">
 				        	<g:checkBox name="profilPublic" class="custom-control-input" value="${ command?.profilPublic }"/>
 				        	<span class="custom-control-label">
-				        		J'autorise le Grand Défi Energie 2019 à me faire apparaître dans la liste des participants de mon équipe.
+				        		J'autorise le <g:meta name="app.code"/> à me faire apparaître dans la liste des participants de mon équipe.
 				        	</span>
 				        </label>
 	     

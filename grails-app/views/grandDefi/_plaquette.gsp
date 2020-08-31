@@ -1,13 +1,13 @@
 <div class="card">
 	<div class="card-header">
-		<h4 class="card-title">Le Grand Défi Energie 2019</h4>
+		<h4 class="card-title"><g:meta name="app.code"/></h4>
 		<h6 class="card-subtitle text-muted">ALEC du pays de Rennes</h6>
 	</div>
 	
 	<div class="card-body">
 		<div class="text-center">
-			<a href="https://www.alec-rennes.org/usager/conseil-energie-particuliers-coproprietaire/le-grand-defi-economie-energie-des-communes-2019/" target="granddefi">
-				<asset:image src="granddefi/logo.gif" height="185px"/>
+			<a href="${ g.meta(name: 'app.urlInfoGde') }" target="granddefi">
+				<asset:image src="granddefi/logo.png" height="185px"/>
 				<div>Plus d'informations</div>
 			</a>
 			

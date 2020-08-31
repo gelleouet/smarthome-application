@@ -38,8 +38,12 @@ class GrandDefiController extends AbstractController {
 		def user = authenticatedUser
 		House house = houseService.findDefaultByUser(user)
 
-		if (house?.compteur || house?.compteurGaz) {
-			redirect(action: 'consommation')
+		if (house?.compteur) {
+			redirect(action: 'consommationElec')
+		} else if (house?.compteurGaz) {
+			redirect(action: 'consommationGaz')
+		} else if (house?.compteurEau) {
+			redirect(action: 'consommationEau')
 		} else {
 			redirect(controller: 'compteur', action: 'compteur')
 		}
@@ -90,8 +94,7 @@ class GrandDefiController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi Energie 2019", icon = "tool")
+	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary, icon = "tool")
 	def compteur() {
 		redirect(controller: 'compteur', action: 'compteur')
 	}
@@ -104,23 +107,51 @@ class GrandDefiController extends AbstractController {
 	 */
 	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
 	@NavigableAction(label = "Validation des index", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi Energie 2019", icon = "check-square")
+		icon = "check-square")
 	def compteurIndexs(CompteurIndexCommand command) {
 		redirect(controller: 'compteur', action: 'compteurIndexs')
 	}
 
 
 	/**
-	 * Affichage des consommations élec et gaz
+	 * Affichage des consommations
 	 * @return
 	 */
-	@NavigableAction(label = "Mes consommations", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi Energie 2019", icon = "bar-chart")
-	def consommation() {
+	@NavigableAction(label = "Electricité", navigation = NavigationEnum.navbarPrimary,
+		header = "Mes consommations", icon = "zap", iconHeader = "bar-chart")
+	def consommationElec() {
 		def user = authenticatedUser
-		def model = grandDefiService.modelConsommation(user)
+		def model = grandDefiService.modelConsommation(user, DefiCompteurEnum.electricite)
 
-		render(view: 'consommation', model: model)
+		render(view: 'consommationElec', model: model)
+	}
+	
+	
+	/**
+	 * Affichage des consommations
+	 * @return
+	 */
+	@NavigableAction(label = "Gaz", navigation = NavigationEnum.navbarPrimary,
+			header = "Mes consommations", icon = "fire", iconLib = "awesome", iconHeader = "bar-chart")
+	def consommationGaz() {
+		def user = authenticatedUser
+		def model = grandDefiService.modelConsommation(user, DefiCompteurEnum.gaz)
+		
+		render(view: 'consommationGaz', model: model)
+	}
+	
+	
+	/**
+	 * Affichage des consommations
+	 * @return
+	 */
+	@NavigableAction(label = "Eau", navigation = NavigationEnum.navbarPrimary,
+			header = "Mes consommations", icon = "droplet", iconHeader = "bar-chart")
+	def consommationEau() {
+		def user = authenticatedUser
+		def model = grandDefiService.modelConsommation(user, DefiCompteurEnum.eau)
+		
+		render(view: 'consommationEau', model: model)
 	}
 
 
@@ -129,8 +160,7 @@ class GrandDefiController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary,
-	header = "Grand Défi Energie 2019", icon = "award")
+	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary, icon = "award")
 	def defis(DefiCommand command) {
 		mesresultats(command)
 	}

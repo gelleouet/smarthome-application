@@ -25,7 +25,7 @@ class EventController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration, header = "Smarthome")
+	//@NavigableAction(label = "Evénements", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def events(String eventSearch) {
 		def search = QueryUtils.decorateMatchAll(eventSearch)
 

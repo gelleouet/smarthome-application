@@ -17,6 +17,10 @@
 				<g:render template="compteurGaz"/>
 			</div> <!-- div.col -->
 			
+			<div class="col">
+				<g:render template="compteurEau"/>
+			</div> <!-- div.col -->
+			
 		</div> <!-- div.row -->
 		
 	</g:applyLayout>

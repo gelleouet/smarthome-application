@@ -38,8 +38,8 @@ import smarthome.security.User;
  * @author gregory
  *
  */
-@ServerEndpoint(value = ShellEndPoint.URL, 
-	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
+//@ServerEndpoint(value = ShellEndPoint.URL, 
+//	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
 class ShellEndPoint {
 	private static final log = LogFactory.getLog(this)
 	static final String URL = "/shell-endpoint/{agentId}"

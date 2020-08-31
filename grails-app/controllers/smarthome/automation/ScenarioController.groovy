@@ -22,7 +22,7 @@ class ScenarioController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Scénarios", navigation = NavigationEnum.configuration, header = "Smarthome")
+	//@NavigableAction(label = "Scénarios", navigation = NavigationEnum.configuration, header = "Smarthome")
 	def scenarios(String scenarioSearch) {
 		def scenarios = scenarioService.listByUser(scenarioSearch, principal.id, this.getPagination([:]))
 		def recordsTotal = scenarios.totalCount

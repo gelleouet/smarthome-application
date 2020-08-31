@@ -99,18 +99,19 @@ environments {
 			}
 
 			debug 'smarthome',
-					'org.hibernate.SQL',
-					'org.apache.camel.component',
-					'org.springframework.transaction.interceptor'
+				'org.hibernate.SQL'
+				//'org.apache.camel.component',
+				//'org.springframework.transaction.interceptor'
 
-			trace 'org.springframework.security.web.authentication.rememberme',
-					'org.springframework.security.web.authentication'
+			//trace 'org.springframework.security.web.authentication.rememberme',
+			//		'org.springframework.security.web.authentication'
 
 
-			info 'org.hibernate',
-					'net.sf.ehcache.hibernate',
-					'grails.app.services',
-					'grails.app.controllers'
+			info 'grails.app.services',
+				'grails.app.controllers',
+				'org.hibernate'
+				//'net.sf.ehcache.hibernate',
+					
 		}
 	}
 
@@ -175,6 +176,3 @@ environments {
 	}
 }
 
-enedis {
-	state = "grand-defi"
-}

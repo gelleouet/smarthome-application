@@ -7,14 +7,6 @@
 					<app:icon name="more-horizontal"/>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<g:if test="${ dataConnect }">
-						<g:link class="dropdown-item" action="edit" controller="notificationAccount" id="${ dataConnect.id }">Service DataConnect</g:link>
-					</g:if>
-					<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
-						<g:if test="${ house?.compteur }">
-							<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteur.id }">Compteur</g:link>
-						</g:if>
-					</sec:ifNotGranted>
 					<g:link class="dropdown-item" action="resetCompteurElec">Réinitialiser</g:link>
 				</div>
 			</div>
@@ -31,7 +23,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id, dateChart: app.formatPicker(date: house.compteur.dateValue)]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id, dateChart: app.formatPicker(date: house.compteur.dateValue ?: new Date())]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteur.metadata('fournisseur') }">
@@ -55,7 +47,7 @@
 					<div class="col">
 						<div class="btn-group-vertical">
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="[deviceId: house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
-							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id, dateChart: app.formatPicker(date: house.compteur.dateValue)]"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id, dateChart: app.formatPicker(date: house.compteur.dateValue ?: new Date())]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteur.metadata('fournisseur') }">
@@ -114,8 +106,7 @@
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="compteur-elec-electronique.png" class="ml-4 compteur-model-img"/>
-							<asset:image src="linky.png" class="ml-1 compteur-model-img"/>
+							
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>

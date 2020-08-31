@@ -7,14 +7,6 @@
 					<app:icon name="more-horizontal"/>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<g:if test="${ adict }">
-						<g:link class="dropdown-item" action="edit" controller="notificationAccount" id="${ adict.id }">Service ADICT</g:link>
-					</g:if>
-					<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
-						<g:if test="${ house?.compteurGaz }">
-							<g:link class="dropdown-item" action="edit" controller="device" id="${ house.compteurGaz.id }">Compteur</g:link>
-						</g:if>
-					</sec:ifNotGranted>
 					<g:link class="dropdown-item" action="resetCompteurGaz">Réinitialiser</g:link>
 				</div>
 			</div>
@@ -31,7 +23,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue)]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue ?: new Date())]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
@@ -55,7 +47,7 @@
 					<div class="col">
 						<div class="btn-group-vertical">
 							<g:link class="btn btn-primary mb-2" action="saisieIndex" params="[deviceId: house.compteurGaz.id]"><app:icon name="edit"/> Saisie index</g:link>
-							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue)]"><app:icon name="bar-chart"/> Consommations</g:link>
+							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteurGaz.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue ?: new Date())]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
 						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
@@ -118,8 +110,6 @@
 					</label>
 					<div class="row">
 						<div class="col">
-							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
-							<asset:image src="gazpar.png" class="ml-1 compteur-model-img"/>
 						</div>
 						<div class="col-8">
 							<small class="font-text text-muted">Sélectionnez un compteur déjà associé à votre compte</small>

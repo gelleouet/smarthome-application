@@ -42,8 +42,8 @@ import smarthome.security.User;
  * @author gregory
  *
  */
-@ServerEndpoint(value = TeleinfoEndPoint.URL, 
-	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
+//@ServerEndpoint(value = TeleinfoEndPoint.URL, 
+//	configurator = smarthome.endpoint.SmarthomeEndpointConfigurator)
 class TeleinfoEndPoint {
 	private static final log = LogFactory.getLog(this)
 	static final String URL = "/teleinfo-endpoint/{deviceId}"

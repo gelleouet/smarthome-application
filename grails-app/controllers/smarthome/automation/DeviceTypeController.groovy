@@ -53,19 +53,8 @@ class DeviceTypeController extends AbstractController {
 	 * @param deviceType
 	 * @return
 	 */
-	def deviceType(DeviceType deviceType) {
+	def edit(DeviceType deviceType) {
 		def editDeviceType = parseFlashCommand(COMMAND_NAME, deviceType)
-		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDeviceType]))
-	}
-
-
-	/**
-	 * Création
-	 *
-	 * @return
-	 */
-	def create() {
-		def editDeviceType = parseFlashCommand(COMMAND_NAME, new DeviceType())
 		render(view: COMMAND_NAME, model: fetchModelEdit([(COMMAND_NAME): editDeviceType]))
 	}
 
@@ -94,21 +83,7 @@ class DeviceTypeController extends AbstractController {
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "edit", modelName = DeviceTypeController.COMMAND_NAME)
-	def saveEdit(DeviceType deviceType) {
-		checkErrors(this, deviceType)
-		deviceTypeService.save(deviceType, params.configuration)
-		redirect(action: COMMAND_NAME + 's')
-	}
-
-
-	/**
-	 * Enregistrement d'un nouveau
-	 *
-	 * @param user
-	 * @return
-	 */
-	@ExceptionNavigationHandler(actionName = "create", modelName = DeviceTypeController.COMMAND_NAME)
-	def saveCreate(DeviceType deviceType) {
+	def save(DeviceType deviceType) {
 		checkErrors(this, deviceType)
 		deviceTypeService.save(deviceType, params.configuration)
 		redirect(action: COMMAND_NAME + 's')

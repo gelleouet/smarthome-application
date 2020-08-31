@@ -47,5 +47,9 @@ class NavigationItem implements Serializable {
 	
 	// icon html
 	String icon
+	String iconLib
+	
+	String iconHeader
+	String iconLibHeader
 
 }

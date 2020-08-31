@@ -72,6 +72,30 @@ public @interface NavigableAction {
 	 * @return
 	 */
 	String icon() default "";
+	
+	
+	/**
+	 * Icon du lien vers controlleur
+	 * 
+	 * @return
+	 */
+	String iconLib() default "";
+	
+	
+	/**
+	 * Icon du lien vers controlleur
+	 * 
+	 * @return
+	 */
+	String iconHeader() default "";
+	
+	
+	/**
+	 * Icon du lien vers controlleur
+	 * 
+	 * @return
+	 */
+	String iconLibHeader() default "";
 
 
 	/**

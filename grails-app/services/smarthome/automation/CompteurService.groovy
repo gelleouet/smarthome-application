@@ -7,6 +7,7 @@ import smarthome.api.AdictService
 import smarthome.api.DataConnectService
 import smarthome.application.granddefi.RegisterCompteurCommand
 import smarthome.automation.deviceType.Compteur
+import smarthome.automation.deviceType.CompteurEau
 import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
@@ -25,6 +26,8 @@ class CompteurService extends AbstractService {
 	private static final String LABEL_COMPTEUR_ELEC_MANUEL = "Compteur électrique (non connecté)"
 	private static final String MAC_COMPTEUR_GAZ_MANUEL = "compteur_gaz"
 	private static final String LABEL_COMPTEUR_GAZ_MANUEL = "Compteur gaz (non connecté)"
+	private static final String MAC_COMPTEUR_EAU_MANUEL = "compteur_eau"
+	private static final String LABEL_COMPTEUR_EAU_MANUEL = "Compteur eau (non connecté)"
 
 	HouseService houseService
 	DeviceService deviceService
@@ -63,7 +66,7 @@ class CompteurService extends AbstractService {
 
 		// recherche des compteurs existants
 		model.compteurElecs = deviceService.listByUser(new DeviceSearchCommand(userId: user.id,
-		deviceTypeClass: TeleInformation.name))
+			deviceTypeClass: TeleInformation.name))
 
 		// --------------------------------------------------------------------
 		// Compteur gaz
@@ -82,7 +85,16 @@ class CompteurService extends AbstractService {
 
 		// recherche des compteurs existants
 		model.compteurGazs = deviceService.listByUser(new DeviceSearchCommand(userId: user.id,
-		deviceTypeClass: CompteurGaz.name))
+			deviceTypeClass: CompteurGaz.name))
+		
+		// --------------------------------------------------------------------
+		// Compteur eau
+
+		model.fournisseurEau = deviceTypeProviderService.listByDeviceTypeImpl(CompteurEau.name)
+
+		// recherche des compteurs existants
+		model.compteurEaux = deviceService.listByUser(new DeviceSearchCommand(userId: user.id,
+			deviceTypeClass: CompteurEau.name))
 
 		return model
 	}
@@ -181,6 +193,44 @@ class CompteurService extends AbstractService {
 		// si le compteur est bien créé, on l'associe à la maison principale
 		houseService.bindDefault(command.user, [compteurGaz: compteur])
 	}
+	
+	
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void registerCompteurEau(RegisterCompteurCommand command) throws SmartHomeException {
+		Device compteur
+
+		if (command.compteurModel == "_exist") {
+			if (!command.compteurEau) {
+				throw new SmartHomeException("Veuillez sélectionner un compteur !")
+			}
+
+			compteur = command.compteurEau
+		} else {
+			// recherche d'un existant
+			compteur = deviceService.findByMac(command.user, MAC_COMPTEUR_EAU_MANUEL)
+
+			if (!compteur) {
+				compteur = new Device(
+						user: command.user,
+						mac: MAC_COMPTEUR_EAU_MANUEL,
+						label: LABEL_COMPTEUR_EAU_MANUEL,
+						deviceType: DeviceType.findByImplClass(CompteurEau.name))
+
+				compteur.addMetavalue('conso', [unite: 'L', label: 'Période consommation', trace: true])
+			}
+		}
+
+		// ne pas écraser l'ancienne valeur si pas renseigné
+		if (command.fournisseur) {
+			compteur.addMetadata('fournisseur', [value: command.fournisseur, label: 'Fournisseur'])
+		}
+
+		// ajout ou update config device
+		deviceService.save(compteur)
+
+		// si le compteur est bien créé, on l'associe à la maison principale
+		houseService.bindDefault(command.user, [compteurEau: compteur])
+	}
 
 
 	/**
@@ -204,6 +254,18 @@ class CompteurService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void resetCompteurGaz(User user)  throws SmartHomeException {
 		houseService.bindDefault(user, [compteurGaz: null])
+	}
+	
+	
+	/**
+	 * Reset du compteur eau associé à la maison
+	 *
+	 * @param user
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void resetCompteurEau(User user)  throws SmartHomeException {
+		houseService.bindDefault(user, [compteurEau: null])
 	}
 
 

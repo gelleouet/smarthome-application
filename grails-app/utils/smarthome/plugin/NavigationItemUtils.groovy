@@ -99,6 +99,9 @@ class NavigationItemUtils {
 			item.useForm = navigation.useForm()
 			item.header = navigation.header()
 			item.icon = navigation.icon()
+			item.iconLib = navigation.iconLib()
+			item.iconHeader = navigation.iconHeader()
+			item.iconLibHeader = navigation.iconLibHeader()
 			item.security = '' // TODO from @Secured
 		}
 	}

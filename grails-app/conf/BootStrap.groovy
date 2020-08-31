@@ -9,9 +9,9 @@ class BootStrap {
 	def init = { servletContext ->
 		// Mettre ici le code spécial env dev
 		if (Environment.current == Environment.DEVELOPMENT) {
-			EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
-			EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
-			EndPointUtils.register(servletContext, smarthome.endpoint.TeleinfoEndPoint)
+//			EndPointUtils.register(servletContext, smarthome.endpoint.AgentEndPoint)
+//			EndPointUtils.register(servletContext, smarthome.endpoint.ShellEndPoint)
+//			EndPointUtils.register(servletContext, smarthome.endpoint.TeleinfoEndPoint)
 		}
 
 		// Mettre ici le code spécial env prod

@@ -53,17 +53,30 @@ void initClasspathFile(projectCompiler, rootFile) {
 	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="target-eclipse"/>
 """
+		
+		// ajout src view (plus pratique pour la navigation package explorer
+		// sinon il se retrouve dans un dossier simple grails-app
+		def viewsFile = new File("/grails-app/views", rootFile)
+		def srcFiles = []
+		
+		if (viewsFile.exists()) {
+			srcFiles << rootPath.relativize(viewsFile.toPath())
+		}
+
 		// insère les dossiers sources. les sources sont relatives au projet
 		// il faut calculer le path des sources en fonction du path du projet
 		// exclusion des dossiers migrations et spring
 		projectCompiler.srcDirectories.sort().each { srcDir ->
 			if (!srcDir.endsWith('spring') && !srcDir.endsWith('migrations')) {
 				def srcDirPath = new File(srcDir).toPath()
-				def srcSubDirPath = rootPath.relativize(srcDirPath)
-				writer << """\
-	<classpathentry kind="src" path="${srcSubDirPath}"/>
-"""
+				srcFiles << rootPath.relativize(srcDirPath)
 			}
+		}
+		
+		srcFiles.sort().each {
+			writer << """\
+	<classpathentry kind="src" path="${it}"/>
+"""
 		}
 		
 		// insère les projets inline
@@ -106,6 +119,9 @@ void initClasspathFile(projectCompiler, rootFile) {
 		// on passe par une map pour éviter les doublons de libs entre les scopes
 		def libs = [:]
 		
+		projectCompiler.buildSettings.buildDependencies.sort().each { file ->
+			libs[file.name] = file
+		}
 		projectCompiler.buildSettings.compileDependencies.sort().each { file ->
 			libs[file.name] = file
 		}

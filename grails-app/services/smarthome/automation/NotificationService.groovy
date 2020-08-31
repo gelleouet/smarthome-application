@@ -128,12 +128,14 @@ class NotificationService extends AbstractService {
 	 */
 	void sendEmail(Map email) {
 		// inject des infos sur l'appli
+		email.contextPath = grailsLinkGenerator.serverBaseURL
 		email.appCode = grailsApplication.metadata['app.code']
 		email.appVersion = grailsApplication.metadata['app.version']
-		email.appTwitter = grailsApplication.metadata['app.twitter']
-		email.appFacebook = grailsApplication.metadata['app.facebook']
-		email.appInstagram = grailsApplication.metadata['app.instagram']
-		email.contextPath = grailsLinkGenerator.serverBaseURL
+		
+		email.appTwitter = grailsApplication.conf.social.twitter
+		email.appFacebook = grailsApplication.conf.social.facebook
+		email.appInstagram = grailsApplication.conf.social.instagram
+		
 
 		// Envoi des messages sur une instance applicative identique !!
 		// suffixe avec le nom de l'application

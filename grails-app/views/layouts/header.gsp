@@ -1,46 +1,9 @@
-<form class="form-inline d-none d-sm-inline-block">
+<!-- <form class="form-inline d-none d-sm-inline-block">
 	<input class="form-control form-control-no-border mr-sm-2" type="text" placeholder="Rechercher..." aria-label="Search">
-</form>
+</form> -->
 
 <div class="navbar-collapse collapse">
 	<ul class="navbar-nav ml-auto">
-	
-		<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
-			<li class="nav-item">
-				<g:link class="nav-link" controller="deviceAlert" action="deviceAlerts" params="[open:true]" title="Alertes">
-					<div class="position-relative">
-						<i class="align-middle" data-feather="bell"></i>
-						<%--<span class="indicator">2</span>--%>
-					</div>
-				</g:link>
-			</li>
-		</sec:ifNotGranted>
-	
-		<sec:ifNotGranted roles="ROLE_GRAND_DEFI">
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-toggle="dropdown">
-	        		<i class="align-middle mr-1" data-feather="help-circle"></i> Aide
-	            </a>
-				
-				<div class="dropdown-menu dropdown-menu-right">
-					<h6 class="dropdown-header">Application Web</h6>
-					<a class="dropdown-item" href="https://github.com/gelleouet/smarthome-application">
-	                  <i class="align-middle" data-feather="github"></i> Github
-	                </a>
-					<a class="dropdown-item" href="https://github.com/gelleouet/smarthome-application/wiki">
-	                  <i class="align-middle" data-feather="github"></i> Wiki
-	                </a>
-	                <div class="dropdown-divider"></div>
-	                <h6 class="dropdown-header">Contrôleur Raspberry</h6>
-					<a class="dropdown-item" href="https://github.com/gelleouet/smarthome-raspberry">
-	                  <i class="align-middle" data-feather="github"></i> Github
-	                </a>
-					<a class="dropdown-item" href="https://github.com/gelleouet/smarthome-raspberry/wiki">
-	                  <i class="align-middle" data-feather="github"></i> Wiki
-	                </a>
-				</div>
-			</li>
-		</sec:ifNotGranted>
 	
 		<li class="nav-item dropdown">
 			<g:set var="loggedInUser" value="${ secUser ?: smarthome.security.User.read(sec.loggedInUserInfo(field: 'id')) }"/>

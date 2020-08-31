@@ -1,41 +1,36 @@
 <%@ page import="smarthome.automation.DeviceType" %>
 
 
-<div class="field-group">
+<div class="form-group required">
 	<label for="libelle">
 		Libellé
-		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textField name="libelle" required="true" value="${deviceType?.libelle}" class="text long-field"/>
+	<g:textField name="libelle" required="true" value="${deviceType?.libelle}" class="form-control" autofocus="true"/>
 </div>
 
-<div class="field-group">
+<div class="form-group required">
 	<label for="implClass">
 		Implémentation
-		<span class="aui-icon icon-required">*</span>
 	</label>
-	<g:textField name="implClass" required="true" value="${deviceType?.implClass}" class="text long-field"/>
+	<g:textField name="implClass" required="true" value="${deviceType?.implClass}" class="form-control"/>
 </div>
 
-<div class="field-group">
-	<label for="qualitatif">
-		Qualitatif ?
-	</label>
-	<g:checkBox name="qualitatif" value="${deviceType?.qualitatif}" class="checkbox"/>
-</div>
+<label class="custom-control custom-checkbox">
+    <g:checkBox class="custom-control-input" name="qualitatif" value="${deviceType?.qualitatif}"/>
+    <span class="custom-control-label" for="qualitatif">Qualitatif ?</span>
+</label>
+  
+<label class="custom-control custom-checkbox">
+    <g:checkBox class="custom-control-input" name="planning" value="${deviceType?.planning}"/>
+    <span class="custom-control-label" for="planning">Planning ?</span>
+</label>  
 
-<div class="field-group">
-	<label for="planning">
-		Planning ?
-	</label>
-	<g:checkBox name="planning" value="${deviceType?.planning}" class="checkbox"/>
-</div>
-
-<div class="field-group">
+<div class="form-group">
 	<label for="configuration">
 		Configuration
 	</label>
-	<g:textArea name="configuration" value="${deviceTypeConfig?.data}" class="script textarea text long-field"/>
+	<g:textArea name="configuration" value="${deviceTypeConfig?.data}" class="medium-script form-control"/>
 </div>
+
 	
 

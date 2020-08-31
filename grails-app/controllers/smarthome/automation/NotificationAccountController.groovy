@@ -28,7 +28,7 @@ class NotificationAccountController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Services", navigation = NavigationEnum.configuration, header = "Compte")
+	//@NavigableAction(label = "Services", navigation = NavigationEnum.configuration, header = "Compte")
 	def notificationAccounts(NotificationAccountCommand command) {
 		command.user = authenticatedUser
 		def notificationAccounts = notificationAccountService.search(command, this.getPagination([:]))

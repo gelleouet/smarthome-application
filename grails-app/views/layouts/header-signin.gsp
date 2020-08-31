@@ -7,7 +7,7 @@
 	
 	<div class="navbar-nav ml-auto">
 		<g:if test="${ actionName != 'account' }">
-			<g:link controller="${g.meta(name: 'app.accountController') }" action="account" class="btn btn-outline-primary">Inscription</g:link>
+			<g:link controller="grandDefi" action="account" class="btn btn-outline-primary">Inscription</g:link>
 		</g:if>
 		<g:if test="${ controllerName != 'login' }">
 			<g:link controller="login" action="auth" class="btn btn-outline-primary ml-2">Connexion</g:link>
