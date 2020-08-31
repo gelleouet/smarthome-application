@@ -132,9 +132,9 @@ class NotificationService extends AbstractService {
 		email.appCode = grailsApplication.metadata['app.code']
 		email.appVersion = grailsApplication.metadata['app.version']
 		
-		email.appTwitter = grailsApplication.conf.social.twitter
-		email.appFacebook = grailsApplication.conf.social.facebook
-		email.appInstagram = grailsApplication.conf.social.instagram
+		email.appTwitter = grailsApplication.config.social.twitter
+		email.appFacebook = grailsApplication.config.social.facebook
+		email.appInstagram = grailsApplication.config.social.instagram
 		
 
 		// Envoi des messages sur une instance applicative identique !!
