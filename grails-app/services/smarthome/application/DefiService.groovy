@@ -54,7 +54,32 @@ class DefiService extends AbstractService {
 	}
 
 
+	/**
+	 * Liste les défis du catalogue (uniquement les défis publiques et ouverts)
+	 * 
+	 * @param command
+	 * @param pagination
+	 * @return
+	 */
+	List<Defi> listCatalogue(DefiCommand command, Map pagination) {
+		return Defi.createCriteria().list(pagination) {
+			eq 'publique', true
+			eq 'actif', true
+			
+			if (command.search) {
+				ilike 'libelle', QueryUtils.decorateMatchAll(command.search)
+			}
+			if (command.organisation) {
+				ilike 'organisation', QueryUtils.decorateMatchAll(command.organisation)
+			}
 
+			join 'user'
+			
+			order 'referenceDebut', 'desc'
+		}
+	}
+	
+	
 	/**
 	 * Recherche des défis d'un admin (les défis qu'il a créé)
 	 * 
@@ -91,6 +116,19 @@ class DefiService extends AbstractService {
 			}
 			order 'referenceDebut', 'desc'
 		}
+	}
+	
+	
+	/**
+	 * Les défis de l'utilisateur connecté
+	 * 
+	 * @param command
+	 * @param pagination
+	 * @return
+	 */
+	List<Defi> listByAuthenticatedUser(Map pagination) {
+		User user = User.read(springSecurityService.principal.id)
+		return listByUser(new DefiCommand(user: user), pagination)
 	}
 
 
@@ -389,6 +427,13 @@ class DefiService extends AbstractService {
 		if (!defi.actif) {
 			throw new SmartHomeException("Le ${defi.libelle} n'est plus ouvert aux inscriptions !")
 		}
+		
+		// déjà inscript
+		DefiEquipeParticipant existParticipant = this.findUserResultat(defi, user)
+		
+		if (existParticipant) {
+			throw new SmartHomeException("Vous êtes déjà inscrit à ce défi !")
+		}
 
 		// recherche d'une équipe associée au défi par son nom
 		// si elle n'existe pas, elle est créé à la volée pour faciliter la gestion
@@ -402,6 +447,56 @@ class DefiService extends AbstractService {
 
 		// Association du user avec l'équipe du défi
 		return super.save(new DefiEquipeParticipant(user: user, defiEquipe: defiEquipe))
+	}
+	
+	
+	/**
+	 * Désinscription d'un défi
+	 * 
+	 * @param user
+	 * @param defiId
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void desinscription(User user, Long defiId) throws SmartHomeException {
+		// vérifie le statut du défi
+		Defi defi = Defi.read(defiId)
+		
+		if (!defi) {
+			throw new SmartHomeException("Le défi n'existe pas !")
+		}
+		
+		DefiEquipeParticipant existParticipant = this.findUserResultat(defi, user)
+		
+		if (!existParticipant) {
+			throw new SmartHomeException("Vous n'êtes pas inscrit à ce défi !")
+		}
+		
+		desinscription(existParticipant)
+	}
+	
+	
+	/**
+	 * Désinscription d'un défi
+	 *
+	 * @param participant
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void desinscription(DefiEquipeParticipant participant) throws SmartHomeException {
+		DefiEquipe equipe = participant.defiEquipe
+		
+		// supprime le user de la liste des participants
+		equipe.participants.removeAll { it.id == participant.id }
+		boolean hasOtherParticipant = equipe.participants.size() 
+		
+		super.delete(participant)
+		
+		// suppression de l'équipe si pas d'autres participants
+		if (!hasOtherParticipant) {
+			equipe.profils*.delete()
+			super.delete(equipe)
+		}
 	}
 
 
@@ -1085,18 +1180,15 @@ class DefiService extends AbstractService {
 	 */
 	List<User> listAvailableParticipants(Defi defi) {
 		return User.executeQuery("""SELECT user
-		FROM UserRole userRole
-		JOIN userRole.user user
+		FROM User user
 		JOIN FETCH user.profil profil
-		JOIN userRole.role role
-		WHERE role.authority = :role
-		AND user.id not in (
+		WHERE user.id not in (
 			SELECT user1.id
 			FROM DefiEquipeParticipant participant
 			JOIN participant.user user1
 			JOIN participant.defiEquipe defiEquipe
 			WHERE defiEquipe.defi = :defi
 		)
-		ORDER BY user.prenom, user.nom""", [defi: defi, role: Role.ROLE_GRAND_DEFI])
+		ORDER BY user.prenom, user.nom""", [defi: defi])
 	}
 }

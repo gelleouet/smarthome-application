@@ -45,6 +45,8 @@ class NavigationItem implements Serializable {
 	// Référence item parent (pour faciliter la navigation montante dans l'arbre)
 	NavigationItem parent
 	
+	boolean customMenuView
+	
 	// icon html
 	String icon
 	String iconLib

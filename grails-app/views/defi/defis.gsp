@@ -34,10 +34,21 @@
 		    <tbody>
 		    	<g:each var="bean" in="${ defiInstanceList }">
 			        <tr>
-			            <td><g:link action="edit" id="${bean.id }">${ bean.libelle }</g:link></td>
+			            <td>
+			            	<g:link action="edit" id="${bean.id }">
+			            		${ bean.libelle } <g:if test="${ bean.organisation }"> > ${ bean.organisation }</g:if>
+			            	</g:link>
+			            </td>
 			            <td>du <app:formatUser date="${ bean.referenceDebut }"/> au <app:formatUser date="${ bean.referenceFin }"/></td>
 			            <td>du <app:formatUser date="${ bean.actionDebut }"/> au <app:formatUser date="${ bean.actionFin }"/></td>
 			            <td>
+			            	<g:if test="${ bean.publique }">
+			            		<span class="badge badge-primary">PUBLIQUE</span>
+			            	</g:if>
+			            	<g:else>
+			            		<span class="badge badge-dark">PRIVÉ</span>
+			            	</g:else>
+			            	
 			            	<g:if test="${ bean.actif }">
 			            		<span class="badge badge-primary">OUVERT</span>
 			            	</g:if>

@@ -62,7 +62,7 @@ class GrandDefiService extends AbstractService {
 	private Map defaultModelResultat(DefiCommand command) throws SmartHomeException {
 		Map model = [user: command.user, command: command]
 
-		model.defis = defiService.listByUser(command, [max: 5])
+		model.defis = defiService.listByUser(command, [max: 1])
 		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
 
 		if (model.currentDefi) {
@@ -341,6 +341,14 @@ class GrandDefiService extends AbstractService {
 		if (user) {
 			throw new SmartHomeException("Un compte existe déjà avec cette adresse !", account)
 		}
+		
+		// construction des équipes "à la volée" et association avec une équipe
+		// et le grand défi en cours
+		String grandDefiId = configService.value(Config.GRAND_DEFI_ID)
+
+		if (!grandDefiId) {
+			throw new SmartHomeException("Les inscriptions pour le Grand Défi ne sont plus autorisées", account)
+		}
 
 		// création d'un code d'enregistrement
 		RegistrationCode registrationCode = new RegistrationCode(username: account.username)
@@ -357,26 +365,17 @@ class GrandDefiService extends AbstractService {
 		nom: account.nom, lastActivation: new Date(), accountLocked: true,
 		applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
 		profil: account.profil)
-		user.roles << Role.findByAuthority(Role.ROLE_GRAND_DEFI).id
+		
 		try {
-			userService.save(user, true)
+			userService.save(user, false)
 		} catch (SmartHomeException ex) {
 			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
 			throw new SmartHomeException(ex.message, account, user)
 		}
 
-		// Association à un admin (pour la validation des index)
-		String adminIds = configService.value(Config.GRAND_DEFI_ADMIN_IDS)
-
-		if (adminIds) {
-			for (String adminId : adminIds.split(",")) {
-				userService.save(new UserAdmin(user: user, admin: User.read(adminId.trim() as Long)))
-			}
-		}
-
-		// création d'une maison par défaut
+		// inscription
 		try {
-			houseService.bindDefault(user, [chauffage: account.chauffage,
+			inscriptionDefi(user, grandDefiId as Long, [chauffage: account.chauffage,
 				ecs: account.ecs, surface: account.surface,
 				location: account.commune.libelle + ", France"])
 		} catch (SmartHomeException ex) {
@@ -384,22 +383,49 @@ class GrandDefiService extends AbstractService {
 			throw new SmartHomeException(ex.message, account)
 		}
 
-		// construction des équipes "à la volée" et association avec une équipe
-		// et le grand défi en cours
-		String grandDefiId = configService.value(Config.GRAND_DEFI_ID)
-
-		if (!grandDefiId) {
-			throw new SmartHomeException("Les inscriptions pour le Grand Défi ne sont plus autorisées", account)
-		}
-
-		try {
-			defiService.inscription(user, grandDefiId as Long, account.commune.libelle)
-		} catch (SmartHomeException ex) {
-			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
-			throw new SmartHomeException(ex.message, account)
-		}
-
 		return registrationCode
+	}
+	
+
+	/**
+	 * Inscription à un défi 
+	 * 	
+	 * @param user
+	 * @param defiId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	DefiEquipeParticipant inscriptionDefi(User user, Long defiId, Map houseinfo) throws SmartHomeException {
+		// Association à un admin (pour la validation des index)
+		String adminIds = configService.value(Config.GRAND_DEFI_ADMIN_IDS)
+
+		// suppression des anciennes asso si déjà inscrit
+		UserAdmin.where{ user == user}.deleteAll()
+		
+		if (adminIds) {
+			for (String adminId : adminIds.split(",")) {
+				userService.save(new UserAdmin(user: user, admin: User.read(adminId.trim() as Long)))
+			}
+		}
+		
+		// création ou récupération d'une maison par défaut
+		House defaultHouse = houseService.bindDefault(user, houseinfo)
+		
+		return defiService.inscription(user, defiId, defaultHouse.location ?: "Non renseigné")
+	}
+	
+	
+	/**
+	 * 
+	 * @param user
+	 * @param defiId
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void desinscriptionDefi(User user, Long defiId) throws SmartHomeException {
+		defiService.desinscription(user, defiId)
 	}
 
 }

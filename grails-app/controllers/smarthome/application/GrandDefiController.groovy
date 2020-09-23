@@ -8,9 +8,11 @@ import smarthome.automation.HouseService
 import smarthome.common.Commune
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
+import smarthome.core.SmartHomeException
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
 import smarthome.security.Profil
+import smarthome.security.User
 import grails.plugin.springsecurity.annotation.Secured
 import smarthome.automation.CompteurIndexCommand
 
@@ -21,7 +23,7 @@ import smarthome.automation.CompteurIndexCommand
  * @author gregory
  *
  */
-@Secured("hasAnyRole('ROLE_GRAND_DEFI', 'ROLE_ADMIN_GRAND_DEFI', 'ROLE_ADMIN')")
+@Secured("isAuthenticated()")
 class GrandDefiController extends AbstractController {
 
 	GrandDefiService grandDefiService
@@ -33,7 +35,6 @@ class GrandDefiController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@Secured("isAuthenticated()")
 	def index() {
 		def user = authenticatedUser
 		House house = houseService.findDefaultByUser(user)
@@ -160,7 +161,8 @@ class GrandDefiController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary, icon = "award")
+	@NavigableAction(label = "Mes défis", navigation = NavigationEnum.navbarPrimary,
+		iconHeader = "award", customMenuView = true)
 	def defis(DefiCommand command) {
 		mesresultats(command)
 	}
@@ -219,5 +221,46 @@ class GrandDefiController extends AbstractController {
 		def model = grandDefiService.modelParticipants(command)
 		model.viewName = "participants"
 		render(view: 'participants', model: model)
+	}
+	
+	
+	/**
+	 * Inscription à un défi
+	 * 
+	 * @param defiId
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "catalogue", controllerName = "defi")
+	def inscription(long defiId) {
+		User user = authenticatedUser // spring security plugin
+		DefiEquipeParticipant defiUser = grandDefiService.inscriptionDefi(user, defiId, [:])
+		Defi defi = defiUser.defiEquipe.defi
+		
+		setInfo "Félicitations : vous êtes inscrit au défi ${defi.libelle} !"
+		mesresultats(new DefiCommand(defi: defi))
+	}
+	
+	
+	/**
+	 * Désinscription du défi
+	 * 
+	 * @param defiId
+	 * @return
+	 */
+	@ExceptionNavigationHandler(actionName = "catalogue", controllerName = "defi")
+	def desinscription(long defiId) {
+		User user = authenticatedUser // spring security plugin
+
+		try {
+			grandDefiService.desinscriptionDefi(user, defiId)
+			setInfo "Vous êtes désinscrit du défi !"
+			forward controller: "defi", action: "catalogue"
+		} catch (SmartHomeException e) {
+			// redirige vers le défi en cours
+			setError e.message
+			Defi defi = Defi.read(defiId)
+			mesresultats(new DefiCommand(defi: defi))
+		}		
+		
 	}
 }

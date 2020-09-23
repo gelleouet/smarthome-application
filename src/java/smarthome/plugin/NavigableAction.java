@@ -123,4 +123,12 @@ public @interface NavigableAction {
 	 * @return
 	 */
 	boolean defaultGroup() default false;
+	
+	
+	/**
+	 * Un menu personnalisé via un template GSP
+	 * 
+	 * @return
+	 */
+	boolean customMenuView() default false;
 }

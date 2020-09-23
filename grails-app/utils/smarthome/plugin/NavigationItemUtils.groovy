@@ -102,6 +102,7 @@ class NavigationItemUtils {
 			item.iconLib = navigation.iconLib()
 			item.iconHeader = navigation.iconHeader()
 			item.iconLibHeader = navigation.iconLibHeader()
+			item.customMenuView = navigation.customMenuView()
 			item.security = '' // TODO from @Secured
 		}
 	}

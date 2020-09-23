@@ -10,6 +10,7 @@ import smarthome.security.User
  */
 @Validateable
 class DefiCommand {
+	String organisation
 	String search
 	User user
 	Defi defi

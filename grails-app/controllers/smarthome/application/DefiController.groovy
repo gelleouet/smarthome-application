@@ -211,7 +211,21 @@ class DefiController extends AbstractController {
 	 */
 	def deleteParticipant(DefiEquipeParticipant defiEquipeParticipant) {
 		Defi defi = defiEquipeParticipant.defiEquipe.defi
-		defiService.delete(defiEquipeParticipant)
+		defiService.desinscription(defiEquipeParticipant)
 		renderTemplateParticipants(defi)
+	}
+	
+	
+	/**
+	 * Catalogue des défis pour inscription
+	 *
+	 * @param command
+	 * @return
+	 */
+	@Secured("isAuthenticated()")
+	def catalogue(DefiCommand command) {
+		def defis = defiService.listCatalogue(command, this.getPagination([:]))
+		def model = [command: command, defis: defis, recordsTotal: defis.totalCount]
+		render(view: 'catalogue', model: model)
 	}
 }

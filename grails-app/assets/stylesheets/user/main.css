@@ -800,6 +800,10 @@ input.form-control.medium {
 	width: 350px;
 }
 
+input.form-control.large {
+	width: 500px;
+}
+
 .compteur-model-img {
 	height: 70px;
 	width: 50px;

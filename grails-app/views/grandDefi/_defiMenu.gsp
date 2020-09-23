@@ -23,12 +23,7 @@
 	<div class="col-4">
 		<div class="btn-toolbar justify-content-end">
 			<div class="btn-group">
-				<button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Autres défis</button>
-				<div class="dropdown-menu">
-					<g:each var="defi" in="${ defis?.sort { it.libelle } }">
-						<g:link class="dropdown-item" action="defis" params="['defi.id': defi.id]">${ defi.libelle }</g:link>
-					</g:each>
-				</div>
+				<g:link class="btn btn-danger confirm-button" action="desinscription" params="[defiId: currentDefi?.id]">Se désinscrire</g:link>
 			</div>
 		</div>
 	</div>
