@@ -5,8 +5,8 @@
 <g:if test="${ googleChartTarif }">
 	<g:if test="${ !command.deviceImpl.fournisseur }">
 		<g:applyLayout name="messageWarning">
-			Pour visualiser les coûts des consommations, veuillez sélectionner
-				<g:link action="edit" controller="device" id="${ command.device.id }" fragment="tabs-device-configuration">un gestionnaire d'énergie</g:link>	
+			Pour visualiser les coûts des consommations, veuillez associer un fournisseur à votre compteur
+			<g:link class="btn btn-primary" action="compteur" controller="compteur">Associer</g:link>	
 		</g:applyLayout>
 	</g:if>
 	
@@ -20,7 +20,7 @@
 		<g:render template="/chart/datas/chartDatas" model="[chart: googleChartTarif]"/>
 	</div>  
 	
-	<small class="form-text text-muted">L’estimation financière en € de votre consommation se base sur le prix du kWh heures pleines du tarif réglementé, hors abonnement.
+	<small class="form-text text-muted">L’estimation financière en € de votre consommation se base sur le prix du ${ command.deviceImpl.defaultUnite() } heures pleines du tarif réglementé, hors abonnement.
 		<g:if test="${ command.deviceImpl.fournisseur }"><strong style="text-decoration:underline">
 			<g:set var="tarifs" value="${ command.deviceImpl.listTarifAnnee(command.dateChart[Calendar.YEAR]) }"/>
 			(Tarifs : ${ command.deviceImpl.fournisseur.libelle }<g:if test="${ tarifs }"><g:each var="tarif" in="${ tarifs }" status="status">, ${ tarif.key } : ${ tarif.value }€</g:each></g:if>)

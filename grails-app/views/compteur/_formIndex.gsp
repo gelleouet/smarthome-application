@@ -2,34 +2,34 @@
 	<g:if test="${ compteur.isDoubleTarification() }">
 		<g:set var="lastIndex" value="${ compteur.lastIndexHP() }"/>
 		<div class="form-group">
-			<label>Ancien Index Heures Pleines</label>
+			<label>Ancien Index Heures Pleines (Wh)</label>
 			<g:field type="number decimal" name="lastIndex1" value="${ lastIndex?.value as Long }" class="form-control" readonly="true"/>
 			<small class="text-muted">Dernier relevé le <g:formatDate date="${ lastIndex?.dateValue }" format="dd/MM/yyyy 'à' HH:mm:ss"/></small>
 		</div>
 		<div class="form-group required">
-			<label>Nouvel Index Heures Pleines</label>
+			<label>Nouvel Index Heures Pleines (Wh)</label>
 			<g:field type="number decimal" name="index1" value="${ command.index1 as Long }" class="form-control" required="true"/>
 		</div>
 		<g:set var="lastIndex" value="${ compteur.lastIndexHC() }"/>
 		<div class="form-group">
-			<label>Ancien Index Heures Creuses</label>
+			<label>Ancien Index Heures Creuses (Wh)</label>
 			<g:field type="number decimal" name="lastIndex2" value="${ lastIndex?.value as Long }" class="form-control" readonly="true"/>
 			<small class="text-muted">Dernier relevé le <g:formatDate date="${ lastIndex?.dateValue }" format="dd/MM/yyyy 'à' HH:mm:ss"/></small>
 		</div>
 		<div class="form-group required">
-			<label>Nouvel Index Heures Creuses</label>
+			<label>Nouvel Index Heures Creuses (Wh)</label>
 			<g:field type="number decimal" name="index2" value="${ command.index2 as Long }" class="form-control" required="true"/>
 		</div>
 	</g:if>
 	<g:else>
 		<g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
 		<div class="form-group">
-			<label>Ancien Index Heures Base</label>
+			<label>Ancien Index Heures Base (Wh)</label>
 			<g:field type="number decimal" name="lastIndex1" value="${ lastIndex?.value as Long }" class="form-control" readonly="true"/>
 			<small class="text-muted">Dernier relevé le <g:formatDate date="${ lastIndex?.dateValue }" format="dd/MM/yyyy 'à' HH:mm:ss"/></small>
 		</div>
 		<div class="form-group required">
-			<label>Nouvel Index Heures Base</label>
+			<label>Nouvel Index Heures Base (Wh)</label>
 			<g:field type="number decimal" name="index1" value="${ command.index1 as Long }" class="form-control" required="true"/>
 		</div>
 	</g:else>
@@ -50,6 +50,19 @@
 		<label>Coefficient de conversion</label>
 		<g:field type="number decimal" name="param1" value="${ (command.param1 ?: (device.metadata('coefConversion')?.value ?: defaultCoefGaz)) }" class="form-control" required="true" readonly="${ modeAdmin ? 'false' : 'true' }"/>
 		<small class="text-muted">Ce coefficient sert à convertir les volumes en kWh. Il sera conservé dans la configuration du compteur</small>
+	</div>
+</g:elseif>
+
+<g:elseif test="${ compteur instanceof smarthome.automation.deviceType.Compteur }">
+	<g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
+	<div class="form-group">
+		<label>Ancien Index (${ compteur.defaultUnite() })</label>
+		<g:field type="number decimal" name="lastIndex1" value="${ lastIndex?.value as Long }" class="form-control" readonly="true"/>
+		<small class="text-muted">Dernier relevé le <g:formatDate date="${ lastIndex?.dateValue }" format="dd/MM/yyyy 'à' HH:mm:ss"/></small>
+	</div>
+	<div class="form-group required">
+		<label>Nouvel Index (${ compteur.defaultUnite() })</label>
+		<g:field type="number decimal" name="index1" value="${ command.index1 as Long }" class="form-control" required="true"/>
 	</div>
 </g:elseif>
 

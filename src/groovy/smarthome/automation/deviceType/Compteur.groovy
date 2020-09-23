@@ -110,12 +110,14 @@ class Compteur extends AbstractDeviceType {
 		chart.chartType = ChartTypeEnum.Combo.factory
 		chart.selectionField = "selectionConso"
 
-		def unite = device.metavalue(META_METRIC_NAME)?.unite
+		String unite = this.uniteByView(command.viewMode)
 
-		chart.vAxis << [title: 'Consommation (${ unite })']
+		chart.vAxis << [title: "Consommation (${ unite })"]
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
-		chart.colonnes << new GoogleDataTableCol(label: "Heures base", property: "value", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Heures base ($unite)", type: "number", value: { deviceValue, index, currentChart ->
+			valueByView(deviceValue.value, command.viewMode)
+		})
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
@@ -297,7 +299,46 @@ class Compteur extends AbstractDeviceType {
 	 * @return
 	 */
 	String defaultUnite() {
-		return device.unite
+		return device.metavalue(META_METRIC_NAME)?.unite
+	}
+	
+	
+	/**
+	 * Les unités peuvent changer en fonction des vues
+	 * 
+	 * @param view
+	 * @return
+	 */
+	String uniteByView(ChartViewEnum view) {
+		defaultUnite()
+	}
+	
+	
+	/**
+	 * Conversion des valeurs en fonction vue
+	 * 
+	 * @param value
+	 * @param view
+	 * @return
+	 */
+	Number valueByView(Number value, ChartViewEnum view) {
+		value
+	}
+	
+	
+	/**
+	 * Formattage avec unité en fonction vue
+	 * 
+	 * @param value
+	 * @param view
+	 * @return
+	 */
+	String formatByView(Number value, ChartViewEnum view) {
+		if (value == null) {
+			""
+		} else {
+			"${valueByView(value, view)}${uniteByView(view)}"
+		}
 	}
 
 
@@ -307,17 +348,18 @@ class Compteur extends AbstractDeviceType {
 	 */
 	@Override
 	List aggregateValueDay(Date dateReference) {
-		// calcule la conso du jour en repartant des index
+		// calcule les consos à partir des consos par période
 		def values = DeviceValue.executeQuery("""\
 			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as ${AGGREGATE_METRIC_NAME})
+			sum(deviceValue.value) as ${AGGREGATE_METRIC_NAME})
 			FROM DeviceValue deviceValue
 			WHERE deviceValue.device = :device
 			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name is null
-			GROUP BY deviceValue.name, date_trunc('day', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstTimeInDay(dateReference), dateFin: DateUtils.lastTimeInDay(dateReference)])
-
+			AND deviceValue.name in (:metaNames)
+			GROUP BY date_trunc('day', deviceValue.dateValue), deviceValue.name""", [device: device,
+					dateDebut: DateUtils.firstTimeInDay(dateReference),
+					dateFin: DateUtils.lastTimeInDay(dateReference), metaNames: [META_METRIC_NAME]])
+		
 		return values
 	}
 
@@ -329,17 +371,20 @@ class Compteur extends AbstractDeviceType {
 	 */
 	@Override
 	List aggregateValueMonth(Date dateReference) {
-		// calcule la conso du mois en repartant des index
+		// calcule les consos à partir des consos par période
 		def values = DeviceValue.executeQuery("""\
 			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			(max(deviceValue.value) - min(deviceValue.value)) as ${AGGREGATE_METRIC_NAME})
+			sum(deviceValue.value) as ${AGGREGATE_METRIC_NAME})
 			FROM DeviceValue deviceValue
 			WHERE deviceValue.device = :device
 			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name is null
-			GROUP BY deviceValue.name, date_trunc('month', deviceValue.dateValue)""", [device: device,
-					dateDebut: DateUtils.firstDayInMonth(dateReference), dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference))])
-
+			AND deviceValue.name in (:metaNames)
+			GROUP BY date_trunc('month', deviceValue.dateValue), deviceValue.name""", [device: device,
+					dateDebut: DateUtils.firstDayInMonth(dateReference),
+					dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
+					metaNames: [META_METRIC_NAME]])
+		
+		
 		return values
 	}
 
@@ -382,11 +427,12 @@ class Compteur extends AbstractDeviceType {
 
 	/**
 	 * La clé des données aggrégées
+	 * Par défaut : les consos sont ajoutées pour trouver les valeurs aggrégées
 	 * 
 	 * @return
 	 */
 	protected String aggregateMetaName() {
-		AGGREGATE_METRIC_NAME
+		"${META_METRIC_NAME}${AGGREGATE_METRIC_NAME}"
 	}
 
 
@@ -396,7 +442,8 @@ class Compteur extends AbstractDeviceType {
 	 * @return
 	 */
 	protected List consoAggregateMetanames() {
-		[aggregateMetaName()]}
+		[aggregateMetaName()]
+	}
 
 	/**
 	 * Les consos du jour
@@ -455,7 +502,7 @@ class Compteur extends AbstractDeviceType {
 		Date firstDayMonth = DateUtils.firstDayInMonth(currentDate)
 		Date lastDayMonth = DateUtils.lastDayInMonth(currentDate)
 
-		consos.base = ((DeviceValueDay.values(device, firstDayMonth, lastDayMonth, aggregateMetaName()).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+		consos.base = (valueByView(DeviceValueDay.values(device, firstDayMonth, lastDayMonth, aggregateMetaName()).sum { it.value } ?: 0.0, ChartViewEnum.month) as Double).round(1)
 		consos.total = consos.base
 
 		consos.tarifBASE = calculTarif(DEFAULT_CONTRAT, consos.base, currentYear)
@@ -477,7 +524,7 @@ class Compteur extends AbstractDeviceType {
 		Date firstDayYear = DateUtils.firstDayInYear(currentDate)
 		Date lastDayYear = DateUtils.lastDayInYear(currentDate)
 
-		consos.base = ((DeviceValueMonth.values(device, firstDayYear, lastDayYear, aggregateMetaName()).sum { it.value } ?: 0.0) / 1000.0 as Double).round(1)
+		consos.base = (valueByView(DeviceValueMonth.values(device, firstDayYear, lastDayYear, aggregateMetaName()).sum { it.value } ?: 0.0, ChartViewEnum.year) as Double).round(1)
 		consos.total = consos.base
 
 		consos.tarifBASE = calculTarif(DEFAULT_CONTRAT, consos.base, currentYear)

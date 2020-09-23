@@ -103,6 +103,8 @@ class TeleInformation extends Compteur {
 		chart.chartType = ChartTypeEnum.Combo.factory
 		chart.selectionField = "selectionConso"
 
+		String unite = this.uniteByView(command.viewMode)
+		
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.values = values.groupBy { it.dateValue }
 
@@ -110,17 +112,17 @@ class TeleInformation extends Compteur {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hcinst" }?.value
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "hpinst" }?.value
 				})
 
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc, targetAxisIndex: 0]
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp, targetAxisIndex: 0]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					deviceValue.value.find{ it.name == "baseinst" }?.value
 				})
 				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, targetAxisIndex: 0]
@@ -131,7 +133,7 @@ class TeleInformation extends Compteur {
 			})
 			chart.series << [type: 'line', color: SERIES_COLOR.puissance, targetAxisIndex: 1]
 
-			chart.vAxis << [title: 'Consommation (Wh)']
+			chart.vAxis << [title: "Consommation ($unite)"]
 			chart.vAxis << [title: 'Puissance (W)']
 		} else {
 			chart.values = values
@@ -141,7 +143,7 @@ class TeleInformation extends Compteur {
 			chart.colonnes << new GoogleDataTableCol(label: "Date", type: "date", property: "key")
 
 			if (isDoubleTarification(opttarif)) {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'creuses' : 'normales' } ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchcsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -149,7 +151,7 @@ class TeleInformation extends Compteur {
 						return null
 					}
 				})
-				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } (kWh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures ${ opttarif == 'HC' ? 'pleines' : 'pointe mobile' } ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "hchpsum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -161,7 +163,7 @@ class TeleInformation extends Compteur {
 				chart.series << [type: 'bars', color: SERIES_COLOR.hc, targetAxisIndex: 0, annotation: true]
 				chart.series << [type: 'bars', color: SERIES_COLOR.hp, targetAxisIndex: 0, annotation: true]
 			} else {
-				chart.colonnes << new GoogleDataTableCol(label: "Heures base (kWh)", type: "number", value: { deviceValue, index, currentChart ->
+				chart.colonnes << new GoogleDataTableCol(label: "Heures base ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "basesum" }?.value
 					if (value != null) {
 						return (value / 1000d).round(1)
@@ -172,7 +174,7 @@ class TeleInformation extends Compteur {
 				chart.series << [type: 'bars', color: SERIES_COLOR.base, targetAxisIndex: 0, annotation: true]
 			}
 
-			chart.vAxis << [title: 'Consommation (kWh)']
+			chart.vAxis << [title: "Consommation ($unite)"]
 
 			if (!command.comparePreviousYear) {
 				chart.colonnes << new GoogleDataTableCol(label: "Puissance max (W)", type: "number", value: { deviceValue, index, currentChart ->
@@ -383,6 +385,32 @@ class TeleInformation extends Compteur {
 	@Override
 	String defaultUnite() {
 		"kWh"
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@Override
+	public String uniteByView(ChartViewEnum view) {
+		if (view == ChartViewEnum.day) {
+			"Wh"
+		} else {
+			"KWh"
+		}
+	}
+	
+	
+	/**
+	 *
+	 */
+	@Override
+	public Number valueByView(Number value, ChartViewEnum view) {
+		if (view == ChartViewEnum.day) {
+			value
+		} else {
+			CompteurUtils.convertWhTokWh(value)
+		}
 	}
 
 

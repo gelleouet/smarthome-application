@@ -65,91 +65,6 @@ class CompteurGaz extends Compteur {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueDay(java.util.Date)
-	 */
-	@Override
-	List aggregateValueDay(Date dateReference) {
-		// calcule les consos à partir des consos par période
-		// on ne peut pas repartir des index car il faut les transformer avec le coef de conversion
-		// qui peut changer sur la période
-		def values = DeviceValue.executeQuery("""\
-			SELECT new map(date_trunc('day', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			sum(deviceValue.value) as ${AGGREGATE_METRIC_NAME})
-			FROM DeviceValue deviceValue
-			WHERE deviceValue.device = :device
-			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name in (:metaNames)
-			GROUP BY date_trunc('day', deviceValue.dateValue), deviceValue.name""", [device: device,
-					dateDebut: DateUtils.firstTimeInDay(dateReference),
-					dateFin: DateUtils.lastTimeInDay(dateReference), metaNames: [META_METRIC_NAME]])
-
-		return values
-	}
-
-
-
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueMonth(java.util.Date)
-	 */
-	@Override
-	List aggregateValueMonth(Date dateReference) {
-		// calcule les consos à partir des consos par période
-		// on ne peut pas repartir des index car il faut les transformer avec le coef de conversion
-		// qui peut changer sur la période
-		def values = DeviceValue.executeQuery("""\
-			SELECT new map(date_trunc('month', deviceValue.dateValue) as dateValue, deviceValue.name as name,
-			sum(deviceValue.value) as ${AGGREGATE_METRIC_NAME})
-			FROM DeviceValue deviceValue
-			WHERE deviceValue.device = :device
-			AND deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-			AND deviceValue.name in (:metaNames)
-			GROUP BY date_trunc('month', deviceValue.dateValue), deviceValue.name""", [device: device,
-					dateDebut: DateUtils.firstDayInMonth(dateReference),
-					dateFin: DateUtils.lastTimeInDay(DateUtils.lastDayInMonth(dateReference)),
-					metaNames: [META_METRIC_NAME]])
-
-		return values
-	}
-
-
-	/**
-	 * (non-Javadoc)
-	 *
-	 * @see smarthome.automation.deviceType.Compteur#googleChart(smarthome.automation.DeviceChartCommand, java.util.List)
-	 */
-	@Override
-	GoogleChart googleChart(DeviceChartCommand command, List values) {
-		GoogleChart chart = new GoogleChart()
-		command.device.extrasToJson()
-		chart.values = values
-		chart.title = device.label
-		chart.chartType = ChartTypeEnum.Combo.factory
-		chart.selectionField = "selectionConso"
-
-		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
-
-		if (command.viewMode == ChartViewEnum.day) {
-			chart.colonnes << new GoogleDataTableCol(label: "Heures base (Wh)", property: "value", type: "number")
-			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
-
-			chart.vAxis << [title: 'Consommation (Wh)']
-		} else {
-			// les consos sont converties en kWh
-			chart.colonnes << new GoogleDataTableCol(label: "Heures base (kWh)", type: "number", value: { deviceValue, index, currentChart ->
-				return CompteurUtils.convertWhTokWh(deviceValue.value)
-			})
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
-
-			chart.vAxis << [title: 'Consommation (kWh)']
-		}
-
-		return chart
-	}
-
-
 	/** 
 	 * Construction d'un graphe avec les tarifs
 	 * Les impls doivent formattées les valeurs en une map contenant en clé la date
@@ -194,16 +109,6 @@ class CompteurGaz extends Compteur {
 
 
 	/**
-	 * La clé des données aggrégées
-	 *
-	 * @return
-	 */
-	@Override
-	protected String aggregateMetaName() {
-		"${META_METRIC_NAME}${AGGREGATE_METRIC_NAME}"
-	}
-
-	/**
 	 * Unité pour les widgets (peut être différent)
 	 *
 	 * @return
@@ -212,4 +117,31 @@ class CompteurGaz extends Compteur {
 	String defaultUnite() {
 		"kWh"
 	}
+	
+	
+	/**
+	 * Unité sur les graphes en fonction vue
+	 */
+	@Override
+	public String uniteByView(ChartViewEnum view) {
+		if (view == ChartViewEnum.day) {
+			"Wh"
+		} else {
+			"KWh"
+		}
+	}
+
+
+	/**
+	 * 
+	 */
+	@Override
+	public Number valueByView(Number value, ChartViewEnum view) {
+		if (view == ChartViewEnum.day) {
+			value
+		} else {
+			CompteurUtils.convertWhTokWh(value)
+		}
+	}
+	
 }
