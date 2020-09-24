@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="myProcess" name="My process" isExecutable="true">
+  <process id="Activiti_registerService.createAccount" name="Activiti_registerService.createAccount" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
     <scriptTask id="scripttask1" name="Préparation des données" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>def user = smarthome.security.User.findByUsername(context.arg0.username)
@@ -9,7 +9,7 @@ execution.setVariable("user", user)</script>
     <sequenceFlow id="flow10" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
     <scriptTask id="scripttask2" name="Envoi mail utilisateur" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>Map email = [title: 'Activation compte', subject: 'Activation compte', to: context.result.username,
-	bcc: 'gregory.elleouet@gmail.com']
+	bcc: 'gregory.elleouet@gmail.com,ronan.jouve@alec-rennes.org,olivier.roche@alec-rennes.org']
 def appCode = grailsApplication.metadata['app.code']
 	
 email.message = """
@@ -29,8 +29,8 @@ notificationService.sendEmail(email)</script>
       <text>Workflow : User Create Account</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
-    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Activiti_registerService.createAccount">
+    <bpmndi:BPMNPlane bpmnElement="Activiti_registerService.createAccount" id="BPMNPlane_Activiti_registerService.createAccount">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="343.0" y="70.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
