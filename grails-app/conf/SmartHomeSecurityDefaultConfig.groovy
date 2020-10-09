@@ -3,7 +3,6 @@
 
 grails.plugin.springsecurity.providerNames = ['daoAuthenticationProvider', 'rememberMeAuthenticationProvider'] // 'daoAuthenticationProvider', 'anonymousAuthenticationProvider', 'rememberMeAuthenticationProvider'
 grails.plugin.springsecurity.logout.handlerNames = ['rememberMeServices', 'securityContextLogoutHandler'] // 'rememberMeServices', 'securityContextLogoutHandler'
-grails.plugin.springsecurity.rememberMe.alwaysRemember = true
 
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'smarthome.security.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'smarthome.security.UserRole'
@@ -11,7 +10,7 @@ grails.plugin.springsecurity.authority.className = 'smarthome.security.Role'
 grails.plugin.springsecurity.useRoleGroups = false
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-	'/**/assets/**':                  ['permitAll'],
+	'/assets/**':                  	  ['permitAll'],
 	'/**/js/**':                      ['permitAll'],
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
@@ -21,8 +20,18 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/websocket/**':		  		  ['permitAll'],
 	'/*-endpoint/**':		  	  	  ['permitAll'],
 	'/j_spring_security_switch_user': ["hasRole('ROLE_ADMIN')"],
-	'/j_spring_security_exit_user':   ["isAuthenticated()"],
+	'/j_spring_security_exit_user':   ["permitAll"],
 	'/j_spring_security_logout':   	  ["permitAll"]
+]
+
+grails.plugin.springsecurity.filterChain.chainMap = [
+	'/assets/**':      					'none',
+	'/**/js/**':       					'none',
+	'/**/css/**':      					'none',
+	'/**/images/**':   					'none',
+	'/**/favicon.ico': 					'none',
+	'/login/auth': 						'none',
+	'/**':             					'JOINED_FILTERS'
 ]
 
 // Configuration supplémentaire de Spring Security

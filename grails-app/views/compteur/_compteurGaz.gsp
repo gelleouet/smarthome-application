@@ -16,30 +16,8 @@
 	
 	<div class="card-body">
 		<div>
-			<g:if test="${ house?.compteurGaz && house.compteurGaz.id == adictDevice?.id }">
-				<div class="row mb-4 text-center">
-					<div class="col">
-						<g:render template="/compteur/modeleGaz" model="[compteur: house?.compteurGaz]"/>
-					</div>
-					<div class="col">
-						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !adictDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': adictDevice?.id, dateChart: app.formatPicker(date: house.compteurGaz.dateValue ?: new Date())]" disabled="${ adictDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
-						</div>
-						
-						<g:if test="${ house.compteurGaz.metadata('fournisseur') }">
-							<div class="mt-4">
-								<span class="text-muted">Votre fournisseur de gaz : </span>
-								<br/>
-								<span class="badge badge-primary">${ house.compteurGaz.metadata('fournisseur').value }</span>
-							</div>
-						</g:if>
-					</div>
-				</div>
-				
-				<g:render template="/templates/messageInfo" model="[message: 'Gazpar with GRDF ADICT', icon: 'check-circle']"/>
-			</g:if>
 			
-			<g:elseif test="${ house?.compteurGaz }">
+			<g:if test="${ house?.compteurGaz }">
 				<div class="row mb-4 text-center">
 					<div class="col">
 						<g:render template="/compteur/modeleGaz" model="[compteur: house?.compteurGaz]"/>
@@ -61,7 +39,7 @@
 				</div>
 				
 				<g:render template="/templates/messageInfo" model="[message: house.compteurGaz.label, icon: 'check-circle']"/>
-			</g:elseif>
+			</g:if>
 			
 			<g:else>
 				
@@ -76,7 +54,7 @@
 					<g:hiddenField name="compteurType" value="gaz"/>
 					
 					<label class="custom-control custom-radio">
-						<g:radio name="compteurModel" value="Gazpar" class="custom-control-input" checked="true"/>
+						<g:radio name="compteurModel" value="Gazpar" class="custom-control-input" disabled="true"/>
 						<span class="custom-control-label">Gazpar - GRDF ADICT</span>
 					</label>
 					<div class="row">
@@ -84,12 +62,13 @@
 							<asset:image src="gazpar.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les consommations seront téléchargées automatiquement par le service GRDF ADICT</small>
+							<small class="font-text text-muted">Les consommations seront téléchargées automatiquement par le service GRDF ADICT<br/>
+							<app:icon name="alert-circle"/> Non disponible pour le moment</small>
 						</div>
 					</div>
 					
 					<label class="custom-control custom-radio mt-4">
-						<g:radio id="radioCompteurGazNew" name="compteurModel" value="Gaz" class="custom-control-input"/>
+						<g:radio id="radioCompteurGazNew" name="compteurModel" value="Gaz" class="custom-control-input" checked="true"/>
 						<span class="custom-control-label">Compteur non communicant</span>
 					</label>
 					<div class="row">
@@ -97,10 +76,7 @@
 							<asset:image src="compteur-gaz.png" class="ml-4 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les index de consommation seront saisis manuellement. Veuillez indiquer votre contrat tarifaire :</small>
-							
-							<g:select class="form-control" name="contrat" from="${ contratGaz }"
-         								optionKey="key" optionValue="value" onchange="selectRadio('radioCompteurGazNew', true)"/>
+							<small class="font-text text-muted">Les index de consommation seront saisis manuellement.</small>
 						</div>
 					</div>
 					

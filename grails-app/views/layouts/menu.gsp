@@ -1,3 +1,6 @@
+<g:set var="houseService" bean="houseService"/>
+<g:set var="house" value="${ houseService.findDefaultByPrincipal() }"/>
+
 <nav id="sidebar" class="sidebar">
 	<div class="sidebar-content">
 		<g:link class="sidebar-brand" uri="/">
@@ -5,55 +8,74 @@
 			<span class="align-middle"><g:meta name="app.code"/></span>
 		</g:link>
 		
-		<g:set var="items" value="${ app.navigationItems(category: 'navbarPrimary')?.subitems }"/>
 
 		<ul class="sidebar-nav">
-			<g:each var="menuGroup" in="${ items?.groupBy{ it.header ?: it.label }.sort{ it.key} }" status="menuGroupStatus">
-			
-				<g:set var="item" value="${ menuGroup.value[0] }"/>
-			
-				<g:if test="${ menuGroup.value.size() > 1 || item.customMenuView }">
-					<li class="sidebar-item">
-						<a href="#menuleft-${ menuGroupStatus }" data-toggle="collapse" class="sidebar-link" aria-expanded="true" role="button">
-							<g:if test="${ menuGroup.value[0].iconHeader }">
-								<app:icon name="${ menuGroup.value[0].iconHeader }" lib="${ menuGroup.value[0].iconLibHeader }"/>
-							</g:if>
-							<span class="align-middle">${ menuGroup.key }</span>
-						</a>
-						
-						<ul id="menuleft-${ menuGroupStatus }" class="sidebar-dropdown list-unstyled collapse show">
-						
-							<g:if test="${ item.customMenuView }">
-								<g:render template="/${item.controller}/customMenuView" model="[item: item]"/>
-							</g:if>
-							<g:else>
-								<g:each var="item" in="${ menuGroup.value.sort({it.label}) }">
-									<li class="sidebar-item ${app.isCurrentItem(item: item) ? 'active' : '' }">
-										<g:link class="sidebar-link" action="${ item.action }" controller="${ item.controller }">
-											<g:if test="${ item.icon }">
-												<app:icon name="${ item.icon }" lib="${ item.iconLib }"/>
-											</g:if>
-											${item.label }
-										</g:link>
-									</li>
-								</g:each>
-							</g:else>
-						</ul>
-					</li>
-				</g:if>
+		
+			<li class="sidebar-item">
+				<a href="#menuleft-conso" data-toggle="collapse" class="sidebar-link" aria-expanded="true" role="button">
+					<app:icon name="bar-chart"/>
+					<span class="align-middle">Mes consommations</span>
+				</a>
 				
-				<g:else>
-					<li class="sidebar-item ${app.isCurrentItem(item: item) ? 'active' : '' }">
-						<g:link class="sidebar-link" action="${ item.action }" controller="${ item.controller }">
-							<g:if test="${ item.icon }">
-								<app:icon name="${ item.icon }" lib="${ item.iconLib }"/>
-							</g:if>
-							${item.label }
+				<ul id="menuleft-conso" class="sidebar-dropdown list-unstyled collapse show">
+					<li class="sidebar-item">
+						<g:link class="sidebar-link" action="consommationElec" controller="grandDefi">
+							<app:icon name="zap"/>
+							Electricité
 						</g:link>
 					</li>
-				</g:else>
+					<g:if test="${ house?.compteurGaz }">
+						<li class="sidebar-item">
+							<g:link class="sidebar-link" action="consommationGaz" controller="grandDefi">
+								<app:icon name="fire" lib="awesome"/>
+								Gaz
+							</g:link>
+						</li>
+					</g:if>
+					<g:if test="${ house?.compteurEau }">
+						<li class="sidebar-item">
+							<g:link class="sidebar-link" action="consommationEau" controller="grandDefi">
+								<app:icon name="droplet"/>
+								Eau
+							</g:link>
+						</li>
+					</g:if>
+				</ul>
+			</li>
 			
-			</g:each>
+			
+			<li class="sidebar-item">
+				<a href="#menuleft-saisieindex" data-toggle="collapse" class="sidebar-link" aria-expanded="true" role="button">
+					<app:icon name="edit"/>
+					<span class="align-middle">Saise des index</span>
+				</a>
+				
+				<ul id="menuleft-saisieindex" class="sidebar-dropdown list-unstyled collapse show">
+					<g:render template="/compteur/customMenuView" model="[house: house]"/>
+				</ul>
+			</li>
+			
+			
+			<li class="sidebar-item">
+				<a href="#menuleft-defi" data-toggle="collapse" class="sidebar-link" aria-expanded="true" role="button">
+					<app:icon name="award"/>
+					<span class="align-middle">Mes défis</span>
+				</a>
+				
+				<ul id="menuleft-defi" class="sidebar-dropdown list-unstyled collapse show">
+					<g:render template="/grandDefi/customMenuView" model="[house: house]"/>
+				</ul>
+			</li>
+			
+			<sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_VALIDATION_INDEX">
+				<li class="sidebar-item">
+					<g:link class="sidebar-link" action="compteurIndexs" controller="compteur">
+						<app:icon name="check-square"/>
+						Validation des index
+					</g:link>
+				</li>
+			</sec:ifAnyGranted>
+		
 		</ul>
 	</div>
 </nav>

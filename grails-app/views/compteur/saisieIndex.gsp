@@ -51,7 +51,6 @@
 					
 						<div class="mt-4">
 							<button class="btn btn-primary">Enregistrer</button>
-							<g:link action="compteur" class="btn btn-link">Annuler</g:link>
 						</div>
 					</g:uploadForm>
 				</div>

@@ -5,35 +5,28 @@
 		     	
 		    </div>
 			<div class="col">
-		    	<h6>
-				<g:meta name="app.code"/> v<g:meta name="app.version"/>
-				<br/>
-				build with Grails <g:meta name="app.grails.version"/> - Java ${System.getProperty('java.version')}
-				</h6>
+		    	<h6><g:meta name="app.code"/> v<g:meta name="app.version"/></h6>
 				<asset:image src="/gandi-ssl.png" />
 				
 				<ul class="list-inline" style="margin-top:10px;">
-					<g:if test="${ false }">
+					<g:if test="${ grailsApplication.config.social.web }">
 						<li class="list-inline-item">
-							<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application"><i class="align-middle fab fa-github"></i> Github</a>
-						</li>
-						<li class="list-inline-item">
-							<a class="btn mb-1 btn-github" href="https://github.com/gelleouet/smarthome-application/wiki"><i class="align-middle fab fa-github"></i> Wiki</a>
+							<a class="btn mb-1 btn-primary" href="${ grailsApplication.config.social.web }" target="social"><asset:image src="granddefi/bonhomme.png" height="16px"/> Grand Défi</a>
 						</li>
 					</g:if>
-					<g:if test="${ g.meta(name: 'app.twitter') }">
+					<g:if test="${ grailsApplication.config.social.twitter }">
 						<li class="list-inline-item">
-							<a class="btn mb-1 btn-twitter" href="${ g.meta(name: 'app.twitter') }"><i class="align-middle fab fa-twitter"></i> Twitter</a>
+							<a class="btn mb-1 btn-twitter" href="${ grailsApplication.config.social.twitter }" target="social"><i class="align-middle fab fa-twitter"></i> Twitter</a>
 						</li>
 					</g:if>
-					<g:if test="${ g.meta(name: 'app.facebook') }">
+					<g:if test="${ grailsApplication.config.social.facebook }">
 						<li class="list-inline-item">
-							<a class="btn mb-1 btn-facebook" href="${g.meta(name: 'app.facebook') }"><i class="align-middle fab fa-facebook"></i> Facebook</a>
+							<a class="btn mb-1 btn-facebook" href="${ grailsApplication.config.social.facebook }" target="social"><i class="align-middle fab fa-facebook"></i> Facebook</a>
 						</li>
 					</g:if>
-					<g:if test="${ g.meta(name: 'app.instagram') }">
+					<g:if test="${ grailsApplication.config.social.instagram }">
 						<li class="list-inline-item">
-							<a class="btn mb-1 btn-instagram" href="${g.meta(name: 'app.instagram') }"><i class="align-middle fab fa-instagram"></i> Instagram</a>
+							<a class="btn mb-1 btn-instagram" href="${ grailsApplication.config.social.instagram }" target="social"><i class="align-middle fab fa-instagram"></i> Instagram</a>
 						</li>
 					</g:if>
 				</ul>

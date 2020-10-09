@@ -135,6 +135,7 @@ class NotificationService extends AbstractService {
 		email.appTwitter = grailsApplication.config.social.twitter
 		email.appFacebook = grailsApplication.config.social.facebook
 		email.appInstagram = grailsApplication.config.social.instagram
+		email.appWeb = grailsApplication.config.social.web
 		
 
 		// Envoi des messages sur une instance applicative identique !!

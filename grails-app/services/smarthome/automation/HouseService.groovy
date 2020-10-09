@@ -216,6 +216,18 @@ group by chauffage.libelle
 	
 	
 	/**
+	 * Recherche de la maison principale de l'utilisateur connecté
+	 *
+	 * @param user
+	 * @return
+	 */
+	House findDefaultByPrincipal() {
+		User user = springSecurityService.getCurrentUser() as User
+		return House.findByUserAndDefaut(user, true)
+	}
+	
+	
+	/**
 	 * Recherche de la maison principale d'un user avec activation de jointure
 	 *
 	 * @param user

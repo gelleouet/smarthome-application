@@ -1,3 +1,7 @@
+<g:set var="fournisseur" value="${ house?.compteur?.metadata('fournisseur') }"/>
+<g:set var="contrat" value="${ house?.compteur?.metavalue('opttarif') }"/>
+
+
 <div class="card">
 
 	<div class="card-header">
@@ -16,30 +20,8 @@
 	
 	<div class="card-body">
 		<div>
-			<g:if test="${ house?.compteur && house.compteur.id == dataConnectDevice?.id }">
-				<div class="row mb-4 text-center">
-					<div class="col">
-						<g:render template="/compteur/modeleElec" model="[compteur: house?.compteur]"/>
-					</div>
-					<div class="col">
-						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2 ${ !dataConnectDevice ? 'disabled' : ''}" action="deviceChart" controller="device" params="['device.id': dataConnectDevice?.id, dateChart: app.formatPicker(date: house.compteur.dateValue ?: new Date())]" disabled="${ dataConnectDevice ? 'false' : 'true'}"><app:icon name="bar-chart"/> Consommations</g:link>
-						</div>
-						
-						<g:if test="${ house.compteur.metadata('fournisseur') }">
-							<div class="mt-4">
-								<span class="text-muted">Votre fournisseur d'électricité : </span>
-								<br/>
-								<span class="badge badge-primary">${ house.compteur.metadata('fournisseur').value }</span>
-							</div>
-						</g:if>
-					</div>
-				</div>
-				
-				<g:render template="/templates/messageInfo" model="[message: 'Linky with Enedis DataConnect', icon: 'check-circle']"/>
-			</g:if>
 			
-			<g:elseif test="${ house?.compteur }">
+			<g:if test="${ house?.compteur }">
 				<div class="row mb-4 text-center">
 					<div class="col">
 						<g:render template="/compteur/modeleElec" model="[compteur: house?.compteur]"/>
@@ -50,18 +32,26 @@
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id, dateChart: app.formatPicker(date: house.compteur.dateValue ?: new Date())]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
-						<g:if test="${ house.compteur.metadata('fournisseur') }">
+						<g:if test="${ contrat }">
+							<div class="mt-4">
+								<span class="text-muted">Votre contrat tarifaire : </span>
+								<br/>
+								<span class="badge badge-primary">${ contrat.value }</span>
+							</div>
+						</g:if>
+						
+						<g:if test="${ fournisseur }">
 							<div class="mt-4">
 								<span class="text-muted">Votre fournisseur d'électricité : </span>
 								<br/>
-								<span class="badge badge-primary">${ house.compteur.metadata('fournisseur').value }</span>
+								<span class="badge badge-primary">${ fournisseur.value }</span>
 							</div>
 						</g:if>
 					</div>
 				</div>
 				
 				<g:render template="/templates/messageInfo" model="[message: house.compteur.label, icon: 'check-circle']"/>
-			</g:elseif>
+			</g:if>
 			
 			<g:else>
 				
@@ -90,13 +80,9 @@
 					<div class="row">
 						<div class="col">
 							<asset:image src="compteur-elec-electronique.png" class="ml-4 compteur-model-img"/>
-							<asset:image src="compteur-elec-mecanique.png" class="ml-1 compteur-model-img"/>
 						</div>
 						<div class="col-8">
-							<small class="font-text text-muted">Les index de consommation seront saisis manuellement. Veuillez indiquer votre contrat tarifaire :</small>
-							
-							<g:select class="form-control" name="contrat" from="${ contratElecs }"
-         								optionKey="key" optionValue="value" onchange="selectRadio('radioCompteurElecNew', true)"/>
+							<small class="font-text text-muted">Les index de consommation seront saisis manuellement.</small>
 						</div>
 					</div>
 					
@@ -118,11 +104,14 @@
 					</div>
 					
 					
-					<h5 class="mt-4 font-weight-bold">Vous pouvez également sélectionner votre fournisseur d'électricité
+					<h5 class="mt-4 font-weight-bold">Vous pouvez également sélectionner votre fournisseur d'électricité et votre contrat tarifaire
 						pour visualiser les coûts de consommation <span class="text-muted">(hors abonnement)</span> :</h5>
 					
 					<g:select class="form-control" name="fournisseur" from="${ fournisseurElecs }"
          				optionKey="libelle" optionValue="libelle" noSelection="['': ' ']"/>
+         				
+         				
+         			<g:select class="form-control" name="contrat" from="${ contratElecs }" optionKey="key" optionValue="value"/>
 					
 					<div class="mt-4 text-right">
 						<button class="btn btn-primary"><app:icon name="chevron-right"/> Suivant</button>

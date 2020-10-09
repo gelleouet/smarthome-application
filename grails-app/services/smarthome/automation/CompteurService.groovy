@@ -131,12 +131,14 @@ class CompteurService extends AbstractService {
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
 				compteur.addMetadata('aggregate', [value: 'sum-conso', label: 'Calcul des données aggrégées'])
 
-				compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: command.contrat ?: Compteur.DEFAULT_CONTRAT])
 				compteur.addMetavalue('baseinst', [unite: 'Wh', label: 'Période consommation', trace: true])
 			}
 		}
 
 		// ne pas écraser l'ancienne valeur si pas renseigné
+		if (command.contrat) {
+			compteur.addMetavalue('opttarif', [label: 'Option tarifaire', value: command.contrat])
+		}
 		if (command.fournisseur) {
 			compteur.addMetadata('fournisseur', [value: command.fournisseur, label: 'Fournisseur'])
 		}

@@ -42,7 +42,11 @@ class User implements Serializable {
 	static transients = ['springSecurityService', 'roles']
 
 	static constraints = {
-		username blank: false, unique: true, validator: SmartHomeSecurityUtils.emailValidator
+		// ne pas déclarer la contrainte unique dans le mapping car hibernate fait des controles à chaque chargement
+		// ce qui déclenche des multiples requetes par exemple get(id) ethibernate fait une seconde requete sur le username
+		// !! garder la contrainte en base !!
+		//username unique: true
+		username blank: false, validator: SmartHomeSecurityUtils.emailValidator
 		password blank: false, validator: SmartHomeSecurityUtils.passwordValidator
 		nom blank: false
 		prenom blank: false

@@ -5,6 +5,7 @@
 <div class="navbar-collapse collapse">
 	<ul class="navbar-nav ml-auto">
 	
+	
 		<li class="nav-item dropdown">
 			<g:set var="loggedInUser" value="${ secUser ?: smarthome.security.User.read(sec.loggedInUserInfo(field: 'id')) }"/>
         	
@@ -13,17 +14,18 @@
         		<span class="text-dark">${ loggedInUser.initiale }</span>
             </a>
             
-            <g:set var="headers" value="${ app.navigationItems(category: 'configuration')?.subitems?.groupBy({ it.header }) }"/>
-            
             <div class="dropdown-menu dropdown-menu-right">
             	<div class="dropdown-header">${ loggedInUser.username }</div>
             	
-            	<g:each var="header" in="${ headers.sort{ it.key } }">
-            		<g:set var="item" value="${ header.value.find{ it.defaultGroup } }"/>
-            		<g:if test="${ item }">
-						<g:link class="dropdown-item" controller="${ item.controller }" action="${ item.action }"><app:icon class="align-middle mr-1" name="${ item.icon }"/> ${ header.key }</g:link>
-					</g:if>
-				</g:each>
+            	<g:link class="dropdown-item" controller="compteur" action="compteur"><app:icon class="align-middle mr-1" name="tool"/> Compteurs</g:link>
+            	
+            	<div class="dropdown-divider"></div>
+            	
+				<g:link class="dropdown-item" controller="profil" action="profil"><app:icon class="align-middle mr-1" name="user"/> Profil</g:link>
+				
+				<sec:ifAnyGranted roles="ROLE_ADMIN">
+					<g:link class="dropdown-item" controller="user" action="users"><app:icon class="align-middle mr-1" name="settings"/> Système</g:link>
+				</sec:ifAnyGranted>
 				
 				<div class="dropdown-divider"></div>
 				<sec:ifSwitched>

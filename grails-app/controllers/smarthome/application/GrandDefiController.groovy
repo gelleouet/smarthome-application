@@ -91,30 +91,6 @@ class GrandDefiController extends AbstractController {
 
 
 	/**
-	 * Affichage page config/résumé des compteurs
-	 *
-	 * @return
-	 */
-	@NavigableAction(label = "Mes compteurs", navigation = NavigationEnum.navbarPrimary, icon = "tool")
-	def compteur() {
-		redirect(controller: 'compteur', action: 'compteur')
-	}
-
-
-	/**
-	 * Les index en cours de validation par un admin
-	 *
-	 * @return
-	 */
-	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
-	@NavigableAction(label = "Validation des index", navigation = NavigationEnum.navbarPrimary,
-		icon = "check-square")
-	def compteurIndexs(CompteurIndexCommand command) {
-		redirect(controller: 'compteur', action: 'compteurIndexs')
-	}
-
-
-	/**
 	 * Affichage des consommations
 	 * @return
 	 */
