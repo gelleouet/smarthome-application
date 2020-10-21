@@ -16,7 +16,6 @@ import smarthome.automation.DeviceValueCommand
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
-import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
