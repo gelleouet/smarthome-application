@@ -9,7 +9,7 @@
 	
 		<div class="row">
 			<div class="col-8">
-				<g:form class="form-inline" action="users">
+				<g:form class="form-inline" action="users" name="user-form">
 					<fieldset>
 						<input autofocus="true" class="form-control" type="text" placeholder="Rechercher nom, prénom, email" name="search" value="${ command.search }"/>
 						<button class="btn btn-light"><app:icon name="search"/></button>
@@ -23,7 +23,7 @@
 		
 		<br/>
 		
-		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
+		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="user-form">
 		    <thead>
 		        <tr>
 		            <th>Nom</th>

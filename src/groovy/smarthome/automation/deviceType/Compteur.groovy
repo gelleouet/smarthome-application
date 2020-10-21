@@ -12,9 +12,11 @@ import smarthome.automation.DeviceChartCommand
 import smarthome.automation.DeviceTypeProvider
 import smarthome.automation.DeviceTypeProviderPrix
 import smarthome.automation.DeviceValue
+import smarthome.automation.DeviceValueCommand
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
+import smarthome.automation.SaisieIndexCommand
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -602,5 +604,44 @@ class Compteur extends AbstractDeviceType {
 			resultTransformer org.hibernate.Criteria.ALIAS_TO_ENTITY_MAP
 		}
 	}
+	
+	
+	/**
+	 * Charge les index d'un compteur du plus récent au plus vieux
+	 * @see Compteur#parseIndex : par défaut, il est enregistré dans la valeur principale (name = null)
+	 * 
+	 * @param command
+	 * @return
+	 */
+	List listIndex(DeviceValueCommand command) throws SmartHomeException {
+		return DeviceValue.createCriteria().list(command.pagination) {
+			eq 'device', device
+			lt 'dateValue', command.dateIndex + 1
+			isNull 'name'
+			order 'dateValue', 'desc'
+		}
+		
+	}
 
+	
+	/**
+	 * Conversion et validation d'un nouvel index
+	 * Faire uniquement les controles liés au compteur car le command
+	 * fait déjà des controles de base (index nouveau > ancien, valeur négative)
+	 * 
+	 * @param command
+	 */
+	void bindCompteurIndex(CompteurIndex command) throws SmartHomeException {
+		
+	}
+	
+	
+	/**
+	 * Prépare l'objet pour édition dans formulaire
+	 * 
+	 * @param command
+	 */
+	void prepareForEdition(CompteurIndex command) {
+		
+	}
 }

@@ -16,6 +16,7 @@ import smarthome.automation.DeviceMetadata
 import smarthome.automation.DeviceTypeProvider
 import smarthome.automation.DeviceTypeProviderPrix
 import smarthome.automation.DeviceValue
+import smarthome.automation.DeviceValueCommand
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
 import smarthome.automation.HouseConso
@@ -809,4 +810,20 @@ class TeleInformation extends Compteur {
 	protected List consoAggregateMetanames() {
 		['basesum', 'hchcsum', 'hchpsum']
 	}
+
+
+	/**
+	 * 
+	 */
+	@Override
+	List listIndex(DeviceValueCommand command) throws SmartHomeException {
+		return DeviceValue.createCriteria().list(command.pagination) {
+			eq 'device', device
+			lt 'dateValue', command.dateIndex + 1
+			'in' 'name', ['hchp', 'hchc']
+			order 'dateValue', 'desc'
+			order 'name', 'asc'
+		}
+	}
+	
 }

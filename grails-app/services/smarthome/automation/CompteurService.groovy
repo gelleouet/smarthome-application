@@ -282,28 +282,23 @@ class CompteurService extends AbstractService {
 	 */
 	@AsynchronousWorkflow("compteurService.saveIndexForValidation")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	CompteurIndex saveIndexForValidation(SaisieIndexCommand command)  throws SmartHomeException {
-		command.asserts()
-
-		Device device = Device.read(command.deviceId)
-
+	CompteurIndex saveIndexForValidation(CompteurIndex command)  throws SmartHomeException {
 		// le nouvel index doit aussi être postérieur au dernier relevé
-		if (device.dateValue && command.dateIndex <= device.dateValue) {
+		if (command.device.dateValue && command.dateIndex <= command.device.dateValue) {
 			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", command)
 		}
 
+		// transformation et controle par le compteur lui-meme avant les controles généraux
+		// car l'impl peut calculer de nouveaux index à partir des valeurs saisies
+		(command.device.newDeviceImpl() as Compteur).bindCompteurIndex(command)
+		command.asserts()
+		
 		// quit si au moins un index est trouvé pour le user
 		//		if (countCompteurIndexForDevice(device)) {
 		//			throw new SmartHomeException("Un index en attente de validation existe déjà pour ce compteur !")
 		//		}
 
-		// construction d'un objet Index
-		CompteurIndex index = new CompteurIndex(device: device,
-		dateIndex: command.dateIndex,
-		index1: command.index1, index2: command.index2,
-		param1: command.param1, photo: command.photo)
-
-		return super.save(index)
+		return super.save(command)
 	}
 
 
@@ -325,9 +320,13 @@ class CompteurService extends AbstractService {
 		}
 
 		// on passe les données du compteur dans l'impl associée pour mettre à
-		// jour les bonnes données
+		// jour les bonnes données et faire les controles
 		try {
 			Compteur compteurImpl = device.newDeviceImpl()
+			
+			compteurImpl.bindCompteurIndex(compteurIndex)
+			compteurIndex.asserts()
+			
 			compteurImpl.parseIndex(compteurIndex)
 		} catch (SmartHomeException ex) {
 			// on recatche l'erreur pour passer l'objet command

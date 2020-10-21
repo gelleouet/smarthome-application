@@ -8,7 +8,7 @@
 	
 		<div class="row">
 			<div class="col-8">
-				<g:form class="form-inline" action="devices">
+				<g:form class="form-inline" action="devices" name="device-form">
 					<fieldset>
 						<input autofocus="true" class="form-control" type="text" placeholder="Nom, groupe ..." name="deviceSearch" value="${ deviceSearch }"/>
 						<button class="btn btn-light"><app:icon name="search"/></button>
@@ -22,7 +22,7 @@
 		
 		<br/>
 		
-		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
+		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="device-form">
 		    <thead>
 		        <tr>
 		            <th>Nom</th>

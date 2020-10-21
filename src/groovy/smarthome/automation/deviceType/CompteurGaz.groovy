@@ -24,6 +24,71 @@ class CompteurGaz extends Compteur {
 
 
 	/**
+	 * Prépare l'objet pour édition dans formulaire
+	 *
+	 * @param command
+	 */
+	@Override
+	void prepareForEdition(CompteurIndex command) {
+		command.highindex1 = indexHigh(command.index1)
+		command.lowindex1 = indexLow(command.index1)
+	}
+	
+	
+	/**
+	 * Renvoit la part en m3 d'un index
+	 *
+	 * @param index
+	 * @return
+	 */
+	Double indexHigh(Double index) {
+		if (index) {
+			(index / 1000.0).trunc()
+		} else {
+			null
+		}
+	}
+	
+	
+	/**
+	 * Renvoit la part en litre d'un index
+	 *
+	 * @param index
+	 * @return
+	 */
+	Double indexLow(Double index) {
+		if (index) {
+			index - (indexHigh(index) * 1000)
+		} else {
+			null
+		}
+	}
+	
+	
+	/**
+	* Validation d'un nouvel index
+	* Faire uniquement les controles liés au compteur car le command
+	* fait déjà des controles de base (index nouveau > ancien, valeur négative)
+	*
+	* @param command
+	*/
+	@Override
+   void bindCompteurIndex(CompteurIndex command) throws SmartHomeException {
+	   if (command.lowindex1 >= 1000) {
+		   throw new SmartHomeException("La part en dm3 ne peut pas être supérieure à 1000 !", command)
+	   }
+	   
+	   // obligé de faire le test de index négatif ici car on va ajouter les 2 parties
+	   // et peut-être perdre le négatif après addition mais ca sera faux
+	   if (command.lowindex1 < 0 || command.highindex1 < 0) {
+		   throw new SmartHomeException("Les index ne peuvent pas être négatifs ou nuls !", command)
+	   }
+	   
+	   command.index1 = command.highindex1 * 1000 + command.lowindex1
+   }
+	
+	
+	/**
 	 * (non-Javadoc)
 	 *
 	 * @see smarthome.automation.deviceType.Compteur#parseIndex(smarthome.automation.CompteurIndex)
@@ -42,7 +107,6 @@ class CompteurGaz extends Compteur {
 		addDefaultMetas()
 
 		if (lastIndex) {
-			// FIXME formule à confirmer !! Les index sont en m3 ou dm3 ???
 			// Cas ici si tout l'index est saisi (avec la part en dm3) => on obtient de suite les Wh
 			// coef conversion = XX kWh pour 1m3
 			def conso = (index.index1 - lastIndex.value) * index.param1.toDouble()

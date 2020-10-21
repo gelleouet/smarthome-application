@@ -1,6 +1,7 @@
 package smarthome.automation
 
 import smarthome.application.granddefi.RegisterCompteurCommand
+import smarthome.automation.deviceType.Compteur
 import smarthome.automation.deviceType.CompteurGaz
 import smarthome.core.AbstractController
 import smarthome.core.ConfigService
@@ -23,6 +24,7 @@ class CompteurController extends AbstractController {
 	ConfigService configService
 	DeviceService deviceService
 	DeviceTypeService deviceTypeService
+	DeviceValueService deviceValueService
 
 
 	/**
@@ -109,20 +111,26 @@ class CompteurController extends AbstractController {
 	 * @param device
 	 * @return
 	 */
-	def saisieIndex(SaisieIndexCommand command) {
+	def saisieIndex(CompteurIndex command) {
 		command = this.parseFlashCommand("command", command)
-		def device = Device.read(command.deviceId)
 
-		if (!device) {
+		if (!command) {
+			command = new CompteurIndex()
+		}
+		
+		// recharge du device systématique pour éviter erreur no-session
+		// après handle erreur par exemple
+		command.device = Device.read(params['device.id'] ? params.int('device.id') : command.device.id)
+		
+		if (!command.device) {
 			throw new SmartHomeException("Device introuvable !")
 		}
 
 		// vérif autorisation
-		deviceService.edit(device)
+		deviceService.edit(command.device)
 		def defaultCoefGaz = configService.value(CompteurGaz.CONFIG_DEFAULT_COEF_CONVERSION)
-
-		render(view: 'saisieIndex', model: [command: command, device: device,
-			defaultCoefGaz: defaultCoefGaz])
+		
+		render(view: 'saisieIndex', model: [command: command, defaultCoefGaz: defaultCoefGaz])
 	}
 
 
@@ -132,12 +140,12 @@ class CompteurController extends AbstractController {
 	 * @return
 	 */
 	@ExceptionNavigationHandler(actionName = "saisieIndex", modelName = "command")
-	def saveIndex(SaisieIndexCommand command) {
+	def saveIndex(CompteurIndex command) {
 		bindFile(command, 'photo', 'photo')
-		checkErrors(this, command)
 		compteurService.saveIndexForValidation(command)
 		setInfo "Index enregistré avec succès. Il sera validé ultérieurement par un administrateur."
-		forward(action: 'compteur')
+		
+		saisieIndex(new CompteurIndex(device: command.device))
 	}
 
 
@@ -166,8 +174,16 @@ class CompteurController extends AbstractController {
 	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
 	def compteurIndex(CompteurIndex index) {
 		index = this.parseFlashCommand('index', index)
+		
+		// recharge du device systématique pour éviter erreur no-session
+		// après handle erreur par exemple
+		index.device = Device.read(index.device.id)
+		
 		def defaultCoefGaz = configService.value(CompteurGaz.CONFIG_DEFAULT_COEF_CONVERSION)
-		render(view: 'compteurIndex', model: [command: index, device: index.device,
+		
+		(index.device.newDeviceImpl() as Compteur).prepareForEdition(index)
+		
+		render(view: 'compteurIndex', model: [command: index, 
 			modeAdmin: true, defaultCoefGaz: defaultCoefGaz])
 	}
 
@@ -211,5 +227,31 @@ class CompteurController extends AbstractController {
 	def deleteIndex(CompteurIndex index) {
 		compteurService.delete(index)
 		redirect(action: 'compteurIndexs')
+	}
+	
+	
+	/**
+	 * Charge les derniers index d'un compteur
+	 * Prévu pour être appelé uniquement en Ajax
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def datatableIndex(DeviceValueCommand command) {
+		Device device = Device.read(command.deviceId)
+
+		if (!device) {
+			throw new SmartHomeException("Device introuvable !")
+		}
+
+		// vérif autorisation
+		deviceService.edit(device)
+		
+		// récupère les infos de pagination
+		command.pagination = this.getPagination([:])
+		def indexList = (device.newDeviceImpl() as Compteur).listIndex(command)
+		
+		render (template: 'datatableIndex', model: [indexList: indexList, command: command,
+			recordsTotal: indexList.totalCount])
 	}
 }

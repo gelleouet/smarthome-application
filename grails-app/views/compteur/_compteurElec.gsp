@@ -28,7 +28,7 @@
 					</div>
 					<div class="col">
 						<div class="btn-group-vertical">
-							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="[deviceId: house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
+							<g:link class="btn btn-primary mb-2" action="saisieIndex" controller="compteur" params="['device.id': house.compteur.id]"><app:icon name="edit"/> Saisie index</g:link>
 							<g:link class="btn btn-primary mb-2" action="deviceChart" controller="device" params="['device.id': house.compteur.id, dateChart: app.formatPicker(date: house.compteur.dateValue ?: new Date())]"><app:icon name="bar-chart"/> Consommations</g:link>
 						</div>
 						
