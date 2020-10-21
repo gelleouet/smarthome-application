@@ -7,7 +7,6 @@ import smarthome.automation.DeviceChartCommand
 import smarthome.automation.DeviceValue
 import smarthome.automation.DeviceValueDay
 import smarthome.automation.DeviceValueMonth
-import smarthome.automation.SaisieIndexCommand
 import smarthome.core.CompteurUtils
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
