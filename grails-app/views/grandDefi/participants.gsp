@@ -9,7 +9,7 @@
 		<g:render template="defiMenu"/>
 		
 		<div class="row">
-			<g:each var="equipe" in="${ currentDefi?.equipes?.sort { it.libelle } }">
+			<g:each var="equipe" in="${ currentDefi?.equipes?.sort { it.libelle } }" status="statusEquipe">
 				<div class="col-4">
 					
 					<div class="card">
@@ -57,14 +57,23 @@
 						<g:set var="members" value="${ participants.findAll { it.defiEquipe == equipe } }"/>
 						
 						<ul class="list-group list-group-flush">
-							<g:each var="profil" in="${ members.groupBy { it.user.profil } }">
+							<g:each var="profil" in="${ members.groupBy { it.user.profil } }" status="statusProfil">
 								<li class="list-group-item">
-									<div>
+									
+									<a data-toggle="collapse" data-target="#equipe-${ statusEquipe }-${ statusProfil }">
 										<asset:image src="${profil.key.icon }" style="width:30px"/> <span class="font-weight-bold">${ profil.key.libelle }</span>
-										: <g:each var="member" in="${ profil.value }">
-											<!-- <g:link action="mesresultats" params="['defi.id': currentDefi.id, 'defiEquipeParticipant.id': member.id]">${ member.user.prenomNom }</g:link> -->
-											<span class="text-muted">${ member.user.prenomNom }</span>
-										</g:each>
+										<span class="badge badge-primary">${ profil.value.size() }</span>
+									</a>
+								
+									<div id="equipe-${ statusEquipe }-${ statusProfil }" class="collapse mt-2">
+										<div class="row">
+											<g:each var="member" in="${ profil.value }">
+												<div class="col-4">
+													<!-- <g:link action="mesresultats" params="['defi.id': currentDefi.id, 'defiEquipeParticipant.id': member.id]">${ member.user.prenomNom }</g:link> -->
+													<span class="text-muted">${ member.user.prenomNom }</span>
+												</div>
+											</g:each>
+										</div>
 									</div>
 								</li>
 							</g:each>
