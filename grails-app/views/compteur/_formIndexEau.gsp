@@ -1,37 +1,31 @@
 <g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
 
-
 <g:hiddenField name="lastIndex1" value="${ lastIndex?.value }"/>
 
-
-<div class="saisie-compteur-gaz" style="position: relative;">
-	<div>
-		<asset:image src="/compteur/dessin-compteur-gaz.png"/>
+<div class="form-group">
+	<label>Dernier Index</label>
+	<div class="row">
+		<div class="col">
+			<g:field type="number" name="lastHighIndex1" value="${ compteur.indexHigh(lastIndex?.value) as Long }" class="form-control form-control-lg" readonly="true" style="color:white; background-color:#302C34; text-align:right"/>
+			<small class="text-muted">Part index en m3</small>
+		</div>
+		<div class="col">
+			<g:field type="number" name="lastLowIndex1" value="${ compteur.indexLow(lastIndex?.value) as Long }" class="form-control form-control-lg" readonly="true" style="color:white; background-color:#792D36; text-align:right"/>
+			<small class="text-muted">Part index en litre</small>
+		</div>
 	</div>
-	<div style="left:202px; top:258px; width:120px; height:28px; position: absolute;">
-		<g:textField name="highindex1" value="${ g.formatNumber(number: command.highindex1 ?: 0, format: '000000') }" class="form-control form-control-lg index-high-part"
-			autofocus="true" required="true" maxlength="6" data-mask="000000"/>
-		<small class="text-muted">m3</small>
-	</div>
-	<div style="left:322px; top:258px; width:70px; height:28px; position: absolute;">
-		<g:textField name="lowindex1" value="${ g.formatNumber(number: command.lowindex1 ?: 0, format: '000') }" class="form-control form-control-lg index-low-part"
-			required="true" maxlength="3" data-mask="000"/>
-		<small class="text-muted">litre</small>
-	</div>
-	
-	
-	<div style="left:200px; top:380px; width:195px; height:100px; position: absolute;">
-		<div class="alert alert-dark alert-outline-coloured" role="alert">
-			<div class="alert-icon">
-				<i class="far fa-fw fa-bell"></i>
-			</div>
-			<div class="alert-message">
-				
-			</div>
-			
+	<small class="text-muted">Dernier relevé le <g:formatDate date="${ lastIndex?.dateValue }" format="dd/MM/yyyy 'à' HH:mm:ss"/></small>
+</div>
+<div class="form-group required">
+	<label>Nouvel Index</label>
+	<div class="row">
+		<div class="col">
+			<g:field type="number" name="highindex1" value="${ command.highindex1 as Long }" class="form-control form-control-lg" required="true" style="color:white; background-color:#302C34; text-align:right"/>
+			<small class="text-muted">Part index en m3</small>
+		</div>
+		<div class="col">
+			<g:field type="number" name="lowindex1" value="${ command.lowindex1 as Long }" class="form-control form-control-lg" required="true" style="color:white; background-color:#792D36; text-align:right"/>
+			<small class="text-muted">Part index en litre</small>
 		</div>
 	</div>
 </div>
-
-
-
