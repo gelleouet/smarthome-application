@@ -95,7 +95,7 @@
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'month']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consoMois.total as Integer }<span class="vignette-unite">kWh</span>
+							${ consoMois.total as Integer }<span class="vignette-unite"> kWh</span>
 						</div>
 					</g:link>
 					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>
@@ -158,7 +158,7 @@
 						
 					<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
 						<div class="vignette-synthese" style="background: radial-gradient(#0747a6 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-							${ consoAnnee.total as Integer }<span class="vignette-unite">kWh</span>
+							${ consoAnnee.total as Integer }<span class="vignette-unite"> kWh</span>
 						</div>
 					</g:link>
 					<h6 class="h6">Dernier relevé : ${ app.formatTimeAgo(date: house.compteur.dateValue) }</h6>

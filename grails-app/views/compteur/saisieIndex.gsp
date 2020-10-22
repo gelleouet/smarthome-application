@@ -8,14 +8,12 @@
 	
 		<g:set var="compteur" value="${ command.device.newDeviceImpl() }"/>
 	
-		<h3 class="mb-3">Saisie Index Compteur</h3>
-		
 		<div class="card">
 			
 			<div class="card-header">
 				<div class="card-actions float-right">
 				</div>
-				<h4 class="card-title">
+				<h3 >
 					<g:if test="${ compteur instanceof smarthome.automation.deviceType.TeleInformation }">
 						<app:icon name="zap"/>
 					</g:if>
@@ -26,7 +24,7 @@
 						<app:icon name="droplet"/>
 					</g:elseif>
 					 ${ command.device.label }
-				</h4>
+				</h3>
 			</div> <!-- div.card-header -->
 		
 			<div class="card-body">
@@ -34,9 +32,9 @@
 				<div class="row">
 					<div class="col">
 						<div class="text-center">
-							<h5>Veuillez saisir les index de votre compteur pour enregistrer une nouvelle consommation</h5>
+							<h4>Veuillez saisir les index de votre compteur pour enregistrer une nouvelle consommation</h4>
 						
-							<g:uploadForm action="saveIndex">
+							<g:uploadForm action="saveIndex" class="enter-as-tab-form">
 							
 								<div class="row justify-content-center mt-4">
 									<div class="col-6 text-left">
@@ -63,7 +61,7 @@
 					
 					<div class="col">
 						<div class="text-center">
-							<h5>Historique des index</h5>
+							<h4>Historique des index</h4>
 							
 							<g:formRemote url="[action: 'datatableIndex']" name="deferedForm-index-historique" update="[success: 'ajaxHistoriqueIndex', failure: 'ajaxError']">
 							

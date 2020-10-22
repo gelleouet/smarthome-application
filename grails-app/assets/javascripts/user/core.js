@@ -9,6 +9,7 @@
 		$('#ajaxSpinner').fadeOut(200);
 		formatDataTable();
 		combobox();
+		inputMask();
 		ajaxPagination();
 		buildGoogleCharts();
 		initIcon()
@@ -26,6 +27,7 @@ $( document ).ready(function() {
 	formatDataTable();
 	ajaxPagination();
 	combobox();
+	inputMask();
 	initDragula();
 	initToggle()
 	selectHashTab()

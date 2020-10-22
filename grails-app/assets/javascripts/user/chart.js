@@ -31,7 +31,8 @@ function onLoadGoogleChart() {
 	}
 	
 	google.load("visualization", "1.0", {
-		packages: chartPackages
+		packages: chartPackages,
+		'language': 'fr'
 	})
 	google.setOnLoadCallback(buildGoogleCharts);
 }

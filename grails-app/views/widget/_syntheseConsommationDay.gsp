@@ -3,13 +3,7 @@
 <g:set var="currentDate" value="${ currentDate ?: new Date() }"/>
 
 <h4>
-<g:if test="${ typeCompteur == 'electricite' }">
-<asset:image src="linky.png" height="40px" width="40px" class="img-thumbnail rounded"/>
-</g:if>
-<g:elseif test="${ typeCompteur == 'gaz' }">
-<asset:image src="gazpar.png" height="45px" width="45px" class="img-thumbnail rounded"/>
-</g:elseif>
-<g:if test="${ icon }"><app:icon name="${ icon }" lib="${ iconLib }"/></g:if> ${ title ?: 'Consommations jour' }
+<g:render template="/widget/syntheseConsommationIcon"/> ${ title ?: 'Consommations jour' }
 </h4>
 
 <g:if test="${ compteur }">
@@ -40,7 +34,7 @@
 					<div class="synthese-content">
 						<g:link controller="device" action="deviceChart" params="['device.id': compteur.id]">
 							<div class="vignette-synthese" style="background: radial-gradient(#47bac1 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-								${ consos.total }<span class="vignette-unite">${ defaultUnite }</span>
+								${ consos.total }<span class="vignette-unite"> ${ defaultUnite }</span>
 								<g:if test="${ consos.total < consoMoyenne }">
 									<br/><app:icon name="arrow-down" lib="awesome" style="fa-lg"/>
 								</g:if>

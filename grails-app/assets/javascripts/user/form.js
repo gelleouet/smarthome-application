@@ -1,3 +1,30 @@
+$(document).on('keydown', 'form.enter-as-tab-form :input', function(event) {
+	if (event.which == 13 && !event.ctrlKey) {
+		focusNextElement($(this));
+		return false;
+	}
+	return true
+});
+
+
+/**
+ * Recherche du champ suivant pour lui donner le focus
+ * 
+ * @param element
+ */
+function focusNextElement(element) {
+	var form = element.parents('form:eq(0)'),
+		focusable, next;
+
+    focusable = form.find(':input').filter(':visible').filter(':enabled');
+    var index = focusable.index(element)
+    next = focusable.slice(index + 1).not('select.select2-offscreen').first();
+    if (next.length) {
+        next.focus();
+    }
+}
+
+
 /**
  * Transforme un select simple en combobox avec recherche intégrée
  */
@@ -68,4 +95,14 @@ function initPickList() {
 
 function selectRadio(elementId, value) {
 	$("#" + elementId).prop("checked", value)
+}
+
+
+function inputMask() {
+	$('input[data-mask]').each(function() {
+		$(this).mask($(this).attr('data-mask'), {
+			autoclear: false,
+			selectOnFocus: true
+		})
+	})
 }

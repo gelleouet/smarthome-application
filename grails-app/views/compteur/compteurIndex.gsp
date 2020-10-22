@@ -33,7 +33,7 @@
 			
 				<div class="row">
 					<div class="col">
-						<g:form action="validIndex">
+						<g:form action="validIndex" class="enter-as-tab-form">
 						
 							<g:hiddenField name="id" value="${ command.id }"/>
 						

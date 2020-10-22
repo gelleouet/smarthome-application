@@ -4,13 +4,7 @@
 <g:set var="currentDate" value="${ new Date() }"/>
 
 <h4>
-<g:if test="${ typeCompteur == 'electricite' }">
-<asset:image src="linky.png" height="40px" width="40px" class="img-thumbnail rounded"/>
-</g:if>
-<g:elseif test="${ typeCompteur == 'gaz' }">
-<asset:image src="gazpar.png" height="45px" width="45px" class="img-thumbnail rounded"/>
-</g:elseif>
-<i class="align-middle" data-feather="zap"></i> ${ title ?: 'Consommations année' }
+<g:render template="/widget/syntheseConsommationIcon"/> ${ title ?: 'Consommations année' }
 </h4>
 
 <g:if test="${ house?.compteur }">
@@ -40,7 +34,7 @@
 							
 						<g:link controller="device" action="deviceChart" params="['device.id': house.compteur.id, viewMode: 'year']">
 							<div class="vignette-synthese" style="background: radial-gradient(#47bac1 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-								${ consos.total as Integer }<span class="vignette-unite">kWh</span>
+								${ consos.total as Integer }<span class="vignette-unite"> kWh</span>
 							</div>
 						</g:link>
 						

@@ -1,0 +1,24 @@
+.saisie-compteur-gaz {
+	
+}
+
+input.form-control.index-low-part {
+	color: white;
+	background-color: #c31b29;
+	text-align: left;
+	font-weight: bold;
+	font-size: 16pt;
+	letter-spacing: 3px;
+	padding: 0px 10px;
+}
+
+input.form-control.index-high-part {
+	color: white;
+	/*background-color: #302C34;*/
+	background-color: #2e3847;
+	text-align: left;
+	font-weight: bold;
+	font-size: 16pt;
+	letter-spacing: 3px;
+	padding: 0px 10px;
+}

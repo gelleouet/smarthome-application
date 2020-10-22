@@ -4,13 +4,7 @@
 <g:set var="currentDate" value="${ currentDate ?: new Date() }"/>
 
 <h4>
-<g:if test="${ typeCompteur == 'electricite' }">
-<asset:image src="linky.png" height="40px" width="40px" class="img-thumbnail rounded"/>
-</g:if>
-<g:elseif test="${ typeCompteur == 'gaz' }">
-<asset:image src="gazpar.png" height="45px" width="45px" class="img-thumbnail rounded"/>
-</g:elseif>
-<g:if test="${ icon }"><app:icon name="${ icon }" lib="${ iconLib }"/></g:if> ${ title ?: 'Consommations mois' }
+<g:render template="/widget/syntheseConsommationIcon"/> ${ title ?: 'Consommations mois' }
 </h4>
 
 <g:if test="${ compteur }">
@@ -41,7 +35,7 @@
 							
 						<g:link controller="device" action="deviceChart" params="['device.id': compteur.id, viewMode: 'month']">
 							<div class="vignette-synthese" style="background: radial-gradient(#47bac1 ${interpretation?.pourcentage == 100 ? '100%' : ''}, orange ${interpretation?.pourcentage < 100 ? interpretation?.pourcentage + '%' : ''});">
-								${ consos.total as Integer }<span class="vignette-unite">${ defaultUnite }</span>
+								${ consos.total as Integer }<span class="vignette-unite"> ${ defaultUnite }</span>
 							</div>
 						</g:link>
 						
