@@ -12,6 +12,7 @@ import smarthome.automation.deviceType.CompteurGaz
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
+import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.query.HQL
 import smarthome.security.User
@@ -284,8 +285,18 @@ class CompteurService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	CompteurIndex saveIndexForValidation(CompteurIndex command)  throws SmartHomeException {
 		// le nouvel index doit aussi être postérieur au dernier relevé
-		if (command.device.dateValue && command.dateIndex <= command.device.dateValue) {
-			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", command)
+		// Grand défi : on n'autorise qu'une seule saisie à la semaine
+		if (command.device.dateValue) {
+			if (command.dateIndex <= command.device.dateValue) {
+				throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", command)
+			}
+			
+			Date startSemaine = DateUtils.firstDayInWeek(command.device.dateValue)
+			Date endSemaine = DateUtils.lastDayInWeek(command.device.dateValue)
+			
+			if (command.dateIndex >= startSemaine && command.dateIndex <= endSemaine) {
+				throw new SmartHomeException("Vous ne pouvez saisir qu'un seul index par semaine !", command)
+			}
 		}
 
 		// transformation et controle par le compteur lui-meme avant les controles généraux

@@ -1,4 +1,4 @@
-<g:if test="${ house?.compteur }">
+<g:if test="${ house?.compteur && house.compteur.label != grailsApplication.config.enedis.compteurLabel }">
 	<li class="sidebar-item">
 		<g:link class="sidebar-link" action="saisieIndex" controller="compteur" params="['device.id': house.compteur.id]">
 			<app:icon name="zap"/>
@@ -6,7 +6,7 @@
 		</g:link>
 	</li>
 </g:if>
-<g:if test="${ house?.compteurGaz }">
+<g:if test="${ house?.compteurGaz && house.compteurGaz != grailsApplication.config.grdf.compteurLabel }">
 	<li class="sidebar-item">
 		<g:link class="sidebar-link" action="saisieIndex" controller="compteur" params="['device.id': house.compteurGaz.id]">
 			<app:icon name="fire" lib="awesome"/>

@@ -542,9 +542,12 @@ class TeleInformation extends Compteur {
 				throw new SmartHomeException("Les 2 index sont nécessaires pour les contrats double tarif !")
 			}
 
+			Long indexHP = index.index1 as Long
+			Long indexHC = index.index2 as Long
+			
 			// conserve les index
-			device.addMetavalue("hchp", [value: (index.index1 as Long).toString(), label: "Total heures pleines", trace: true, unite: "Wh"])
-			device.addMetavalue("hchc", [value: (index.index2 as Long).toString(), label: "Total heures creuses", trace: true, unite: "Wh"])
+			device.addMetavalue("hchp", [value: indexHP.toString(), label: "Total heures pleines", trace: true, unite: "Wh"])
+			device.addMetavalue("hchc", [value: indexHC.toString(), label: "Total heures creuses", trace: true, unite: "Wh"])
 
 			// insère les metavalue pour conso période
 			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines", trace: true, unite: "Wh"])
@@ -554,19 +557,21 @@ class TeleInformation extends Compteur {
 			DeviceValue lastIndexHP = lastIndexHP()
 
 			if (lastIndexHP) {
-				def conso = (index.index1 - lastIndexHP.value) as Long
+				def conso = (indexHP - lastIndexHP.value) as Long
 				device.addMetavalue("hpinst", [value: conso.toString()])
 			}
 
 			DeviceValue lastIndexHC = lastIndexHC()
 
 			if (lastIndexHC) {
-				def conso = (index.index2 - lastIndexHC.value) as Long
+				def conso = (indexHC - lastIndexHC.value) as Long
 				device.addMetavalue("hcinst", [value: conso.toString()])
 			}
 		} else {
+			Long indexBase = index.index1 as Long
+			
 			// conserve les index
-			device.addMetavalue("base", [value: (index.index1 as Long).toString(), label: "Total toutes heures", trace: true, unite: "Wh"])
+			device.addMetavalue("base", [value: indexBase.toString(), label: "Total toutes heures", trace: true, unite: "Wh"])
 
 			// insère les metavalue pour conso période
 			device.addMetavalue("baseinst", [value: "0", label: "Période toutes heures", trace: true, unite: "Wh"])
@@ -575,7 +580,7 @@ class TeleInformation extends Compteur {
 			DeviceValue lastIndex = lastIndex()
 
 			if (lastIndex) {
-				def conso = (index.index1 - lastIndex.value) as Long
+				def conso = (indexBase - lastIndex.value) as Long
 				device.addMetavalue("baseinst", [value: conso.toString()])
 			}
 		}
@@ -798,6 +803,37 @@ class TeleInformation extends Compteur {
 		}
 
 		return consos
+	}
+
+
+	/**
+	 * Les index sont saisis en kWh, il faut les convertir en Wh
+	 */
+	@Override
+	void bindCompteurIndex(CompteurIndex command) throws SmartHomeException {
+		if (command.highindex1 != null) {
+			command.index1 = command.highindex1 * 1000
+		}
+		if (command.highindex2 != null) {
+			command.index2 = command.highindex2 * 1000
+		}
+	}
+	
+	
+	/**
+	 * Prépare l'objet pour édition dans formulaire
+	 * On convertit les index enregitrés en Wh en Kwh
+	 *
+	 * @param command
+	 */
+	@Override
+	void prepareForEdition(CompteurIndex command) {
+		if (command.index1 != null) {
+			command.highindex1 = command.index1 / 1000
+		} 
+		if (command.index2 != null) {
+			command.highindex2 = command.index2 / 1000
+		}
 	}
 
 

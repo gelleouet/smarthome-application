@@ -27,9 +27,11 @@ class CompteurIndex implements Serializable {
 	Double lastIndex2
 	Double highindex1
 	Double lowindex1
+	Double highindex2
+	Double lowindex2
 
 	
-	static transients = ['lastIndex1', 'lastIndex2', 'highindex1', 'lowindex1']
+	static transients = ['lastIndex1', 'lastIndex2', 'highindex1', 'lowindex1', 'highindex2', 'lowindex2']
 	
 	static belongsTo = [device: Device]
 
@@ -41,6 +43,8 @@ class CompteurIndex implements Serializable {
 		lastIndex2 nullable: true, bindable: true
 		highindex1 nullable: true, bindable: true
 		lowindex1 nullable: true, bindable: true
+		highindex2 nullable: true, bindable: true
+		lowindex2 nullable: true, bindable: true
 	}
 
 	static mapping = {

@@ -10,8 +10,8 @@
     	<g:each var="index" in="${ indexList }">
 	        <tr>
 	        	<td><app:formatUserDateTime date="${ index.dateValue }"/></td>
-	            <td>${ index.name }</td>
-	            <td>${ index.value }</td>
+	            <td>${ index.name ?: 'base' }</td>
+	            <td><g:formatNumber number="${ index.value }" format="### ### ### ### ##0"/></td>
 	        </tr>
         </g:each>
     </tbody>

@@ -34,5 +34,7 @@
 	</div>
 </div>
 
+<h6 class="text-muted">Le coefficient de conversion permet d’obtenir la quantité en kWh du volume exprimé en m3. <a href="https://www.grdf.fr/particuliers/coefficient-conversion-commune">Connaître le coefficient de conversion de votre commune</a></h6>
+
 
 
