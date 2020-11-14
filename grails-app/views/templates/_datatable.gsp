@@ -1,5 +1,5 @@
 <div class="mt-4 text-right">
 	<ul class="pagination" data-form-id="${ paginateForm }">
-		<g:paginate total="${ recordsTotal }"/>
+		<g:paginate total="${ recordsTotal }" offset="${ offset }"/>
 	</ul>
 </div>

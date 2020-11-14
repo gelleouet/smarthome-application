@@ -80,7 +80,7 @@ class CompteurGaz extends Compteur {
 	   
 	   // obligé de faire le test de index négatif ici car on va ajouter les 2 parties
 	   // et peut-être perdre le négatif après addition mais ca sera faux
-	   if (command.lowindex1 < 0 || command.highindex1 < 0) {
+	   if (command.lowindex1 < 0 || command.highindex1 <= 0) {
 		   throw new SmartHomeException("Les index ne peuvent pas être négatifs ou nuls !", command)
 	   }
 	   

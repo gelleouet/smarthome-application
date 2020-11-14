@@ -14,19 +14,12 @@
 				<h4>${ device.id ? 'Objet : ' + device.label : 'Nouvel objet' }</h4>
 			</div>
 			<div class="col-4 text-right">
-				<div class="btn-toolbar">
-					<div class="btn-group">
-						<g:if test="${ device.id }">
-							<g:link class="btn btn-light" action="deviceChart" params="['device.id': device.id]">
-								<app:icon name="bar-chart"/> Graphique
-							</g:link>
-							<sec:ifAnyGranted roles="ROLE_ADMIN">
-								<g:link class="btn btn-light" action="aggregateValues" params="['device.id': device.id]">
-									<app:icon name="database"/> Aggrégation
-								</g:link>
-							</sec:ifAnyGranted>
-						</g:if>	
-					</div>
+				<div class="btn-group">
+					<g:if test="${ device.id }">
+						<g:link class="btn btn-light" action="deviceChart" params="['device.id': device.id]">
+							<app:icon name="bar-chart"/> Graphique
+						</g:link>
+					</g:if>	
 				</div>
 			</div>
 		</div>
@@ -92,13 +85,23 @@
 			
 			<br/>
 	
-			<g:if test="${device.id }">
-				<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />
-			</g:if>
-			<g:else>
-				<g:actionSubmit value="Enregistrer" action="saveCreate" class="btn btn-primary" />
-			</g:else>
-			<g:link action="devices" class="btn btn-link">Annuler</g:link>
+			<div class="row">
+				<div class="col">
+					<g:if test="${device.id }">
+						<g:actionSubmit value="Enregistrer" action="saveEdit" class="btn btn-primary" />
+					</g:if>
+					<g:else>
+						<g:actionSubmit value="Enregistrer" action="saveCreate" class="btn btn-primary" />
+					</g:else>
+					<g:link action="devices" class="btn btn-link">Annuler</g:link>
+				</div>
+				<div class="col text-right">
+					<g:if test="${device.id }">
+						<g:link action="delete" class="btn btn-danger confirm-button" id="${device.id }"><app:icon name="times" lib="fa"/> Supprimer</g:link>
+					</g:if>
+				</div>
+			</div>
+			
 		</g:form>
 		
 	</g:applyLayout>

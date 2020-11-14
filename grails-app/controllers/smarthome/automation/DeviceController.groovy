@@ -155,7 +155,13 @@ class DeviceController extends AbstractController {
 	def saveEdit(Device device) {
 		checkErrors(this, device)
 		deviceService.saveWithAssociations(device)
-		redirect(action: 'devices')
+		
+		// si mode admin, on redirige vers écran supervision
+		if (device.user.id != principal.id) {
+			redirect controller: 'supervision', action: 'supervision'
+		} else {
+			redirect(action: 'devices')
+		}
 	}
 
 

@@ -504,30 +504,40 @@ class DeviceService extends AbstractService {
 	 * @param command
 	 * @return
 	 */
-	List listByAdmin(DeviceSearchCommand command) throws SmartHomeException {
+	List listSupervision (SupervisionCommand command) throws SmartHomeException {
 		if (!command.adminId) {
 			throw new SmartHomeException("adminId must be fill !", command)
 		}
 
 		HQL hql = new HQL("device",	""" 
-			FROM Device device JOIN FETCH device.deviceType deviceType
-			LEFT JOIN FETCH device.agent agent""")
+			FROM Device device 
+			JOIN FETCH device.deviceType deviceType
+			JOIN FETCH device.user user
+			LEFT JOIN FETCH user.profil profil""")
 
-		if (command.userId) {
-			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
-		} else {
-			hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
-				where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
+			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+			
+		if (command.userSearch) {
+			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
+				[userSearch: QueryUtils.decorateMatchAll(command.userSearch.toLowerCase())])
 		}
 
-		if (command.deviceTypeClass) {
-			hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
+		if (command.deviceTypeId) {
+			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceTypeId])
 		}
 
+		if (command.profilId) {
+			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
+		}
+
+		hql.addOrder("profil.libelle")
+		hql.addOrder("user.nom")
+		hql.addOrder("user.prenom")
 		hql.addOrder("device.label")
 
 		return Device.withSession { session ->
-			hql.list(session, command.pagination)
+			hql.list(session, command.pagination())
 		}
 	}
 

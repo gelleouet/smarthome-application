@@ -24,7 +24,7 @@
 								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
 							<g:select name="profilId" value="${ command?.profilId }" from="${ profils }"
 								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
-							<g:textField name="userSearch" value="${ command?.userSearch}" class="form-control"/>
+							<g:textField name="userSearch" value="${ command?.userSearch}" class="form-control" placeholder="Nom prénom"/>
 							<button class="btn btn-light"><app:icon name="search"/></button>
 						</div>
 						<div class="col text-right">

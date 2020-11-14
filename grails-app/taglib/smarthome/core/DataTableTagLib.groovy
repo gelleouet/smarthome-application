@@ -15,6 +15,7 @@ class DataTableTagLib {
 	 * @attr cssClass par défaut aui
 	 * @attr cssStyle
 	 * @attr paginateForm
+	 * @attr offset
 	 */
 	def datatable = { attrs, body ->
 		def paginateDebut = 0

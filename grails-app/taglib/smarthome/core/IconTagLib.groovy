@@ -19,8 +19,8 @@ class IconTagLib {
 	 * 
 	 */
 	def icon = { attrs, body ->
-		if (attrs.lib == 'awesome') {
-			out << """<i class="${ attrs.class ?: 'fas'} fa-${ attrs.name }" style="${ attrs.style ?: ''}"
+		if (attrs.lib in ['awesome', 'fa']) {
+			out << """<i class="${ attrs.class } fas fa-${ attrs.name }" style="${ attrs.style ?: ''}"
 				width="${ attrs.width }" height="${ attrs.height }"></i>"""
 		} else {
 			out << """<i class="${ attrs.class ?: ''}" data-feather="${ attrs.name }" style="${ attrs.style ?: ''}"

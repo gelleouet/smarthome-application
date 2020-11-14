@@ -20,7 +20,7 @@
 					<g:checkBox name="metavalues[${ status }].main" value="${ metadata.main }"/>
 				</td>
 				<td><label title="API : device.metavalue('${ metadata.name }')?.value">${ metadata.label }</label></td>
-				<td><g:textField name="metavalues[${ status }].value" value="${ metadata.value }" class="form-control" disabled="true"/></td>
+				<td><g:textField name="metavalues[${ status }].value" value="${ metadata.value }" class="form-control"/></td>
 				<td><g:textField name="metavalues[${ status }].unite" value="${ metadata.unite }" class="form-control"/></td>
 				<td>
 					<g:if test="${ metadata.type }">

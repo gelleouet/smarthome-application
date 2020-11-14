@@ -74,6 +74,11 @@
 						Validation des index
 					</g:link>
 				</li>
+				<li class="sidebar-item">
+					<g:link class="sidebar-link" controller="supervision" action="supervision">
+						<app:icon name="monitor"/> Supervision utilisateur
+					</g:link>
+				</li>
 			</sec:ifAnyGranted>
 		
 		</ul>

@@ -31,26 +31,22 @@
 			
 				<div class="row">
 					<div class="col">
-						<div class="text-center">
+						<div class="">
 							<h4>Veuillez saisir les index de votre compteur pour enregistrer une nouvelle consommation</h4>
 						
 							<g:uploadForm action="saveIndex" class="enter-as-tab-form">
 							
-								<div class="row justify-content-center mt-4">
-									<div class="col-6 text-left">
 										
-										<g:hiddenField name="device.id" value="${ command.device.id }"/>
+								<g:hiddenField name="device.id" value="${ command.device.id }"/>
+								
+								<g:render template="formIndex"/>
+								
+								<div class="form-group mt-2">
+									<label for="photo-file">Importer une photo du compteur</label>
+									<input name="photo" type="file" id="photo-file"/>
+									<small class="form-text text-muted">Veuillez à ce que les index soient lisibles sur la photo pour que l'administrateur puisse valider votre saisie.</small>
+								</div>
 										
-										<g:render template="formIndex"/>
-										
-										<div class="form-group mt-2">
-											<label for="photo-file">Importer une photo du compteur</label>
-											<input name="photo" type="file" id="photo-file"/>
-											<small class="form-text text-muted">Veuillez à ce que les index soient lisibles sur la photo pour que l'administrateur puisse valider votre saisie.</small>
-										</div>
-										
-									</div>
-								</div>	
 							
 								<div class="mt-4">
 									<button class="btn btn-primary">Enregistrer</button>
