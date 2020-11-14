@@ -13,6 +13,7 @@ import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
 import smarthome.core.DateUtils
+import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.query.HQL
 import smarthome.security.User
@@ -393,13 +394,12 @@ class CompteurService extends AbstractService {
 
 
 	/**
-	 * Liste les index en cours de validation par un admin
+	 * Liste paginée des index en cours de validation par un admin
 	 * 
 	 * @param command
-	 * @param pagination
 	 * @return
 	 */
-	List<CompteurIndex> listCompteurIndex(CompteurIndexCommand command, Map pagination) {
+	List<CompteurIndex> listCompteurIndex(CompteurIndexCommand command) {
 		HQL hql = new HQL("compteurIndex",	""" 
 			FROM CompteurIndex compteurIndex
 			JOIN FETCH compteurIndex.device device
@@ -408,21 +408,26 @@ class CompteurService extends AbstractService {
 			LEFT JOIN FETCH user.profil profil""")
 
 		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.admin.id])
-
-		if (command.deviceType) {
-			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceType.id])
+			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		
+		if (command.userSearch) {
+			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
+				[userSearch: QueryUtils.decorateMatchAll(command.userSearch.toLowerCase())])
 		}
 
-		if (command.profil) {
-			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profil.id])
+		if (command.deviceTypeId) {
+			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceTypeId])
+		}
+
+		if (command.profilId) {
+			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
 		}
 
 		hql.addOrder("compteurIndex.dateIndex")
 		hql.addOrder("compteurIndex.id")
 
 		return CompteurIndex.withSession { session ->
-			hql.list(session, pagination)
+			hql.list(session, command.pagination())
 		}
 	}
 }

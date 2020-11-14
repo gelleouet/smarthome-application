@@ -1,20 +1,23 @@
 package smarthome.automation
 
 import grails.validation.Validateable
+import smarthome.core.PaginableCommand
 import smarthome.security.Profil
 import smarthome.security.User
 
 
 @Validateable
-class CompteurIndexCommand {
-	DeviceType deviceType
-	Profil profil
-	User admin
-
+class CompteurIndexCommand extends PaginableCommand implements Serializable {
+	Long deviceTypeId
+	Long profilId
+	Long adminId
+	String userSearch
+	
 
 	static constraints = {
-		deviceType nullable: true
-		profil nullable: true
+		deviceTypeId nullable: true
+		profilId nullable: true
+		userSearch nullable: true
 	}
 
 
@@ -24,9 +27,12 @@ class CompteurIndexCommand {
 	 * @param admin
 	 * @return
 	 */
-	CompteurIndexCommand admin(User admin) {
-		this.admin = admin
+	CompteurIndexCommand admin(Long adminId) {
+		this.adminId = adminId
+		this.clearErrors()
 		this.validate()
 		return this
 	}
+	
+	
 }

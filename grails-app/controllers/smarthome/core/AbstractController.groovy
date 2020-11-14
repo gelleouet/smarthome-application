@@ -19,6 +19,11 @@ import smarthome.core.SmartHomeException
  * <li>Protection par défaut des URL avec utilisateur connecté</li>
  * </ul>
  * 
+ * !! IMPORTANT : penser à bien passer toutes les méthodes "utilitaires" en protected
+ * pour éviter qu'elles soient considérées en action et qu'elles soient parsées par 
+ * tous les plugins et proxy liés à l'artefact Controller (sauf les handlers exception
+ * qui doivent rester public)
+ * 
  * @author gregory
  *
  */
@@ -72,8 +77,8 @@ abstract class AbstractController {
 	 * 
 	 * @return
 	 */
-	def getPagination(userPaginate) {
-		params.max = params.max ?: grailsApplication.config.smarthome.pagination.defaultMax
+	protected def getPagination(userPaginate) {
+		params.max = params.max ?: getPaginationDefaultMax()
 		params.offset = params.offset ?: 0
 
 		if (userPaginate) {
@@ -82,27 +87,66 @@ abstract class AbstractController {
 
 		return params
 	}
+	
+	
+	/**
+	 * Config : smarthome.pagination.defaultMax
+	 * 
+	 * @return
+	 */
+	protected int getPaginationDefaultMax() {
+		ApplicationUtils.configDefaultMax(grailsApplication)
+	}
 
 
 	/**
 	 * Vérifie dans le scope flash si un objet du nom "command" existe.
 	 * Si oui renvoit cet objet, sinon renvoit l'objet par défaut
 	 * 
+	 * !! IMPORTANT : le scope flash n'étant pas utilisable en cluster et compatible stateless,
+	 * les objets sont stockées simplement dans la request. On conserve le nom dans un souci
+	 * de compatibilité avec le code existant (à moins de faire un refactoring complet)
+	 * 
+	 * FIXME : renommer en parseRequestCommand
+	 * 
 	 * @param commandName
 	 * @param defaultObject
 	 * @return
 	 */
-	def parseFlashCommand(commandName, defaultObject) {
+	protected def parseFlashCommand(commandName, defaultObject) {
 		request[commandName] ?: defaultObject
 	}
 
+	
+	/**
+	 * Gestion d'un objet command en view session
+	 * Sur les appels POST, l'objet est récupéré depuis la request et mis en session
+	 * Sur les appels GET, l'objet est récupéré depuis la session s'il existe ou depuis la request
+	 *
+	 * Dans tous les cas, l'objet est remis en session
+	 *
+	 * @param defaultObject
+	 * @return
+	 */
+	protected def parseViewCommand(defaultObject) {
+		def command
+
+		if (request.post) {
+			command = defaultObject
+		} else {
+			command = getViewAttribute(defaultObject)
+		}
+
+		return setSessionAttribute(SmartHomeCoreConstantes.ATTRIBUTE_VIEW_NAME, command)
+	}
+	
 
 	/**
 	 * Redirection vers la dernière page
 	 * 
 	 * @return
 	 */
-	def redirectLastURI() {
+	protected def redirectLastURI() {
 		redirect (uri: session[(SmartHomeCoreConstantes.SESSION_LAST_URI)])
 	}
 
@@ -118,26 +162,26 @@ abstract class AbstractController {
 	}
 
 
-	void setError(def error) {
+	protected void setError(def error) {
 		request.setAttribute("error", error)
 	}
 
 
-	void setErrors(def errors) {
+	protected void setErrors(def errors) {
 		request.setAttribute("errors", errors)
 	}
 
 
-	void setCommand(String name, def command) {
+	protected void setCommand(String name, def command) {
 		request.setAttribute(name, command)
 	}
 
 
-	void setInfo(def info) {
+	protected void setInfo(def info) {
 		request.setAttribute("info", info)
 	}
 
-	void setWarning(def warning) {
+	protected void setWarning(def warning) {
 		request.setAttribute("message", warning)
 	}
 
@@ -202,7 +246,7 @@ abstract class AbstractController {
 	 * @param attribute
 	 * @return
 	 */
-	def removeSession(String attribute) {
+	protected def removeSession(String attribute) {
 		def object = session[(attribute)]
 		session.removeAttribute(attribute)
 		return object
@@ -215,8 +259,33 @@ abstract class AbstractController {
 	 * @param attribute
 	 * @return
 	 */
-	def getSessionAttribute(String attribute) {
+	protected def getSessionAttribute(String attribute) {
 		return session[(attribute)]
+	}
+	
+	
+	/**
+	 * Renvoit un objet de la session. Si l'objet n'est pas trouvé, l'objet par défaut
+	 * est mis en session et renvoyé.
+	 *
+	 * La méthode géère aussi le cas où l'objet existe en session mais n'est pas du même type
+	 * que l'objet par défaut. On utilise pour diminuer le nombre d'objets en session le même nom
+	 * d'attribut pour certains objets notamment pour les moteurs de recherche. En changeant de page
+	 * l'objet de la page précédente est écrasé. Cela correspond un peu au scope view
+	 *
+	 * @param defaultValue
+	 * @return
+	 */
+	protected Object getViewAttribute(Object defaultValue) {
+		Object value = getSessionAttribute(SmartHomeCoreConstantes.ATTRIBUTE_VIEW_NAME)
+
+
+		if (!value || value.getClass() != defaultValue?.getClass()) {
+			value = defaultValue
+			this.setSessionAttribute(SmartHomeCoreConstantes.ATTRIBUTE_VIEW_NAME, defaultValue)
+		}
+
+		return value
 	}
 
 
@@ -240,7 +309,7 @@ abstract class AbstractController {
 	 * 
 	 * @return
 	 */
-	def parsePluginCommand() {
+	protected def parsePluginCommand() {
 		if (params.command instanceof String) {
 			def json = JSON.parse(params.command)
 			def object =  Class.forName(json['class']).newInstance(json)
@@ -263,7 +332,7 @@ abstract class AbstractController {
 	 * 
 	 * @return
 	 */
-	def nop() {
+	protected def nop() {
 		render(status: 200, text: '')
 	}
 
@@ -275,7 +344,7 @@ abstract class AbstractController {
 	 * @param status
 	 * @return
 	 */
-	def nopError(String error, int status) {
+	protected def nopError(String error, int status) {
 		render(status: status, text: error)
 	}
 
@@ -286,7 +355,7 @@ abstract class AbstractController {
 	 * @param status
 	 * @return
 	 */
-	def nopError400(String error) {
+	protected def nopError400(String error) {
 		nopError(error, 400)
 	}
 
@@ -294,7 +363,7 @@ abstract class AbstractController {
 	/**
 	 * Récupère le fichier si uploadé
 	 */
-	byte[] parseFile(String name) {
+	protected byte[] parseFile(String name) {
 		def file = request.getFile(name)
 		if (file && !file.empty) {
 			return file.getInputStream().getBytes()
@@ -311,7 +380,7 @@ abstract class AbstractController {
 	 * @param domainProperty
 	 * @param paramFile
 	 */
-	def bindFile(def domain, String domainProperty, String paramFile) {
+	protected def bindFile(def domain, String domainProperty, String paramFile) {
 		def dataFile = this.parseFile(paramFile)
 
 		if (dataFile) {

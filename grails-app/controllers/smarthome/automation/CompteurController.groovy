@@ -156,9 +156,12 @@ class CompteurController extends AbstractController {
 	 */
 	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
 	def compteurIndexs(CompteurIndexCommand command) {
-		command.admin(authenticatedUser) // plugin spring security
+		// moteur de recherche en view scope
+		command = parseViewCommand(command)
+		
+		command.admin(principal.id) // plugin spring security
 		checkErrors(this, command)
-		def indexs = compteurService.listCompteurIndex(command, getPagination([:]))
+		def indexs = compteurService.listCompteurIndex(command)
 
 		render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
 			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])

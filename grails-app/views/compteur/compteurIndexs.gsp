@@ -20,10 +20,11 @@
 				<g:form action="compteurIndexs" name="compteurIndex-form" class="form-inline">
 					<div class="row w-100">
 						<div class="col">
-							<g:select name="deviceType.id" value="${ command?.deviceType?.id }" from="${ compteurTypes }"
-								optionKey="id" optionValue="libelle" class="form-control" noSelection="[null: ' ']"/>
-							<g:select name="profil.id" value="${ command?.profil?.id }" from="${ profils }"
-								optionKey="id" optionValue="libelle" class="form-control" noSelection="[null: ' ']"/>
+							<g:select name="deviceTypeId" value="${ command?.deviceTypeId }" from="${ compteurTypes }"
+								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
+							<g:select name="profilId" value="${ command?.profilId }" from="${ profils }"
+								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
+							<g:textField name="userSearch" value="${ command?.userSearch}" class="form-control"/>
 							<button class="btn btn-light"><app:icon name="search"/></button>
 						</div>
 						<div class="col text-right">
@@ -33,7 +34,7 @@
 		
 				<br/>
 			
-				<app:datatable datatableId="datatable" recordsTotal="${ indexs.totalCount }">
+				<app:datatable datatableId="datatable" recordsTotal="${ indexs?.totalCount ?: 0 }" paginateForm="compteurIndex-form">
 				    <thead>
 				        <tr>
 				            <th>Propriétaire</th>

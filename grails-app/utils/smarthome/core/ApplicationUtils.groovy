@@ -57,5 +57,16 @@ class ApplicationUtils implements ApplicationContextAware {
 		springContext.getAutowireCapableBeanFactory().autowireBean(bean)
 		return bean
 	}
+	
+	
+	/**
+	 * Config : smarthome.pagination.defaultMax
+	 * 
+	 * @param grailsApplication
+	 * @return
+	 */
+	static int configDefaultMax(GrailsApplication grailsApplication) {
+		grailsApplication.config.smarthome.pagination.defaultMax
+	}
 
 }
