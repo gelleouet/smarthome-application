@@ -377,7 +377,7 @@ class GrandDefiService extends AbstractService {
 		try {
 			inscriptionDefi(user, grandDefiId as Long, [chauffage: account.chauffage,
 				ecs: account.ecs, surface: account.surface,
-				location: account.commune.libelle + ", France"])
+				location: account.commune.libelle])
 		} catch (SmartHomeException ex) {
 			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
 			throw new SmartHomeException(ex.message, account)

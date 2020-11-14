@@ -112,7 +112,9 @@ environments {
 				'org.hibernate'
 				//'net.sf.ehcache.hibernate',
 				
-			
+			root {
+				info()
+			}
 					
 		}
 	}
