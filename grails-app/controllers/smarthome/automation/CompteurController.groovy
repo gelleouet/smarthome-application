@@ -252,9 +252,11 @@ class CompteurController extends AbstractController {
 		
 		// récupère les infos de pagination
 		command.pagination = this.getPagination([:])
-		def indexList = (device.newDeviceImpl() as Compteur).listIndex(command)
+		Compteur deviceImpl = device.newDeviceImpl() as Compteur
+		
+		def indexList = deviceImpl.listIndex(command)
 		
 		render (template: 'datatableIndex', model: [indexList: indexList, command: command,
-			recordsTotal: indexList.totalCount])
+			recordsTotal: indexList.totalCount, deviceImpl: deviceImpl])
 	}
 }

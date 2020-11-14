@@ -643,4 +643,15 @@ class Compteur extends AbstractDeviceType {
 	void prepareForEdition(CompteurIndex command) {
 		
 	}
+	
+	
+	/**
+	 * Formattage HTML (mise en forme) d'un index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	String formatHtmlIndex(Double index) {
+		"<span>${ (index as Long).toString() }</span>"
+	}
 }

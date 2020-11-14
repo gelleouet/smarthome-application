@@ -28,3 +28,15 @@ input.form-control.index-elec {
 	letter-spacing: 2px;
 	padding: 0px 10px;
 }
+
+.index-low-part-text {
+	color: #c31b29;
+}
+
+.index-high-part-text {
+	color: #2e3847;
+}
+
+.index-elec-text {
+	color: #33bd7e;
+}

@@ -233,5 +233,12 @@ messages info, error, warning dans les request, retour par défaut des response
 de message asynchrones AMQP, et méthodes de base sur les domain
 - _smarthome.core.AbstractRuleService_ : service de base pour les règles métier
 
-### 3.3 Objets connectés et implémentations
+### 3.3 Framework CSS/Bootsrap AppStack
+
+Celui-ci est recompilé pour exposer la librairie feather et utiliser les méthodes
+sur les éléments icones. A la suite d'un appel Ajax, si le contenu HTML contient des
+icones, celle-ci ne sont pas transformés automatiquement.
+
+A chaque mise à jour du framework, il faut modifier le fichier ``src\js\modules\feather.js``
+et rajouter ``window.feather = feather;`` juste après ``import feather from "feather-icons";``  
 

@@ -1,5 +1,7 @@
 package smarthome.automation.deviceType
 
+import java.text.DecimalFormat
+
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
@@ -107,6 +109,19 @@ class CompteurEau extends Compteur {
 		} else {
 			null
 		}
+	}
+	
+	
+	/**
+	 * Les index sont enregistrés en litre.
+	 * On formatte l'index avec part m3 en noir, et part litre en rouge
+	 *
+	 */
+	@Override
+	String formatHtmlIndex(Double index) {
+		DecimalFormat formatHigh = new DecimalFormat("00000")
+		DecimalFormat formatLow = new DecimalFormat("000")
+		"""<span class="index-high-part-text">${ formatHigh.format(indexHigh(index)) }</span><span class="index-low-part-text"> ${ formatLow.format(indexLow(index)) }</span>"""
 	}
 
 

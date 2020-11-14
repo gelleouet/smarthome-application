@@ -837,6 +837,17 @@ class TeleInformation extends Compteur {
 	}
 
 
+	/**
+	 * Les index sont enregistrés en Wh.
+	 * On formatte l'index en kWh
+	 *
+	 */
+	@Override
+	String formatHtmlIndex(Double index) {
+		"""<span class="index-elec-text">${ (index / 1000).round() }</span>"""
+	}
+	
+	
 	/** 
 	 * (non-Javadoc)
 	 *

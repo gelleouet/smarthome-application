@@ -11,7 +11,7 @@
 	        <tr>
 	        	<td><app:formatUserDateTime date="${ index.dateValue }"/></td>
 	            <td>${ index.name ?: 'base' }</td>
-	            <td><g:formatNumber number="${ index.value }" format="### ### ### ### ##0"/></td>
+	            <td>${ raw(deviceImpl.formatHtmlIndex(index.value)) }</td>
 	        </tr>
         </g:each>
     </tbody>
