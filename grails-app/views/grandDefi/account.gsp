@@ -77,7 +77,7 @@
 	     				<div class="form-group required">
 				        	<label>Commune</label>
 	            			<g:select class="form-control form-control-lg combobox" name="commune.id" required="true" from="${ communes }"
-	            				optionKey="id" optionValue="libelle" value="${ command?.commune?.id }"/>
+	            				optionKey="id" optionValue="libelle" value="${ command?.commune?.id }" noSelection="['': ' ']"/>
 				        </div>
 				        
 				        <div class="form-group required">

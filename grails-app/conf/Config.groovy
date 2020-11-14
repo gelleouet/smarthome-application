@@ -91,7 +91,7 @@ environments {
 
 	development {
 		grails.logging.jul.usebridge = true
-		grails.plugin.springsecurity.debug.useFilter = true
+		grails.plugin.springsecurity.debug.useFilter = false
 
 		log4j.main = {
 			appenders {

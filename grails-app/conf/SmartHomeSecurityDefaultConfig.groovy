@@ -26,9 +26,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 grails.plugin.springsecurity.filterChain.chainMap = [
 	'/assets/**':      					'none',
-	'/**/js/**':       					'none',
-	'/**/css/**':      					'none',
-	'/**/images/**':   					'none',
+	'/fonts/**':      					'none',
+	'/js/**':       					'none',
+	'/css/**':      					'none',
+	'/images/**':   					'none',
 	'/**/favicon.ico': 					'none',
 	'/login/auth': 						'none',
 	'/**':             					'JOINED_FILTERS'
