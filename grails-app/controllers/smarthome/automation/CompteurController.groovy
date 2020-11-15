@@ -158,10 +158,12 @@ class CompteurController extends AbstractController {
 	def compteurIndexs(CompteurIndexCommand command) {
 		// moteur de recherche en view scope
 		command = parseViewCommand(command)
-		
 		command.admin(principal.id) // plugin spring security
 		checkErrors(this, command)
+		
 		def indexs = compteurService.listCompteurIndex(command)
+		// ne pas oublier de réinjecter la pagination car géré par le command
+		setPagination(command.pagination())
 
 		render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
 			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])

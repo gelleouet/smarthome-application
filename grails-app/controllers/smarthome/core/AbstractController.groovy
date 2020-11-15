@@ -90,6 +90,16 @@ abstract class AbstractController {
 	
 	
 	/**
+	 * Injecte les valeurs de pagination dans la request
+	 * @param max
+	 */
+	protected void setPagination(Map pagination) {
+		params.max = pagination.max ?: getPaginationDefaultMax()
+		params.offset = pagination.offset ?: 0
+	}
+	
+	
+	/**
 	 * Config : smarthome.pagination.defaultMax
 	 * 
 	 * @return

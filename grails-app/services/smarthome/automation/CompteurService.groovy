@@ -295,9 +295,9 @@ class CompteurService extends AbstractService {
 			Date startSemaine = DateUtils.firstDayInWeek(command.device.dateValue)
 			Date endSemaine = DateUtils.lastDayInWeek(command.device.dateValue)
 			
-			if (command.dateIndex >= startSemaine && command.dateIndex <= endSemaine) {
+			/*if (command.dateIndex >= startSemaine && command.dateIndex <= endSemaine) {
 				throw new SmartHomeException("Vous ne pouvez saisir qu'un seul index par semaine !", command)
-			}
+			}*/
 		}
 
 		// transformation et controle par le compteur lui-meme avant les controles généraux

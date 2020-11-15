@@ -32,6 +32,8 @@ class SupervisionController extends AbstractController {
 		checkErrors(this, command)
 		
 		def devices = deviceService.listSupervision(command)
+		// ne pas oublier de réinjecter la pagination car géré par le command
+		setPagination(command.pagination())
 		
 		render(view: 'supervision', model: [devices: devices, recordsTotal: devices.totalCount,
 			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur(), command: command])

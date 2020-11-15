@@ -38,13 +38,15 @@
 							<g:hiddenField name="id" value="${ command.id }"/>
 						
 							<div class="row">
-								<div class="col-6">
-									<g:render template="formIndex"/>
-								</div>
-								<div class="col-6">
+								<div class="col">
 									<g:link action="compteurIndexImg" id="${ command.id }" target="compteurIndexImg">
-										<img class="img-thumbnail rounded" src="${ g.createLink(action: 'compteurIndexImg', id: command.id) }" />
+										<img class="img-thumbnail rounded" src="${ g.createLink(action: 'compteurIndexImg', id: command.id) }" alt="Aucune image importée"/>
 									</g:link>
+								</div>
+							</div>	
+							<div class="row">
+								<div class="col">
+									<g:render template="formIndex"/>
 								</div>
 							</div>	
 						

@@ -29,7 +29,7 @@
 				</g:form>
 				
 				
-				<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="supervision-form" offset="${ command.offset }">
+				<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="supervision-form">
 				    <thead>
 				        <tr>
 				        	<th>Utilisateur</th>
