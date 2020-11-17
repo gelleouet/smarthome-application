@@ -26,6 +26,10 @@
 						<app:icon name="droplet"/>
 					</g:elseif>
 					 ${ command.device.user.prenomNom } > ${ command.device.label }
+					 
+					 <sec:ifAnyGranted roles="ROLE_ADMIN">
+						<g:link controller="device" action="edit" id="${ command.device.id }" title="Edition"><app:icon name="edit"/></g:link>
+					</sec:ifAnyGranted>
 				</h4>
 			</div> <!-- div.card-header -->
 		
@@ -70,7 +74,7 @@
 								</div>	
 								
 								<div class="btn-group mr-2" role="group">
-									<button class="btn btn-outline btn-primary">Rafraîchir</button>
+									<button class="btn btn-light"><app:icon name="search"/></button>
 								</div>
 							</div>
 						</g:formRemote>

@@ -19,6 +19,7 @@ import smarthome.automation.NotificationAccount
 import smarthome.automation.NotificationAccountSender
 import smarthome.automation.NotificationAccountSenderService
 import smarthome.automation.NotificationAccountService
+import smarthome.automation.deviceType.Compteur
 import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
 import smarthome.core.DateUtils
@@ -453,12 +454,13 @@ class DataConnectService extends AbstractService {
 					mac: notificationAccount.jsonConfig.usage_point_id,
 					label: defaultCompteurLabel,
 					deviceType: DeviceType.findByImplClass(TeleInformation.name))
+			
+			dataDevice.addMetavalue('opttarif', [value: Compteur.DEFAULT_CONTRAT, label: 'Option tarifaire'])
 		}
 
-		// ajout ou update config device
-		dataDevice.addMetadata('modele', [label: 'Modèle', value: 'Linky'])
+		// force certaines valeurs
+		dataDevice.addMetadata('modele', [value: 'Linky', label: 'Modèle'])
 		dataDevice.addMetavalue('baseinst', [unite: 'Wh', label: 'Consommation moyenne sur 30 minutes', trace: true])
-		dataDevice.addMetavalue('opttarif', [label: 'Option tarifaire', value: 'BASE'])
 
 		return dataDevice
 	}

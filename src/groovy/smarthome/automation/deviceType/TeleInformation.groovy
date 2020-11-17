@@ -864,10 +864,18 @@ class TeleInformation extends Compteur {
 	 */
 	@Override
 	List listIndex(DeviceValueCommand command) throws SmartHomeException {
+		List nameList
+		
+		if (isDoubleTarification()) {
+			nameList = ['hchp', 'hchc']
+		} else {
+			nameList = ['base']
+		}
+		
 		return DeviceValue.createCriteria().list(command.pagination) {
 			eq 'device', device
 			lt 'dateValue', command.dateIndex + 1
-			'in' 'name', ['hchp', 'hchc']
+			'in' 'name', nameList
 			order 'dateValue', 'desc'
 			order 'name', 'asc'
 		}

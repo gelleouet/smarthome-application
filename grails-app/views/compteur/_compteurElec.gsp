@@ -111,7 +111,7 @@
          				optionKey="libelle" optionValue="libelle" noSelection="['': ' ']"/>
          				
          				
-         			<g:select class="form-control" name="contrat" from="${ contratElecs }" optionKey="key" optionValue="value"/>
+         			<g:select class="form-control" name="contrat" from="${ contratElecs }" optionKey="key" optionValue="value" noSelection="['': ' ']"/>
 					
 					<div class="mt-4 text-right">
 						<button class="btn btn-primary"><app:icon name="chevron-right"/> Suivant</button>

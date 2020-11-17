@@ -19,7 +19,7 @@ class CompteurIndex implements Serializable {
 	Double index1
 	Double index2
 	String param1
-	Date dateIndex = new Date().clearTime()
+	Date dateIndex
 	byte[] photo
 
 	// propriétés utilisateur
