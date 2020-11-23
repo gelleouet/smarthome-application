@@ -4,13 +4,10 @@
 package smarthome.application
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
-
-import grails.transaction.NotTransactional
-
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import smarthome.application.granddefi.AccountCommand
+import smarthome.application.granddefi.model.DefiModel
 import smarthome.automation.House
 import smarthome.automation.HouseService
 import smarthome.core.AbstractService
@@ -30,8 +27,6 @@ import smarthome.security.UserService
  *
  */
 class GrandDefiService extends AbstractService {
-
-	private static final int MAX_CLASSEMENT = 3
 
 	HouseService houseService
 	GrailsApplication grailsApplication
@@ -66,6 +61,7 @@ class GrandDefiService extends AbstractService {
 		model.currentDefi = command.defi ?: (model.defis ? model.defis[0] : null)
 
 		if (model.currentDefi) {
+			model.defiModel = model.currentDefi.newModeleImpl()
 			def myResultat = defiService.findUserResultat(model.currentDefi, command.user)
 
 			if (!myResultat) {
@@ -108,8 +104,12 @@ class GrandDefiService extends AbstractService {
 		// prépare le modèle par compteur
 		// on duplique le total classement pour q'il soit accessible depuis la map
 		// principale de chaque compteur qui sera délèguée à des templates
+		// le type est dupliqué dans la key consos car c'est elle qui est passé aux fonctions de graphe
+		// et le type est nécessaire
 		model.electricite = [type: DefiCompteurEnum.electricite, consos: [:]]
 		model.gaz = [type: DefiCompteurEnum.gaz, consos: [:]]
+		model.eau = [type: DefiCompteurEnum.eau, consos: [:]]
+		model.energie = [type: DefiCompteurEnum.energie, consos: [:]]
 		model.global = [type: DefiCompteurEnum.global, consos: [:]]
 
 		return model
@@ -125,13 +125,7 @@ class GrandDefiService extends AbstractService {
 	 */
 	Map modelParticipants(DefiCommand command) throws SmartHomeException {
 		Map model = defaultModelResultat(command)
-
-		// liste tous les participants avec profil public
-		if (model.currentDefi) {
-			model.participants = defiService.listParticipantResultat(
-					new DefiCommand(defi: model.currentDefi, profilPublic: true), [:])
-		}
-
+		model.defiModel?.modelParticipants(command, model)
 		return model
 	}
 
@@ -145,51 +139,7 @@ class GrandDefiService extends AbstractService {
 	 */
 	Map modelResultatsDefi(DefiCommand command) throws SmartHomeException {
 		Map model = defaultModelResultat(command)
-
-		model.global.classement = []
-
-		// récupère le nombre d'entrées dans le classement (par défaut MAX_CLASSEMENT)
-		// construction des équipes "à la volée" et association avec une équipe
-		// et le grand défi en cours
-		String configMaxClassement = configService.value(Config.GRAND_DEFI_MAX_CLASSEMENT)
-		int maxClassement = configMaxClassement ? configMaxClassement.toInteger() : MAX_CLASSEMENT
-
-		if (model.currentDefi) {
-			model.equipe.profils = defiService.listEquipeProfilResultat(model.equipe)
-
-			// charge les résultats globals du défi
-			model.global.consos.values = defiService.listDefiProfilResultat(model.currentDefi)
-			model.currentDefi.injectResultat(model.global.consos, DefiCompteurEnum.global)
-
-			model.profils = defiService.listDistinctProfil(model.currentDefi)
-
-			// charge les classements des équipes en global et pour chaque profil
-			model.global.classement = defiService.classementEquipe(model.currentDefi,
-					[max: maxClassement])
-			defiService.addEquipeClassement(model.global.classement, model.equipe)
-
-			for (Profil profil : model.profils) {
-				model["profil${ profil.id }"] = [:]
-				model["profil${ profil.id }"].classement = defiService.classementEquipeProfil(
-						model.currentDefi, profil, [max: maxClassement])
-				defiService.addEquipeProfilClassement(model["profil${ profil.id }"].classement,
-						model.equipe, profil)
-			}
-		}
-
-		// création des charts dans tous les cas pour ne pas avoir de page vide
-		model.global.chartTotal = defiService.chartTotal(model.currentDefi, model.global.consos)
-		model.global.chartConso = defiService.chartProfil(model.currentDefi, model.global.consos,
-				DefiCompteurEnum.global)
-
-		model.global.chartClassement = defiService.chartClassement(model.currentDefi,
-				model.global.classement, model.equipe)
-
-		for (Profil profil : model.profils) {
-			model["profil${ profil.id }"].chartClassement = defiService.chartClassement(model.currentDefi,
-					model["profil${ profil.id }"].classement, model.equipe)
-		}
-
+		model.defiModel?.modelResultatsDefi(command, model)
 		return model
 	}
 
@@ -203,36 +153,7 @@ class GrandDefiService extends AbstractService {
 	 */
 	Map modelResultatsEquipe(DefiCommand command) throws SmartHomeException {
 		Map model = defaultModelResultat(command)
-
-		// charge les données uniquement si défi activé
-		if (model.currentDefi) {
-			model.global.consos.values = defiService.listEquipeProfilResultat(model.equipe)
-			model.equipe.injectResultat(model.global.consos, DefiCompteurEnum.global)
-
-			model.electricite.consos.values = model.global.consos.values
-			model.equipe.injectResultat(model.electricite.consos, DefiCompteurEnum.electricite)
-
-			model.gaz.consos.values = model.global.consos.values
-			model.equipe.injectResultat(model.gaz.consos, DefiCompteurEnum.gaz)
-		}
-
-		// lance dans tous les cas, les charts pour avoir des vues un minimum
-		// complétées (sinon page vide et c'est moins fun)
-		model.global.chartTotal = defiService.chartTotal(model.currentDefi,
-				model.global.consos)
-		model.global.chartConso = defiService.chartProfil(model.currentDefi,
-				model.global.consos, DefiCompteurEnum.global)
-
-		model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
-				model.electricite.consos)
-		model.electricite.chartConso = defiService.chartProfil(model.currentDefi,
-				model.electricite.consos, DefiCompteurEnum.electricite)
-
-		model.gaz.chartTotal = defiService.chartTotal(model.currentDefi,
-				model.gaz.consos)
-		model.gaz.chartConso = defiService.chartProfil(model.currentDefi,
-				model.gaz.consos, DefiCompteurEnum.gaz)
-
+		model.defiModel?.modelResultatsEquipe(command, model)
 		return model
 	}
 
@@ -246,80 +167,7 @@ class GrandDefiService extends AbstractService {
 	 */
 	Map modelMesResultats(DefiCommand command) throws SmartHomeException {
 		Map model = defaultModelResultat(command)
-
-		// charge les données elec et construit les graphes
-		// on passe dans des transactions séparées car le service appelé peut
-		// déclencher une SmartHomeException qui va péter un rollabck alors que
-		// lecture seule sur la transaction principale. Même avec un @NotTransaction
-		// ca ne marche pas
-		try {
-			Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
-				// un seul chargement de données qui est passé ensuite aux graphes
-				// pour ne pas devoir charger à chaque graphe
-				if (model.currentDefi) {
-					model.electricite.consos = defiService.loadUserConso(model.currentDefi,
-							model.house, DefiCompteurEnum.electricite)
-					model.participant?.injectResultat(model.electricite.consos, DefiCompteurEnum.electricite)
-				}
-
-				model.electricite.chartTotal = defiService.chartTotal(model.currentDefi,
-						model.electricite.consos)
-				model.electricite.chartConso = defiService.chartUserDay(model.currentDefi,
-						model.electricite.consos)
-			}
-		} catch (SmartHomeException ex) {
-			model.electricite.error = ex.message
-		}
-
-
-		// charge les données gaz et construit les graphes
-		// on passe dans des transactions séparées car le service appelé peut
-		// déclencher une SmartHomeException qui va péter un rollabck alors que
-		// lecture seule sur la transaction principale. Même avec un @NotTransaction
-		// ca ne marche pas
-		try {
-			Defi.withTransaction([readOnly: true, propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
-				// un seul chargement de données qui est passé ensuite aux graphes
-				// pour ne pas devoir charger à chaque graphe
-				if (model.currentDefi) {
-					model.gaz.consos = defiService.loadUserConso(model.currentDefi,
-							model.house, DefiCompteurEnum.gaz)
-					model.participant?.injectResultat(model.gaz.consos, DefiCompteurEnum.gaz)
-				}
-
-				model.gaz.chartTotal = defiService.chartTotal(model.currentDefi,
-						model.gaz.consos)
-				model.gaz.chartConso = defiService.chartUserDay(model.currentDefi,
-						model.gaz.consos)
-			}
-		} catch (SmartHomeException ex) {
-			model.gaz.error = ex.message
-		}
-
-		// passer toutes les consos de chaque compteur dans cette méthode
-		// pour calculer les consos globales et créer les chart correspondants
-		if (model.currentDefi) {
-			model.global.consos = defiService.groupConsos(model.currentDefi,
-					model.electricite.consos, model.gaz.consos)
-			model.participant?.injectResultat(model.global.consos, DefiCompteurEnum.global)
-		}
-
-		model.global.chartTotal = defiService.chartTotal(model.currentDefi,
-				model.global.consos)
-		// le graphe détaillé est différent selon la granularité des consos
-		// entre les différents compteurs. si un compteur elec est connecté
-		// et le connecteur gaz non, alors beaucoup plus de valeurs sur l'élec et
-		// les consos gaz seront toutes enregistrées sur une seule date. donc
-		// le graphe à la journée ne sera pas représentatif. On passe dans ce
-		// cas à un graphe à la semaine
-		if (model.global.consos.bestView == "day") {
-			model.global.chartConso = defiService.chartUserDay(model.currentDefi,
-					model.global.consos)
-		} else {
-			model.global.chartConso = defiService.chartUserWeek(model.currentDefi,
-					model.global.consos)
-		}
-
+		model.defiModel?.modelMesResultats(command, model)
 		return model
 	}
 

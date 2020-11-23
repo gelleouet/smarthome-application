@@ -6,7 +6,7 @@
 <body>
 	<g:applyLayout name="page-default">
 	
-		<g:render template="defiMenu"/>
+		<g:render template="/grandDefi/defiMenu"/>
 		
 		<div class="row">
 			<g:each var="equipe" in="${ currentDefi?.equipes?.sort { it.libelle } }" status="statusEquipe">

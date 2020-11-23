@@ -7,4 +7,4 @@
 -
 </g:else>
 
-<span style="font-size: x-small;">kWh</span>
+<span style="font-size: x-small;">${ unite ?: 'kWh' }</span>

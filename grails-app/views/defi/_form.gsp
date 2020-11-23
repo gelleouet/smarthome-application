@@ -7,6 +7,11 @@
 </div>
 
 <div class="form-group required">
+	<label for="modele">Modèle</label>
+	<g:textField name="modele" value="${defi?.modele}" required="true" class="form-control"/>
+</div>
+
+<div class="form-group">
 	<label for="organisation">Organisé par</label>
 	<g:textField name="organisation" value="${defi?.organisation}" class="form-control"/>
 </div>

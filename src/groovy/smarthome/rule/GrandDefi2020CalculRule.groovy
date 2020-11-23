@@ -33,7 +33,7 @@ import smarthome.security.Profil
  * @author gregory
  *
  */
-class DefiCalculRule implements Rule<Defi, Defi> {
+class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 
 	static final Long PROFIL_PARTICULIER_ID = 1L
 	static final Long CHAUFFAGE_ELEC_ID = 1L
@@ -90,6 +90,9 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 				} else {
 					participant.economie_electricite = noteParticipant(key, participant, DefiCompteurEnum.electricite)
 				}
+				
+				participant.economie_eau = noteParticipant(key, participant, DefiCompteurEnum.eau)
+				
 				// on ne peut pas faire le calcul du global car le participant GN
 				// appartient aussi au groupe US, donc dans cette boucle il peut
 				// encore manquer l'une ou l'autre des valeurs pour faire la moyenne
@@ -97,7 +100,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		}
 		participants.each { participant ->
 			participant.economie_global = NumberUtils.moyenne(participant.economie_electricite,
-					participant.economie_gaz)
+					participant.economie_gaz, participant.economie_eau)
 		}
 
 		// calcul des notes par équipe / profil
@@ -122,14 +125,20 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 							moyenneEconomie(participantsProfil, DefiCompteurEnum.electricite))
 					defiEquipeProfil.economie_gaz = noteProfil(defiEquipeProfil.profil,
 							moyenneEconomie(participantsProfil, DefiCompteurEnum.gaz))
+					defiEquipeProfil.economie_eau = noteProfil(defiEquipeProfil.profil,
+						moyenneEconomie(participantsProfil, DefiCompteurEnum.eau))
+					
 					defiEquipeProfil.economie_global = NumberUtils.moyenne(defiEquipeProfil.economie_electricite,
-							defiEquipeProfil.economie_gaz)
+							defiEquipeProfil.economie_gaz, defiEquipeProfil.economie_eau)
 				}
 	
 				// note équipe = moyenne des profils
 				equipe.economie_electricite = moyenneEconomie(equipe.profils, DefiCompteurEnum.electricite)
 				equipe.economie_gaz = moyenneEconomie(equipe.profils, DefiCompteurEnum.gaz)
-				equipe.economie_global =  NumberUtils.moyenne(equipe.economie_electricite, equipe.economie_gaz)
+				equipe.economie_eau = moyenneEconomie(equipe.profils, DefiCompteurEnum.eau)
+				
+				equipe.economie_global =  NumberUtils.moyenne(equipe.economie_electricite, equipe.economie_gaz,
+					equipe.economie_eau)
 			}
 		}
 
@@ -141,45 +150,43 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 			}
 			defiProfil.economie_electricite = moyenneEconomie(profilList, DefiCompteurEnum.electricite)
 			defiProfil.economie_gaz = moyenneEconomie(profilList, DefiCompteurEnum.gaz)
-			defiProfil.economie_global = NumberUtils.moyenne(defiProfil.economie_electricite, defiProfil.economie_gaz)
+			defiProfil.economie_eau = moyenneEconomie(profilList, DefiCompteurEnum.eau)
+			
+			defiProfil.economie_global = NumberUtils.moyenne(defiProfil.economie_electricite,
+				defiProfil.economie_gaz, defiProfil.economie_eau)
 		}
 
 		// calcul au niveau défi
 		// on refait les moyennes des profils
 		defi.economie_electricite = moyenneEconomie(defi.profils, DefiCompteurEnum.electricite)
 		defi.economie_gaz = moyenneEconomie(defi.profils, DefiCompteurEnum.gaz)
-		defi.economie_global = NumberUtils.moyenne(defi.economie_electricite, defi.economie_gaz)
+		defi.economie_eau = moyenneEconomie(defi.profils, DefiCompteurEnum.eau)
+		
+		defi.economie_global = NumberUtils.moyenne(defi.economie_electricite, defi.economie_gaz,
+			defi.economie_eau)
 
 		// ---------------------------------------------------------------------
 		// CLASSEMENTS
 		// ---------------------------------------------------------------------
 
-		// classement des équipes selon les types de consommation
-		classementList(defi.equipes, DefiCompteurEnum.electricite)
-		classementList(defi.equipes, DefiCompteurEnum.gaz)
+		// classement général des équipes 
 		classementList(defi.equipes, DefiCompteurEnum.global)
 
-		// classement des équipes profil selon les types de consommation
+		// classement des équipes profil
 		def equipeProfilGroup = equipeProfils.groupBy { it.profil }.each { key, value ->
-			classementList(value, DefiCompteurEnum.electricite)
-			classementList(value, DefiCompteurEnum.gaz)
 			classementList(value, DefiCompteurEnum.global)
 		}
-
+		
 		// classement des participants en fonction de leurs profils
 		participantsGroup.each { key, value ->
 			// pas de classement elec pour le profil gaz
 			// et inversement
 			// on effectue le classement global que les catégories US et ELEC
 			// car la catégorie GAZ est incluse dans US
-			if (key.endsWith(SUFFIX_GAZ_NATUREL)) {
-				classementList(value, DefiCompteurEnum.gaz)
-			} else {
-				classementList(value, DefiCompteurEnum.electricite)
+			if (!key.endsWith(SUFFIX_GAZ_NATUREL)) {
 				classementList(value, DefiCompteurEnum.global)
 			}
 		}
-
 
 		return defi
 	}
@@ -282,7 +289,7 @@ class DefiCalculRule implements Rule<Defi, Defi> {
 		if (participant."evolution_${compteurType}"() != null) {
 			note = participant."evolution_${compteurType}"()
 
-			if (! groupKey.endsWith(SUFFIX_USAGE_SPECIFIQUE)) {
+			if (compteurType != DefiCompteurEnum.eau && !groupKey.endsWith(SUFFIX_USAGE_SPECIFIQUE)) {
 				// si il y a ce profil sur cette équipe, c'est que forcément
 				// il était présent dans la liste des participants et doit
 				// forcément apparaître dans les groupes de moyenne. S'il n'y

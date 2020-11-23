@@ -38,7 +38,7 @@
 		  		</div>
 		  		<div class="col-6 text-right">
 		  			<h4 class="text-black-50 font-weight-bold">
-		  				<g:render template="formatConsommation" model="[value: data.consos.reference, precision: 0]"/>
+		  				<g:render template="formatConsommation" model="[value: data.consos.reference, precision: 0, unite: data.type.converter.unite()]"/>
 		  			</h4>
 		  		</div>
 		  	</div>
@@ -51,7 +51,7 @@
 		  		</div>
 		  		<div class="col-6 text-right">
 		  			<h4 class="text-primary font-weight-bold">
-		  				<g:render template="formatConsommation" model="[value: data.consos.action, precision: 0]"/>
+		  				<g:render template="formatConsommation" model="[value: data.consos.action, precision: 0, unite: data.type.converter.unite()]"/>
 		  			</h4>
 		  		</div>
 		  	</div>
@@ -65,7 +65,7 @@
 		  		<div class="col-6 text-right">
 		  			<h4 class="font-weight-bold">
 		  				<g:applyLayout name="arrow" model="[value: data.consos.difference != null ? data.consos.difference : '-', reference: 0]">
-		  					<span style="font-size: x-small;">kWh</span>
+		  					<span style="font-size: x-small;">${ data.type.converter.unite() ?: 'kWh' }</span>
 		  				</g:applyLayout>
 		  			</h4>
 		  		</div>
@@ -115,7 +115,7 @@
 				<h5 class="font-weight-bold">Economie</h5>
 			</div>
 			<div class="col border-bottom p-2 text-center">
-				<h5 class="font-weight-bold">Classement dans le Grand Défi Energie</h5>
+				<h5 class="font-weight-bold">Classement dans le ${ defi?.libelle }</h5>
 			</div>
 		</div>
 		<g:each var="conso" in="${ consos }" status="status">

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package smarthome.application
 
 import java.text.DecimalFormat
@@ -8,7 +5,8 @@ import java.text.DecimalFormat
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 
-import groovyx.gpars.GParsPool
+import smarthome.application.granddefi.converter.DefiConsoConverter
+import smarthome.application.granddefi.model.DefiModel
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.Device
 import smarthome.automation.House
@@ -16,10 +14,6 @@ import smarthome.automation.HouseService
 import smarthome.automation.deviceType.Compteur
 import smarthome.core.AbstractService
 import smarthome.core.Chronometre
-import smarthome.core.CompteurUtils
-import smarthome.core.Config
-import smarthome.core.ConfigService
-import smarthome.core.NumberUtils
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -39,7 +33,6 @@ class DefiService extends AbstractService {
 
 	HouseService houseService
 	DefiCalculRuleService defiCalculRuleService
-	ConfigService configService
 
 
 	/**
@@ -505,15 +498,20 @@ class DefiService extends AbstractService {
 	 * 
 	 * @param defi
 	 * @param consos données contenant 2 fields : reference et action
+	 * @param consoConverter
 	 * 
 	 * @return GoogleChart
 	 */
-	GoogleChart chartTotal(Defi defi, Map consos) {
+	GoogleChart chartTotal(Defi defi, Map consos, DefiConsoConverter consoConverter = null) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Column.factory
 		chart.values = []
 
+		DefiCompteurEnum defiCompteur = consos.type
+		DefiConsoConverter converter = consoConverter ?: defiCompteur.converter
+		String unite = converter.unite()
+		
 		if (consos.resultat?.canDisplay()) {
 			chart.values = [
 				[name: "Total", reference: consos.reference, action: consos.action]
@@ -521,13 +519,13 @@ class DefiService extends AbstractService {
 		}
 
 		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence ($unite)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action ($unite)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
+		chart.vAxis << [title: "Consommation ($unite)", minValue: 0]
 
 		return chart
 	}
@@ -538,16 +536,20 @@ class DefiService extends AbstractService {
 	 *
 	 * @param defi
 	 * @param consos
-	 * @param defiCompteur
+	 * @param consoConverter
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartProfil(Defi defi, Map consos, DefiCompteurEnum defiCompteur) {
+	GoogleChart chartProfil(Defi defi, Map consos, DefiConsoConverter consoConverter = null) {
 		GoogleChart chart = new GoogleChart()
 
 		chart.chartType = ChartTypeEnum.Column.factory
 		chart.values = []
 
+		DefiCompteurEnum defiCompteur = consos.type
+		DefiConsoConverter converter = consoConverter ?: defiCompteur.converter
+		String unite = converter.unite()
+		
 		// regroupe les données par profil et pour chacun récupère le
 		if (consos.resultat?.canDisplay()) {
 			consos?.values?.sort { it.profil.libelle }?.each {
@@ -558,13 +560,13 @@ class DefiService extends AbstractService {
 		}
 
 		chart.colonnes << new GoogleDataTableCol(label: "Total", property: "name", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence ($unite)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action ($unite)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
+		chart.vAxis << [title: "Consommation ($unite)", minValue: 0]
 
 		return chart
 	}
@@ -637,10 +639,11 @@ class DefiService extends AbstractService {
 	 *
 	 * @param defi
 	 * @param consos données issues de la méthode #loadUserConso
+	 * @param consoConverter
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserDay(Defi defi, Map consos) {
+	GoogleChart chartUserDay(Defi defi, Map consos, DefiConsoConverter consoConverter = null) {
 		GoogleChart chart = new GoogleChart()
 		chart.chartType = ChartTypeEnum.Column.factory
 		chart.hAxisFormat = "EE"
@@ -650,11 +653,14 @@ class DefiService extends AbstractService {
 		// ensuite, les valeurs d'action sont injectée sur ces jours
 		// on convertit aussi les consos en kWh
 		chart.values = []
+		
+		DefiCompteurEnum defiCompteur = consos.type
+		DefiConsoConverter converter = consoConverter ?: defiCompteur.converter
+		String unite = converter.unite()
 
 		if (consos.resultat?.canDisplay()) {
 			for (def reference : consos.referenceValues) {
-				chart.values << [dateValue: reference.dateValue,
-					reference: CompteurUtils.convertWhTokWh(reference.value)]
+				chart.values << [dateValue: reference.dateValue, reference: converter.convert(reference.value)]
 			}
 
 			// injecte les valeurs d'action en tenant compte de "trous"
@@ -667,7 +673,7 @@ class DefiService extends AbstractService {
 					index = action.dateValue - debutAction
 
 					if (index >= 0 && index < chart.values.size()) {
-						chart.values[index].action = CompteurUtils.convertWhTokWh(action.value)
+						chart.values[index].action = converter.convert(action.value)
 					}
 				}
 			}
@@ -678,13 +684,13 @@ class DefiService extends AbstractService {
 		}.join(",")
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", property: "dateValue", type: "date")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence ($unite)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action ($unite)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
+		chart.vAxis << [title: "Consommation ($unite)", minValue: 0]
 
 		return chart
 	}
@@ -700,23 +706,27 @@ class DefiService extends AbstractService {
 	 *
 	 * @param defi
 	 * @param consos données issues de la méthode #loadUserConso
+	 * @param consoConverter
 	 *
 	 * @return GoogleChart
 	 */
-	GoogleChart chartUserWeek(Defi defi, Map consos) {
+	GoogleChart chartUserWeek(Defi defi, Map consos, DefiConsoConverter consoConverter = null) {
 		GoogleChart chart = new GoogleChart()
 		chart.chartType = ChartTypeEnum.Column.factory
 
 		// réorganisation les valeurs de référence par semaine
-		// on convertit aussi les consos en kWh
+		// conversion des valeurs en fonction type conso
 		chart.values = []
+		
+		DefiCompteurEnum defiCompteur = consos.type
+		DefiConsoConverter converter = consoConverter ?: defiCompteur.converter
+		String unite = converter.unite()
 
 		if (consos.resultat?.canDisplay()) {
 			consos.referenceValues?.groupBy {
 				it.dateValue[Calendar.WEEK_OF_YEAR]
 			}?.eachWithIndex { key, values, statut ->
-				chart.values << [week: "S${statut + 1}", reference: CompteurUtils.convertWhTokWh(
-					values.sum { it.value })]
+				chart.values << [week: "S${statut + 1}", reference: converter.convert(values.sum { it.value })]
 			}
 
 			// injecte les valeurs d'action en tenant compte de "trous"
@@ -732,8 +742,7 @@ class DefiService extends AbstractService {
 					index = key - debutSemaine
 
 					if (index >= 0 && index < chart.values.size()) {
-						chart.values[index].action = CompteurUtils.convertWhTokWh(
-								values.sum { it.value })
+						chart.values[index].action = converter.convert(values.sum { it.value })
 					}
 				}
 			}
@@ -743,13 +752,13 @@ class DefiService extends AbstractService {
 		chart.hAxisTicks = chart.values.collect { "'S${ statut++}'" }.join(",")
 
 		chart.colonnes << new GoogleDataTableCol(label: "Semaine", property: "week", type: "string")
-		chart.colonnes << new GoogleDataTableCol(label: "Référence (kWh)", property: "reference", type: "number")
-		chart.colonnes << new GoogleDataTableCol(label: "Action (kWh)", property: "action", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Référence ($unite)", property: "reference", type: "number")
+		chart.colonnes << new GoogleDataTableCol(label: "Action ($unite)", property: "action", type: "number")
 
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.total, annotation: true]
 		chart.series << [type: 'bars', color: Compteur.SERIES_COLOR.conso, annotation: true]
 
-		chart.vAxis << [title: 'Consommation (kWh)', minValue: 0]
+		chart.vAxis << [title: "Consommation ($unite)", minValue: 0]
 
 		return chart
 	}
@@ -786,8 +795,8 @@ class DefiService extends AbstractService {
 		result.actionValues = compteur.consommationTotalByDay(defi.actionDebut, defi.actionFin)
 
 		// calcul temporaire des totaux et diff
-		result.totalReference = CompteurUtils.convertWhTokWh(result.referenceValues.sum { it.value })
-		result.totalAction = CompteurUtils.convertWhTokWh(result.actionValues.sum { it.value })
+		result.totalReference = compteurType.converter.convert(result.referenceValues.sum { it.value })
+		result.totalAction = compteurType.converter.convert(result.actionValues.sum { it.value })
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result
@@ -798,11 +807,15 @@ class DefiService extends AbstractService {
 	 * Regroupe des consos chargées depuis la méthode #loadUserConso et calcule
 	 * le consos globales
 	 * 
+	 * !! IMPORTANT : n'a de sens qu'avec des consos de même unité !!
+	 * 
+	 * @param defi 
+	 * @param converter 
 	 * @param consos 1 ou plusieurs datas
 	 * 
 	 * @return
 	 */
-	Map groupConsos(Defi defi, Map... consos) {
+	Map groupConsos(Defi defi, DefiConsoConverter converter, Map... consos) {
 		Map result = [referenceValues: [], actionValues: []]
 
 		// garde une trace du type de compteur
@@ -840,8 +853,8 @@ class DefiService extends AbstractService {
 		}
 
 		// calcul temporaire des totaux et diff
-		result.totalReference = CompteurUtils.convertWhTokWh(result.referenceValues.sum { it.value })
-		result.totalAction = CompteurUtils.convertWhTokWh(result.actionValues.sum { it.value })
+		result.totalReference = converter.convert(result.referenceValues.sum { it.value })
+		result.totalAction = converter.convert(result.actionValues.sum { it.value })
 		result.totalDiff = result.totalAction - result.totalReference
 
 		return result
@@ -932,7 +945,9 @@ class DefiService extends AbstractService {
 			}
 		}
 
-		defiCalculRuleService.execute(defi, true, [participants: participants])
+		// Calcul nom règle en fonction model défi
+		DefiModel defiModel = defi.newModeleImpl()
+		defiCalculRuleService.executeByRuleName(defiModel.ruleName(), defi, true, [participants: participants])
 
 		return super.save(defi)
 	}
@@ -945,7 +960,9 @@ class DefiService extends AbstractService {
 	 * @return
 	 */
 	String groupKeyParticipant(DefiEquipeParticipant defiEquipeParticipant) {
-		return defiCalculRuleService.executeMethod(defiEquipeParticipant, "groupKeyParticipant", true, null)
+		// Calcul nom règle en fonction model défi
+		DefiModel defiModel = defiEquipeParticipant.defiEquipe.defi.newModeleImpl()
+		return defiCalculRuleService.executeMethodByRuleName(defiModel.ruleName(), defiEquipeParticipant, "groupKeyParticipant", true, null)
 	}
 
 
@@ -960,154 +977,8 @@ class DefiService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	Defi calculerConsommations(Defi defi) throws SmartHomeException {
 		Chronometre chrono = new Chronometre()
-
-		// precision des consos en config
-		int precision = 0
-		String configPrecision = configService.value(Config.GRAND_DEFI_CONSOMMATION_PRECISION)
-
-		if (configPrecision) {
-			precision = configPrecision.toInteger()
-		}
-
-		// charge tous les profils défi et reset sur la liste du défi
-		// pour au final détecter les orphelins
-		List<DefiProfil> defiProfils = listDefiProfilResultat(defi)
-		defi.profils = []
-
-		// charge tous les participants "à plat" et les réorganise par équipe
-		// pour une structure en arbre
-		List<DefiEquipeParticipant> participants = listParticipantResultat(new DefiCommand(defi: defi), [:])
-		List<DefiEquipe> defiEquipes = extractDefiEquipe(participants)
-
-		// charge les résultats au niveau des profils (défi + équipe)
-		// ces listes seront complétées si des éléments manquent au moment des
-		// enregistrements de résultat
-		List<DefiEquipeProfil> defiEquipeProfilList = listEquipeProfilResultat(defi)
-
-		// parallélise le traitement de la liste (ie 4 cores)
-		// gpars rajoute aux méthodes d'itération des collection le suffixe Parallel
-		GParsPool.withPool(4) {
-
-			// 1ère passe, calcul simple des consos par participant
-			// on passe sur la liste entière sans tenir compte des équipes car cette étape
-			// nécessite de charger les consos en base. C'est l'étape la plus gourmande
-			// en temps et ressource
-			// le traitement de la liste est partagé entre 4 threads
-			participants.eachParallel { DefiEquipeParticipant participant ->
-				participant.cleanResultat()
-
-				// le traitement est threadé avec gpars, donc hors thread courant
-				// sur lequel est associé la session par défaut. il faut donc la
-				// gérer manuellement. Il y en aura autant que de pool alloué
-				DefiEquipeParticipant.withNewSession {
-					// on charge la maison principale avec le chauffage car il sera
-					// utilisé pour le calcul des notes. Cela évitera d'autres
-					// requêtes en activant l'association
-					House house = houseService.findDefaultByUserFetch(participant.user, ['chauffage'])
-					Map consos
-
-					if (house) {
-						participant.house = house
-
-						// calcul conso elec
-						if (house[DefiCompteurEnum.electricite.property]) {
-							consos = loadUserConso(defi, house, DefiCompteurEnum.electricite)
-							participant.reference_electricite = NumberUtils.round(consos.totalReference, precision)
-							participant.action_electricite = NumberUtils.round(consos.totalAction, precision)
-						}
-
-						// calcul conso gaz
-						if (house[DefiCompteurEnum.gaz.property]) {
-							consos = loadUserConso(defi, house, DefiCompteurEnum.gaz)
-							participant.reference_gaz = NumberUtils.round(consos.totalReference, precision)
-							participant.action_gaz = NumberUtils.round(consos.totalAction, precision)
-						}
-					}
-				}
-			}
-
-			// on a toutes les données au niveau le plus bas. on peut aggréger les
-			// données aux niveaux supérieurs, ie aux équipes à cette étape
-			// le traitement de la liste est partagé entre 4 threads
-			defiEquipes.eachParallel { DefiEquipe defiEquipe ->
-				// reset des profils pour détecter les orphelins
-				defiEquipe.profils = []
-				defiEquipe.cleanResultat()
-
-				// calcul total au niveau équipe
-				defiEquipe.reference_electricite = NumberUtils.round(defiEquipe.participants.sum { it.reference_electricite ?: 0 }, precision)
-				defiEquipe.reference_gaz = NumberUtils.round(defiEquipe.participants.sum { it.reference_gaz ?: 0 }, precision)
-				defiEquipe.action_electricite = NumberUtils.round(defiEquipe.participants.sum { it.action_electricite ?: 0 }, precision)
-				defiEquipe.action_gaz = NumberUtils.round(defiEquipe.participants.sum { it.action_gaz ?: 0 }, precision)
-
-				// calcul au niveau équipe-profil. ajout des éléments manquans
-				// en fonction des groupes calculés au niveau des participants
-				defiEquipe.participants.groupBy { it.user.profil }.each { entry ->
-					// recherche du profil équipe existant
-					DefiEquipeProfil defiEquipeProfil = defiEquipeProfilList.find {
-						it.defiEquipe == defiEquipe && it.profil == entry.key
-					}
-
-					// création à la volée d'un nouvel élément et ajout dans la liste de l'équipe
-					if (!defiEquipeProfil) {
-						defiEquipeProfil = new DefiEquipeProfil(profil: entry.key, defiEquipe: defiEquipe)
-					}
-
-					// ajout systématique dans la liste de l'équipe pour la reconstruire
-					defiEquipe.profils << defiEquipeProfil
-
-					defiEquipeProfil.cleanResultat()
-					defiEquipeProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 }, precision)
-					defiEquipeProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 }, precision)
-					defiEquipeProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 }, precision)
-					defiEquipeProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 }, precision)
-				}
-			}
-
-			// calcul au niveau global profil
-			participants.groupByParallel { it.user.profil }.each { entry ->
-				// attention !! le groupBy est threadé mais pas le each.
-				// donc on peut sans souci (car un seul thread) modifier l'instance
-				// défi depuis cette closure
-				DefiProfil defiProfil = defiProfils.find { it.profil == entry.key }
-
-				// création à la volée d'un nouvel élément et ajout dans la liste du défi
-				if (!defiProfil) {
-					defiProfil = new DefiProfil(defi: defi, profil: entry.key)
-				}
-
-				// ajout systématique dans la liste du défi pour la reconstruire
-				defi.profils << defiProfil
-
-				defiProfil.cleanResultat()
-				defiProfil.reference_electricite = NumberUtils.round(entry.value.sum { it.reference_electricite ?: 0 }, precision)
-				defiProfil.reference_gaz = NumberUtils.round(entry.value.sum { it.reference_gaz ?: 0 }, precision)
-				defiProfil.action_electricite = NumberUtils.round(entry.value.sum { it.action_electricite ?: 0 }, precision)
-				defiProfil.action_gaz = NumberUtils.round(entry.value.sum { it.action_gaz ?: 0 }, precision)
-			}
-		}
-
-		// dernière passe pour le calcul total du défi avec les sous-résultats par équipe
-		defi.cleanResultat()
-		defi.reference_electricite = NumberUtils.round(defiEquipes.sum { it.reference_electricite ?: 0 }, precision)
-		defi.reference_gaz = NumberUtils.round(defiEquipes.sum { it.reference_gaz ?: 0 }, precision)
-		defi.action_electricite = NumberUtils.round(defiEquipes.sum { it.action_electricite ?: 0 }, precision)
-		defi.action_gaz = NumberUtils.round(defiEquipes.sum { it.action_gaz ?: 0 }, precision)
-
-		// gestion des orphelins : équipe sans participant, ancien profil équipe
-		// ou défi d'un ancien calcul et après modification des participants du
-		// défi
-		// les orphelins se trouvent dans les listes chargés en début de méthode
-		(defiProfils - defi.profils).each { it.delete() }
-		// pour les équipes on doit toutes les passer en revue pour gérer les profils
-		defiEquipes.each { defiEquipe ->
-			defiEquipeProfilList.removeAll(defiEquipe.profils)
-		}
-		defiEquipeProfilList.each { it.delete() }
-		// équipes orphelines + réassociation de la bonne liste sur le défi
-		(defi.equipes - defiEquipes).each { it.delete() }
-		defi.equipes = defiEquipes
-
+		// délègue le chargement des données à l'impl du model
+		defi.newModeleImpl().calculerConsommations(defi)
 		log.info "Calcul défi : ${chrono.stop()}ms"
 
 		// comme tout est réorganisé en arbre (chaque objet parent contient les enfants

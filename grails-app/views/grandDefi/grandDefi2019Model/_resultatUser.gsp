@@ -141,7 +141,7 @@
 					</g:else>
 				</div>
 				<div class="col border-bottom text-center p-2">
-					<h5 class="font-weight-bold">Mon classement dans le Grand Défi Energie</h5>
+					<h5 class="font-weight-bold">Mon classement dans le ${ defi?.libelle }</h5>
 				</div>
 			</div>
 			<div class="row ml-4 mr-4">

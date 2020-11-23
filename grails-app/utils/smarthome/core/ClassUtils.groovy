@@ -27,13 +27,24 @@ class ClassUtils {
 	
 	
 	/**
+	 * Le nom d'un bean
+	 * 
+	 * @param object
+	 * @return
+	 */
+	static String beanName(Object object) {
+		StringUtils.uncapitalize(object.class.simpleName)
+	}
+	
+	
+	/**
 	 * Retourne le nom pour un exchange ou routingKey d'un service
 	 * 
 	 * @param objet
 	 * @return
 	 */
 	static String prefixAMQ(Object object) {
-		object.getClass().getPackage().getName() + "." + StringUtils.uncapitalize(object.class.simpleName)
+		object.getClass().getPackage().getName() + "." + beanName(object)
 	}
 	
 	

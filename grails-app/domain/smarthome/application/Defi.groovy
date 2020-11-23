@@ -1,6 +1,10 @@
 package smarthome.application
 
+import smarthome.application.granddefi.model.DefiModel
+import smarthome.core.ApplicationUtils
+import smarthome.core.ClassUtils
 import smarthome.core.SmartHomeCoreConstantes
+import smarthome.core.SmartHomeException
 import smarthome.security.User
 import grails.validation.Validateable
 
@@ -18,6 +22,7 @@ class Defi extends AbstractDefiResultat {
 	boolean publique
 	Set equipes = []
 	Set profils = []
+	String modele // impl DefiModel pour l'affichage
 
 
 	static hasMany = [equipes: DefiEquipe, profils: DefiProfil]
@@ -37,5 +42,17 @@ class Defi extends AbstractDefiResultat {
 		publique defaultValue: true
 		//equipes cascade: 'all-delete-orphan'
 		//profils cascade: 'all-delete-orphan'
+	}
+	
+	
+	/**
+	 * Création instance du modèle
+	 * 
+	 * @return
+	 */
+	DefiModel newModeleImpl() throws SmartHomeException {
+		DefiModel defiModel = ClassUtils.forNameInstance(modele)
+		ApplicationUtils.autowireBean(defiModel)
+		return defiModel
 	}
 }

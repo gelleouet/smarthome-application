@@ -22,7 +22,8 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 
 	SpringSecurityService springSecurityService
 
-
+	
+	
 	@Override
 	O executeFromScript(String script, I object) throws SmartHomeException {
 		return executeFromScript(script, object, [:])
@@ -55,23 +56,29 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 		return execute(object, ruleObligatoire, [:])
 	}
 
-
+	
 	@Override
-	O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
-		Rule rule = this.newRuleInstance(ruleObligatoire)
-
+	O executeByRuleName(String ruleName, I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
+		Rule rule = this.newRuleInstance(ruleObligatoire, ruleName)
+		
 		if (rule) {
 			return executeRule(rule, object, parameters)
 		} else {
 			return null
 		}
 	}
+	
+
+	@Override
+	O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
+		return execute(null, object, ruleObligatoire, parameters)
+	}
 
 
 	@Override
-	Object executeMethod(Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
-		Rule rule = this.newRuleInstance(ruleObligatoire)
-
+	Object executeMethodByRuleName(String ruleName, Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
+		Rule rule = this.newRuleInstance(ruleObligatoire, ruleName)
+		
 		if (rule) {
 			injectParameters(rule, parameters)
 
@@ -83,6 +90,12 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 		} else {
 			return null
 		}
+	}
+	
+	
+	@Override
+	Object executeMethod(Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException {
+		return executeMethodByRuleName(null, object, method, ruleObligatoire, parameters)
 	}
 
 
@@ -111,13 +124,16 @@ class GroovyScriptRuleService<I, O> extends AbstractRuleService<I, O> {
 	/**
 	 * Instancie la rule
 	 * 
+	 * @param ruleObligatoire
+	 * @param ruleName
+	 * 
 	 * @return
 	 */
-	private Rule newRuleInstance(boolean ruleObligatoire) throws SmartHomeException {
+	private Rule newRuleInstance(boolean ruleObligatoire, String ruleName = null) throws SmartHomeException {
 		Rule rule
 
 		// recherche de la règle via la nom de l'implémentation (sans le mot Service de fin)
-		def className = this.class.name.substring(0, this.class.name.length()-7)
+		def className = ruleName ?: this.class.name.substring(0, this.class.name.length()-7)
 
 
 		if (Environment.getCurrent() != Environment.PRODUCTION) {

@@ -22,11 +22,18 @@ abstract class AbstractDefiResultat implements Serializable {
 	Double moyenne_gaz
 	Integer classement_gaz
 	Integer total_gaz
+	
+	Double reference_eau
+	Double action_eau
+	Double economie_eau
+	Double moyenne_eau
+	Integer classement_eau
+	Integer total_eau
 
 	Double economie_global
 	Double moyenne_global
 	Integer classement_global
-	Integer total_global
+	Integer total_global // le nombre particpants dans la catégorie
 
 
 	static constraints = {
@@ -42,6 +49,12 @@ abstract class AbstractDefiResultat implements Serializable {
 		moyenne_gaz nullable: true
 		classement_gaz nullable: true
 		total_gaz nullable: true
+		reference_eau nullable: true
+		action_eau nullable: true
+		economie_eau nullable: true
+		moyenne_eau nullable: true
+		classement_eau nullable: true
+		total_eau nullable: true
 		economie_global nullable: true
 		moyenne_global nullable: true
 		classement_global nullable: true
@@ -95,8 +108,8 @@ abstract class AbstractDefiResultat implements Serializable {
 	 * @return
 	 */
 	Double reference_global() {
-		if (reference_electricite != null || reference_gaz != null) {
-			return NumberUtils.round((reference_electricite ?: 0) + (reference_gaz ?: 0))
+		if (reference_electricite != null || reference_gaz != null || reference_eau != null) {
+			return NumberUtils.round((reference_electricite ?: 0) + (reference_gaz ?: 0) + (reference_eau ?: 0))
 		} else {
 			return null
 		}
@@ -109,10 +122,10 @@ abstract class AbstractDefiResultat implements Serializable {
 	 * @return
 	 */
 	Double action_global() {
-		if (action_electricite != null || action_gaz != null) {
-			return NumberUtils.round((action_electricite ?: 0) + (action_gaz ?: 0))
+		if (action_electricite != null || action_gaz != null || action_eau != null) {
+			return NumberUtils.round((action_electricite ?: 0) + (action_gaz ?: 0) + (action_eau ?: 0))
 		} else {
-
+			return null
 		}
 	}
 
@@ -150,8 +163,111 @@ abstract class AbstractDefiResultat implements Serializable {
 			return null
 		}
 	}
+	
+	
+	/**
+	 * Résultat global des consos sur période de réference
+	 *
+	 * @return
+	 */
+	Double reference_energie() {
+		if (reference_electricite != null || reference_gaz != null) {
+			return NumberUtils.round((reference_electricite ?: 0) + (reference_gaz ?: 0))
+		} else {
+			return null
+		}
+	}
 
 
+	/**
+	 * Résultat global des consos sur période d'action
+	 *
+	 * @return
+	 */
+	Double action_energie() {
+		if (action_electricite != null || action_gaz != null) {
+			return NumberUtils.round((action_electricite ?: 0) + (action_gaz ?: 0))
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Différence sur résultat global
+	 *
+	 * @return
+	 */
+	Double difference_energie() {
+		def action = action_energie()
+		def reference = reference_energie()
+
+		if (action != null && reference != null) {
+			return NumberUtils.round(action - reference)
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Evolution sur résultat global par rapport à la référence
+	 *
+	 * @return
+	 */
+	Double evolution_energie() {
+		def difference = difference_energie()
+		def reference = reference_energie()
+
+		// check difference et reference pas 0 pour la division
+		if (difference != null && reference) {
+			return NumberUtils.round(difference * 100 / reference, 1)
+		} else {
+			return null
+		}
+	}
+
+	
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double economie_energie() {
+		NumberUtils.moyenne(economie_electricite(), economie_gaz())
+	}
+	
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double moyenne_energie() {
+		null
+	}
+	
+	
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer classement_energie() {
+		null
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer total_energie() {
+		null
+	}
+	
+	
 	/**
 	 * Coompatibilité avec l'accès dynamique aux properties par méthode
 	 *
@@ -340,6 +456,101 @@ abstract class AbstractDefiResultat implements Serializable {
 	Integer total_gaz() {
 		return total_gaz
 	}
+	
+	
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double reference_eau() {
+		return reference_eau
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double action_eau() {
+		return action_eau
+	}
+
+
+	/**
+	 * Différence sur résultat gaz
+	 * Le nom avec _ n'est pas anodin. le suffixe doit correspondre à @see DefiCompteurEnum
+	 * Les propriétés peuvent être accédées dynamiquement en fonction type compteur
+	 *
+	 * @return
+	 */
+	Double difference_eau() {
+		if (reference_eau != null && action_eau != null) {
+			return NumberUtils.round(action_eau - reference_eau)
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Evolution sur résultat gaz par rapport à la référence
+	 * Le nom avec _ n'est pas anodin. le suffixe doit correspondre à @see DefiCompteurEnum
+	 * Les propriétés peuvent être accédées dynamiquement en fonction type compteur
+	 *
+	 * @return
+	 */
+	Double evolution_eau() {
+		def difference = difference_eau()
+
+		// check difference et reference pas 0 pour la division
+		if (difference != null && reference_eau) {
+			return NumberUtils.round(difference * 100 / reference_eau, 1)
+		} else {
+			return null
+		}
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double economie_eau() {
+		return economie_eau
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Double moyenne_eau() {
+		return moyenne_eau
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer classement_eau() {
+		return classement_eau
+	}
+
+
+	/**
+	 * Coompatibilité avec l'accès dynamique aux properties par méthode
+	 *
+	 * @return
+	 */
+	Integer total_eau() {
+		return total_eau
+	}
 
 
 	/**
@@ -388,6 +599,13 @@ abstract class AbstractDefiResultat implements Serializable {
 		moyenne_gaz = null
 		classement_gaz = null
 		total_gaz = null
+		
+		reference_eau = null
+		action_eau = null
+		economie_eau = null
+		moyenne_eau = null
+		classement_eau = null
+		total_eau = null
 
 		economie_global = null
 		moyenne_global = null

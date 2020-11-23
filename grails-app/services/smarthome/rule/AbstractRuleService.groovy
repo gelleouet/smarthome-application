@@ -26,6 +26,19 @@ abstract class AbstractRuleService<I, O> {
 	 * @throws SmartHomeException
 	 */
 	abstract Object executeMethod(Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException
+	
+	
+	/**
+	 * Exécution d'une méthode publique dans la règle en dehors de la méthode
+	 * par défaut execute
+	 *
+	 * @param object
+	 * @param method
+	 * @param parameters
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	abstract Object executeMethodByRuleName(String ruleName, Object object, String method, boolean ruleObligatoire, Map parameters) throws SmartHomeException
 
 
 	/**
@@ -65,6 +78,19 @@ abstract class AbstractRuleService<I, O> {
 	 * @throws LimsException
 	 */
 	abstract O execute(I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException
+	
+	
+	/**
+	 * Exécution d'une règle par son nom avec des paramètres supplémentaires
+	 *
+	 * @param ruleName
+	 * @param object
+	 * @param ruleObligatoire
+	 * @param parameters
+	 * @return
+	 * @throws LimsException
+	 */
+	abstract O executeByRuleName(String ruleName, I object, boolean ruleObligatoire, Map parameters) throws SmartHomeException
 
 
 	/**
