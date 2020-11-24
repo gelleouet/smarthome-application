@@ -32,7 +32,7 @@ class Compteur extends AbstractDeviceType {
 	protected static final String AGGREGATE_METRIC_NAME = "sum"
 	protected static final String META_METRIC_NAME = "conso"
 	static final String DEFAULT_CONTRAT = "BASE"
-	static final String DEFAULT_FOURNISSEUR = "Tarifs réglementés"
+	static final String DEFAULT_FOURNISSEUR = "Tarif moyen"
 
 	protected static final Map CONTRATS = [
 		(DEFAULT_CONTRAT): 'Heures de base'
@@ -236,15 +236,26 @@ class Compteur extends AbstractDeviceType {
 		String libelle = device.metadata("fournisseur")?.value
 
 		if (libelle) {
-			fournisseurCache = DeviceTypeProvider.findByLibelle(libelle)
+			fournisseurCache = DeviceTypeProvider.findByLibelleAndDeviceType(libelle, device.deviceType)
 		}
 
 		// recherche d'un fournisseur par défaut
 		if (!fournisseurCache) {
-			fournisseurCache = DeviceTypeProvider.findByLibelle(DEFAULT_FOURNISSEUR)
+			fournisseurCache = DeviceTypeProvider.findByLibelleAndDeviceType(defaultFournisseur(), device.deviceType)
 		}
 
 		return fournisseurCache
+	}
+	
+	
+	/**
+	 * Le nom du fournisseur par défaut si pas renseigné sur le device
+	 * Peut-être surchargé par les impl
+	 * 
+	 * @return
+	 */
+	protected String defaultFournisseur() {
+		DEFAULT_FOURNISSEUR
 	}
 
 

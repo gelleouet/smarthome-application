@@ -134,4 +134,5 @@ class CompteurEau extends Compteur {
 	protected void addDefaultMetas() {
 		device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation", trace: true, unite: 'L'])
 	}
+	
 }

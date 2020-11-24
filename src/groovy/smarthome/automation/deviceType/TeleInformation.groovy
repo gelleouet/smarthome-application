@@ -34,6 +34,8 @@ import smarthome.core.chart.GoogleDataTableCol
  */
 class TeleInformation extends Compteur {
 
+	static final String DEFAULT_FOURNISSEUR_ELEC = "Tarifs réglementés"
+	
 	public static final SERIES_COLOR = [
 		'hc': '#47bac1',
 		'hp': '#dc3912',
@@ -879,6 +881,17 @@ class TeleInformation extends Compteur {
 			order 'dateValue', 'desc'
 			order 'name', 'asc'
 		}
+	}
+	
+	
+	/**
+	 * (non-Javadoc)
+	 *
+	 * @return
+	 */
+	@Override
+	protected String defaultFournisseur() {
+		DEFAULT_FOURNISSEUR_ELEC
 	}
 	
 }
