@@ -43,7 +43,12 @@
 							  	</div>
 							  	
 							  	<div class="mt-2">
-							  		<g:link action="inscription" controller="grandDefi" class="btn btn-primary" params="[defiId: defi.id]">Je m'inscris</g:link>
+							  		<div class="btn-group">
+							  			<g:link action="inscription" controller="grandDefi" class="btn btn-primary" params="[defiId: defi.id]"><app:icon name="check-square"/> Je m'inscris</g:link>
+							  			<sec:ifAnyGranted roles="ROLE_ADMIN">
+							  				<g:link action="edit" controller="defi" class="btn btn-primary ml-1" id="${ defi.id }"><app:icon name="edit"/> Modifier</g:link>
+							  			</sec:ifAnyGranted>
+							  		</div>
 							  	</div>
 							</div>
 							

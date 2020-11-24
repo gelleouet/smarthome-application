@@ -170,10 +170,16 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 		// ---------------------------------------------------------------------
 
 		// classement général des équipes 
+		classementList(defi.equipes, DefiCompteurEnum.electricite)
+		classementList(defi.equipes, DefiCompteurEnum.gaz)
+		classementList(defi.equipes, DefiCompteurEnum.eau)
 		classementList(defi.equipes, DefiCompteurEnum.global)
 
 		// classement des équipes profil
 		def equipeProfilGroup = equipeProfils.groupBy { it.profil }.each { key, value ->
+			classementList(value, DefiCompteurEnum.electricite)
+			classementList(value, DefiCompteurEnum.gaz)
+			classementList(value, DefiCompteurEnum.eau)
 			classementList(value, DefiCompteurEnum.global)
 		}
 		
@@ -184,6 +190,9 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 			// on effectue le classement global que les catégories US et ELEC
 			// car la catégorie GAZ est incluse dans US
 			if (!key.endsWith(SUFFIX_GAZ_NATUREL)) {
+				classementList(value, DefiCompteurEnum.electricite)
+				classementList(value, DefiCompteurEnum.gaz)
+				classementList(value, DefiCompteurEnum.eau)
 				classementList(value, DefiCompteurEnum.global)
 			}
 		}

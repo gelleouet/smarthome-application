@@ -17,6 +17,7 @@ class DefiCommand {
 	DefiEquipe defiEquipe
 	DefiEquipeParticipant defiEquipeParticipant
 	boolean profilPublic
+	Boolean actif
 
 
 	static constraints = {
@@ -25,5 +26,6 @@ class DefiCommand {
 		defiEquipe nullable: true
 		defiEquipeParticipant nullable: true
 		profilPublic nullable: true
+		actif nullable: true
 	}
 }
