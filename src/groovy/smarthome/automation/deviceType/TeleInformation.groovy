@@ -163,8 +163,8 @@ class TeleInformation extends Compteur {
 					}
 				})
 
-				chart.series << [type: 'bars', color: SERIES_COLOR.hc, targetAxisIndex: 0, annotation: true]
-				chart.series << [type: 'bars', color: SERIES_COLOR.hp, targetAxisIndex: 0, annotation: true]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc, targetAxisIndex: 0, annotation: true]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp, targetAxisIndex: 0, annotation: true]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 					def value = deviceValue.value.find{ it.name == "basesum" }?.value
@@ -174,7 +174,7 @@ class TeleInformation extends Compteur {
 						return null
 					}
 				})
-				chart.series << [type: 'bars', color: SERIES_COLOR.base, targetAxisIndex: 0, annotation: true]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, targetAxisIndex: 0, annotation: true]
 			}
 
 			chart.vAxis << [title: "Consommation ($unite)"]
@@ -229,7 +229,7 @@ class TeleInformation extends Compteur {
 						} else {
 							name = 'BASE'
 						}
-						def kwh = deviceValue.value / 1000
+						def kwh = this.convertValueForCalculPrix(deviceValue.value) 
 						resultValues["kwh${name}"] = deviceValue.value
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
@@ -274,7 +274,7 @@ class TeleInformation extends Compteur {
 						} else {
 							name = 'BASE'
 						}
-						def kwh = deviceValue.value / 1000.0
+						def kwh = this.convertValueForCalculPrix(deviceValue.value)
 						resultValues["kwh${name}"] = deviceValue.value
 						resultValues["prix${name}"] = command.deviceImpl.calculTarif(name, kwh, deviceValue.dateValue[Calendar.YEAR])
 					}
@@ -300,14 +300,14 @@ class TeleInformation extends Compteur {
 					deviceValue.value["prix"]
 				})
 
-				chart.series << [type: 'bars', color: SERIES_COLOR.hc]
-				chart.series << [type: 'bars', color: SERIES_COLOR.hp]
-				chart.series << [type: 'bars', color: SERIES_COLOR.total, annotation: true]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hc]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.hp]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.total, annotation: true]
 			} else {
 				chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#", value: { deviceValue, index, currentChart ->
 					deviceValue.value["prixBASE"]
 				})
-				chart.series << [type: 'bars', color: SERIES_COLOR.base, annotation: true]
+				chart.series << [type: 'steppedArea', color: SERIES_COLOR.base, annotation: true]
 			}
 		}
 
@@ -892,6 +892,18 @@ class TeleInformation extends Compteur {
 	@Override
 	protected String defaultFournisseur() {
 		DEFAULT_FOURNISSEUR_ELEC
+	}
+	
+	
+	/**
+	 * Conversion des valeurs enregistrés pour le calcul des prix
+	 *
+	 * @param value
+	 * @return
+	 */
+	@Override
+	Double convertValueForCalculPrix(Double value) {
+		CompteurUtils.convertWhTokWh(value)
 	}
 	
 }

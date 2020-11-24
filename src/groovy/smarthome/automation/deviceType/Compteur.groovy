@@ -116,14 +116,14 @@ class Compteur extends AbstractDeviceType {
 		chart.vAxis << [title: "Consommation (${ unite })"]
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "dateValue")
-		chart.colonnes << new GoogleDataTableCol(label: "Heures base ($unite)", type: "number", value: { deviceValue, index, currentChart ->
+		chart.colonnes << new GoogleDataTableCol(label: "Consommation ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 			valueByView(deviceValue.value, command.viewMode)
 		})
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
 		} else {
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, annotation: true]
 		}
 
 		return chart
@@ -155,25 +155,28 @@ class Compteur extends AbstractDeviceType {
 		// métrique chargée. donc le regroupement de renvoit qu'une seule valeur
 		// par groupe
 		chart.values = values.groupBy { it.dateValue }.collectEntries { entry ->
-			def conso = entry.value[0].value
-			[(entry.key): [kwh: conso, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
+			def conso = this.convertValueForCalculPrix(entry.value[0].value)
+			
+			// !! IMPORTANT : ne pas passre dans la key kwh la valeur convertie car en fonction affichage, elle peut
+			// peut être encore convertie par la vue
+			[(entry.key): [kwh: entry.value[0].value, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
 		}.sort { it.key }
 
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
-		chart.colonnes << new GoogleDataTableCol(label: "Heures base", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
+		chart.colonnes << new GoogleDataTableCol(label: "Consommation (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 			deviceValue.value.prix
 		})
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
 		} else {
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
+			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, annotation: true]
 		}
 
 		return chart
 	}
-
-
+	
+	
 	/**
 	 * Charge les prix pour une année donnée et les renvoit indexés dans une map en
 	 * fonction de l'option tarifaire
@@ -664,5 +667,16 @@ class Compteur extends AbstractDeviceType {
 	 */
 	String formatHtmlIndex(Double index) {
 		"<span>${ (index as Long).toString() }</span>"
+	}
+	
+	
+	/**
+	 * Conversion des valeurs enregistrés pour le calcul des prix
+	 * 
+	 * @param value
+	 * @return
+	 */
+	Double convertValueForCalculPrix(Double value) {
+		value
 	}
 }

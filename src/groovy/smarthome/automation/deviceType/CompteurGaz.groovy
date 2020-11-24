@@ -131,49 +131,6 @@ class CompteurGaz extends Compteur {
 	}
 
 
-	/** 
-	 * Construction d'un graphe avec les tarifs
-	 * Les impls doivent formattées les valeurs en une map contenant en clé la date
-	 * et différents champs pour les prix par période tarifaire. Celles par défaut 
-	 * sont 'kwh' pour la conso et 'prix' . Grâce à ce format, les données seront
-	 * compatibles pour s'afficher aussi en format Table avec tout le détail
-	 *
-	 * @see smarthome.automation.deviceType.Compteur#googleChartTarif(smarthome.automation.DeviceChartCommand, java.lang.Object)
-	 */
-	@Override
-	GoogleChart googleChartTarif(DeviceChartCommand command, Object values) {
-		GoogleChart chart = new GoogleChart()
-		command.device.extrasToJson()
-		chart.title = device.label
-		chart.chartType = ChartTypeEnum.Combo.factory
-		chart.selectionField = "selectionCout"
-		def contrat = getContrat()
-
-		chart.vAxis << [title: 'Coût (€)']
-
-		// transforme les valeurs en Map. Avec cette impl, il n'y qu'une seule
-		// métrique chargée. donc le regroupement de renvoit qu'une seule valeur
-		// par groupe
-		chart.values = values.groupBy { it.dateValue }.collectEntries { entry ->
-			def kwh = entry.value[0].value / 1000
-			[(entry.key): [kwh: entry.value[0].value, prix: command.deviceImpl.calculTarif(contrat, kwh, entry.key[Calendar.YEAR])]]
-		}.sort { it.key }
-
-		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
-		chart.colonnes << new GoogleDataTableCol(label: "Heures base (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
-			deviceValue.value.prix
-		})
-
-		if (command.viewMode == ChartViewEnum.day) {
-			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
-		} else {
-			chart.series << [type: 'bars', color: SERIES_COLOR.conso, annotation: true]
-		}
-
-		return chart
-	}
-
-
 	/**
 	 * Unité pour les widgets (peut être différent)
 	 *
@@ -221,6 +178,18 @@ class CompteurGaz extends Compteur {
 		DecimalFormat formatHigh = new DecimalFormat("00000")
 		DecimalFormat formatLow = new DecimalFormat("000")
 		"""<span class="index-high-part-text">${ formatHigh.format(indexHigh(index)) }</span><span class="index-low-part-text"> ${ formatLow.format(indexLow(index)) }</span>"""
+	}
+	
+	
+	/**
+	 * Conversion des valeurs enregistrés pour le calcul des prix
+	 *
+	 * @param value
+	 * @return
+	 */
+	@Override
+	Double convertValueForCalculPrix(Double value) {
+		CompteurUtils.convertWhTokWh(value)
 	}
 	
 }
