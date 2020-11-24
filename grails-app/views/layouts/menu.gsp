@@ -47,7 +47,7 @@
 			<li class="sidebar-item">
 				<a href="#menuleft-saisieindex" data-toggle="collapse" class="sidebar-link" aria-expanded="true" role="button">
 					<app:icon name="edit"/>
-					<span class="align-middle">Saise des index</span>
+					<span class="align-middle">Saisie des index</span>
 				</a>
 				
 				<ul id="menuleft-saisieindex" class="sidebar-dropdown list-unstyled collapse show">

@@ -103,6 +103,10 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 					participant.economie_gaz, participant.economie_eau)
 		}
 
+		
+		// provisoire pour ne pas afficher les résultats des équipes et du défi
+		return defi
+		
 		// calcul des notes par équipe / profil
 		// il s'agit simplement de faire les moyennes des économies des participants
 		// à chaque niveau : catégorie puis équipe
