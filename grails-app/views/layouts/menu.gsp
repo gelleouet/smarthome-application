@@ -81,8 +81,10 @@
 				</li>
 			</sec:ifAnyGranted>
 		
-		</ul>
-	</div>
+		</ul> <!-- ul.sidebar-nav -->
+		
+		
+	</div> <!-- div.sidebar-content -->
 </nav>
 
 

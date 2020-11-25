@@ -1,7 +1,7 @@
 <footer class="footer">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col text-left">
+			<div class="col-2 text-left">
 		     	
 		    </div>
 			<div class="col">
@@ -29,9 +29,14 @@
 							<a class="btn mb-1 btn-instagram" href="${ grailsApplication.config.social.instagram }" target="social"><i class="align-middle fab fa-instagram"></i> Instagram</a>
 						</li>
 					</g:if>
+					
+					<li class="list-inline-item">
+						<a class="btn mb-1 btn-light" href="https://github.com/gelleouet/smarthome-application/tree/granddefi" target="social"><app:icon name="github"/> EUPL v1.2</a>
+					</li>
+					
 				</ul>
 		    </div>
-			<div class="col text-right">
+			<div class="col-2 text-right">
 		    	
 		    </div>
 		</div>
