@@ -50,7 +50,10 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 	public Defi execute(Defi defi) throws SmartHomeException {
 		// récupère la liste des participants "à plat" depuis les paramètres
 		// de la règle
-		List<DefiEquipeParticipant> participants = parameters.participants
+		// exclusion de certains participants dont les données sont incomplètes
+		List<DefiEquipeParticipant> participants = parameters.participants.findAll { 
+			!(it.user.id in [80642587L, 80541640L, 80519833L])
+		}
 		List equipeProfils = []
 
 		// regroupement des participants par catégorie (profil du user)
@@ -105,13 +108,13 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 
 		
 		// provisoire pour ne pas afficher les résultats des équipes et du défi
-		return defi
+		//return defi
 		
 		// calcul des notes par équipe / profil
 		// il s'agit simplement de faire les moyennes des économies des participants
 		// à chaque niveau : catégorie puis équipe
 		defi.equipes.each { DefiEquipe equipe ->
-			if (!equipe.libelle.contains("ALEC")) {
+			if (!equipe.libelle.contains("ALEC") && equipe.libelle != "Guipel") {
 				// d'abord calcul des notes par profil
 				equipe.profils.each { DefiEquipeProfil defiEquipeProfil ->
 					// mise à plat des profils des équipes pour faire le calcul par
@@ -132,17 +135,16 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 					defiEquipeProfil.economie_eau = noteProfil(defiEquipeProfil.profil,
 						moyenneEconomie(participantsProfil, DefiCompteurEnum.eau))
 					
-					defiEquipeProfil.economie_global = NumberUtils.moyenne(defiEquipeProfil.economie_electricite,
-							defiEquipeProfil.economie_gaz, defiEquipeProfil.economie_eau)
+					// économie globale = à faire sur économie globale de chaque participant
+					defiEquipeProfil.economie_global = noteProfil(defiEquipeProfil.profil,
+						moyenneEconomie(participantsProfil, DefiCompteurEnum.global))
 				}
 	
 				// note équipe = moyenne des profils
 				equipe.economie_electricite = moyenneEconomie(equipe.profils, DefiCompteurEnum.electricite)
 				equipe.economie_gaz = moyenneEconomie(equipe.profils, DefiCompteurEnum.gaz)
 				equipe.economie_eau = moyenneEconomie(equipe.profils, DefiCompteurEnum.eau)
-				
-				equipe.economie_global =  NumberUtils.moyenne(equipe.economie_electricite, equipe.economie_gaz,
-					equipe.economie_eau)
+				equipe.economie_global =  moyenneEconomie(equipe.profils, DefiCompteurEnum.global)
 			}
 		}
 
@@ -332,7 +334,7 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 	 */
 	private Double noteProfil(Profil profil, Double note) {
 		if (note && profil.id == PROFIL_PARTICULIER_ID) {
-			return note * 2
+			return note * 4
 		} else {
 			return note
 		}

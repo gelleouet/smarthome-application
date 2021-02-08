@@ -12,10 +12,10 @@
 	<div class="row mt-4">
 		<div class="col">
 			<div class="row ml-4 mr-4">
-				<div class="col border-bottom border-right text-center p-2">
-					<h5 class="font-weight-bold">Evolution de mes consommations</h5>
-				</div>
 				<g:if test="${ data.consos.type?.toString() != 'global' }">
+					<div class="col border-bottom border-right text-center p-2">
+						<h5 class="font-weight-bold">Evolution de mes consommations</h5>
+					</div>
 					<div class="col border-bottom border-right text-center p-2">
 						<h5 class="font-weight-bold">Moyenne des évolutions des consommations</h5>
 					</div>
@@ -39,12 +39,12 @@
 				</div>
 			</div>
 			<div class="row ml-4 mr-4">
-				<div class="col border-right text-center p-2">
-					<h4 class="font-weight-bold">
-						<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
-					</h4>
-				</div>
 				<g:if test="${ data.consos.type?.toString() != 'global' }">
+					<div class="col border-right text-center p-2">
+						<h4 class="font-weight-bold">
+							<g:applyLayout name="arrow" model="[value: data.consos.evolution != null ? data.consos.evolution : '-', reference: 0]"><span style="font-size:small;">%</span></g:applyLayout>
+						</h4>
+					</div>
 					<div class="col border-right text-center p-2">
 						<h4 class="font-weight-bold">
 							<g:applyLayout name="arrow" model="[value: data.consos.moyenne != null ? data.consos.moyenne : '-', reference: 0]">
