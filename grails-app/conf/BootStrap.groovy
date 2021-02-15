@@ -16,7 +16,7 @@ class BootStrap {
 
 		// Mettre ici le code spécial env prod
 		if (Environment.current == Environment.PRODUCTION) {
-			smarthomeScheduler.start()
+			//smarthomeScheduler.start()
 		}
 
 		// Mettre ici le code multi env
@@ -31,7 +31,7 @@ class BootStrap {
 
 		// Mettre ici le code spécial env prod
 		if (Environment.current == Environment.PRODUCTION) {
-			smarthomeScheduler.shutdown()
+			//smarthomeScheduler.shutdown()
 		}
 
 		// Mettre ici le code multi env
