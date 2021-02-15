@@ -78,7 +78,7 @@ class GrandDefi2020CalculRule implements Rule<Defi, Defi> {
 
 			[(key): result]
 		}
-
+		
 		// calcul des notes au niveau participant. Les notes sont calculées par catégorie
 		// et le calcul dépend de la catégorie. Si ELEC ou GN, les notes dépendent
 		// de la moyenne générale (par catégorie et profil). Sinon si US, la note

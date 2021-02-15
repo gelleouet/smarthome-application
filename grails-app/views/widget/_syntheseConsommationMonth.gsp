@@ -16,7 +16,7 @@
 	
 	<div class="container">
 		<div class="row">
-			<div class="col-4">
+			<div class="col-12 col-lg-4">
 				
 				<div class="mt-4">
 					<div class="separator-bottom">
@@ -74,7 +74,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col">
+			<div class="col-12 col-lg-8">
 				<div>
 					<g:include action="templateDeviceChart" controller="device" params="[viewMode: 'month',
 						dateChart: app.formatPicker(date: new Date()), dateDebutUser: app.formatPicker(date: DateUtils.firstDayInMonth(currentDate)),

@@ -32,9 +32,11 @@ class DataTableTagLib {
 		}
 		
 		// le body contient déjà la structure de la table sauf la balise <table>
+		out << "<div class=\"table-responsive-lg\">"
 		out << "<table class=\"${attrs.cssClass ?: 'table table-hover'} app-datatable\" id=\"$attrs.datatableId\" style=\"${attrs.cssStyle ?: ''}\" paginateTotal=\"${ attrs.recordsTotal }\" paginateDebut=\"${ paginateDebut }\" paginateFin=\"${ paginateFin }\">"
 		out << body()
 		out << "</table>"
+		out << "</div>"
 
 		// on rajoute juste après le code javascript pour transformer la table
 		out << render(template: '/templates/datatable', model: attrs)
