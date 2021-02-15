@@ -35,7 +35,7 @@ beans = {
 	// seconde | minute | heure | jour du mois (1-31) | mois | jour semaine (1-7) | année
 	// Jobs pouvant être injectés dans d'autres services
 	smarthomeJobMap(org.springframework.beans.factory.config.MapFactoryBean) {
-		sourceMap = [
+		sourceMap = [:
 			// monitoring des devices toutes les minutes
 			//'smarthome.automation.scheduler.DeviceAlertMonitoringCronMainJob' : "0 * * * * ?",
 			// les providers de datasource associés à un cron. Le gestionnaire est
