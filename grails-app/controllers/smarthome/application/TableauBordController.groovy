@@ -51,4 +51,13 @@ class TableauBordController extends AbstractController {
 		render(view: 'tableauBordFriend', model: [user: friend, house: house, viewOnly: true,
 			secUser: user])
 	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	def ressources() {
+		
+	}
 }

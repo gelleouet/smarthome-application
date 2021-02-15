@@ -5,7 +5,9 @@
 		<title><g:layoutTitle default="${g.meta(name: 'app.code') }"/></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		
-		<link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon">		
+		<link rel="apple-touch-icon" sizes="180x180" href="${assetPath(src: 'apple-touch-icon.png')}" type="image/png">		
+		<link rel="icon" sizes="32x32" href="${assetPath(src: 'favicon-32x32.png')}" type="image/png">		
+		<link rel="icon" sizes="16x16" href="${assetPath(src: 'favicon-16x16.png')}" type="image/png">		
 		
 		<asset:stylesheet src="application.css"/>
 		<asset:javascript src="application.js"/>

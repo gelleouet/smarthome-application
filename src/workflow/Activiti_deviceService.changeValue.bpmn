@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="myProcess" name="My process" isExecutable="true">
+  <process id="Activiti_deviceService.changeValue" name="Activiti_deviceService.changeValue" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
     <sequenceFlow id="flow1" name="Device ?" sourceRef="startevent1" targetRef="scripttask1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${context.result != null}]]></conditionExpression>
@@ -67,8 +67,8 @@ events?.each { event -&gt;
       <text>Workflow : Device Change Value</text>
     </textAnnotation>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
-    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Activiti_deviceService.changeValue">
+    <bpmndi:BPMNPlane bpmnElement="Activiti_deviceService.changeValue" id="BPMNPlane_Activiti_deviceService.changeValue">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="343.0" y="96.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
@@ -115,7 +115,7 @@ events?.each { event -&gt;
         <omgdi:waypoint x="360.0" y="131.0"></omgdi:waypoint>
         <omgdi:waypoint x="360.0" y="170.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="42.0" x="364.0" y="139.0"></omgdc:Bounds>
+          <omgdc:Bounds height="39.0" width="42.0" x="364.0" y="139.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
@@ -123,7 +123,7 @@ events?.each { event -&gt;
         <omgdi:waypoint x="185.0" y="273.0"></omgdi:waypoint>
         <omgdi:waypoint x="185.0" y="330.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="68.0" x="186.0" y="293.0"></omgdc:Bounds>
+          <omgdc:Bounds height="39.0" width="68.0" x="186.0" y="293.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
@@ -134,7 +134,7 @@ events?.each { event -&gt;
         <omgdi:waypoint x="360.0" y="293.0"></omgdi:waypoint>
         <omgdi:waypoint x="361.0" y="330.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="42.0" width="100.0" x="364.0" y="292.0"></omgdc:Bounds>
+          <omgdc:Bounds height="39.0" width="100.0" x="364.0" y="292.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
@@ -158,7 +158,7 @@ events?.each { event -&gt;
         <omgdi:waypoint x="545.0" y="395.0"></omgdi:waypoint>
         <omgdi:waypoint x="545.0" y="440.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="83.0" x="550.0" y="409.0"></omgdc:Bounds>
+          <omgdc:Bounds height="39.0" width="83.0" x="550.0" y="409.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
@@ -170,7 +170,7 @@ events?.each { event -&gt;
         <omgdi:waypoint x="715.0" y="460.0"></omgdi:waypoint>
         <omgdi:waypoint x="715.0" y="520.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="68.0" x="719.0" y="481.0"></omgdc:Bounds>
+          <omgdc:Bounds height="39.0" width="68.0" x="719.0" y="481.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">

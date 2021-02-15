@@ -23,7 +23,7 @@ class DefiController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Défis", navigation = NavigationEnum.configuration, header = "Compte")
+	//@NavigableAction(label = "Défis", navigation = NavigationEnum.configuration, header = "Compte")
 	def defis(DefiCommand command) {
 		command.user = authenticatedUser // spring security plugin
 		def defis = defiService.listByAdmin(command, this.getPagination([:]))

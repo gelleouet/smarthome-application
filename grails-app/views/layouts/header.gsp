@@ -17,7 +17,7 @@
             <div class="dropdown-menu dropdown-menu-right">
             	<div class="dropdown-header">${ loggedInUser.username }</div>
             	
-            	<g:link class="dropdown-item" controller="compteur" action="compteur"><app:icon class="align-middle mr-1" name="tool"/> Compteurs</g:link>
+            	<g:link class="dropdown-item" controller="compteur" action="compteur"><app:icon class="align-middle mr-1" name="tool"/> Compteur</g:link>
             	
             	<div class="dropdown-divider"></div>
             	

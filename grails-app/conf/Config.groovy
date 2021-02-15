@@ -151,10 +151,10 @@ smarthome {
 }
 
 social {
-	twitter = "https://twitter.com/ALEC_Rennes"
-	facebook = "https://www.facebook.com/groups/legranddefienergieeteau2020/"
-	instagram = "https://www.instagram.com/alec_rennes/"
-	web = "https://www.alec-rennes.org/usager/conseil-energie-particuliers-coproprietaire/grand-defi-energie-eau-2020/"
+	twitter = "https://twitter.com/eau_br"
+	facebook = "https://www.facebook.com/eaudubassinrennais/"
+	instagram = ""
+	web = "https://www.eaudubassinrennais-collectivite.fr/votre-eau/comment-economiser-eau/ecodo-un-programme-local-deconomies-deau/"
 }
 
 grails.databinding.dateFormats = ['yyyy-MM-dd', 'dd/MM/yyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
@@ -175,7 +175,7 @@ quartz.jobStore.clusterCheckinInterval = 20000
 environments {
 	development {
 		quartz.dataSource.smarthomeDataSource.driver = "org.postgresql.Driver"
-		quartz.dataSource.smarthomeDataSource.URL = "jdbc:postgresql://localhost:5432/smarthome"
+		quartz.dataSource.smarthomeDataSource.URL = "jdbc:postgresql://localhost:5432/ecodo"
 		quartz.dataSource.smarthomeDataSource.user = "postgres"
 		quartz.dataSource.smarthomeDataSource.password = "${System.properties['smarthome.datasource.password']}"
 		quartz.dataSource.smarthomeDataSource.maxConnections = 2

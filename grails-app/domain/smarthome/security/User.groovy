@@ -32,6 +32,9 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	boolean profilPublic
+	boolean acceptUseData
+	boolean acceptPublishData
+	
 
 	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)
 	def roles = []

@@ -4,6 +4,7 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator;
 
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured;
+import smarthome.common.Commune
 import smarthome.core.AbstractController;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.security.ResetPasswordCommand;
@@ -18,7 +19,7 @@ import smarthome.security.ResetPasswordCommand;
 @Secured("permitAll")
 class RegisterController extends AbstractController {
 
-	def registerService
+	RegisterService registerService
 	LinkGenerator grailsLinkGenerator
 	
 	/**
@@ -39,7 +40,8 @@ class RegisterController extends AbstractController {
 	 */
 	def account() {
 		def account = parseFlashCommand('command', new AccountCommand())
-		render(view: 'account', model: [command: account])
+		def communes = Commune.list()
+		render(view: 'account', model: [command: account, communes: communes])
 	}
 	
 	

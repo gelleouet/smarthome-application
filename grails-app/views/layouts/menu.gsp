@@ -4,7 +4,7 @@
 <nav id="sidebar" class="sidebar">
 	<div class="sidebar-content">
 		<g:link class="sidebar-brand" uri="/">
-			<asset:image src="granddefi/bonhomme.png" height="25px"/>
+			<asset:image src="logo.png" height="25px"/>
 			<span class="align-middle"><g:meta name="app.code"/></span>
 		</g:link>
 		
@@ -19,27 +19,11 @@
 				
 				<ul id="menuleft-conso" class="sidebar-dropdown list-unstyled collapse show">
 					<li class="sidebar-item">
-						<g:link class="sidebar-link" action="consommationElec" controller="grandDefi">
-							<app:icon name="zap"/>
-							Electricité
+						<g:link class="sidebar-link" action="consommationEau" controller="grandDefi">
+							<app:icon name="droplet"/>
+							Eau
 						</g:link>
 					</li>
-					<g:if test="${ house?.compteurGaz }">
-						<li class="sidebar-item">
-							<g:link class="sidebar-link" action="consommationGaz" controller="grandDefi">
-								<app:icon name="fire" lib="awesome"/>
-								Gaz
-							</g:link>
-						</li>
-					</g:if>
-					<g:if test="${ house?.compteurEau }">
-						<li class="sidebar-item">
-							<g:link class="sidebar-link" action="consommationEau" controller="grandDefi">
-								<app:icon name="droplet"/>
-								Eau
-							</g:link>
-						</li>
-					</g:if>
 				</ul>
 			</li>
 			

@@ -54,7 +54,7 @@ class CompteurService extends AbstractService {
 		// --------------------------------------------------------------------
 		// Compteur élec
 
-		model.contratElecs = TeleInformation.contrats()
+		/*model.contratElecs = TeleInformation.contrats()
 		model.fournisseurElecs = deviceTypeProviderService.listByDeviceTypeImpl(TeleInformation.name)
 
 		// recherche des services associés
@@ -68,12 +68,12 @@ class CompteurService extends AbstractService {
 
 		// recherche des compteurs existants
 		model.compteurElecs = deviceService.listByUser(new DeviceSearchCommand(userId: user.id,
-			deviceTypeClass: TeleInformation.name))
+			deviceTypeClass: TeleInformation.name))*/
 
 		// --------------------------------------------------------------------
 		// Compteur gaz
 
-		model.contratGaz = CompteurGaz.contrats()
+		/*model.contratGaz = CompteurGaz.contrats()
 		model.fournisseurGaz = deviceTypeProviderService.listByDeviceTypeImpl(CompteurGaz.name)
 
 		// recherche des services associés
@@ -87,7 +87,7 @@ class CompteurService extends AbstractService {
 
 		// recherche des compteurs existants
 		model.compteurGazs = deviceService.listByUser(new DeviceSearchCommand(userId: user.id,
-			deviceTypeClass: CompteurGaz.name))
+			deviceTypeClass: CompteurGaz.name))*/
 		
 		// --------------------------------------------------------------------
 		// Compteur eau
@@ -409,8 +409,8 @@ class CompteurService extends AbstractService {
 			JOIN FETCH device.user user
 			LEFT JOIN FETCH user.profil profil""")
 
-		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		//hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
+		//	where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
 		
 		if (command.userSearch) {
 			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",

@@ -34,7 +34,7 @@
 			<h6 style="color:#707070;font-size:10px;font-weight:700;line-height:1.66666667;text-transform:uppercase;margin:20px 0 0">
 			$body.appCode $body.appVersion
 			<br/>
-			<a href="${body.appWeb}">Grand Défi</a> - <a href="${body.appTwitter}">Twitter</a> - <a href="${body.appFacebook}">Facebook</a> - <a href="${body.appInstagram}">Instagram</a>
+			<a href="${body.appWeb}">Ecodo</a> - <a href="${body.appTwitter}">Twitter</a> - <a href="${body.appFacebook}">Facebook</a>
 			</h6>
 		</div>
 		

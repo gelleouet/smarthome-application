@@ -8,7 +8,7 @@ import smarthome.security.Profil
 import smarthome.security.UserService;
 
 
-@Secured("hasRole('ROLE_SUPERVISION')")
+@Secured("hasRole('ROLE_ADMIN')")
 class SupervisionController extends AbstractController {
 	UserService userService
 	DeviceValueService deviceValueService

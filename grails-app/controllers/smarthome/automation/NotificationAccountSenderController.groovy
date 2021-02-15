@@ -25,8 +25,7 @@ class NotificationAccountSenderController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Connecteurs", navigation = NavigationEnum.configuration,
-	header = "Système")
+	//@NavigableAction(label = "Connecteurs", navigation = NavigationEnum.configuration, header = "Système")
 	def notificationAccountSenders(String notificationAccountSenderSearch) {
 		def search = QueryUtils.decorateMatchAll(notificationAccountSenderSearch)
 

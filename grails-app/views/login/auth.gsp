@@ -16,7 +16,7 @@
 	    
 	    <div class="row">
 	    	<div class="col">
-	    		<g:render template="/grandDefi/plaquette" model="[withAccountButton: true]"/>
+	    		
 	    	</div>
 	    	
 	    	<div class="col-6">
@@ -24,7 +24,7 @@
 					<div class="card-body">
 						<div class="m-sm-4">
 							<div class="text-center">
-								<asset:image src="apple-touch-icon-retina.png" class="img-fluid rounded-circle" width="132" height="132" />
+								<asset:image src="logo.png" class="img-fluid rounded-circle" width="132" height="132" />
 							</div>
 							
 							<g:applyLayout name="content-error"/>

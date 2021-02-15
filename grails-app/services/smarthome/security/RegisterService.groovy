@@ -4,6 +4,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.transaction.annotation.Transactional
 
+import smarthome.automation.House
+import smarthome.automation.HouseService
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
 import smarthome.core.SmartHomeException
@@ -14,6 +16,9 @@ import smarthome.security.User
 class RegisterService extends AbstractService {
 
 	LinkGenerator grailsLinkGenerator
+	UserService userService
+	HouseService houseService
+	
 
 	/**
 	 * Demande d'oubli du mot de passe
@@ -75,12 +80,26 @@ class RegisterService extends AbstractService {
 
 		// création d'un user avec compte bloqué en attente déblocage
 		user = new User(username: account.username, password: account.newPassword, prenom: account.prenom,
-		nom: account.nom, lastActivation: new Date(), accountLocked: true,
-		applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic)
-
-		if (!user.save()) {
-			throw new SmartHomeException("Erreur création nouveau compte !", account, user)
+			nom: account.nom, lastActivation: new Date(), accountLocked: true,
+			applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
+			acceptUseData: account.acceptUseData, acceptPublishData: account.acceptPublishData)
+		
+		try {
+			userService.save(user, false)
+		} catch (SmartHomeException ex) {
+			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
+			throw new SmartHomeException(ex.message, account, user)
 		}
+		
+		try {
+			// création ou récupération d'une maison par défaut
+			House defaultHouse = houseService.bindDefault(user, [nbPersonne: account.nbPersonne,
+				location: account.ville, adresse: account.adresse, codePostal: account.codePostal])
+		} catch (SmartHomeException ex) {
+			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
+			throw new SmartHomeException(ex.message, account)
+		}
+		
 
 		return registrationCode
 	}

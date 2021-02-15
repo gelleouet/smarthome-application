@@ -21,6 +21,12 @@ class AccountCommand {
 	String newPassword
 	String confirmPassword
 	boolean profilPublic
+	boolean acceptUseData
+	boolean acceptPublishData
+	String adresse
+	String codePostal
+	String ville
+	Integer nbPersonne
 
 	
 	static constraints = {

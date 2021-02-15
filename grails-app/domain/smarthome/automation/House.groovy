@@ -35,9 +35,12 @@ class House implements Serializable {
 	Device humidite
 	Chauffage chauffage
 	ECS ecs
-	String location
+	String location // ou ville
 	String latitude
 	String longitude
+	String codePostal
+	String adresse
+	Integer nbPersonne
 
 
 	static belongsTo = [user: User]
@@ -56,6 +59,9 @@ class House implements Serializable {
 		location nullable: true
 		latitude nullable: true
 		longitude nullable: true
+		codePostal nullable: true
+		adresse nullable: true
+		nbPersonne nullable: true
 	}
 
 	static mapping = {
@@ -66,6 +72,7 @@ class House implements Serializable {
 		weathers cascade: 'all-delete-orphan'
 		latitude length: 32
 		longitude length: 32
+		codePostal length: 8
 	}
 
 

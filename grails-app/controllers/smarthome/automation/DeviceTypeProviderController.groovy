@@ -24,7 +24,7 @@ class DeviceTypeProviderController extends AbstractController {
 	 *
 	 * @return
 	 */
-	@NavigableAction(label = "Fournisseurs", navigation = NavigationEnum.configuration, header = "Système")
+	//@NavigableAction(label = "Fournisseurs", navigation = NavigationEnum.configuration, header = "Système")
 	def deviceTypeProviders(String deviceTypeProviderSearch) {
 		def search = QueryUtils.decorateMatchAll(deviceTypeProviderSearch)
 

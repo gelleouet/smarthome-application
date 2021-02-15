@@ -5,6 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import smarthome.automation.DeviceService
 import smarthome.automation.HouseService
 import smarthome.automation.ModeService
+import smarthome.common.Commune
 import smarthome.core.AbstractController
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.plugin.NavigableAction
@@ -35,7 +36,10 @@ class ProfilController extends AbstractController {
 	def profil() {
 		// plugin spring security add authenticatedUser property
 		def user = parseFlashCommand("user", authenticatedUser)
-		render(view: 'profil', model: [user: user, profils: Profil.list()])
+		def house = houseService.findDefaultByUser(user)
+		
+		render(view: 'profil', model: [user: user, profils: Profil.list(),
+			communes: Commune.list(), house: house])
 	}
 
 

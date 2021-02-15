@@ -6,17 +6,13 @@
 <body>
 	<g:applyLayout name="page-settings" model="[titre: 'Profil', navigation: 'Compte']">
 	
-		<g:form name="profil-form" controller="profil" method="post">
+		<g:form name="profil-form" controller="profil" method="post" action="saveProfil">
 			
 			<g:hiddenField name="user.id" value="${user.id}" />
+			<g:hiddenField name="house.id" value="${house.id}" />
 	
 			<h4>Général</h4>
 			
-			<div class="form-group">
-				<label>Profil</label>
-				<g:select class="form-control" name="user.profil.id" from="${ profils }"
-           				optionKey="id" optionValue="libelle"  value="${ user.profil?.id }"/>
-			</div>
 			<div class="form-group required">
 				<label>Email</label>
 				<g:textField name="user.username" value="${user.username}" type="email"
@@ -33,17 +29,27 @@
 					required="true" />
 			</div>
 			
-			<div class="custom-control custom-checkbox">
-	        	<g:checkBox name="user.profilPublic" value="${ user.profilPublic }" class="custom-control-input"/>
-	            <label for="user.profilPublic" class="custom-control-label">J'autorise le <g:meta name="app.code"/> à me faire apparaître dans la liste des participants de mon équipe.
-	            </label>
-		    </div>
+			 <h4 class="mt-4">Informations du foyer</h4>
 
-			<h4 class="mt-4">Habitation</h4>
+			<div class="form-group required">
+	        	<label for="nbPersonne">Nombre de personnes</label>
+          			<g:field class="form-control" type="number" name="house.nbPersonne" required="true" value="${ house.nbPersonne }"/>
+	        </div>
+	        <div class="form-group required">
+	        	<label for="adresse">Adresse</label>
+          			<g:field class="form-control" type="text" name="house.adresse" required="true" value="${ house.adresse }"/>
+	        </div>
+	        <div class="form-group required">
+	        	<label for="codePostal">Code postal</label>
+          			<g:field class="form-control" type="text" name="house.codePostal" required="true" value="${ house.codePostal }"/>
+	        </div>
+	        <div class="form-group required">
+	        	<label for="ville">Ville</label>
+          			<g:select class="form-control combobox" name="house.location" required="true" from="${ communes }"
+          				optionKey="libelle" optionValue="libelle" value="${ house.location }" noSelection="['': ' ']"/>
+	        </div>
 			
-			<g:include action="templateEditByUser" controller="house" params="[user: user]"/>
-			
-			<g:actionSubmit value="Enregistrer" action="saveProfil" class="btn btn-primary" />
+			<button class="btn btn-primary">Enregistrer</button>
 			
 		</g:form>
 	</g:applyLayout>
