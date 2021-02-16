@@ -55,7 +55,7 @@ class GoogleChart {
 		}
 
 		values.eachWithIndex { deviceValue, index ->
-			def values = []
+			def rowValues = []
 
 			for (GoogleDataTableCol col : colonnes) {
 				def value = null
@@ -88,10 +88,10 @@ class GoogleChart {
 					cellStyle = col.cellStyle(deviceValue, index, this)
 				}
 
-				values << [v: value, p: cellStyle]
+				rowValues << [v: value, p: cellStyle]
 			}
 
-			def row = ["c": values]
+			def row = ["c": rowValues]
 
 			if (deviceValue?.hasProperty('id')) {
 				row["p"] = [deviceValueId: deviceValue.id]

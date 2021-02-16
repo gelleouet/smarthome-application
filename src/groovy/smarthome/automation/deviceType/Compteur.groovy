@@ -111,6 +111,15 @@ class Compteur extends AbstractDeviceType {
 		chart.chartType = ChartTypeEnum.Combo.factory
 		chart.selectionField = "selectionConso"
 
+		// retravaille les valeurs pour ajouter les consos cumulées
+		// et les stocke dans les metaValues du chart
+		Double consoCumul = 0
+		
+		for (value in values) {
+			consoCumul += value.value
+			chart.metaValues << ['consoCumul': consoCumul]
+		}
+		
 		String unite = this.uniteByView(command.viewMode)
 
 		chart.vAxis << [title: "Consommation (${ unite })"]
@@ -119,11 +128,14 @@ class Compteur extends AbstractDeviceType {
 		chart.colonnes << new GoogleDataTableCol(label: "Consommation ($unite)", type: "number", value: { deviceValue, index, currentChart ->
 			valueByView(deviceValue.value, command.viewMode)
 		})
+		chart.colonnes << new GoogleDataTableCol(label: "Consommation cumulée ($unite)", type: "number", metaName: 'consoCumul')
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+			chart.series << [type: 'line', color: SERIES_COLOR.total]
 		} else {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, annotation: true]
+			chart.series << [type: 'line', color: SERIES_COLOR.total, annotation: true]
 		}
 
 		return chart
@@ -162,15 +174,27 @@ class Compteur extends AbstractDeviceType {
 			[(entry.key): [kwh: entry.value[0].value, prix: command.deviceImpl.calculTarif(contrat, conso, entry.key[Calendar.YEAR])]]
 		}.sort { it.key }
 
+		// retravaille les valeurs pour ajouter les prix cumulés
+		// et les stocke dans les metaValues du chart
+		Double prixCumul = 0
+		
+		for (entry in chart.values) {
+			prixCumul += entry.value.prix
+			chart.metaValues << ['prixCumul': prixCumul]
+		}
+		
 		chart.colonnes << new GoogleDataTableCol(label: "Date", type: "datetime", property: "key")
 		chart.colonnes << new GoogleDataTableCol(label: "Consommation (€)", type: "number", pattern: "#.##", value: { deviceValue, index, currentChart ->
 			deviceValue.value.prix
 		})
+		chart.colonnes << new GoogleDataTableCol(label: "Consommation cumulée (€)", type: "number", metaName: 'prixCumul')
 
 		if (command.viewMode == ChartViewEnum.day) {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso]
+			chart.series << [type: 'line', color: SERIES_COLOR.total]
 		} else {
 			chart.series << [type: 'steppedArea', color: SERIES_COLOR.conso, annotation: true]
+			chart.series << [type: 'line', color: SERIES_COLOR.total, annotation: true]
 		}
 
 		return chart

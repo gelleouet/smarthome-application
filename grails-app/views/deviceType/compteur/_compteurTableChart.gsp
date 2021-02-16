@@ -108,7 +108,7 @@
 			</td>
 		</g:if>
 		<td style="text-align:center; font-weight:bold;">
-			<g:formatNumber number="${ CompteurUtils.convertWhTokWh(googleChartTarifValues?.sum{ it.kwh ?: 0d }) }" maxFractionDigits="1"/>${ command.deviceImpl.defaultUnite() }
+			${ command.deviceImpl.formatByView(googleChartTarifValues?.sum{ it.kwh ?: 0d }, ChartViewEnum.month) }${ command.deviceImpl.defaultUnite() }
 		</td>
 		<td style="text-align:center; font-weight:bold;">
 			<g:formatNumber number="${ googleChartTarifValues?.sum{ it.prix ?: 0d } }" maxFractionDigits="3"/>€

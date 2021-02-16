@@ -515,8 +515,8 @@ class DeviceService extends AbstractService {
 			JOIN FETCH device.user user
 			LEFT JOIN FETCH user.profil profil""")
 
-		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		//hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
+		//	where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
 			
 		if (command.userSearch) {
 			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
