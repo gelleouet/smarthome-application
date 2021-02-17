@@ -21,6 +21,7 @@ class CompteurIndex implements Serializable {
 	String param1
 	Date dateIndex
 	byte[] photo
+	String commentaire
 
 	// propriétés utilisateur
 	Double lastIndex1
@@ -39,6 +40,7 @@ class CompteurIndex implements Serializable {
 		index2 nullable: true
 		param1 nullable: true
 		photo nullable: true
+		commentaire nullable: true
 		lastIndex1 nullable: true, bindable: true
 		lastIndex2 nullable: true, bindable: true
 		highindex1 nullable: true, bindable: true

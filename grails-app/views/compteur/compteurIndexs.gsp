@@ -43,6 +43,7 @@
 				            <th>Index 1</th>
 				            <th>Index 2</th>
 				            <th>Param 1</th>
+				            <th>Remarque</th>
 				            <th class="column-1-buttons"></th>
 				        </tr>
 				    </thead>
@@ -55,6 +56,7 @@
 					            <td>${ index.index1 as Long }</td>
 					            <td>${ index.index2 as Long }</td>
 					            <td>${ index.param1 }</td>
+					            <td>${ index.commentaire }</td>
 					            <td class="column-1<-buttons command-column">
 					            	<g:link class="btn btn-light confirm-button" title="Supprimer" action="deleteIndex" id="${ index.id }">
 					            		<app:icon name="trash"/>

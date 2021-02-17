@@ -31,4 +31,9 @@
 	<g:field name="dateIndex" class="form-control small" value="${ app.formatPicker(date: command.dateIndex) }" type="date" required="true"/>
 	<small class="text-muted">Après calcul avec le dernier index enregistré, la consommation sera enregistrée à cette date</small>
 </div>
+
+<div class="form-group">
+	<label>Remarque</label>
+	<g:textArea name="commentaire" class="form-control small" value="${ command.commentaire }" />
+</div>
 		
