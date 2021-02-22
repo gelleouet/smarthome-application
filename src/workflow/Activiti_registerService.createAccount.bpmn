@@ -9,7 +9,7 @@ execution.setVariable("user", user)</script>
     <sequenceFlow id="flow10" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
     <scriptTask id="scripttask2" name="Envoi mail utilisateur" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>Map email = [title: 'Activation compte', subject: 'Activation compte', to: context.result.username,
-	bcc: 'gregory.elleouet@gmail.com,ejodin@ebr-collectivite.fr']
+	bcc: 'gregory.elleouet@gmail.com,schoukairy@ebr-collectivite.fr']
 def appCode = grailsApplication.metadata['app.code']
 	
 email.message = """

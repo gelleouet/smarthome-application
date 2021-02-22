@@ -68,5 +68,16 @@ class ApplicationUtils implements ApplicationContextAware {
 	static int configDefaultMax(GrailsApplication grailsApplication) {
 		grailsApplication.config.smarthome.pagination.defaultMax
 	}
+	
+	
+	/**
+	 * Config : smarthome.pagination.maxBackend
+	 * 
+	 * @param grailsApplication
+	 * @return
+	 */
+	static int configMaxBackend(GrailsApplication grailsApplication) {
+		grailsApplication.config.smarthome.pagination.maxBackend
+	}
 
 }

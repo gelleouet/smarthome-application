@@ -22,8 +22,8 @@
 						<div class="col">
 							<g:select name="deviceTypeId" value="${ command?.deviceTypeId }" from="${ compteurTypes }"
 								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
-							<g:select name="profilId" value="${ command?.profilId }" from="${ profils }"
-								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
+							<g:select class="form-control combobox" name="ville" from="${ communes }"
+	            				optionKey="libelle" optionValue="libelle" value="${ command.ville }" noSelection="['': ' ']"/>
 							<g:textField name="userSearch" value="${ command?.userSearch}" class="form-control" placeholder="Nom prénom"/>
 							<button class="btn btn-light"><app:icon name="search"/></button>
 						</div>
@@ -50,7 +50,7 @@
 				    <tbody>
 				    	<g:each var="index" in="${ indexs }">
 					        <tr>
-					            <td><g:link action="compteurIndex" id="${ index.id }">${ index.device.user.profil?.libelle } > ${ index.device.user.prenomNom }</g:link></td>
+					            <td><g:link action="compteurIndex" id="${ index.id }">${ index.device.user.prenomNom }</g:link></td>
 					            <td><g:formatDate date="${ index.dateIndex }" format="dd/MM/yyyy"/></td>
 					            <td>${ index.device.deviceType.libelle }</td>
 					            <td>${ index.index1 as Long }</td>

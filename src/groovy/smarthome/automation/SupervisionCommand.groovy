@@ -2,6 +2,8 @@ package smarthome.automation
 
 import smarthome.core.DateUtils;
 import smarthome.core.PaginableCommand
+import smarthome.core.QueryUtils
+import smarthome.core.query.HQL
 import grails.validation.Validateable;
 import groovy.time.TimeCategory;
 
@@ -12,8 +14,9 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	Long profilId
 	Long adminId
 	String userSearch
-	Date dateDebut = new Date()
-	Date dateFin = new Date()
+	Date dateDebut = DateUtils.firstDayInMonth(new Date())
+	Date dateFin = DateUtils.lastDayInMonth(new Date())
+	String ville
 	
 	
 	
@@ -21,6 +24,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		deviceTypeId nullable: true
 		profilId nullable: true
 		userSearch nullable: true
+		ville nullable: true
 	}
 	
 	
@@ -61,5 +65,88 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		}	
 		
 		return datetimeFin
+	}
+	
+	
+	List listDevice() {
+		HQL hql = new HQL("device",	"""
+			FROM Device device 
+			JOIN FETCH device.deviceType deviceType
+			JOIN FETCH device.user user
+			LEFT JOIN FETCH user.profil profil""")
+			.domainClass(Device)
+		
+		applyCriterion(hql, false)
+			.addOrder("user.nom")
+			.addOrder("user.prenom")
+			.addOrder("device.label")
+	
+		return hql.list(pagination())
+	}
+	
+	
+	protected HQL applyCriterion(HQL hql, boolean joinHouse) {
+		//hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
+			//	where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
+		
+		if (userSearch) {
+			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
+				[userSearch: QueryUtils.decorateMatchAll(userSearch.toLowerCase())])
+		}
+	
+		if (deviceTypeId) {
+			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: deviceTypeId])
+		}
+	
+		if (profilId) {
+			hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
+		}
+		
+		if (ville) {
+			if (joinHouse) {
+				hql.addCriterion("lower(house.location) like :ville", [ville: QueryUtils.decorateMatchAll(ville.toLowerCase())])
+			} else {
+				hql.addCriterion("exists (select house.id from House house where house.user.id = user.id and lower(house.location) like :ville)",
+					[ville: QueryUtils.decorateMatchAll(ville.toLowerCase())])
+			}
+		}
+		
+		return hql
+	}
+	
+	
+	void visitDeviceValue(int maxPage, Closure closure) {
+		HQL hql = new HQL("deviceValue", """
+			FROM DeviceValue deviceValue
+			JOIN FETCH deviceValue.device device
+			JOIN device.deviceType deviceType
+			JOIN FETCH device.user user
+			LEFT JOIN user.profil profil""")
+			.domainClass(DeviceValue)
+		
+		applyCriterion(hql, false)
+			.addCriterion("deviceValue.dateValue between :dateDebut and :dateFin", [dateDebut: datetimeDebut(), dateFin: datetimeFin()])
+			.addCriterion("deviceValue.name is null")
+			.addOrder("user.username")
+			.addOrder("device.label")
+			.addOrder("deviceValue.dateValue")
+			
+		hql.visit(maxPage, closure)
+	}
+	
+	
+	void visitUser(int maxPage, Closure closure) {
+		HQL hql = new HQL("distinct user, house",	"""
+			FROM Device device, House house
+			JOIN device.deviceType deviceType
+			JOIN device.user user
+			LEFT JOIN user.profil profil""")
+			.domainClass(Device)
+			.addCriterion("house.user = user and house.defaut = :defautHouse", [defautHouse: true])
+		
+		applyCriterion(hql, true)
+			.addOrder("user.username")
+	
+		hql.visit(maxPage, closure)
 	}
 }

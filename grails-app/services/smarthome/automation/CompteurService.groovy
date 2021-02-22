@@ -424,6 +424,11 @@ class CompteurService extends AbstractService {
 		if (command.profilId) {
 			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
 		}
+		
+		if (command.ville) {
+			hql.addCriterion("exists (select house.id from House house where house.user.id = user.id and lower(house.location) like :ville)",
+				[ville: QueryUtils.decorateMatchAll(command.ville.toLowerCase())])
+		}
 
 		hql.addOrder("compteurIndex.dateIndex")
 		hql.addOrder("compteurIndex.id")

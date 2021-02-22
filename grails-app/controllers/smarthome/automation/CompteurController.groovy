@@ -3,6 +3,7 @@ package smarthome.automation
 import smarthome.application.granddefi.RegisterCompteurCommand
 import smarthome.automation.deviceType.Compteur
 import smarthome.automation.deviceType.CompteurGaz
+import smarthome.common.Commune
 import smarthome.core.AbstractController
 import smarthome.core.ConfigService
 import smarthome.core.ExceptionNavigationHandler
@@ -166,7 +167,7 @@ class CompteurController extends AbstractController {
 		setPagination(command.pagination())
 
 		render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
-			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])
+			communes: Commune.list(), compteurTypes: deviceTypeService.listCompteur()])
 	}
 
 

@@ -12,12 +12,14 @@ class CompteurIndexCommand extends PaginableCommand implements Serializable {
 	Long profilId
 	Long adminId
 	String userSearch
+	String ville
 	
 
 	static constraints = {
 		deviceTypeId nullable: true
 		profilId nullable: true
 		userSearch nullable: true
+		ville nullable: true
 	}
 
 

@@ -2,6 +2,7 @@ package smarthome.automation
 
 import grails.plugin.springsecurity.annotation.Secured
 import smarthome.automation.export.ExportTypeEnum;
+import smarthome.common.Commune
 import smarthome.core.AbstractController;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.security.Profil
@@ -36,7 +37,18 @@ class SupervisionController extends AbstractController {
 		setPagination(command.pagination())
 		
 		render(view: 'supervision', model: [devices: devices, recordsTotal: devices.totalCount,
-			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur(), command: command])
+			communes: Commune.list(), compteurTypes: deviceTypeService.listCompteur(), command: command])
+	}
+	
+	
+	/**
+	 * Dialog paramètres export
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def dialogExportAdmin(SupervisionCommand command) {
+		render (template: 'dialogExportAdmin', model: [command: command])
 	}
 	
 	
@@ -45,9 +57,8 @@ class SupervisionController extends AbstractController {
 	 *
 	 */
 	@ExceptionNavigationHandler(actionName = "supervision", modelName = "command")
-	def exportAdmin(ExportCommand command) {
-		def user = authenticatedUser
-		command.adminId = user.id
+	def exportAdmin(SupervisionCommand command) {
+		command.adminId = principal.id
 		deviceValueService.export(command, ExportTypeEnum.admin, response)
 	}
 }
