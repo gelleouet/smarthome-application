@@ -25,11 +25,11 @@ import smarthome.security.User
 class CompteurService extends AbstractService {
 
 	private static final String MAC_COMPTEUR_ELEC_MANUEL = "compteur_elec"
-	private static final String LABEL_COMPTEUR_ELEC_MANUEL = "Compteur électrique (non connecté)"
+	private static final String LABEL_COMPTEUR_ELEC_MANUEL = "Compteur électrique"
 	private static final String MAC_COMPTEUR_GAZ_MANUEL = "compteur_gaz"
-	private static final String LABEL_COMPTEUR_GAZ_MANUEL = "Compteur gaz (non connecté)"
+	private static final String LABEL_COMPTEUR_GAZ_MANUEL = "Compteur gaz"
 	private static final String MAC_COMPTEUR_EAU_MANUEL = "compteur_eau"
-	private static final String LABEL_COMPTEUR_EAU_MANUEL = "Compteur eau (non connecté)"
+	private static final String LABEL_COMPTEUR_EAU_MANUEL = "Compteur eau"
 
 	HouseService houseService
 	DeviceService deviceService

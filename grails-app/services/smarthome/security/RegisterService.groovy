@@ -4,6 +4,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.transaction.annotation.Transactional
 
+import smarthome.application.granddefi.RegisterCompteurCommand
+import smarthome.automation.CompteurService
 import smarthome.automation.House
 import smarthome.automation.HouseService
 import smarthome.core.AbstractService
@@ -18,6 +20,7 @@ class RegisterService extends AbstractService {
 	LinkGenerator grailsLinkGenerator
 	UserService userService
 	HouseService houseService
+	CompteurService compteurService
 	
 
 	/**
@@ -100,7 +103,10 @@ class RegisterService extends AbstractService {
 			throw new SmartHomeException(ex.message, account)
 		}
 		
-
+		// création automatique d'un compteur eau non connecté. Vu que l'application n'offre que cette possibilité
+		// autant le faire de suite et ne pas le demander à l'utilisateur
+		compteurService.registerCompteurEau(new RegisterCompteurCommand(user: user))
+		
 		return registrationCode
 	}
 

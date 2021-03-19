@@ -277,27 +277,27 @@ class HQL {
 	}
 
 	
-	void visit(int maxPage, Closure closure) {
+	int visit(int maxPage, Closure closure) {
 		visitSingleAndBatch(maxPage, closure, null)
 	}
 
 	
-	void visit(Session session, int maxPage, Closure closure) {
+	int visit(Session session, int maxPage, Closure closure) {
 		visitSingleAndBatch(session, maxPage, closure, null)
 	}
 	
 	
-	void visitBatch(int maxPage, Closure closure) {
+	int visitBatch(int maxPage, Closure closure) {
 		visitSingleAndBatch(maxPage, null, closure)
 	}
 
 	
-	void visitBatch(Session session, int maxPage, Closure closure) {
+	int visitBatch(Session session, int maxPage, Closure closure) {
 		visitSingleAndBatch(session, maxPage, null, closure)
 	}
 	
 	
-	void visitSingleAndBatch(int maxPage, Closure closureItem, Closure closurePage) {
+	int visitSingleAndBatch(int maxPage, Closure closureItem, Closure closurePage) {
 		domainClass.withSession { session ->
 			visitSingleAndBatch(session, maxPage, closureItem, closurePage)
 		}
@@ -313,10 +313,12 @@ class HQL {
 	 * @param session
 	 * @param maxPage <=0 pour désactiver la pagination et tout charger en
 	 * 	une seule fois
-	 * @param closureItem 2 paramètres item et session
-	 * @param closurePage 2 paramètres values et session
+	 * @param closureItem 1 paramètre : item 
+	 * @param closurePage 1 paramètre : values 
+	 * 
+	 * @return nombre total élément
 	 */
-	void visitSingleAndBatch(Session session, int maxPage, Closure closureItem, Closure closurePage) {
+	int visitSingleAndBatch(Session session, int maxPage, Closure closureItem, Closure closurePage) {
 		maxPage = maxPage <= 0 ? Integer.MAX_VALUE : maxPage
 		
 		// calcule le total pour créer les pages
@@ -345,6 +347,8 @@ class HQL {
 			// au fur et à mesure que les pages se chargent
 			session.flush()
 		}
+		
+		return totalCount
 	}
 
 	

@@ -3,26 +3,21 @@
   <process id="Activiti_compteurService.saveIndexForValidation" name="Activiti_compteurService.saveIndexForValidation" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
-    <scriptTask id="scripttask1" name="Préparation des données" scriptFormat="groovy" activiti:autoStoreVariables="false">
-      <script>def device = deviceService.findById(context.result.id)
-device.actionName = context.result.actionName
-device.newDeviceImpl()
+    <scriptTask id="scripttask1" name="Notification Saisie Index" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>def index = smarthome.automation.CompteurIndex.read(context.result.id)
+def indexUrl = grailsLinkGenerator.link(controller: 'compteur', action: 'compteurIndex', id: index.id, absolute: true)
 
-execution.setVariable("device", device)
-execution.setVariable("dateValue", smarthome.core.DateUtils.parseJson(context.result.jsonDateValue, 0))
+Map email = [title: 'Notification Saisie Index', subject: 'Notification Saisie Index', to: 'schoukairy@ebr-collectivite.fr',
+	bcc: 'gregory.elleouet@gmail.com']
+	
+email.message = """
+	&lt;p&gt;Bonjour,&lt;/p&gt;
+	&lt;br/&gt;
+	&lt;p&gt;Un nouvel index du &lt;strong&gt;${index.dateIndex.format('dd/MM/yyyy')}&lt;/strong&gt; de &lt;strong&gt;${index.device.user.prenomNom}&lt;/strong&gt; est en attente de validation.&lt;/p&gt;
+	&lt;p&gt;Cliquez sur le lien suivant &lt;a style="text-decoration:none;color:#47bac1;font-weight:bold;" href="${indexUrl}"&gt;-- index n°${index.id} --&lt;/a&gt; pour le valider.&lt;/p&gt;
+"""
 
-if (context.arg1 instanceof Map &amp;&amp; context.arg1.offline) {
-	execution.setVariable("offline", true)
-} else {
-	execution.setVariable("offline", false)
-}
-
-if (context.arg1 instanceof Map) {
-	execution.setVariable("originalDatas", context.arg1)
-} else {
-	execution.setVariable("originalDatas", null)
-}
-</script>
+notificationService.sendEmail(email)</script>
     </scriptTask>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow2" sourceRef="scripttask1" targetRef="endevent1"></sequenceFlow>
