@@ -7,7 +7,7 @@
       <script>def index = smarthome.automation.CompteurIndex.read(context.result.id)
 def indexUrl = grailsLinkGenerator.link(controller: 'compteur', action: 'compteurIndex', id: index.id, absolute: true)
 
-Map email = [title: 'Notification Saisie Index', subject: 'Notification Saisie Index', to: 'schoukairy@ebr-collectivite.fr',
+Map email = [title: 'Notification Saisie Index', subject: 'Notification Saisie Index', to: 'schoukairy@ebr-collectivite.fr,ejodin@ebr-collectivite.fr',
 	bcc: 'gregory.elleouet@gmail.com']
 	
 email.message = """
