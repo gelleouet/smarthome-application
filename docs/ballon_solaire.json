@@ -1,0 +1,22 @@
+{
+	"username": "bmhs account email",
+	"mac": "your box mac",
+	"applicationKey": "bmhs application key",
+	"privateIp": "local network ip",
+	"agentModel": "your box name",
+	"data": {
+		"mac": "ballon_solaire",
+		"label": "Ballon solaire",
+		"implClass": "smarthome.automation.deviceType.BallonSolaire",
+		"dateValue": "2021-04-25 18:22:05",
+		"value": 0,
+		"metavalues": {
+			"temp_haut": { "label": "Température haut", "trace": true, "unite": "°C", "value": 50.4 },
+			"temp_milieu": { "label": "Température milieu", "trace": true, "unite": "°C", "value": 30.1 },
+			"temp_bas": { "label": "Température bas", "trace": true, "unite": "°C", "value": 25.5 },
+			"temp_ecs": { "label": "Température ECS", "trace": false, "unite": "°C", "value": 27 },
+			"puissance": { "label": "Puissance résistance", "trace": true, "unite": "W", "value": 1000 },
+			"consommation": { "label": "Consommation résistance", "trace": true, "unite": "kWh", "value": 100 }
+		}
+	}
+}

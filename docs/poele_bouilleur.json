@@ -1,0 +1,21 @@
+{
+	"username": "bmhs account email",
+	"mac": "your box mac",
+	"applicationKey": "bmhs application key",
+	"privateIp": "local network ip",
+	"agentModel": "your box name",
+	"data": {
+		"mac": "poele_bouilleur",
+		"label": "Poële bouilleur",
+		"implClass": "smarthome.automation.deviceType.PoeleBouilleur",
+		"dateValue": "2021-04-25 18:22:05",
+		"value": 0,
+		"metavalues": {
+			"temp_chaud": { "label": "Température chaud", "trace": true, "unite": "°C", "value": 50.4 },
+			"temp_froid": { "label": "Température froid", "trace": true, "unite": "°C", "value": 30.1 },
+			"puissance": { "label": "Puissance", "trace": true, "unite": "W", "value": 1000 },
+			"production": { "label": "Production", "trace": true, "unite": "kWh", "value": 100 },
+			"debit": { "label": "Débit", "trace": false, "unite": "m3/h", "value": 2.5 }
+		}
+	}
+}
