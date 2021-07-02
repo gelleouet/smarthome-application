@@ -296,6 +296,18 @@ class DateUtils {
 
 
 	/**
+	 * Tronque une date à la seconde (supprime les millisecondes)
+	 *
+	 * @param date
+	 * @return
+	 */
+	static Date truncSeconde(Date date) {
+		date[Calendar.MILLISECOND] = 0
+		return date
+	}
+	
+	
+	/**
 	 * Tronque une date à la 10e minute (Ex : 10h53 => 10h50)
 	 *
 	 * @param date

@@ -1,28 +1,23 @@
 package smarthome.automation
 
-import java.util.Date
 
 import javax.servlet.ServletResponse
-
 import grails.async.PromiseList
 import grails.converters.JSON
 import grails.plugin.cache.CachePut
 import grails.plugin.cache.Cacheable
-
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
-
 import smarthome.automation.deviceType.AbstractDeviceType
 import smarthome.automation.export.DeviceValueExport
-import smarthome.automation.export.DulceExcelDeviceValueExport
-import smarthome.automation.export.ExportTypeEnum
 import smarthome.core.AbstractService
 import smarthome.core.ApplicationUtils
 import smarthome.core.AsynchronousMessage
 import smarthome.core.Chronometre
+import smarthome.core.ClassUtils
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
+import smarthome.core.query.HQL
 import smarthome.security.User
 
 
@@ -411,92 +406,4 @@ class DeviceValueService extends AbstractService {
 		return super.save(monthValue)
 	}
 
-
-	/**
-	 * Export des données d'un device pour un profil administrateur
-	 * 
-	 * @param command
-	 * @param exportType
-	 * @param response
-	 * 
-	 * @throws SmartHomeException
-	 */
-	void export(ExportCommand command, ExportTypeEnum exportType, ServletResponse response) throws SmartHomeException {
-		// Vérifs communes avant de lancer une impl
-		if (!command.dateDebut || !command.dateFin) {
-			throw new SmartHomeException("Veuillez renseigner les dates d'export !", command)
-		}
-
-		if (!command.adminId) {
-			throw new SmartHomeException("L'administrateur doit être renseigné !", command)
-		}
-
-		if (command.dateFin < command.dateDebut) {
-			throw new SmartHomeException("Date fin incorrecte !", command)
-		}
-
-		// pour des raison de perf, on n'autorise pas d'export > 1 mois
-		if (command.dateFin - command.dateDebut > 32) {
-			throw new SmartHomeException("Export limité à maximum 1 mois !", command)
-		}
-
-
-		// TODO : changer imlémentation en fonction utilisateur
-		// provisoire le temps de créer d'autres impls
-		DeviceValueExport deviceValueExport = new DulceExcelDeviceValueExport()
-		ApplicationUtils.autowireBean(deviceValueExport)
-
-		// on s'assure que le stream est bien fermé à la fin de l'export et en cas d'erreur
-		response.outputStream.withStream {
-			try {
-				if (exportType == ExportTypeEnum.admin) {
-					command.userIdsExport = this.calculUserExportAdmin(command)
-
-					// si aucun utilisateur pas la peine de lancer l'export : aucune donnée
-					if (command.userIdsExport) {
-						log.info("Export admin")
-						deviceValueExport.initExportAdmin(command, response)
-						deviceValueExport.exportAdmin(command, it)
-					}
-				} else if (exportType == ExportTypeEnum.user) {
-					log.info("Export user ")
-					deviceValueExport.initExportUser(command, response)
-					deviceValueExport.exportUser(command, it)
-				}
-			} catch (Exception ex) {
-				log.error("Export ${exportType} : ${ex.message}")
-				throw new SmartHomeException(ex.message, command)
-			}
-
-		}
-	}
-
-
-	/**
-	 * Calcule la liste des ID utilisateurs pour un export admin
-	 * 
-	 * @param command
-	 * @return
-	 */
-	List calculUserExportAdmin(ExportCommand command) {
-		List ids
-
-		if (command.userId) {
-			User user = User.read(command.userId)
-			ids = [[command.userId, user.username, user.prenom, user.nom]]
-		} else {
-			ids = DeviceValue.executeQuery("""SELECT user.id, user.username, user.prenom, user.nom
-				FROM DeviceValue deviceValue JOIN deviceValue.device device
-				JOIN device.user user
-				WHERE deviceValue.dateValue BETWEEN :dateDebut AND :dateFin
-				AND device.user.id IN (SELECT userAdmin.user.id FROM UserAdmin userAdmin
-					WHERE userAdmin.admin.id = :adminId)
-				AND deviceValue.name is null
-				GROUP BY user.id, user.username, user.prenom, user.nom
-				ORDER BY user.prenom, user.nom""", [adminId: command.adminId, dateDebut: command.datetimeDebut(),
-						dateFin: command.datetimeFin()])
-		}
-
-		return ids
-	}
 }

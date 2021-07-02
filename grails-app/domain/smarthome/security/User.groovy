@@ -17,7 +17,6 @@ class User implements Serializable {
 
 	transient springSecurityService
 
-	static hasMany = [friends: UserFriend]
 	
 	String username	// sert aussi d'email qui sera la clé unique
 	String password
@@ -33,13 +32,18 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	boolean profilPublic
+	Set friends = []
+	Set exports = []
 	
 	
-	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)
+	// propriéts utilisateur
 	def roles = []
 
+	
 	static transients = ['springSecurityService', 'roles']
 
+	static hasMany = [friends: UserFriend, exports: UserExport]
+	
 	static constraints = {
 		username blank: false, unique: true, validator: SmartHomeSecurityUtils.emailValidator
 		password blank: false, validator: SmartHomeSecurityUtils.passwordValidator

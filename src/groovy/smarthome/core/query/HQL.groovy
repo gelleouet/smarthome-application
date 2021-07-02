@@ -1,10 +1,13 @@
 package smarthome.core.query
 
+import grails.async.Promise
 import grails.async.Promises;
 import grails.gorm.PagedResultList;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
+import org.hibernate.ScrollMode
+import org.hibernate.ScrollableResults
 import org.hibernate.Session;
 
 import smarthome.core.QueryUtils;
@@ -27,6 +30,7 @@ class HQL {
 	StringBuilder from = new StringBuilder()
 	StringBuilder select = new StringBuilder()
 	String selectCountPart
+	Class domainClass
 
 	
 	public HQL() {
@@ -48,6 +52,18 @@ class HQL {
 		this.selectCountPart = selectCountPart
 	}
 
+	
+	/**
+	 * Associe le domain root pour la création de session
+	 *
+	 * @param domainClass
+	 * @return
+	 */
+	HQL domainClass(Class domainClass) {
+		this.domainClass = domainClass
+		return this
+	}
+	
 
 	/**
 	 * Ajout d'un criterion avec ses paramètres
@@ -62,6 +78,22 @@ class HQL {
 			params.putAll(criterionParams)
 		}
 		return this	
+	}
+	
+	
+	/**
+	 * Ajout d'un criterion LIKE
+	 *
+	 * @param property
+	 * @param value
+	 * @return
+	 */
+	HQL addCriterionLike(String property, String value) {
+		// préfixe avec une lettre car si la propriété démarre par un chiffer ca plante
+		String paramName = "A" + UUID.randomUUID().toString().replace("-", "")
+		criterions << "lower($property) like lower(:$paramName)"
+		params << [(paramName): QueryUtils.decorateMatchAll(value)]
+		return this
 	}
 	
 	
@@ -135,6 +167,18 @@ class HQL {
 	
 	
 	/**
+	 * Idem leftShift mais en méthode classique
+	 *
+	 * @param fromPart
+	 * @return
+	 */
+	HQL addFrom(String fromPart) {
+		from << "\n${fromPart}"
+		return this
+	}
+	
+	
+	/**
 	 * Construction de la HQL avec tous les criterions
 	 * 
 	 * @return
@@ -199,6 +243,42 @@ class HQL {
 	
 	
 	/**
+	 * Exécute la query et renvoit un seul élément
+	 *
+	 * @return
+	 */
+	Object get(Session session) {
+		List rows = list(session)
+		rows ? rows[0] : null
+	}
+	
+	
+	/**
+	 * Exécute la query et renvoit un seul élément
+	 *
+	 * @return
+	 */
+	Object get() {
+		domainClass.withSession { session ->
+			get(session)
+		}
+	}
+	
+	
+	/**
+	 * Exécute la HQL query
+	 *
+	 * @param pagination
+	 * @return
+	 */
+	List list(Map pagination = null) {
+		domainClass.withSession { session ->
+			list(session, pagination)
+		}
+	}
+	
+	
+	/**
 	 * Exécute la HQL query
 	 * 
 	 * @param session
@@ -209,24 +289,33 @@ class HQL {
 		Query query = createQuery(session, this.build())
 		QueryUtils.bindParameters(query, params)
 		PagedList result = new PagedList()
-		
+
 		if (pagination && pagination.max) {
 			query.setMaxResults(pagination.max as Integer)
 			query.setFirstResult(pagination?.offset ? pagination.offset as Integer : 0)
 			result.addAll(query.list())
-			
-			Query queryCount = createQuery(session, this.buildCount())
-			QueryUtils.bindParameters(queryCount, params)
-			Number count = (Number) queryCount.uniqueResult()
-			result.totalCount = (count == null ? 0 : count.intValue())
+
+			result.totalCount = this.count(session)
 		} else {
 			result.addAll(query.list())
 			result.totalCount = result.size()
 		}
-		
+
 		return result
 	}
 	
+	
+	/**
+	 * Exécute la HQL query en mode asynchrone (2 requetes sont lancées pour calculer
+	 * le nombre total et ces 2 requetes sont lancées en parallèle)
+	 *
+	 * @param pagination
+	 * @return
+	 */
+	List asyncList(Map pagination = null) {
+		asyncList(domainClass, pagination)
+	}
+
 	
 	/**
 	 * Exécute la HQL query en mode asynchrone (2 requetes sont lancées pour calculer
@@ -238,36 +327,162 @@ class HQL {
 	 */
 	List asyncList(Class domainClass, Map pagination = null) {
 		PagedList result = new PagedList()
-		
-		domainClass.withSession { session ->
-			Query query = createQuery(session, this.build())
-			QueryUtils.bindParameters(query, params)
-			
-			if (pagination && pagination.max) {
-				// Exécution du calcul count en arrière plan
-				def countTask = Promises.task {
-					domainClass.withNewSession { countSession ->
-						Query queryCount = createQuery(countSession, this.buildCount())
-						QueryUtils.bindParameters(queryCount, params)
-						return queryCount.uniqueResult()
-					}
-					
+
+		if (pagination && pagination.max) {
+			// création des 2 tasks
+			Promise promiseList = Promises.task { 
+				domainClass.withNewSession { session ->
+					Query query = createQuery(session, this.build())
+					QueryUtils.bindParameters(query, params)
+					query.setMaxResults(pagination.max as Integer)
+					query.setFirstResult(pagination?.offset ? pagination.offset as Integer : 0)
+					query.list()
 				}
-				
-				query.setMaxResults(pagination.max as Integer)
-				query.setFirstResult(pagination?.offset ? pagination.offset as Integer : 0)
-				result.addAll(query.list())
-				
-				// bloque le temps de retourner la valeur du count
-				Number count = countTask.get()
-				result.totalCount = (count == null ? 0 : count.intValue())
-			} else {
+			}
+			
+			Promise promiseCount = Promises.task {
+				domainClass.withNewSession { session ->
+					count(session)
+				}
+			}
+			
+			// exécution des 2 tasks en // et récupère les 2 résultats
+			List promiseResult = Promises.waitAll(promiseList, promiseCount)
+			result.addAll(promiseResult[0])
+			result.totalCount = promiseResult[1]
+		} else {
+			domainClass.withSession { session ->
+				Query query = createQuery(session, this.build())
+				QueryUtils.bindParameters(query, params)
 				result.addAll(query.list())
 				result.totalCount = result.size()
 			}
 		}
 		
 		return result
+	}
+	
+	
+	/**
+	 * Compte le nombre de lignes de la requete
+	 *
+	 * @return
+	 */
+	int count() {
+		domainClass.withSession { session ->
+			count(session)
+		}
+	}
+	
+	/**
+	 * Compte le nombre de lignes de la requete
+	 *
+	 * @param session
+	 * @return
+	 */
+	int count(Session session) {
+		Query query = createQuery(session, this.buildCount())
+		QueryUtils.bindParameters(query, params)
+		Number count = (Number) query.uniqueResult()
+		return count == null ? 0 : count.intValue()
+	}
+	
+	
+	void visit(int maxPage, Closure closure) {
+		visitSingleAndBatch(maxPage, closure, null)
+	}
+
+	
+	void visit(Session session, int maxPage, Closure closure) {
+		visitSingleAndBatch(session, maxPage, closure, null)
+	}
+	
+	
+	void visitBatch(int maxPage, Closure closure) {
+		visitSingleAndBatch(maxPage, null, closure)
+	}
+
+	
+	void visitBatch(Session session, int maxPage, Closure closure) {
+		visitSingleAndBatch(session, maxPage, null, closure)
+	}
+	
+	
+	void visitSingleAndBatch(int maxPage, Closure closureItem, Closure closurePage) {
+		domainClass.withSession { session ->
+			visitSingleAndBatch(session, maxPage, closureItem, closurePage)
+		}
+	}
+	
+	
+	/**
+	 * Visite une query par lot. La query est chargée par morceau de maxPagination
+	 * et chaque élément chargé est délégué à closure
+	 * Un seul count est exécuté en début de méthode (si on passe par le findAll,
+	 * le count sera exécuté à chaque passe)
+	 *
+	 * @param session
+	 * @param maxPage <=0 pour désactiver la pagination et tout charger en
+	 * 	une seule fois
+	 * @param closureItem 3 paramètres : item, page, totalCount
+	 * @param closurePage 3 paramètres : values, page, totalCount
+	 */
+	void visitSingleAndBatch(Session session, int maxPage, Closure closureItem, Closure closurePage) {
+		maxPage = maxPage <= 0 ? Integer.MAX_VALUE : maxPage
+		
+		// calcule le total pour créer les pages
+		int totalCount = this.count(session)
+
+		Query query = createQuery(session, this.build())
+		QueryUtils.bindParameters(query, params)
+
+		for (int page = 0; page <= totalCount / maxPage; page++) {
+			query.setMaxResults(maxPage)
+			query.setFirstResult(page * maxPage)
+			List values = query.list()
+			
+			if (closureItem) {
+				values.each {
+					closureItem(it, page, totalCount)
+				}
+			}
+			
+			if (closurePage) {
+				closurePage(values, page, totalCount)
+			}
+			
+			// on fliush la session à chaque page pour vider la mémoire
+			// et les buffers de batch. Cela permet de ne pas dégrader l'exécution
+			// au fur et à mesure que les pages se chargent
+			session.flush()
+		}
+	}
+	
+	
+	void scroll(Session session, int maxPage, Closure closure) {
+		long totalCount = this.count(session)
+		long idx = 0
+		
+		Query query = createQuery(session, this.build())
+		QueryUtils.bindParameters(query, params)
+		query.setFetchSize(maxPage)
+		query.setReadOnly(true)
+		query.setCacheable(false)
+		
+		ScrollableResults scrollResults = query.scroll(ScrollMode.FORWARD_ONLY)
+		
+		while (scrollResults.next()) {
+			Object value = scrollResults.get(0)
+			closure(value, idx, totalCount)
+			idx++
+		}
+	}
+	
+	
+	void scroll(int maxPage, Closure closure) {
+		domainClass.withSession { session ->
+			scroll(session, maxPage, closure)
+		}
 	}
 	
 	
@@ -330,4 +545,5 @@ class HQL {
 	protected Query createQuery(Session session, String query) {
 		return session.createQuery(query)	
 	}
+	
 }

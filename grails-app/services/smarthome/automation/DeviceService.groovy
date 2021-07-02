@@ -486,7 +486,8 @@ class DeviceService extends AbstractService {
 
 
 	/**
-	 * Liste les 
+	 * Liste les objets
+	 * 
 	 * @param command
 	 * @return
 	 */
@@ -495,26 +496,36 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("adminId must be fill !", command)
 		}
 
-		HQL hql = new HQL("device",	""" 
-			FROM Device device JOIN FETCH device.deviceType deviceType
+		HQL query = new HQL("device",	""" 
+			FROM Device device
+			JOIN FETCH device.deviceType deviceType
 			LEFT JOIN FETCH device.agent agent""")
+			.domainClass(Device)
+			.addOrder("device.label")
 
-		if (command.userId) {
-			hql.addCriterion("device.user.id = :userId", [userId: command.userId])
-		} else {
-			hql.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
-				where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
-		}
-
-		if (command.deviceTypeClass) {
-			hql.addCriterion("deviceType.implClass = :implClass", [implClass: command.deviceTypeClass])
-		}
-
-		hql.addOrder("device.label")
-
-		return Device.withSession { session ->
-			hql.list(session, command.pagination)
-		}
+		command.applyCriterion(query)
+			
+		query.list(command.pagination)
+	}
+	
+	
+	/**
+	 * Calcul des metavalues sur la sélection des objets
+	 * On ne tient pas compte si des valeurs sont présentes pour ces objets
+	 *
+	 * @return
+	 */
+	List distinctMetavalueNames(DeviceSearchCommand command) {
+		HQL query = new HQL("distinct metavalue.name, metavalue.label", """
+			FROM Device device
+			JOIN device.metavalues metavalue
+			JOIN device.deviceType deviceType""")
+			.domainClass(Device)
+			.addOrder("metavalue.label")
+		
+		command.applyCriterion(query)
+			
+		return query.list().collect { [name: it[0], label: it[1]] }
 	}
 
 

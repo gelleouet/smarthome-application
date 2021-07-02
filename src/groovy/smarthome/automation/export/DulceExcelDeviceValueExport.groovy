@@ -52,13 +52,21 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	private CreationHelper createHelper
 	
 	
-	/**
-	 * Export des données au format Excel selon CCTP DULCE
-	 * 
-	 * @see smarthome.automation.export.DeviceValueExport#exportAdmin(smarthome.automation.ExportCommand, java.io.OutputStream)
-	 */
 	@Override
-	void exportAdmin(ExportCommand command, OutputStream outStream) throws Exception {
+	String libelle() {
+		"DULCE ADMIN"
+	}
+	
+	
+	@Override
+	void init(ExportCommand command, ServletResponse response) {
+		response.setContentType(MimeTypeEnum.EXCEL2003.mimeType)
+		response.setHeader("Content-Disposition", "attachment; filename=exportdulce-${command.dateDebut.format('yyyyMMdd')}-${command.dateFin.format('yyyyMMdd')}.${MimeTypeEnum.EXCEL2003.extension}")
+	}
+	
+	
+	@Override
+	void export(ExportCommand command, OutputStream outStream) throws Exception {
 		workbook = new HSSFWorkbook()
 		Sheet sheet = workbook.createSheet("DULCE")
 		createHelper = workbook.getCreationHelper()
@@ -78,6 +86,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 		createHeaderCell(row, 9, "Hext (%)")
 		
 		// Export des values par user
+		// FIXME la liste userIdsExport n'existe plus, il faut la calculer dans l'impl
 		for (def user : command.userIdsExport) {
 			Date lastDate, valueDate
 			row = null
@@ -138,18 +147,6 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 		}
 		
 		workbook.write(outStream)
-	}
-
-	
-	/**
-	 * Export des données au format Excel selon CCTP DULCE
-	 * 
-	 * @see smarthome.automation.export.DeviceValueExport#exportUser(smarthome.automation.ExportCommand, java.io.OutputStream)
-	 */
-	@Override
-	void exportUser(ExportCommand command, OutputStream outStream) throws Exception {
-		throw new SmartHomeException("Fonctionnalité pas implémentée !", command)
-		
 	}
 
 	
@@ -238,25 +235,4 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 		return cell
 	}
 
-
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.export.DeviceValueExport#initExportAdmin(smarthome.automation.ExportCommand, javax.servlet.ServletResponse)
-	 */
-	@Override
-	void initExportAdmin(ExportCommand command, ServletResponse response) {
-		response.setContentType(MimeTypeEnum.EXCEL2003.mimeType)
-		response.setHeader("Content-Disposition", "attachment; filename=exportdulce-${command.dateDebut.format('yyyyMMdd')}-${command.dateFin.format('yyyyMMdd')}.${MimeTypeEnum.EXCEL2003.extension}")
-	}
-
-
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.export.DeviceValueExport#initExportUser(smarthome.automation.ExportCommand, javax.servlet.ServletResponse)
-	 */
-	@Override
-	void initExportUser(ExportCommand command, ServletResponse response) {
-		// TODO Auto-generated method stub
-		
-	}
 }

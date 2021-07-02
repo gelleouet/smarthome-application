@@ -3,6 +3,7 @@ package smarthome.automation
 import java.util.Map;
 
 import grails.validation.Validateable;
+import smarthome.core.query.HQL
 
 @Validateable
 class DeviceSearchCommand {
@@ -26,4 +27,31 @@ class DeviceSearchCommand {
 		tableauBord nullable: true
 		userSharedId nullable: true
 	}
+	
+	
+	/**
+	 * Applique les crières du command sur une query
+	 *
+	 * @param query
+	 * @return
+	 */
+	HQL applyCriterion(HQL query) {
+		if (userId) {
+			query.addCriterion("device.user.id = :userId", [userId: userId])
+		} else {
+			query.addCriterion("""device.user.id IN (select userAdmin.user.id from UserAdmin userAdmin
+				where userAdmin.admin.id = :adminId)""", [adminId: adminId])
+		}
+
+		if (deviceTypeClass) {
+			query.addCriterion("deviceType.implClass = :implClass", [implClass: deviceTypeClass])
+		}
+		
+		if (search) {
+			query.addCriterionLike("device.label", search)
+		}
+		
+		return query
+	}
+	
 }

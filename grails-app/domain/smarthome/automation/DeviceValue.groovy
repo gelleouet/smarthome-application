@@ -17,6 +17,11 @@ import groovy.time.TimeCategory;
  */
 @Validateable
 class DeviceValue implements Serializable {
+	
+	static final String DEFAULT_NAME = "_main"
+	static final String DEFAULT_LABEL = "Principale"
+	
+	
 	Device device
 	Double value
 	Date dateValue

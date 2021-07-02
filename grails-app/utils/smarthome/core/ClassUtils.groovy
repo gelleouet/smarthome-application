@@ -52,41 +52,23 @@ class ClassUtils {
 			classLoader.clearCache()
 			return classe
 		} catch (Exception ex) {
-			throw new SmartHomeException(ex)
+			throw new SmartHomeException(ex.message)
 		}
 	}
 	
 	
 	/**
-	 * Instancie un objet à partir d'un script texte contenant la définition de la classe
-	 *
-	 * @param scriptText
-	 * @return
-	 */
-	static Object newInstance(String scriptText) throws SmartHomeException {
-		try {
-			Class instanceClass = newClass(scriptText)
-			return instanceClass.newInstance()
-		} catch (Exception ex) {
-			throw new SmartHomeException(ex)
-		}
-		
-	}
-	
-	
-	/**
-	 * Instance un objet directement à partir du nom de la classe
-	 *
+	 * Créé une classe à patir de son nom
+	 * 
 	 * @param className
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	static Object forNameInstance(String className) throws SmartHomeException {
+	static Class forName(String className) throws SmartHomeException {
 		try {
-			Class classe = Class.forName(className)
-			return newInstance(classe)
+			return Class.forName(className)
 		} catch (Exception ex) {
-			throw new SmartHomeException(ex)
+			throw new SmartHomeException(ex.message)
 		}
 	}
 	
@@ -102,7 +84,34 @@ class ClassUtils {
 		try {
 			return classe.newInstance()
 		} catch (Exception ex) {
-			throw new SmartHomeException(ex)
+			throw new SmartHomeException(ex.message)
 		}
 	}
+	
+	
+	
+	/**
+	 * Instancie un objet à partir d'un script texte contenant la définition de la classe
+	 *
+	 * @param scriptText
+	 * @return
+	 */
+	static Object newInstance(String scriptText) throws SmartHomeException {
+		Class instanceClass = newClass(scriptText)
+		newInstance(instanceClass)
+	}
+	
+	
+	/**
+	 * Instance un objet directement à partir du nom de la classe
+	 *
+	 * @param className
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	static Object forNameInstance(String className) throws SmartHomeException {
+		Class classe = forName(className)
+		return newInstance(classe)
+	}
+	
 }

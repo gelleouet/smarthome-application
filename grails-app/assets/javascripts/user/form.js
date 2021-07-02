@@ -4,6 +4,7 @@
 function combobox() {
 	AJS.$("select.combobox").auiSelect2({
 		openOnEnter: false,
+		dropdownCssClass: 'combobox-dropdown',
 		matcher: function(term, text, option) {
 			// rien n'est saisi, tout passe
 			if (! term) {

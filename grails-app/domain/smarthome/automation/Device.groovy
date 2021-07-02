@@ -22,11 +22,9 @@ import grails.validation.Validateable
  */
 @Validateable
 class Device implements Serializable, EventTriggerPreparable {
-	static belongsTo = [agent: Agent, user: User]
-	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
-		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert,
-		devicePlannings: DevicePlanning]
 
+	Agent agent
+	User user
 	String label
 	String groupe
 	String mac
@@ -40,14 +38,21 @@ class Device implements Serializable, EventTriggerPreparable {
 	String extras	// option extra json
 	String unite
 
-	static transients = ['params', 'actionName', 'extrasJson', 'deviceImpl']
-
+	// user properties
 	AbstractDeviceType deviceImpl
 	Map extrasJson = [:]
 	Map params = [:]
 	String actionName	// action en cours d'exécution sur deviceImpl
 
-
+	
+	static transients = ['params', 'actionName', 'extrasJson', 'deviceImpl']
+	
+	static belongsTo = [agent: Agent, user: User]
+	
+	static hasMany = [values: DeviceValue, metadatas: DeviceMetadata, metavalues: DeviceMetavalue,
+		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert,
+		devicePlannings: DevicePlanning]
+	
 	static constraints = {
 		agent nullable: true
 		groupe nullable: true
