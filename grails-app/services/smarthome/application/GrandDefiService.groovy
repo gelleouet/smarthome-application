@@ -210,9 +210,11 @@ class GrandDefiService extends AbstractService {
 		// création d'un user avec compte bloqué en attente déblocage
 		// et attribution du role GRAND_DEFI
 		user = new User(username: account.username, password: account.newPassword, prenom: account.prenom,
-		nom: account.nom, lastActivation: new Date(), accountLocked: true,
-		applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
-		profil: account.profil)
+			nom: account.nom, lastActivation: new Date(), accountLocked: true,
+			applicationKey: UUID.randomUUID(), profilPublic: account.profilPublic,
+			profil: account.profil, telephoneMobile: account.telephone,
+			autorise_user_data: account.autorise_user_data, autorise_conso_data: account.autorise_conso_data,
+			autorise_share_data: account.autorise_share_data, engage_enedis_account: account.engage_enedis_account)
 		
 		try {
 			userService.save(user, false)
@@ -224,8 +226,9 @@ class GrandDefiService extends AbstractService {
 		// inscription
 		try {
 			inscriptionDefi(user, grandDefiId as Long, [chauffage: account.chauffage,
-				ecs: account.ecs, surface: account.surface,
-				location: account.commune.libelle])
+				ecs: account.ecs, surface: account.surface, location: account.commune.libelle,
+				adresse: account.adresse, codePostal: account.codePostal, chauffageSecondaire: account.chauffageSecondaire,
+				nbPersonne: account.nbPersonne])
 		} catch (SmartHomeException ex) {
 			// rethrow l'erreur en spécifiant le bon command et les bonnes erreurs
 			throw new SmartHomeException(ex.message, account)

@@ -26,15 +26,28 @@ class AccountCommand {
 	String newPassword
 	String confirmPassword
 	boolean profilPublic
+	boolean autorise_user_data = true
+	boolean autorise_conso_data = true
+	boolean autorise_share_data
+	boolean engage_enedis_account = true
+	String adresse
+	String codePostal
+	String telephone
 	Commune commune
 	Integer surface
 	Chauffage chauffage
+	Chauffage chauffageSecondaire
 	ECS ecs
+	Integer nbPersonne
 
 
 	static constraints = {
 		newPassword blank: false, validator: SmartHomeSecurityUtils.passwordValidator
 		confirmPassword blank: false, validator: SmartHomeSecurityUtils.passwordConfirmValidator
+		surface nullable: true
+		nbPersonne nullable: true
+		chauffageSecondaire nullable: true
+		ecs nullable: true
 	}
 
 

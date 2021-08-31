@@ -32,6 +32,11 @@ class User implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	boolean profilPublic
+	boolean autorise_user_data
+	boolean autorise_conso_data
+	boolean autorise_share_data
+	boolean engage_enedis_account
+	
 
 	// la liste des roles (utilisé pour le binding mais n'est pas mappé en base)
 	def roles = []
@@ -61,6 +66,11 @@ class User implements Serializable {
 		password column: '`password`'
 		friends cascade: 'all-delete-orphan'
 		username index: 'UserApplication_Username_Idx'
+		autorise_user_data defaultValue: true
+		autorise_conso_data defaultValue: true
+		engage_enedis_account defaultValue: true
+		autorise_share_data defaultValue: false
+		profilPublic defaultValue: false
 		sort 'nom'
 	}
 

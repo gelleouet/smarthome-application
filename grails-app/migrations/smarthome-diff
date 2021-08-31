@@ -1,0 +1,5 @@
+VERSION=$1
+echo "LIQUIBASE_HOME: $LIQUIBASE_HOME"
+echo "LIQUIBASE_PROPERTIES: $LIQUIBASE_PROPERTIES"
+$LIQUIBASE_HOME/liquibase --defaultsFile=$LIQUIBASE_PROPERTIES --changeLogFile=$VERSION/smarthome-$VERSION.xml --schemas=smarthome diffChangeLog  
+#$LIQUIBASE_HOME/liquibase --defaultsFile=$LIQUIBASE_PROPERTIES --changeLogFile=$VERSION/application-$VERSION.xml --schemas=application diffChangeLog

@@ -8,23 +8,27 @@
     
 	    <div class="text-center mt-4">
 			<h1 class="h2">Bienvenue sur l'application <g:meta name="app.code"/></h1>
-			<p class="lead">
-				Connectez-vous pour continuer
-			</p>
+			
+			<p class="lead">Connectez-vous pour continuer</p>
 		</div>
 	    
 	    
 	    <div class="row">
-	    	<div class="col">
+	    	<div class="col-6">
 	    		<g:render template="/grandDefi/plaquette" model="[withAccountButton: true]"/>
 	    	</div>
 	    	
 	    	<div class="col-6">
-			    <div class="card">
+			    <div class="card" style="min-height:440px">
+			    
 					<div class="card-body">
-						<div class="m-sm-4">
+						<div>
+						
+							<h4 class="card-title">J'ai déjà un compte</h4>
+							<hr/>
+						
 							<div class="text-center">
-								<asset:image src="apple-touch-icon-retina.png" class="img-fluid rounded-circle" width="132" height="132" />
+								<asset:image src="logo.png" class="img-fluid rounded-circle" width="132px" />
 							</div>
 							
 							<g:applyLayout name="content-error"/>

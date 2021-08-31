@@ -4,7 +4,7 @@
 <nav id="sidebar" class="sidebar">
 	<div class="sidebar-content">
 		<g:link class="sidebar-brand" uri="/">
-			<asset:image src="granddefi/bonhomme.png" height="25px"/>
+			<asset:image src="logo.png" height="25px"/>
 			<span class="align-middle"><g:meta name="app.code"/></span>
 		</g:link>
 		

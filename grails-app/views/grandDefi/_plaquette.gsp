@@ -1,20 +1,15 @@
-<div class="card">
-	<div class="card-header">
-		<h4 class="card-title"><g:meta name="app.code"/></h4>
-		<h6 class="card-subtitle text-muted">ALEC du pays de Rennes</h6>
-	</div>
-	
+<div class="card" style="min-height:440px">
 	<div class="card-body">
+	
+		<h4 class="card-title">Je n'ai pas encore de compte</h4>
+		<hr/>
+	
 		<div class="text-center">
 			<a href="${ g.meta(name: 'app.urlInfoGde') }" target="granddefi">
-				<asset:image src="granddefi/logo.png" height="185px"/>
+				<asset:image src="granddefi/plaquette.jpg" width="400px"/>
 				<div>Plus d'informations</div>
 			</a>
 			
-		</div>
-		
-		<div class="text-center mt-4">
-			<asset:image src="granddefi/partenaire.png" height="95px"/>
 		</div>
 		
 		<g:if test="${ withAccountButton }">

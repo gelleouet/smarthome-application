@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.ui.externaltools.ProgramLaunchConfigurationType">
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="LIQUIBASE_HOME" value="${liquibase_home}"/>
+<mapEntry key="LIQUIBASE_PROPERTIES" value="${jdevops.server}/liquibase-granddefi.properties"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LAUNCH_CONFIGURATION_BUILD_SCOPE" value="${none}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/smarthome-application/grails-app/migrations/smarthome-diff}"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="3.1.8"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${workspace_loc:/smarthome-application/grails-app/migrations}"/>
+</launchConfiguration>

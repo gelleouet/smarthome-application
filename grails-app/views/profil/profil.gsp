@@ -10,7 +10,7 @@
 			
 			<g:hiddenField name="user.id" value="${user.id}" />
 	
-			<h4>Général</h4>
+			<h4>Mon profil</h4>
 			
 			<div class="form-group">
 				<label>Profil</label>
@@ -32,14 +32,49 @@
 				<g:textField name="user.nom" value="${user.nom}" class="form-control"
 					required="true" />
 			</div>
+			<div class="form-group required">
+				<label>Numéro téléphone</label>
+			 	<g:field class="form-control form-control-lg" type="text" name="user.telephoneMobile" required="true" value="${ user?.telephoneMobile }"/>
+			</div>
 			
-			<div class="custom-control custom-checkbox">
-	        	<g:checkBox name="user.profilPublic" value="${ user.profilPublic }" class="custom-control-input"/>
-	            <label for="user.profilPublic" class="custom-control-label">J'autorise le <g:meta name="app.code"/> à me faire apparaître dans la liste des participants de mon équipe.
-	            </label>
-		    </div>
+			<h4 class="mt-4">Mes données</h4>
+		    
+		    <label class="custom-control custom-checkbox">
+	        	<g:checkBox name="user.autorise_user_data" class="custom-control-input" value="${ user.autorise_user_data }"/>
+	        	<span class="custom-control-label">
+	        		J'autorise l'ALEC du Pays de Rennes à utiliser mon adresse e-mail et mon numéro de téléphone pour me contacter dans le cadre du <g:meta name="app.code"/> (nécessaire pour le bon déroulement du défi).
+	        	</span>
+	        </label>
+	        
+	        <label class="custom-control custom-checkbox">
+	        	<g:checkBox name="user.autorise_conso_data" class="custom-control-input" value="${ user.autorise_conso_data }"/>
+	        	<span class="custom-control-label">
+	        		J'autorise l'ALEC du Pays de Rennes à récupérer mes données de consommation d’énergie et d’eau à usage exclusif du <g:meta name="app.code"/> (nécessaire pour le bon déroulement du défi).
+	        	</span>
+	        </label>
+	        
+	        <label class="custom-control custom-checkbox">
+	        	<g:checkBox name="user.profilPublic" class="custom-control-input" value="${ user.profilPublic }"/>
+	        	<span class="custom-control-label">
+	        		J'autorise l'ALEC du Pays de Rennes à me faire apparaître dans la liste des participants de mon équipe.
+	        	</span>
+	        </label>
+	        
+	        <label class="custom-control custom-checkbox">
+	        	<g:checkBox name="user.autorise_share_data" class="custom-control-input" value="${ user.autorise_share_data }"/>
+	        	<span class="custom-control-label">
+	        		J'autorise l'ALEC du Pays de Rennes à transmettre mon adresse e-mail et mon numéro de téléphone à ma commune/ma mairie pour me contacter dans le cadre du <g:meta name="app.code"/>.
+	        	</span>
+	        </label>
+	        
+	         <label class="custom-control custom-checkbox">
+	        	<g:checkBox name="user.engage_enedis_account" class="custom-control-input" value="${ user.engage_enedis_account }"/>
+	        	<span class="custom-control-label">
+	        		Je m’engage à créer mon compte client Enedis <a href="https://mon-compte-particulier.enedis.fr" target="enedis">https://mon-compte-particulier.enedis.fr</a> et à transmettre mes relevés de compteurs d’énergie et d’eau avant et pendant le <g:meta name="app.code"/> (nécessaire pour le bon déroulement du défi).
+	        	</span>
+	        </label>
 
-			<h4 class="mt-4">Habitation</h4>
+			<h4 class="mt-4">Mon habitation</h4>
 			
 			<g:include action="templateEditByUser" controller="house" params="[user: user]"/>
 			

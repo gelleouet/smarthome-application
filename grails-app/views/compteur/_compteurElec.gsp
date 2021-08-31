@@ -107,11 +107,12 @@
 					<h5 class="mt-4 font-weight-bold">Vous pouvez également sélectionner votre fournisseur d'électricité et votre contrat tarifaire
 						pour visualiser les coûts de consommation <span class="text-muted">(hors abonnement)</span> :</h5>
 					
-					<g:select class="form-control" name="fournisseur" from="${ fournisseurElecs }"
+					<g:select class="form-control combobox" name="fournisseur" from="${ fournisseurElecs }"
          				optionKey="libelle" optionValue="libelle" noSelection="['': ' ']"/>
          				
          				
-         			<g:select class="form-control" name="contrat" from="${ contratElecs }" optionKey="key" optionValue="value" noSelection="['': ' ']"/>
+         			<g:select class="form-control combobox" name="contrat" from="${ contratElecs }" optionKey="key" optionValue="value"
+         				noSelection="['': ' ']" required="true"/>
 					
 					<div class="mt-4 text-right">
 						<button class="btn btn-primary"><app:icon name="chevron-right"/> Suivant</button>
