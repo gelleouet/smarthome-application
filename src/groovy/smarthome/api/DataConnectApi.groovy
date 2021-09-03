@@ -25,8 +25,8 @@ class DataConnectApi {
 			redirect_uri: "redirect_uri"
 		],
 		"prod": [
-			authorize: "https://espace-client-particuliers.enedis.fr",
-			token: "https://gw.prd.api.enedis.fr",
+			authorize: "https://mon-compte-particulier.enedis.fr",
+			token: " https://gw.prd.api.enedis.fr ", 
 			metric: "https://gw.prd.api.enedis.fr",
 			redirect_uri: "redirect_URI"
 		]
@@ -48,12 +48,12 @@ class DataConnectApi {
 	 * @return
 	 */
 	String authorize_uri() {
-		String url = "${URLS[(grailsApplication.config.enedis.env)].authorize}/group/espace-particuliers/consentement-linky/oauth2/authorize"
+		String url = "${URLS[(grailsApplication.config.enedis.env)].authorize}/dataconnect/v1/oauth2/authorize"
 		url += "?client_id=${grailsApplication.config.enedis.client_id}"
 		url += "&duration=P3Y"
 		url += "&response_type=code"
 		url += "&state=${grailsApplication.config.enedis.state}"
-		url += "&${URLS[(grailsApplication.config.enedis.env)].redirect_uri}=${grailsApplication.config.enedis.redirect_uri}"
+		//url += "&${URLS[(grailsApplication.config.enedis.env)].redirect_uri}=${grailsApplication.config.enedis.redirect_uri}"
 		return url
 	}
 

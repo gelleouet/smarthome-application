@@ -154,7 +154,7 @@ social {
 	twitter = "https://twitter.com/ALEC_Rennes"
 	facebook = "https://www.facebook.com/groups/legranddefienergieeteau2020/"
 	instagram = "https://www.instagram.com/alec_rennes/"
-	web = "https://www.alec-rennes.org/usager/conseil-energie-particuliers-coproprietaire/grand-defi-energie-eau-2020/"
+	web = "https://www.alec-rennes.org/gdee/"
 }
 
 grails.databinding.dateFormats = ['yyyy-MM-dd', 'dd/MM/yyyy', 'yyyy-MM-dd HH:mm:ss.S', "yyyy-MM-dd'T'hh:mm:ss'Z'"]
