@@ -26,7 +26,7 @@ class DataConnectApi {
 		],
 		"prod": [
 			authorize: "https://mon-compte-particulier.enedis.fr",
-			token: " https://gw.prd.api.enedis.fr ", 
+			token: "https://gw.prd.api.enedis.fr", 
 			metric: "https://gw.prd.api.enedis.fr",
 			redirect_uri: "redirect_URI"
 		]
