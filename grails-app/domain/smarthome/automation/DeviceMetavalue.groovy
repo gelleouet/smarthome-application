@@ -50,4 +50,27 @@ class DeviceMetavalue implements Serializable {
 		unite length: 32
 		version false
 	}
+	
+	
+	/**
+	 * Conversion en double avec possibilité d'arrondi
+	 * 
+	 * @param precision
+	 * @return
+	 */
+	Double convertValueToDouble(Integer precision = null) {
+		if (value) {
+			if (value.isDouble()) {
+				Double doubleValue = value.toDouble()
+				
+				if (precision) {
+					doubleValue = doubleValue.round(precision)
+				}
+				
+				return doubleValue
+			}
+		}
+		
+		return null
+	}
 }
