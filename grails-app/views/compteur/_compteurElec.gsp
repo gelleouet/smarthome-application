@@ -51,6 +51,10 @@
 				</div>
 				
 				<g:render template="/templates/messageInfo" model="[message: house.compteur.label, icon: 'check-circle']"/>
+				
+				<g:if test="${ dataConnect?.error }">
+					<g:render template="/templates/messageError" model="[title: 'Enedis DataConnect', message: house.compteur.label]"/>
+				</g:if>
 			</g:if>
 			
 			<g:else>

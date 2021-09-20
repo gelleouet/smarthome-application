@@ -21,6 +21,9 @@ class NotificationAccount implements Serializable {
 	NotificationAccountSender notificationAccountSender
 	String config
 	User user
+	Date lastExecution
+	String error
+	
 
 	// transients properties
 	def jsonConfig = [:]
@@ -30,15 +33,19 @@ class NotificationAccount implements Serializable {
 
 	static transients = ['jsonConfig']
 
+	
 	static constraints = {
 		notificationAccountSender unique: ['user']
 		config nullable: true
+		lastExecution nullable: true
+		error nullable: true
 		jsonConfig bindable: true
 	}
 
 	static mapping = {
 		table schema: SmartHomeCoreConstantes.DEFAULT_SCHEMA
 		user index: "NotificationAccount_User_Idx"
+		error type: 'text'
 	}
 
 

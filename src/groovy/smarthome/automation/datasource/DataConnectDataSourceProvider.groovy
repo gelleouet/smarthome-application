@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import smarthome.api.DataConnectService
 import smarthome.automation.NotificationAccount
+import smarthome.automation.NotificationAccountService
 import smarthome.core.SmartHomeException
 
 
@@ -21,6 +22,9 @@ class DataConnectDataSourceProvider extends AbstractDataSourceProvider {
 
 	@Autowired
 	DataConnectService dataConnectService
+	
+	@Autowired
+	NotificationAccountService notificationAccountService
 
 
 	/**
@@ -30,17 +34,19 @@ class DataConnectDataSourceProvider extends AbstractDataSourceProvider {
 	 */
 	@Override
 	void execute(NotificationAccount notificationAccount) throws SmartHomeException {
+		
 		// une erreur sur le refersh_token est bloquant car les autres appels
 		// vont forcément échouer si les tokens ne sont pas à jour
 		try {
 			dataConnectService.refresh_token(notificationAccount)
 		} catch (SmartHomeException ex) {
-			throw new SmartHomeException("Dataconnect.refresh_token : ${ex.message}")
+			log.error("Dataconnect.refresh_token : ${ex.message}")
+			notificationAccountService.flagExecution(notificationAccount, ex.message)
+			return
 		}
 
 		// les autres appels sont indépendants. on peut tous les lancer même si un plante
 		// on log tout de même les erreurs
-
 		try {
 			dataConnectService.consumptionLoadCurve(notificationAccount)
 		} catch (SmartHomeException ex) {
@@ -58,7 +64,7 @@ class DataConnectDataSourceProvider extends AbstractDataSourceProvider {
 		} catch (SmartHomeException ex) {
 			log.error("Dataconnect.consumptionMaxPower : ${ex.message}")
 		}
-
-
+		
+		notificationAccountService.flagExecution(notificationAccount, null)
 	}
 }

@@ -1,0 +1,55 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    <changeSet author="mac (generated)" id="1630439786424-4">
+        <addColumn tableName="house">
+            <column name="adresse" type="varchar(255 BYTE)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-5">
+        <addColumn tableName="utilisateur">
+            <column defaultValueBoolean="true" name="autorise_conso_data" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-6">
+        <addColumn tableName="utilisateur">
+            <column defaultValueBoolean="true" name="autorise_user_data" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-7">
+        <addColumn tableName="house">
+            <column name="chauffage_secondaire_id" type="int8"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-8">
+        <addColumn tableName="house">
+            <column name="code_postal" type="varchar(16 BYTE)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-9">
+        <addColumn tableName="utilisateur">
+            <column defaultValueBoolean="true" name="engage_enedis_account" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-10">
+        <addColumn tableName="utilisateur">
+            <column defaultValueBoolean="false" name="autorise_share_data" type="bool">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="mac (generated)" id="1630439786424-11">
+        <addColumn tableName="house">
+            <column name="nb_personne" type="int4"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="mac (generated)" id="1630439786424-3">
+        <addForeignKeyConstraint baseColumnNames="chauffage_secondaire_id" baseTableName="house" constraintName="fk_lxs64jrbwsi4sbj0qxc5ic2l7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="chauffage" referencedTableSchemaName="smarthome" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

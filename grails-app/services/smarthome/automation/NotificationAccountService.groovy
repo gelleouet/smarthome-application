@@ -124,6 +124,24 @@ class NotificationAccountService extends AbstractService {
 	NotificationAccount edit(NotificationAccount notificationAccount) {
 		return notificationAccount
 	}
+	
+	
+	/**
+	 * Flag d'une exécution avec ou sans erreur
+	 * 
+	 * @param notificationAccount
+	 * @param error
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	NotificationAccount flagExecution(NotificationAccount notificationAccount, String error) throws SmartHomeException {
+		if (!error) {
+			notificationAccount.lastExecution = new Date()
+		}
+		notificationAccount.error = error
+		return super.save(notificationAccount)
+	} 
 
 
 	/**
