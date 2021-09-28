@@ -30,6 +30,9 @@ import smarthome.core.chart.GoogleDataTableCol
  *
  */
 class TeleInformation extends AbstractDeviceType {
+	static final List DAY_METANAMES = ['null', 'hcinst', 'hpinst', 'baseinst']
+	
+	
 	/**
 	 * @see smarthome.automation.deviceType.AbstractDeviceType.chartDataTemplate()
 	 */
@@ -50,22 +53,9 @@ class TeleInformation extends AbstractDeviceType {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#values()
-	 */
 	@Override
-	List values(DeviceChartCommand command) throws SmartHomeException {
-		def values = []
-
-		if (command.viewMode == ChartViewEnum.day) {
-			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-					command.metaName ?: "null,hcinst,hpinst,baseinst")
-		} else {
-			values = super.values(command)
-		}
-
-		return values
+	public List<String> dayMetaNames() {
+		DAY_METANAMES
 	}
 
 

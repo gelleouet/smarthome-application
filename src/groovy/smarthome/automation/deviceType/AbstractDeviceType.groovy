@@ -214,6 +214,16 @@ abstract class AbstractDeviceType implements Serializable {
 	
 	
 	/**
+	 * Création chart avec chargement des données intégrées
+	 * 
+	 * @param command
+	 * @return
+	 */
+	GoogleChart googleChart(DeviceChartCommand command) {
+		return googleChart(command, values(command))
+	}
+	
+	/**
 	 * Utilisation d'un google chart préparé
 	 * 
 	 * @param command
@@ -399,6 +409,21 @@ abstract class AbstractDeviceType implements Serializable {
 	
 	
 	/**
+	 * La liste des metavalues pour le chargement des données du jour
+	 * mots-clé :
+	 * 		'null' pour charger la valeur principale
+	 * 		'*' : pour tout charger
+	 * 		
+	 * Si null ou vide, seule la valeur principale est retournée
+	 * 
+	 * @return
+	 */
+	List<String> dayMetaNames() {
+		null
+	}
+	
+	
+	/**
 	 * Charge les données sur une période donnée (en général pour les graphes)
 	 * C'est défini dans chaque impl car les données ne sont pas forcément les mêmes
 	 * et la représentatin non plus
@@ -412,7 +437,8 @@ abstract class AbstractDeviceType implements Serializable {
 		def values = []
 		
 		if (command.viewMode == ChartViewEnum.day) {
-			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(), command.metaName)
+			String metaNames = dayMetaNames() ? dayMetaNames().join(',') : null
+			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(), command.metaName ?: metaNames)
 		} else if (command.viewMode == ChartViewEnum.month) {
 			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin(), command.metaName).groupBy {
 				it.dateValue

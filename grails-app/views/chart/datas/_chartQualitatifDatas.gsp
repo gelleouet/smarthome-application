@@ -20,10 +20,14 @@
 		'title': '${ chart.title }',
 		'titleTextStyle': {fontSize: '20'},
 		</g:if>
+		<g:else>
+		'titlePosition': 'none',
+		</g:else>
 		'width': '${ params.chartWidth ?: '100%' }',
-        'height': '${ params.chartHeight ?: '600' }',
-        'legend': {position: 'top'},
+        'height': '${ params.chartHeight ?: (chartHeight ?: '600') }',
+        'legend': {position: '${ chart.showLegend ? 'top' : 'none' }'},
         'curveType': 'function',
+        'axisTitlesPosition': 'none',
         'chartArea': {
         	width: '90%'
         },
@@ -47,12 +51,13 @@
 			</g:each>
 	    },
 	    'hAxis': {
-	    	title: '${ chart.hAxisTitle(command) }',
+	    	textPosition: '${ chart.showHAxis ? 'out' : 'none' }',
+	    	title: '${ chart.showHAxis ? chart.hAxisTitle(command) : '' }',
 	    	gridlines: { color: 'none'},
 		    slantedText: true,
 		    format: '${ new GoogleChart().format(command) }',
 	        ticks: [${ new GoogleChart().ticks(command) }]
-	    }
+	    },
 	    <g:if test="${ chart.joinChart }">
 	    'interpolateNulls': true,
 	    </g:if>

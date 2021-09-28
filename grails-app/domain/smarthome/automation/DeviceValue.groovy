@@ -357,6 +357,7 @@ class DeviceValue implements Serializable {
 					}
 				}
 			} else {
+				// la valeur principale
 				isNull "name"
 			}
 			

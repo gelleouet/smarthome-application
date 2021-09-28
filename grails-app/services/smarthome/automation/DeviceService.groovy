@@ -530,13 +530,25 @@ class DeviceService extends AbstractService {
 
 
 	/**
+	 * Recherche des objets du user connecté
+	 * 
+	 * @param pagination
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	List listByPrincipal(Map pagination) throws SmartHomeException {
+		return listByUser(new DeviceSearchCommand(userId: principalId(), pagination: pagination))
+	}
+	
+	
+	/**
 	 * Liste les devices d'un user
 	 * 
 	 * @param pagination
 	 * @return
 	 * @throws SmartHomeException
 	 */
-	def listByUser(DeviceSearchCommand command) throws SmartHomeException {
+	List listByUser(DeviceSearchCommand command) throws SmartHomeException {
 		Chronometre chrono = new Chronometre()
 
 		def search = QueryUtils.decorateMatchAll(command.search)

@@ -17,11 +17,9 @@
 						<g:link class="aui-button" action="deviceChart" params="['device.id': device.id]">
 							<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span> Graphique
 						</g:link>
-						<sec:ifAnyGranted roles="ROLE_ADMIN">
-							<g:link class="aui-button" action="aggregateValues" params="['device.id': device.id]">
-								Aggregation
-							</g:link>
-						</sec:ifAnyGranted>
+						<g:link class="aui-button" action="aggregateValues" params="['device.id': device.id]">
+							Aggréger data
+						</g:link>
 					</g:if>
 				</div>
 			</div>

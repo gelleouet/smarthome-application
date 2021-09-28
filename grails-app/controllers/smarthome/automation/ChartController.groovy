@@ -5,6 +5,7 @@ import smarthome.core.ChartUtils;
 import smarthome.core.DateUtils;
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.QueryUtils;
+import smarthome.core.Widget
 import smarthome.plugin.NavigableAction;
 import smarthome.plugin.NavigationEnum;
 
@@ -24,6 +25,7 @@ class ChartController extends AbstractController {
 	 *
 	 * @return
 	 */
+	@NavigableAction(label = "Mes graphiques", navigation = NavigationEnum.navbarPrimary)
 	def chartsGrid(ChartCommand command) {
 		command.navigation()
 		def groupes = chartService.listGroupes(principal.id)
@@ -204,13 +206,16 @@ class ChartController extends AbstractController {
 	/**
 	 * Widget chart
 	 * 
-	 * @param Ch
+	 * @param chart
+	 * @param widgetSrcId
 	 * @return
 	 */
-	def widgetChart(Chart chart) {
+	def widgetChart(Chart chart, long widgetSrcId) {
 		ChartCommand command = new ChartCommand(chart: chart)
 		def datas = chartService.values(command)
-		params.chartHeight = 400
-		render(template: 'widgetChart', model: [chart: chart, command: command, datas: datas])
+		Widget widget = Widget.read(widgetSrcId)
+		params.chartHeight = widget.intHeight() ?: Chart.DEFAULT_CHART_HEIGHT
+		render(template: 'widgetChart', model: [chart: chart, command: command,
+			datas: datas, widget: widget])
 	}
 }

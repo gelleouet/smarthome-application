@@ -3,7 +3,7 @@
 		<div class="close-corner-button">
 			<div class="aui-buttons">
 				<g:if test="${ widgetUser.widget.configName }">
-					<g:link class="aui-button aui-button-subtle" title="configuration" controller="${ widgetUser.widget.controllerName }" action="${ widgetUser.widget.configName }">
+					<g:link class="aui-button aui-button-subtle" title="configuration" controller="${ widgetUser.widget.controllerName }" action="${ widgetUser.widget.configName }" id="${ widgetUser.paramId }" target="config">
 						<span class="aui-icon aui-icon-small aui-iconfont-configure"></span>
 					</g:link>
 				</g:if>
@@ -13,7 +13,7 @@
 			</div>
 		</div>
 		
-		<div async-url="<%= createLink(controller: widgetUser.widget.controllerName, action: widgetUser.widget.actionName, id: widgetUser.paramId) %>"
+		<div async-url="<%= createLink(controller: widgetUser.widget.controllerName, action: widgetUser.widget.actionName, id: widgetUser.paramId, params: [widgetSrcId: widgetUser.widget.id]) %>"
 				ajax="true" data-refresh="${ widgetUser.widget.refreshPeriod ? widgetUser.widget.refreshPeriod * 60 * 1000 : '' }"
 				id="ajaxWidget_${widgetUser.id}">
 			<div class="aui-progress-indicator">

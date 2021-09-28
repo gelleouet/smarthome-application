@@ -28,7 +28,7 @@
 		            </div>
 		            
 		            <div class="aui-buttons">
-		            	<g:remoteLink class="aui-button aui-button-subtle" url="[controller: 'widget', action: 'dialogAddWidget']" update="ajaxDialog"
+		            	<g:remoteLink class="aui-button" url="[controller: 'widget', action: 'dialogAddWidget']" update="ajaxDialog"
 		            			onSuccess="showDialog('add-widget-dialog')">
 		            		<span class="aui-icon aui-icon-small aui-iconfont-add"></span> Ajouter widget
 		            	</g:remoteLink>

@@ -14,6 +14,9 @@ import grails.validation.Validateable;
  */
 @Validateable
 class Chart {
+	
+	static final int DEFAULT_CHART_HEIGHT = 400
+	
 	static belongsTo = [user: User]
 	static hasMany = [devices: ChartDevice]
 	

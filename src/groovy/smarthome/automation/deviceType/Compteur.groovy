@@ -23,6 +23,9 @@ import smarthome.core.chart.GoogleDataTableCol;
  *
  */
 class Compteur extends AbstractDeviceType {
+	static final List DAY_METANAMES = ['conso']
+	
+	
 	/**
 	 * @see smarthome.automation.deviceType.AbstractDeviceType.chartDataTemplate()
 	 */
@@ -32,25 +35,9 @@ class Compteur extends AbstractDeviceType {
 	}
 	
 	
-	
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#values()
-	 */
 	@Override
-	List values(DeviceChartCommand command) throws SmartHomeException {
-		def values = []
-		
-		if (command.viewMode == ChartViewEnum.day) {
-			values = DeviceValue.values(command.device, command.dateDebut(), command.dateFin(),
-				"conso")
-		} else if (command.viewMode == ChartViewEnum.month) {
-			values = DeviceValueDay.values(command.device, command.dateDebut(), command.dateFin())
-		} else if (command.viewMode == ChartViewEnum.year) {
-			values = DeviceValueMonth.values(command.device, command.dateDebut(), command.dateFin())
-		}
-		
-		return values
+	public List<String> dayMetaNames() {
+		DAY_METANAMES
 	}
 
 

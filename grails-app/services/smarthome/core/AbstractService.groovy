@@ -152,4 +152,24 @@ abstract class AbstractService {
 			throw new SmartHomeException(ex, domain)
 		}
 	}
+	
+	
+	/**
+	 * Raccourci vers user connecté
+	 * 
+	 * @return
+	 */
+	Object principal() {
+		springSecurityService.getPrincipal()
+	}
+	
+	
+	/**
+	 * Raccourci vers ID user connecté
+	 * 
+	 * @return
+	 */
+	Long principalId() {
+		springSecurityService.getPrincipal()?.id
+	}
 }

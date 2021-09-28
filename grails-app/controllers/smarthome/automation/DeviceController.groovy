@@ -8,6 +8,7 @@ import smarthome.core.DateUtils
 import smarthome.core.ExceptionNavigationHandler
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
+import smarthome.core.Widget
 import smarthome.core.chart.GoogleChart
 import smarthome.plugin.NavigableAction
 import smarthome.plugin.NavigationEnum
@@ -56,7 +57,7 @@ class DeviceController extends AbstractController {
 	 * 
 	 * @return
 	 */
-	@NavigableAction(label = "Pilotage", navigation = NavigationEnum.navbarPrimary)
+	@NavigableAction(label = "Mes objets", navigation = NavigationEnum.navbarPrimary)
 	def devicesGrid(DeviceSearchCommand search) {
 		search.userId = principal.id
 		def user = authenticatedUser
@@ -473,5 +474,21 @@ class DeviceController extends AbstractController {
 		def countOpenAlert = deviceAlertService.countOpenAlert(principal.id)
 		render (template: 'deviceActivite', model: [lastDevices: lastDevices,
 			countOpenAlert: countOpenAlert])
+	}
+	
+	
+	/**
+	 * Affichage du widget objet connecté
+	 * 
+	 * @param device
+	 * @param widgetSrcId
+	 * @return
+	 */
+	def widget(Device device, long widgetSrcId) {
+		User user = authenticatedUser	// inject by spring security plugin
+		deviceService.prepareForView([device])
+		Widget widget = Widget.read(widgetSrcId)
+		render template: 'deviceView', model: [device: device, user: user, widget: widget,
+			height: widget.intHeight()]
 	}
 }

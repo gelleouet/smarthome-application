@@ -486,11 +486,11 @@ div .dataTables_info {
 	font-weight: bold;
 }
 
-table td.command-column a {
+table td.command-column a, table td.command-column button {
 	display: none;
 }
 
-table tr:hover td.command-column a {
+table tr:hover td.command-column a, table tr:hover td.command-column button {
 	display: inline;
 }
 

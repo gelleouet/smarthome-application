@@ -13,7 +13,7 @@
 			<span class="aui-icon aui-icon-small aui-iconfont-edit"></span>
 		</g:link>
 		
-		<g:link class="aui-button aui-button-subtle" controller="device" action="deviceChart" params="['device.id': device.id]" title="Graphique">
+		<g:link class="aui-button aui-button-subtle" controller="device" action="deviceChart" params="['device.id': device.id, dateChart: app.formatPicker(date: device.dateValue)]" title="Graphique">
 			<span class="aui-icon aui-icon-small aui-iconfont-macro-gallery"></span>
 		</g:link>
 	</div>

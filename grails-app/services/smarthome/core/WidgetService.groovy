@@ -48,42 +48,22 @@ class WidgetService extends AbstractService {
 	 * Vérifie si le widget n'est pas déjà associé
 	 *
 	 * @param widget
+	 * @param paramId
 	 * @param userId
 	 * @return
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	WidgetUser addWidgetUser(Widget widget, Long userId) throws SmartHomeException {
+	WidgetUser addWidgetUser(Widget widget, Long paramId, Long userId) throws SmartHomeException {
 		def user = User.read(userId)
-		def widgetUser = WidgetUser.findByWidgetAndUser(widget, user)
+		def widgetUser = WidgetUser.findByWidgetAndUserAndParamId(widget, user, paramId)
 		
 		if (!widgetUser) {
-			widgetUser = new WidgetUser(widget: widget, user: user)
+			widgetUser = new WidgetUser(widget: widget, user: user, paramId: paramId)
 			
 			if (!widgetUser.save()) {
 				throw new SmartHomeException("Erreur ajout widget utilisateur", widgetUser)
 			}
-		}
-		
-		return widgetUser
-	}
-	
-	
-	/**
-	 * Supprime un widget pour un user
-	 *
-	 * @param widget
-	 * @param userId
-	 * @return
-	 * @throws SmartHomeException
-	 */
-	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	WidgetUser removeWidgetUser(Widget widget, Long userId) throws SmartHomeException {
-		def user = User.read(userId)
-		def widgetUser = WidgetUser.findByWidgetAndUser(widget, user)
-		
-		if (widgetUser) {
-			widgetUser.delete()
 		}
 		
 		return widgetUser

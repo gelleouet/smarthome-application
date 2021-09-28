@@ -3,9 +3,6 @@ package smarthome.core.chart
 import grails.converters.JSON
 import grails.web.JSONBuilder
 import groovy.time.TimeCategory
-
-import java.util.List
-
 import smarthome.automation.ChartViewEnum
 import smarthome.core.DateUtils
 
@@ -18,8 +15,27 @@ class GoogleChart {
 	List<Map> series = []
 	List<Map> metaValues = []
 	List<Map> vAxis = []
+	List<Map> hAxis = []
 	GoogleChart joinChart
+	String hAxisFormat
+	String hAxisTicks
+	String hAxisTitle
+	boolean slantedText = false
+	boolean isStacked = false
+	boolean showLegend = true
+	boolean showHAxis = true
+	String selectionField
+	String curveType
 
+
+
+	/**
+	 * Générateur d'id pour les charts
+	 * @return
+	 */
+	static String randomChartId() {
+		UUID.randomUUID()
+	}
 
 
 	/**
@@ -42,6 +58,7 @@ class GoogleChart {
 
 			for (GoogleDataTableCol col : colonnes) {
 				def value = null
+				def cellStyle = null
 
 				if (col.staticValue) {
 					value = col.staticValue
@@ -65,7 +82,12 @@ class GoogleChart {
 					}
 				}
 
-				values << [v: value]
+				// formattage au niveau cellule
+				if (col.cellStyle) {
+					cellStyle = col.cellStyle(deviceValue, index, this)
+				}
+
+				values << [v: value, p: cellStyle]
 			}
 
 			def row = ["c": values]

@@ -25,7 +25,7 @@
 
 		
 		<h4>
-			<g:form class="aui" action="users">
+			<g:form name="user-form" class="aui" action="users">
 				<fieldset>
 					<input autofocus="true" class="text long-field" type="text" placeholder="Rechercher nom, prénom, email" name="search" value="${ command.search }"/>
 					<button class="aui-button aui-button-subtitle"><span class="aui-icon aui-icon-small aui-iconfont-search"></span></button>
@@ -36,7 +36,7 @@
 		<br/>
 		
 		<div style="overflow-x:auto;">
-		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }">
+		<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="user-form">
 		    <thead>
 		        <tr>
 		            <th>Nom</th>

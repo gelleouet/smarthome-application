@@ -51,6 +51,17 @@ class ChartService extends AbstractService {
 	
 	
 	/**
+	 * Recherche sur le user connecté
+	 * 
+	 * @param pagination
+	 * @return
+	 */
+	List<Chart> listByPrincipal(Map pagination) {
+		return listByUser(new ChartCommand(), principalId(), pagination)
+	}
+	
+	
+	/**
 	 * Edition ACL
 	 * 
 	 * @param chart

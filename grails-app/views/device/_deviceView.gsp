@@ -11,7 +11,7 @@
 	</g:if>
 				            	
 	${ device.label }
-	<span class="h6-normal"> 
+	<span class="h6-normal" title="${ app.formatUserDateTime(date: device.dateValue)}"> 
 	
 	<g:link class="h6-normal" action="tableauBordFriend" controller="tableauBord" id="${ device.user.id }">${ device.user.prenomNom }</g:link> - ${ app.formatTimeAgo(date: device.dateValue) }</span>
 	
@@ -19,11 +19,8 @@
 </h4>
 								
 <div class="aui-group">
-	<div class="aui-item filActualiteIcon">
-		<asset:image src="${ device.deviceImpl.icon() }" class="device-icon-grid"/>
-	</div>
 	<div class="aui-item">
-		<g:render template="${ device.deviceImpl.viewGrid() }" model="[device: device]"></g:render>
+		<g:render template="${ device.deviceImpl.viewGrid() }" model="[device: device, height: height]"></g:render>
 	</div>
 </div>
 

@@ -2,7 +2,7 @@
 
 <html>
 <head>
-<meta name='layout' content='authenticated' />
+<meta name='layout' content='authenticated-chart' />
 </head>
 
 <body>
