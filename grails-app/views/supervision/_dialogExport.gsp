@@ -4,12 +4,19 @@
 	<content tag="dialogTitle">Export</content>
 
 	<content tag="dialogBody">
-		<g:form name="supervision-export-dialog-form" action="exportAdmin">
+		<g:form name="supervision-export-dialog-form" action="export">
 			<g:hiddenField name="deviceTypeId" value="${ command.deviceTypeId }"/>
 			<g:hiddenField name="profilId" value="${ command.profilId }"/>
 			<g:hiddenField name="userSearch" value="${ command.userSearch }"/>
 			<g:hiddenField name="ville" value="${ command.ville }"/>
+			<g:hiddenField name="defiId" value="${ command.defiId }"/>
 		
+		
+			<div class="form-group required">
+				<label>Export</label>
+				<g:select name="exportImpl" class="form-control" required="true" from="${ exportImpls }"
+					optionKey="key" optionValue="value"/>	
+			</div>
 			<div class="form-group required">
 				<label for="dateDebut">Date début</label>
 				<g:field type="date" name="dateDebut" class="form-control aui-date-picker" value="${ app.formatPicker(date: command.dateDebut) }" required="true"/>	

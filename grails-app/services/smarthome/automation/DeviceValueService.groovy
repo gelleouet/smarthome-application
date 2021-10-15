@@ -13,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 
 import smarthome.automation.deviceType.AbstractDeviceType
 import smarthome.automation.export.DeviceValueExport
-import smarthome.automation.export.EcodoExcelDeviceValueExport
+import smarthome.automation.export.UserExcelDeviceValueExport
 import smarthome.automation.export.ExportTypeEnum
 import smarthome.core.AbstractService
 import smarthome.core.ApplicationUtils
 import smarthome.core.AsynchronousMessage
 import smarthome.core.Chronometre
+import smarthome.core.ClassUtils
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 import smarthome.core.chart.GoogleChart
@@ -408,54 +409,6 @@ class DeviceValueService extends AbstractService {
 		monthValue.value = value.round(2)
 
 		return super.save(monthValue)
-	}
-
-
-	/**
-	 * Export des données d'un device pour un profil administrateur
-	 * 
-	 * @param command
-	 * @param exportType
-	 * @param response
-	 * 
-	 * @throws SmartHomeException
-	 */
-	void export(SupervisionCommand command, ExportTypeEnum exportType, ServletResponse response) throws SmartHomeException {
-		// Vérifs communes avant de lancer une impl
-		if (!command.dateDebut || !command.dateFin) {
-			throw new SmartHomeException("Veuillez renseigner les dates d'export !", command)
-		}
-
-		if (!command.adminId) {
-			throw new SmartHomeException("L'administrateur doit être renseigné !", command)
-		}
-
-		if (command.dateFin < command.dateDebut) {
-			throw new SmartHomeException("Date fin incorrecte !", command)
-		}
-
-
-		// TODO : changer imlémentation en fonction utilisateur
-		// provisoire le temps de créer d'autres impls
-		DeviceValueExport deviceValueExport = new EcodoExcelDeviceValueExport()
-		ApplicationUtils.autowireBean(deviceValueExport)
-
-		// on s'assure que le stream est bien fermé à la fin de l'export et en cas d'erreur
-		response.outputStream.withStream {
-			try {
-				if (exportType == ExportTypeEnum.admin) {
-					deviceValueExport.initExportAdmin(command, response)
-					deviceValueExport.exportAdmin(command, it)
-				} else if (exportType == ExportTypeEnum.user) {
-					deviceValueExport.initExportUser(command, response)
-					deviceValueExport.exportUser(command, it)
-				}
-			} catch (Exception ex) {
-				log.error("Export ${exportType} : ${ex.message}")
-				throw new SmartHomeException(ex.message, command)
-			}
-
-		}
 	}
 
 }

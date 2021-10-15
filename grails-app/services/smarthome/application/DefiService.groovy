@@ -57,7 +57,6 @@ class DefiService extends AbstractService {
 	List<Defi> listCatalogue(DefiCommand command, Map pagination) {
 		return Defi.createCriteria().list(pagination) {
 			eq 'publique', true
-			eq 'actif', true
 			
 			if (command.search) {
 				ilike 'libelle', QueryUtils.decorateMatchAll(command.search)
@@ -68,7 +67,7 @@ class DefiService extends AbstractService {
 
 			join 'user'
 			
-			order 'referenceDebut', 'desc'
+			order 'libelle'
 		}
 	}
 	

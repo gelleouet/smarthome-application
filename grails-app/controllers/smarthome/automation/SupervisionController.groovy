@@ -1,10 +1,14 @@
 package smarthome.automation
 
 import grails.plugin.springsecurity.annotation.Secured
+import smarthome.application.DefiCommand
+import smarthome.application.DefiService
 import smarthome.automation.export.ExportTypeEnum;
 import smarthome.common.Commune
 import smarthome.core.AbstractController;
+import smarthome.core.ConfigService
 import smarthome.core.ExceptionNavigationHandler;
+import smarthome.core.ExportService
 import smarthome.security.Profil
 import smarthome.security.UserService;
 
@@ -12,9 +16,11 @@ import smarthome.security.UserService;
 @Secured("hasRole('ROLE_SUPERVISION')")
 class SupervisionController extends AbstractController {
 	UserService userService
-	DeviceValueService deviceValueService
 	DeviceService deviceService
 	DeviceTypeService deviceTypeService
+	ExportService exportService
+	DefiService defiService
+	ConfigService configService
 	
 	
 	/**
@@ -37,7 +43,9 @@ class SupervisionController extends AbstractController {
 		setPagination(command.pagination())
 		
 		render(view: 'supervision', model: [devices: devices, recordsTotal: devices.totalCount,
-			communes: Commune.list(), profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur(), command: command])
+			communes: Commune.list(), profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur(),
+			command: command, defis: defiService.listCatalogue(new DefiCommand(), [:]),
+			defaultDefiId: configService.value("GRAND_DEFI_ID")])
 	}
 	
 	
@@ -47,8 +55,9 @@ class SupervisionController extends AbstractController {
 	 * @param command
 	 * @return
 	 */
-	def dialogExportAdmin(SupervisionCommand command) {
-		render (template: 'dialogExportAdmin', model: [command: command])
+	def dialogExport(SupervisionCommand command) {
+		Map exportImpls = [(smarthome.automation.export.UserExcelDeviceValueExport.name): 'Export profils']
+		render (template: 'dialogExport', model: [command: command, exportImpls: exportImpls])
 	}
 	
 	
@@ -57,8 +66,8 @@ class SupervisionController extends AbstractController {
 	 *
 	 */
 	@ExceptionNavigationHandler(actionName = "supervision", modelName = "command")
-	def exportAdmin(SupervisionCommand command) {
+	def export(SupervisionCommand command) {
 		command.adminId = principal.id
-		deviceValueService.export(command, ExportTypeEnum.admin, response)
+		exportService.export(command, response)
 	}
 }

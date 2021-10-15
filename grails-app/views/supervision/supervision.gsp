@@ -15,18 +15,25 @@
 				<g:form action="supervision" name="supervision-form" class="form-inline">
 					
 					<div class="row w-100">
-						<div class="col">
-							<g:select name="deviceTypeId" value="${ command?.deviceTypeId }" from="${ compteurTypes }"
-								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
-							<g:select name="profilId" value="${ command?.profilId }" from="${ profils }"
-								optionKey="id" optionValue="libelle" class="form-control" noSelection="['': ' ']"/>
-							<g:select class="form-control combobox" name="ville" from="${ communes }"
-	            				optionKey="libelle" optionValue="libelle" value="${ command.ville }" noSelection="['': ' ']"/>
+						<div class="col-8">
+							<g:select name="defiId" value="${ command.defiId }" from="${ defis }" class="form-control combobox"
+	            				optionKey="id" optionValue="libelle"  noSelection="['': ' ']"/>
+	            				
+							<g:select name="ville" value="${ command.ville }" from="${ communes }" class="form-control combobox"
+	            				optionKey="libelle" optionValue="libelle"  noSelection="['': ' ']"/>
+	            			
+	            			<g:select name="profilId" value="${ command?.profilId }" from="${ profils }" class="form-control combobox"
+								optionKey="id" optionValue="libelle" noSelection="['': ' ']"/>
+	            				
+							<g:select name="deviceTypeId" value="${ command?.deviceTypeId }" from="${ compteurTypes }" class="form-control combobox"
+								optionKey="id" optionValue="libelle" noSelection="['': ' ']"/>
+							
 							<g:textField name="userSearch" value="${ command?.userSearch}" class="form-control" placeholder="Nom prénom"/>
+							
 							<button class="btn btn-light"><app:icon name="search"/></button>
 						</div>
 						<div class="col text-right">
-							<a id="supervision-export-button" class="btn btn-light" data-url="${ g.createLink(action: 'dialogExportAdmin') }"><app:icon name="download-cloud"/> Exporter</a>
+							<a id="supervision-export-button" class="btn btn-light" data-url="${ g.createLink(action: 'dialogExport') }"><app:icon name="download-cloud"/> Exporter</a>
 						</div>
 					</div>	
 				</g:form>
@@ -46,7 +53,7 @@
 				    	<g:each var="device" in="${ devices }">
 					        <tr>
 					        	<td>
-					        		<g:link controller="user" action="edit" id="${ device.user.id }">${ device.user.nomPrenom }</g:link>
+					        		<g:link controller="user" action="edit" id="${ device.user.id }">${ device.user.profil?.libelle } > ${ device.user.nomPrenom }</g:link>
 					        	</td>
 					            <td>
 					            	<g:link controller="device" action="edit" id="${ device.id }">${ device.label }</g:link>

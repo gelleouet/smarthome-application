@@ -13,10 +13,12 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	Long deviceTypeId
 	Long profilId
 	Long adminId
+	Long defiId
 	String userSearch
 	Date dateDebut = DateUtils.firstDayInMonth(new Date())
 	Date dateFin = DateUtils.lastDayInMonth(new Date())
 	String ville
+	String exportImpl
 	
 	
 	
@@ -25,6 +27,8 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		profilId nullable: true
 		userSearch nullable: true
 		ville nullable: true
+		exportImpl nullable: true
+		defiId nullable: true
 	}
 	
 	
@@ -77,6 +81,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			.domainClass(Device)
 		
 		applyCriterion(hql, false)
+			.addOrder("user.profil.libelle")
 			.addOrder("user.nom")
 			.addOrder("user.prenom")
 			.addOrder("device.label")
@@ -111,6 +116,13 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			}
 		}
 		
+		if (defiId) {
+			hql.addCriterion("exists (select participant.id from DefiEquipeParticipant participant "
+				+ "join participant.defiEquipe equipe "
+				+ "where participant.user.id = user.id and equipe.defi.id = :defiId)",
+				[defiId: defiId])
+		}
+		
 		return hql
 	}
 	
@@ -140,12 +152,13 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			FROM Device device, House house
 			JOIN device.deviceType deviceType
 			JOIN device.user user
-			LEFT JOIN user.profil profil""")
+			LEFT JOIN user.profil profil""", "distinct user")
 			.domainClass(Device)
 			.addCriterion("house.user = user and house.defaut = :defautHouse", [defautHouse: true])
 		
 		applyCriterion(hql, true)
-			.addOrder("user.username")
+			.addOrder("user.nom")
+			.addOrder("user.prenom")
 	
 		return hql.visit(maxPage, closure)
 	}
