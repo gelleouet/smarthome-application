@@ -27,8 +27,8 @@ import smarthome.core.SmartHomeException
 import smarthome.core.TransactionUtils
 import smarthome.core.WorkflowService
 import smarthome.core.chart.GoogleChart
-import smarthome.core.query.HQL
 import smarthome.rule.DeviceTypeDetectRuleService
+import smarthome.security.Role
 import smarthome.security.User
 import smarthome.security.UserAdmin
 
@@ -154,10 +154,8 @@ class DeviceService extends AbstractService {
 			return device
 		}
 
-		// si le user est admin du device
-		def admin = UserAdmin.findByAdminAndUser(user, device.user)
-
-		if (admin) {
+		// si le user est admin
+		if (user.hasRole(Role.ROLE_ADMIN)) {
 			return device
 		}
 
@@ -509,36 +507,7 @@ class DeviceService extends AbstractService {
 			throw new SmartHomeException("adminId must be fill !", command)
 		}
 
-		HQL hql = new HQL("device",	""" 
-			FROM Device device 
-			JOIN FETCH device.deviceType deviceType
-			JOIN FETCH device.user user
-			LEFT JOIN FETCH user.profil profil""")
-
-		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
-			
-		if (command.userSearch) {
-			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
-				[userSearch: QueryUtils.decorateMatchAll(command.userSearch.toLowerCase())])
-		}
-
-		if (command.deviceTypeId) {
-			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceTypeId])
-		}
-
-		if (command.profilId) {
-			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
-		}
-
-		hql.addOrder("profil.libelle")
-		hql.addOrder("user.nom")
-		hql.addOrder("user.prenom")
-		hql.addOrder("device.label")
-
-		return Device.withSession { session ->
-			hql.list(session, command.pagination())
-		}
+		command.listDevice()
 	}
 
 

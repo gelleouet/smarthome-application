@@ -47,10 +47,13 @@ class SmartHomePermissionEvaluator implements PermissionEvaluator {
 			} else {
 				// le user connecté est peut être un admin d'un groupe d'utilisateur
 				// dans ce cas, il a accès à tous les objets des utilisateurs du groupe
-				return UserAdmin.createCriteria().list {
+				/*return UserAdmin.createCriteria().list {
 					eq 'admin.id', authentication.principal.id 
 					eq 'user.id', domainObject['user'].id
-				}
+				}*/
+				// accès admin
+				Collection roles = authentication.authorities
+				return roles.find { it.authority == Role.ROLE_ADMIN }
 			}
 		}
 		

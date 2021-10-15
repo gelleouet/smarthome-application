@@ -23,7 +23,7 @@ import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 
 import smarthome.automation.DeviceValue;
-import smarthome.automation.ExportCommand;
+import smarthome.automation.SupervisionCommand
 import smarthome.automation.deviceType.Compteur;
 import smarthome.automation.deviceType.Humidite;
 import smarthome.automation.deviceType.TeleInformation;
@@ -58,7 +58,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	 * @see smarthome.automation.export.DeviceValueExport#exportAdmin(smarthome.automation.ExportCommand, java.io.OutputStream)
 	 */
 	@Override
-	void exportAdmin(ExportCommand command, OutputStream outStream) throws Exception {
+	void exportAdmin(SupervisionCommand command, OutputStream outStream) throws Exception {
 		workbook = new HSSFWorkbook()
 		Sheet sheet = workbook.createSheet("DULCE")
 		createHelper = workbook.getCreationHelper()
@@ -147,7 +147,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	 * @see smarthome.automation.export.DeviceValueExport#exportUser(smarthome.automation.ExportCommand, java.io.OutputStream)
 	 */
 	@Override
-	void exportUser(ExportCommand command, OutputStream outStream) throws Exception {
+	void exportUser(SupervisionCommand command, OutputStream outStream) throws Exception {
 		throw new SmartHomeException("Fonctionnalité pas implémentée !", command)
 		
 	}
@@ -244,7 +244,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	 * @see smarthome.automation.export.DeviceValueExport#initExportAdmin(smarthome.automation.ExportCommand, javax.servlet.ServletResponse)
 	 */
 	@Override
-	void initExportAdmin(ExportCommand command, ServletResponse response) {
+	void initExportAdmin(SupervisionCommand command, ServletResponse response) {
 		response.setContentType(MimeTypeEnum.EXCEL2003.mimeType)
 		response.setHeader("Content-Disposition", "attachment; filename=exportdulce-${command.dateDebut.format('yyyyMMdd')}-${command.dateFin.format('yyyyMMdd')}.${MimeTypeEnum.EXCEL2003.extension}")
 	}
@@ -255,7 +255,7 @@ class DulceExcelDeviceValueExport implements DeviceValueExport {
 	 * @see smarthome.automation.export.DeviceValueExport#initExportUser(smarthome.automation.ExportCommand, javax.servlet.ServletResponse)
 	 */
 	@Override
-	void initExportUser(ExportCommand command, ServletResponse response) {
+	void initExportUser(SupervisionCommand command, ServletResponse response) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,13 +1,13 @@
 package smarthome.automation.export
 
 import javax.servlet.ServletResponse;
-
-import smarthome.automation.ExportCommand;
+import smarthome.automation.SupervisionCommand
 import smarthome.core.SmartHomeException;
 
+
 interface DeviceValueExport {
-	void initExportAdmin(ExportCommand command, ServletResponse response)
-	void initExportUser(ExportCommand command, ServletResponse response)
+	void initExportAdmin(SupervisionCommand command, ServletResponse response)
+	void initExportUser(SupervisionCommand command, ServletResponse response)
 	
 	/**
 	 * Export des données au format déterminé par l'impl et vers un flux quelconque
@@ -19,7 +19,7 @@ interface DeviceValueExport {
 	 * @param outStream
 	 * @throws SmartHomeException
 	 */
-	void exportAdmin(ExportCommand command, OutputStream outStream) throws Exception
+	void exportAdmin(SupervisionCommand command, OutputStream outStream) throws Exception
 	
 	
 	/**
@@ -30,5 +30,5 @@ interface DeviceValueExport {
 	 * @param outStream
 	 * @throws SmartHomeException
 	 */
-	void exportUser(ExportCommand command, OutputStream outStream) throws Exception
+	void exportUser(SupervisionCommand command, OutputStream outStream) throws Exception
 }
