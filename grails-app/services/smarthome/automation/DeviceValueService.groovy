@@ -444,11 +444,9 @@ class DeviceValueService extends AbstractService {
 		response.outputStream.withStream {
 			try {
 				if (exportType == ExportTypeEnum.admin) {
-					log.info("Export admin")
 					deviceValueExport.initExportAdmin(command, response)
 					deviceValueExport.exportAdmin(command, it)
 				} else if (exportType == ExportTypeEnum.user) {
-					log.info("Export user ")
 					deviceValueExport.initExportUser(command, response)
 					deviceValueExport.exportUser(command, it)
 				}

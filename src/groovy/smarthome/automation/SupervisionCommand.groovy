@@ -115,7 +115,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	}
 	
 	
-	void visitDeviceValue(int maxPage, Closure closure) {
+	int visitDeviceValue(int maxPage, Closure closure) {
 		HQL hql = new HQL("deviceValue", """
 			FROM DeviceValue deviceValue
 			JOIN FETCH deviceValue.device device
@@ -131,11 +131,11 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			.addOrder("device.label")
 			.addOrder("deviceValue.dateValue")
 			
-		hql.visit(maxPage, closure)
+		return hql.visit(maxPage, closure)
 	}
 	
 	
-	void visitUser(int maxPage, Closure closure) {
+	int visitUser(int maxPage, Closure closure) {
 		HQL hql = new HQL("distinct user, house",	"""
 			FROM Device device, House house
 			JOIN device.deviceType deviceType
@@ -147,6 +147,29 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		applyCriterion(hql, true)
 			.addOrder("user.username")
 	
-		hql.visit(maxPage, closure)
+		return hql.visit(maxPage, closure)
+	}
+	
+	
+	/**
+	 * Calcule les dates distinctes des valeurs sur la période
+	 * 
+	 * @return
+	 */
+	List<Date> groupDateValues() {
+		HQL hql = new HQL("deviceValue.dateValue", """
+			FROM DeviceValue deviceValue
+			JOIN deviceValue.device device
+			JOIN device.deviceType deviceType
+			JOIN device.user user""")
+		.domainClass(DeviceValue)
+	
+		applyCriterion(hql, false)
+			.addCriterion("deviceValue.dateValue between :dateDebut and :dateFin", [dateDebut: datetimeDebut(), dateFin: datetimeFin()])
+			.addCriterion("deviceValue.name is null")
+			.addGroupBy("deviceValue.dateValue")
+			.addOrder("deviceValue.dateValue")
+			
+		return hql.list()
 	}
 }
