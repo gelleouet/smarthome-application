@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 import smarthome.automation.deviceType.AbstractDeviceType
 import smarthome.automation.export.DeviceValueExport
 import smarthome.automation.export.UserExcelDeviceValueExport
-import smarthome.automation.export.ExportTypeEnum
 import smarthome.core.AbstractService
 import smarthome.core.ApplicationUtils
 import smarthome.core.AsynchronousMessage

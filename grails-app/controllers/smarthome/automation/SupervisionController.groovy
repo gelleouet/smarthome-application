@@ -3,7 +3,6 @@ package smarthome.automation
 import grails.plugin.springsecurity.annotation.Secured
 import smarthome.application.DefiCommand
 import smarthome.application.DefiService
-import smarthome.automation.export.ExportTypeEnum;
 import smarthome.common.Commune
 import smarthome.core.AbstractController;
 import smarthome.core.ConfigService
