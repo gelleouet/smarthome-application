@@ -80,7 +80,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			LEFT JOIN FETCH user.profil profil""")
 			.domainClass(Device)
 		
-		applyCriterion(hql, false)
+		applyCriterion(hql, false, true)
 			.addOrder("user.profil.libelle")
 			.addOrder("user.nom")
 			.addOrder("user.prenom")
@@ -90,7 +90,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	}
 	
 	
-	protected HQL applyCriterion(HQL hql, boolean joinHouse) {
+	protected HQL applyCriterion(HQL hql, boolean joinHouse, boolean joinDevice) {
 		//hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
 			//	where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
 		
@@ -103,8 +103,10 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: deviceTypeId])
 		}
 	
-		if (profilId) {
-			hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
+		if (joinDevice) {
+			if (profilId) {
+				hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
+			}
 		}
 		
 		if (ville) {
@@ -136,7 +138,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			LEFT JOIN user.profil profil""")
 			.domainClass(DeviceValue)
 		
-		applyCriterion(hql, false)
+		applyCriterion(hql, false, true)
 			.addCriterion("deviceValue.dateValue between :dateDebut and :dateFin", [dateDebut: datetimeDebut(), dateFin: datetimeFin()])
 			.addCriterion("deviceValue.name is null")
 			.addOrder("user.username")
@@ -148,15 +150,13 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	
 	
 	int visitUser(int maxPage, Closure closure) {
-		HQL hql = new HQL("distinct user, house",	"""
-			FROM Device device, House house
-			JOIN device.deviceType deviceType
-			JOIN device.user user
-			LEFT JOIN user.profil profil""", "distinct user")
+		HQL hql = new HQL("user, house",	"""
+			FROM User user, House house
+			LEFT JOIN user.profil profil""")
 			.domainClass(Device)
 			.addCriterion("house.user = user and house.defaut = :defautHouse", [defautHouse: true])
 		
-		applyCriterion(hql, true)
+		applyCriterion(hql, true, false)
 			.addOrder("user.nom")
 			.addOrder("user.prenom")
 	
@@ -177,7 +177,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			JOIN device.user user""")
 		.domainClass(DeviceValue)
 	
-		applyCriterion(hql, false)
+		applyCriterion(hql, false, true)
 			.addCriterion("deviceValue.dateValue between :dateDebut and :dateFin", [dateDebut: datetimeDebut(), dateFin: datetimeFin()])
 			.addCriterion("deviceValue.name is null")
 			.addGroupBy("deviceValue.dateValue")

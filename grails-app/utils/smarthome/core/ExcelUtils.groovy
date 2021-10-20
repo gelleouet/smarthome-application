@@ -37,6 +37,12 @@ class ExcelUtils {
 	}
 	
 	
+	Cell createHeaderCell(Sheet sheet, int rowIndex, int cellIndex, String label) {
+		Row row = createRow(sheet, rowIndex)
+		return createHeaderCell(row, cellIndex, label)
+	}
+	
+	
 	Cell createHeaderCell(Row row, int cellIndex, String label) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(label)
@@ -102,5 +108,10 @@ class ExcelUtils {
 		}
 		
 		return createOrGetCell(row, cellIndex)
+	}
+	
+	
+	Row createRow(Sheet sheet, int rowIndex) {
+		return sheet.createRow(rowIndex)
 	}
 }

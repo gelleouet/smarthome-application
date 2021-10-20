@@ -59,58 +59,60 @@ class UserExcelDeviceValueExport implements DeviceValueExport {
 	@Override
 	void export(SupervisionCommand command, OutputStream outStream) throws Exception {
 		Workbook workbook = new HSSFWorkbook()
-		Sheet sheet = workbook.createSheet("Profils")
 		ExcelUtils excelUtils = new ExcelUtils(workbook).build()
-		int cellIdx=1, rowIdx=0
-		Row row
+		Sheet sheet = workbook.createSheet("Profils")
+		Row row = excelUtils.createRow(sheet, 0)
+		int cellIdx = 0
 		
 		
-		// création de l'entete sur la 1ère colonne
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Profil")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Nom")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Prénom")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Numéro et rue")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Code postal")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Commune")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Adresse courriel")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Numéro de téléphone")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("A utiliser mon adresse e-mail et mon numéro de téléphone pour me contacter dans le cadre du Grand Défi Energie et Eau (nécessaire pour le bon déroulement du défi)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("A récupérer mes données de consommation d’énergie et d’eau à usage exclusif du Grand Défi Energie et Eau (nécessaire pour le bon déroulement du défi)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("A me faire apparaître dans la liste des participants de mon équipe.")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("A transmettre mon adresse e-mail et mon numéro de téléphone à ma commune/ma mairie pour me contacter dans le cadre du Grand Défi Energie et Eau.")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Créer mon compte client Enedis https://mon-compte-particulier.enedis.fr et à transmettre mes relevés de compteurs d’énergie et d’eau avant et pendant le Grand Défi Energie et Eau (nécessaire pour le bon déroulement du défi)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Nombre de personnes dans le foyer (vous compris)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Surface (m²)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Energie de chauffage principal")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Energie de chauffage secondaire (= appoint)")
-		excelUtils.createOrGetCell(sheet, rowIdx++, 0).setCellValue("Eau chaude sanitaire")
+		// création de l'entete sur la 1ère ligne
+		excelUtils.createHeaderCell(row, cellIdx++, "Profil")
+		excelUtils.createHeaderCell(row, cellIdx++, "Nom")
+		excelUtils.createHeaderCell(row, cellIdx++, "Prénom")
+		excelUtils.createHeaderCell(row, cellIdx++, "Numéro et rue")
+		excelUtils.createHeaderCell(row, cellIdx++, "Code postal")
+		excelUtils.createHeaderCell(row, cellIdx++, "Commune")
+		excelUtils.createHeaderCell(row, cellIdx++, "Adresse courriel")
+		excelUtils.createHeaderCell(row, cellIdx++, "Numéro de téléphone")
+		excelUtils.createHeaderCell(row, cellIdx++, "A utiliser mon adresse e-mail et mon numéro de téléphone pour me contacter dans le cadre du Grand Défi Energie et Eau")
+		excelUtils.createHeaderCell(row, cellIdx++, "A récupérer mes données de consommation d’énergie et d’eau à usage exclusif du Grand Défi Energie et Eau")
+		excelUtils.createHeaderCell(row, cellIdx++, "A me faire apparaître dans la liste des participants de mon équipe.")
+		excelUtils.createHeaderCell(row, cellIdx++, "A transmettre mon adresse e-mail et mon numéro de téléphone à ma commune/ma mairie pour me contacter dans le cadre du Grand Défi Energie et Eau.")
+		excelUtils.createHeaderCell(row, cellIdx++, "Créer mon compte client Enedis https://mon-compte-particulier.enedis.fr et à transmettre mes relevés de compteurs d’énergie et d’eau avant et pendant le Grand Défi Energie et Eau")
+		excelUtils.createHeaderCell(row, cellIdx++, "Nombre de personnes dans le foyer")
+		excelUtils.createHeaderCell(row, cellIdx++, "Surface (m²)")
+		excelUtils.createHeaderCell(row, cellIdx++, "Energie de chauffage principal")
+		excelUtils.createHeaderCell(row, cellIdx++, "Energie de chauffage secondaire")
+		excelUtils.createHeaderCell(row, cellIdx++, "Eau chaude sanitaire")
 		
+		// les données commencent à la 2e ligne
+		int rowIdx = 1
 		
 		int nbUser = command.visitUser(ApplicationUtils.configMaxBackend(grailsApplication)) { result ->
 			User user = result[0]
 			House house = result[1]
-			rowIdx = 0
+			// reset de compteur de colonnes à chaque ligne et incrément de la ligne pour la future insertion
+			cellIdx = 0
+			row = excelUtils.createRow(sheet, rowIdx++)
 			
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.profil?.libelle)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.nom)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.prenom)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(house.adresse)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(house.codePostal)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(house.location)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.username)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.telephoneMobile)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.autorise_user_data)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.autorise_conso_data)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.profilPublic)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.autorise_share_data)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(user.engage_enedis_account)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(house.nbPersonne)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(house.surface)
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(chauffage(house.chauffage?.id))
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(chauffage(house.chauffageSecondaire?.id))
-			excelUtils.createOrGetCell(sheet, rowIdx++, cellIdx).setCellValue(ecs(house.ecs?.id))
-			
-			cellIdx++
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.profil?.libelle)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.nom)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.prenom)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(house.adresse)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(house.codePostal)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(house.location)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.username)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.telephoneMobile)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.autorise_user_data)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.autorise_conso_data)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.profilPublic)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.autorise_share_data)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.engage_enedis_account)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(house.nbPersonne)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(house.surface)
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(chauffage(house.chauffage?.id))
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(chauffage(house.chauffageSecondaire?.id))
+			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(ecs(house.ecs?.id))
 		}
 		
 		log.info "Export profils : $nbUser utilisateur(s)"
