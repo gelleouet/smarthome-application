@@ -11,7 +11,7 @@
 				<ul class="list-inline" style="margin-top:10px;">
 					<g:if test="${ grailsApplication.config.social.web }">
 						<li class="list-inline-item">
-							<a class="btn mb-1 btn-primary" href="${ grailsApplication.config.social.web }" target="social"><asset:image src="granddefi/bonhomme.png" height="16px"/> Grand Défi</a>
+							<a class="btn mb-1 btn-primary" href="${ grailsApplication.config.social.web }" target="social"><asset:image src="logo.png" height="16px"/> Grand Défi</a>
 						</li>
 					</g:if>
 					<g:if test="${ grailsApplication.config.social.twitter }">

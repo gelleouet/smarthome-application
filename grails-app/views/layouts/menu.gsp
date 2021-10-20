@@ -80,6 +80,15 @@
 					</g:link>
 				</li>
 			</sec:ifAnyGranted>
+			
+			
+			<li class="sidebar-item">
+					<a href="${ grailsApplication.config.social.web }" class="sidebar-link" target="_blank">
+						<app:icon name="help-circle"/>
+						Plus d'informations sur ALEC
+					</a>
+				</li>
+			</li>
 		
 		</ul> <!-- ul.sidebar-nav -->
 		

@@ -13,8 +13,8 @@
 </div>
 <div class="form-group required">
 	<label>Commune</label>
-	<g:select class="form-control form-control-lg combobox" name="house.location" required="true" from="${ smarthome.common.Commune.list() }"
-		optionValue="libelle" value="${ house?.location }"/>
+	<g:select name="house.location" value="${ house?.location }" class="form-control form-control-lg combobox" required="true" 
+		from="${ smarthome.common.Commune.list() }" optionValue="libelle" optionKey="libelle"/>
 </div>
 <div class="form-group required">
 	<label>Nombre de personnes dans le foyer</label>
