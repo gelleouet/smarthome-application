@@ -2,6 +2,7 @@ package smarthome.automation
 
 import java.io.Serializable;
 
+import smarthome.automation.deviceType.AbstractDeviceType
 import smarthome.core.SmartHomeCoreConstantes;
 import smarthome.security.User;
 import grails.validation.Validateable;
@@ -49,7 +50,7 @@ class DeviceType implements Serializable {
 	 * 
 	 * @return
 	 */
-	def newDeviceType() {
+	AbstractDeviceType newDeviceType() {
 		Class.forName(implClass).newInstance()
 	}
 	

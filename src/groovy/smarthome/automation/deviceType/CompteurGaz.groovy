@@ -2,6 +2,8 @@ package smarthome.automation.deviceType
 
 import java.text.DecimalFormat
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
@@ -190,6 +192,16 @@ class CompteurGaz extends Compteur {
 	@Override
 	Double convertValueForCalculPrix(Double value) {
 		CompteurUtils.convertWhTokWh(value)
+	}
+	
+	
+	/**
+	 * Vrai si compteur connecté sur DataConnect
+	 *
+	 * @return
+	 */
+	boolean isConnected(GrailsApplication grailsApplication) {
+		device.label == grailsApplication.config.grdf.compteurLabel
 	}
 	
 }

@@ -55,8 +55,7 @@ class SupervisionController extends AbstractController {
 	 * @return
 	 */
 	def dialogExport(SupervisionCommand command) {
-		Map exportImpls = [(smarthome.automation.export.UserExcelDeviceValueExport.name): 'Export profils']
-		render (template: 'dialogExport', model: [command: command, exportImpls: exportImpls])
+		render (template: 'dialogExport', model: [command: command, exportImpls: exportService.exportImpls()])
 	}
 	
 	

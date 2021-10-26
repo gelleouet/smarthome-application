@@ -10,6 +10,22 @@ import smarthome.automation.export.DeviceValueExport
  *
  */
 class ExportService extends AbstractService {
+	
+	
+	/**
+	 * Les implémentations export sous forme de Map
+	 * key = classe impl
+	 * value = Libellé de l'export
+	 * 
+	 * @return Map
+	 */
+	Map exportImpls() {
+		[
+			(smarthome.automation.export.UserIndexExcelDeviceValueExport.name): 'Export profils et données',
+			(smarthome.automation.export.UserExcelDeviceValueExport.name): 'Export profils'
+		]
+	}
+	
 
 	/**
 	 * Export des données

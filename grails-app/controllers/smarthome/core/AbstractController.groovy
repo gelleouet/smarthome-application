@@ -5,6 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import java.lang.reflect.Method
 
+import org.apache.commons.io.IOUtils
 import org.springframework.security.access.AccessDeniedException
 
 import smarthome.core.ExceptionNavigationHandler
@@ -227,25 +228,32 @@ abstract class AbstractController {
 		Method method = this.getClass().getDeclaredMethod(actionName)
 		ExceptionNavigationHandler metaHandler = method.getAnnotation(ExceptionNavigationHandler)
 
-		if (request.xhr) {
-			// rendu erreur uniquement pour les appels Ajax
-			render (status: 400, template: '/templates/messageError', model: [title: exception.message])
-		} else if (metaHandler) {
-			if (metaHandler.json()) {
-				render(status: 400, contentType: "application/json") {
-					[error: exception.message, details: request.errors]
+		
+		// on ne fait plus rien si la reponse est déjà commité sinon nouvelle exception en cascade
+		if (! response.committed) {
+			if (request.xhr) {
+				// rendu erreur uniquement pour les appels Ajax
+				render (status: 400, template: '/templates/messageError', model: [title: exception.message])
+			} else if (metaHandler) {
+				if (metaHandler.json()) {
+					render(status: 400, contentType: "application/json") {
+						[error: exception.message, details: request.errors]
+					}
+				} else {
+					// ajout de l'objet en erreur dans le modèle
+					if (metaHandler.modelName()) {
+						setCommand(metaHandler.modelName(), exception.artefactObject)
+					}
+	
+					// sélection du controller
+					def controller = metaHandler.controllerName() ?: controllerName
+	
+					forward (controller: controller, action : metaHandler.actionName())
 				}
-			} else {
-				// ajout de l'objet en erreur dans le modèle
-				if (metaHandler.modelName()) {
-					setCommand(metaHandler.modelName(), exception.artefactObject)
-				}
-
-				// sélection du controller
-				def controller = metaHandler.controllerName() ?: controllerName
-
-				forward (controller: controller, action : metaHandler.actionName())
 			}
+		} else {
+			// la resonse est déjà commitée, on s"assure que le flux est bien fermé
+			IOUtils.closeQuietly(response.outputStream)
 		}
 	}
 

@@ -4,6 +4,8 @@ import java.util.Date
 import java.util.List
 import java.util.Map
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import groovy.time.TimeCategory
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
@@ -679,4 +681,15 @@ class Compteur extends AbstractDeviceType {
 	Double convertValueForCalculPrix(Double value) {
 		value
 	}
+	
+	
+	/**
+	 * Vrai si compteur connecté (et donc donnée auto)
+	 * 
+	 * @param grailsApplication
+	 * @return
+	 */
+	boolean isConnected(GrailsApplication grailsApplication) {
+		false	
+	} 
 }

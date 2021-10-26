@@ -14,6 +14,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	Long profilId
 	Long adminId
 	Long defiId
+	Long userId
 	String userSearch
 	Date dateDebut = DateUtils.firstDayInMonth(new Date())
 	Date dateFin = DateUtils.lastDayInMonth(new Date())
@@ -25,6 +26,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	static constraints = {
 		deviceTypeId nullable: true
 		profilId nullable: true
+		userId nullable: true
 		userSearch nullable: true
 		ville nullable: true
 		exportImpl nullable: true
@@ -97,6 +99,8 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		if (userSearch) {
 			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
 				[userSearch: QueryUtils.decorateMatchAll(userSearch.toLowerCase())])
+		} else if (userId) {
+			hql.addCriterion("user.id = :userId", [userId: userId])
 		}
 	
 		if (deviceTypeId) {

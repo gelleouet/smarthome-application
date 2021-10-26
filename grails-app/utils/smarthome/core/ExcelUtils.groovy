@@ -20,7 +20,7 @@ class ExcelUtils {
 	
 	private Workbook workbook
 	private CreationHelper createHelper
-	private CellStyle headerCellStyle
+	private Map<Short, CellStyle> headerCellStyleMap = [:]
 	private CellStyle datetimeCellStyle
 	private CellStyle dateCellStyle
 	
@@ -44,13 +44,21 @@ class ExcelUtils {
 	
 	
 	Cell createHeaderCell(Row row, int cellIndex, String label) {
+		return createHeaderCell(row, cellIndex, label, IndexedColors.GREY_40_PERCENT)
+	}
+	
+	
+	Cell createHeaderCell(Row row, int cellIndex, String label, IndexedColors indexColor) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(label)
+		CellStyle headerCellStyle = headerCellStyleMap.get(indexColor.index)
 		
 		if (!headerCellStyle) {
 			headerCellStyle = workbook.createCellStyle()
-			headerCellStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.index)
+			headerCellStyle.setFillForegroundColor(indexColor.index)
 			headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			
+			headerCellStyleMap.put(indexColor.index, headerCellStyle)
 		}
 		
 		cell.setCellStyle(headerCellStyle)

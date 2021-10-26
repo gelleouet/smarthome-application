@@ -27,6 +27,8 @@ class Device implements Serializable, EventTriggerPreparable {
 		events: EventDevice, shares: DeviceShare, levelAlerts: DeviceLevelAlert,
 		devicePlannings: DevicePlanning]
 
+	Agent agent
+	User user
 	String label
 	String groupe
 	String mac
@@ -224,12 +226,15 @@ class Device implements Serializable, EventTriggerPreparable {
 
 	/**
 	 * Construit une instance du device type
+	 * !! Ne le fait qu'une fois
 	 * 
 	 * @return
 	 */
-	def newDeviceImpl() {
-		deviceImpl = deviceType.newDeviceType()
-		deviceImpl.device = this
+	AbstractDeviceType newDeviceImpl() {
+		if (!deviceImpl) {
+			deviceImpl = deviceType.newDeviceType()
+			deviceImpl.device = this
+		}
 		return deviceImpl
 	}
 

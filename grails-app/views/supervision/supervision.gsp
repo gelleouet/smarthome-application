@@ -15,7 +15,7 @@
 				<g:form action="supervision" name="supervision-form" class="form-inline">
 					
 					<div class="row w-100">
-						<div class="col-8">
+						<div class="col-10">
 							<g:select name="defiId" value="${ command.defiId }" from="${ defis }" class="form-control combobox"
 	            				optionKey="id" optionValue="libelle"  noSelection="['': ' ']"/>
 	            				

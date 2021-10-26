@@ -6,6 +6,8 @@ import java.util.Date
 import java.util.List
 import java.util.Map
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import smarthome.automation.ChartTypeEnum
 import smarthome.automation.ChartViewEnum
 import smarthome.automation.CompteurIndex
@@ -28,7 +30,8 @@ import smarthome.core.chart.GoogleDataTableCol
 
 /**
  * Périphérique Télé-info EDF
- * 
+ * FIXME : renommer cette classe en CompteurElec car elle n'est pas spécifique
+ * au TIC
  * @author gregory
  *
  */
@@ -904,6 +907,16 @@ class TeleInformation extends Compteur {
 	@Override
 	Double convertValueForCalculPrix(Double value) {
 		CompteurUtils.convertWhTokWh(value)
+	}
+	
+	
+	/**
+	 * Vrai si compteur connecté sur DataConnect
+	 * 
+	 * @return
+	 */
+	boolean isConnected(GrailsApplication grailsApplication) {
+		device.label == grailsApplication.config.enedis.compteurLabel
 	}
 	
 }
