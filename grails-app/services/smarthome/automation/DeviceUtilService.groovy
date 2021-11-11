@@ -1,11 +1,7 @@
 package smarthome.automation
 
 import groovyx.gpars.GParsPool
-
-import java.util.Date
-
 import org.springframework.transaction.annotation.Transactional
-
 import smarthome.core.AbstractService
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
@@ -16,6 +12,29 @@ class DeviceUtilService extends AbstractService {
 	DeviceService deviceService
 
 
+	/**
+	 * Aggrégation de plusieurs valeurs. Les dates sont vérifiées pour ne pas recalculer
+	 * plusieurs fois la même date
+	 * 
+	 * @param values
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void aggregateValues(Collection<DeviceValue> values) throws SmartHomeException {
+		List dates = []
+		
+		// persistance des valeurs au cas où
+		deviceValueService.saveAll(values)
+		
+		values?.each { deviceValue ->
+			if (!dates.contains(deviceValue.dateValue)) {
+				aggregateSingleDay(deviceValue.device.id, deviceValue.dateValue)
+				dates << deviceValue.dateValue
+			}
+		}
+	}
+	
+	
 	/**
 	 * Aggrège les données d'un jour et du mois
 	 *

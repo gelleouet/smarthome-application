@@ -33,6 +33,7 @@ class CompteurService extends AbstractService {
 
 	HouseService houseService
 	DeviceService deviceService
+	DeviceUtilService deviceUtilService
 	NotificationAccountService notificationAccountService
 	DataConnectService dataConnectService
 	GrailsApplication grailsApplication
@@ -279,7 +280,6 @@ class CompteurService extends AbstractService {
 	 * Enregistrement d'un index pour validation par admin
 	 * L'index n'est pas enregistré sur le device mais dans une table TMP
 	 * pour qu'un admin le valide
-	 * Un seul index temporaire par user à la fois
 	 * 
 	 * @param command
 	 * @throws SmartHomeException
@@ -287,31 +287,11 @@ class CompteurService extends AbstractService {
 	@AsynchronousWorkflow("compteurService.saveIndexForValidation")
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	CompteurIndex saveIndexForValidation(CompteurIndex command)  throws SmartHomeException {
-		// le nouvel index doit aussi être postérieur au dernier relevé
-		// Grand défi : on n'autorise qu'une seule saisie à la semaine
-		if (command.device.dateValue) {
-			if (command.dateIndex <= command.device.dateValue) {
-				throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", command)
-			}
-			
-			Date startSemaine = DateUtils.firstDayInWeek(command.device.dateValue)
-			Date endSemaine = DateUtils.lastDayInWeek(command.device.dateValue)
-			
-			/*if (command.dateIndex >= startSemaine && command.dateIndex <= endSemaine) {
-				throw new SmartHomeException("Vous ne pouvez saisir qu'un seul index par semaine !", command)
-			}*/
-		}
-
 		// transformation et controle par le compteur lui-meme avant les controles généraux
 		// car l'impl peut calculer de nouveaux index à partir des valeurs saisies
 		(command.device.newDeviceImpl() as Compteur).bindCompteurIndex(command)
 		command.asserts()
 		
-		// quit si au moins un index est trouvé pour le user
-		//		if (countCompteurIndexForDevice(device)) {
-		//			throw new SmartHomeException("Un index en attente de validation existe déjà pour ce compteur !")
-		//		}
-
 		return super.save(command)
 	}
 
@@ -327,20 +307,13 @@ class CompteurService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void validIndex(CompteurIndex compteurIndex) throws SmartHomeException {
 		Device device = compteurIndex.device
+		Compteur compteurImpl = device.newDeviceImpl()
 
-		// contrôles intégrité donnée
-		if (device.dateValue && compteurIndex.dateIndex <= device.dateValue) {
-			throw new SmartHomeException("Le nouvel index est antérieur au dernier relevé du compteur !", compteurIndex)
-		}
-
-		// on passe les données du compteur dans l'impl associée pour mettre à
-		// jour les bonnes données et faire les controles
+		// on délègue le boulot à l'impl car elle seule connait l'organisation
+		// et le calcul des consos
 		try {
-			Compteur compteurImpl = device.newDeviceImpl()
-			
 			compteurImpl.bindCompteurIndex(compteurIndex)
 			compteurIndex.asserts()
-			
 			compteurImpl.parseIndex(compteurIndex)
 		} catch (SmartHomeException ex) {
 			// on recatche l'erreur pour passer l'objet command
@@ -354,11 +327,45 @@ class CompteurService extends AbstractService {
 		// est obligé de scanner une bonne partie de la base pour essayer de trouver
 		// une valeur qui n'existe pas
 		device.dateValue = compteurIndex.dateIndex
-
 		deviceService.saveAndTriggerChange(device)
 
+		// mise à jour des index voisins car il n'y pas d'ordre d'ajout d'index
+		// donc si insertion d'un index entre 2 autres, il faut recalculer les consos
+		// des index antérieurs et postérieurs
+		// A faire APRES la mise à jour du device pour persister les nouvelles metavalues
+		try {
+			deviceUtilService.aggregateValues(compteurImpl.refactoringNextIndex(compteurIndex))
+		} catch (SmartHomeException ex) {
+			// on recatche l'erreur pour passer l'objet command
+			throw new SmartHomeException(ex.message, compteurIndex)
+		}
+		
 		// si tout s'est bien passé, on peut supprimer cette saisie
 		compteurIndex.delete()
+	}
+	
+	
+	/**
+	 * Modification d'un index existant.
+	 * Les consos associées doivent être modifiées ainsi que celle de l'index juste après
+	 * 
+	 * @param compteurIndex
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void updateIndex(DeviceValue deviceValue) throws SmartHomeException {
+		Device device = deviceValue.device
+		Compteur compteurImpl = device.newDeviceImpl()
+
+		// on délègue le boulot à l'impl car elle seule connait l'organisation
+		// et le calcul des consos
+		try {
+			// recalcul des consos aggrégées sur toutes les dates qui ont changé
+			deviceUtilService.aggregateValues(compteurImpl.updateIndex(deviceValue))
+		} catch (SmartHomeException ex) {
+			// on recatche l'erreur pour passer l'objet command
+			throw new SmartHomeException(ex.message, deviceValue)
+		}
 	}
 
 

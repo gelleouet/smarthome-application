@@ -1,4 +1,4 @@
-<g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
+<g:set var="lastIndex" value="${ compteur.lastIndex(new Date()) }"/>
 <g:hiddenField name="lastIndex1" value="${ lastIndex?.value }"/>
 
 
@@ -8,7 +8,7 @@
 	</div>
 	
 	<g:if test="${ compteur.isDoubleTarification() }">
-		<g:set var="lastIndexHC" value="${ compteur.lastIndexHC() }"/>
+		<g:set var="lastIndexHC" value="${ compteur.lastIndexHC(new Date()) }"/>
 		<g:hiddenField name="lastIndex2" value="${ lastIndexHC?.value }"/>
 		
 		<div style="left:158px; top:243px; width:174px; height:26px; position: absolute;">

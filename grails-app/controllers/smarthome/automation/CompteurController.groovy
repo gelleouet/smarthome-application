@@ -261,4 +261,17 @@ class CompteurController extends AbstractController {
 		render (template: 'datatableIndex', model: [indexList: indexList, command: command,
 			recordsTotal: indexList.totalCount, deviceImpl: deviceImpl])
 	}
+	
+	
+	@Secured("hasRole('ROLE_ADMIN')")
+	def dialogIndex(DeviceValue deviceValue) {
+		render template: 'dialogIndex', model: [deviceValue: deviceValue]
+	}
+	
+	
+	@Secured("hasRole('ROLE_ADMIN')")
+	def updateIndex(DeviceValue deviceValue) {
+		compteurService.updateIndex(deviceValue)
+		nop()
+	}
 }

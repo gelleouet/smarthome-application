@@ -38,6 +38,10 @@ import smarthome.core.chart.GoogleDataTableCol
 class TeleInformation extends Compteur {
 
 	static final String DEFAULT_FOURNISSEUR_ELEC = "Tarifs réglementés"
+	static final String HP_INDEX_NAME = "hchp"
+	static final String HC_INDEX_NAME = "hchc"
+	static final String BASE_INDEX_NAME = "base"
+	
 	
 	public static final SERIES_COLOR = [
 		'hc': '#47bac1',
@@ -65,10 +69,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#values()
-	 */
 	@Override
 	List values(DeviceChartCommand command) throws SmartHomeException {
 		def values = []
@@ -94,12 +94,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * important de surcharger cette boite car le graphe teleinfo a son propre builder de chart
-	 * sinon le graphe sera créé une 1ere fois dans la méthode parent
-	 * 
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#googleChart(smarthome.automation.DeviceChartCommand, java.util.List)
-	 */
 	@Override
 	GoogleChart googleChart(DeviceChartCommand command, List values) {
 		GoogleChart chart = new GoogleChart()
@@ -199,13 +193,7 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Construction d'un graphe avec les tarifs
-	 * 
-	 * @param command
-	 * @param values
-	 * @return
-	 */
+	@Override
 	GoogleChart googleChartTarif(DeviceChartCommand command, def values) {
 		GoogleChart chart = new GoogleChart()
 		def opttarif = command.device.metavalue("opttarif")?.value
@@ -318,10 +306,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-
-	/**
-	 * @see smarthome.automation.deviceType.AbstractDeviceType.prepateMetaValuesForSave()
-	 */
 	@Override
 	def prepareMetaValuesForSave(def datas) {
 		Date dateInf
@@ -334,7 +318,7 @@ class TeleInformation extends Compteur {
 		// pour calculer la dernière conso
 		if (device.id) {
 			// calcul conso heure creuse sur la période
-			def hc = device.metavalue("hchc")
+			def hc = device.metavalue(HC_INDEX_NAME)
 
 			// les metavalues sur la période sont désormais gérées par le controller (à cause du offline)
 			// mais pour les anciennes versions, il faut les ajouter ici manuellement
@@ -351,7 +335,7 @@ class TeleInformation extends Compteur {
 			}
 
 			// calcul conso heure pleine sur la période
-			def hp = device.metavalue("hchp")
+			def hp = device.metavalue(HP_INDEX_NAME)
 
 			if (hp && !datas.metavalues?.hpinst) {
 				device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines",
@@ -366,7 +350,7 @@ class TeleInformation extends Compteur {
 			}
 
 			// calcul conso toute heure sur la période
-			def base = device.metavalue("base")
+			def base = device.metavalue(BASE_INDEX_NAME)
 
 			if (base && !datas.metavalues?.baseinst) {
 				device.addMetavalue("baseinst", [value: "0", label: "Période toutes heures",
@@ -383,33 +367,28 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Unité pour les widgets (peut être différent)
-	 * 
-	 * @return
-	 */
 	@Override
 	String defaultUnite() {
 		"kWh"
 	}
 	
 	
-	/**
-	 * 
-	 */
+	@Override
+	String defaultMetaConsoUnite() {
+		"Wh"
+	}
+	
+	
 	@Override
 	public String uniteByView(ChartViewEnum view) {
 		if (view == ChartViewEnum.day) {
-			"Wh"
+			defaultMetaConsoUnite()
 		} else {
-			"KWh"
+			defaultUnite()
 		}
 	}
 	
 	
-	/**
-	 *
-	 */
 	@Override
 	public Number valueByView(Number value, ChartViewEnum view) {
 		if (view == ChartViewEnum.day) {
@@ -420,10 +399,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueDay(java.util.Date)
-	 */
 	@Override
 	List aggregateValueDay(Date dateReference) {
 		def values = []
@@ -475,10 +450,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 * @see smarthome.automation.deviceType.AbstractDeviceType#aggregateValueMonth(java.util.Date)
-	 */
 	@Override
 	List aggregateValueMonth(Date dateReference) {
 		def values = []
@@ -530,11 +501,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * (non-Javadoc)
-	 *
-	 * @see smarthome.automation.deviceType.Compteur#parseIndex(smarthome.automation.CompteurIndex)
-	 */
 	@Override
 	void parseIndex(CompteurIndex index) throws SmartHomeException {
 		// la valeur principale est la puissance instantanée. ici on ne la connait pas
@@ -551,77 +517,83 @@ class TeleInformation extends Compteur {
 			Long indexHC = index.index2 as Long
 			
 			// conserve les index
-			device.addMetavalue("hchp", [value: indexHP.toString(), label: "Total heures pleines", trace: true, unite: "Wh"])
-			device.addMetavalue("hchc", [value: indexHC.toString(), label: "Total heures creuses", trace: true, unite: "Wh"])
+			device.addMetavalue(HP_INDEX_NAME, [value: indexHP.toString(), label: "Total heures pleines", trace: true, unite: defaultMetaConsoUnite()])
+			device.addMetavalue(HC_INDEX_NAME, [value: indexHC.toString(), label: "Total heures creuses", trace: true, unite: defaultMetaConsoUnite()])
 
 			// insère les metavalue pour conso période
-			device.addMetavalue("hpinst", [value: "0", label: "Période heures pleines", trace: true, unite: "Wh"])
-			device.addMetavalue("hcinst", [value: "0", label: "Période heures creuses", trace: true, unite: "Wh"])
+			device.addMetavalue(getConsoNameByIndexName(HP_INDEX_NAME), [value: "0", label: "Période heures pleines", trace: true, unite: defaultMetaConsoUnite()])
+			device.addMetavalue(getConsoNameByIndexName(HC_INDEX_NAME), [value: "0", label: "Période heures creuses", trace: true, unite: defaultMetaConsoUnite()])
 
 			// essaie de calculer une conso sur la période si un ancien index est trouvé
-			DeviceValue lastIndexHP = lastIndexHP()
+			DeviceValue lastIndexHP = lastIndexHP(index.dateIndex)
 
 			if (lastIndexHP) {
-				def conso = (indexHP - lastIndexHP.value) as Long
-				device.addMetavalue("hpinst", [value: conso.toString()])
+				def conso = calculConsoBetweenIndex(indexHP, lastIndexHP, index.param1) 
+				device.addMetavalue(getConsoNameByIndexName(HP_INDEX_NAME), [value: conso.toString()])
 			}
 
-			DeviceValue lastIndexHC = lastIndexHC()
+			DeviceValue lastIndexHC = lastIndexHC(index.dateIndex)
 
 			if (lastIndexHC) {
 				def conso = (indexHC - lastIndexHC.value) as Long
-				device.addMetavalue("hcinst", [value: conso.toString()])
+				device.addMetavalue(getConsoNameByIndexName(HC_INDEX_NAME), [value: conso.toString()])
 			}
 		} else {
 			Long indexBase = index.index1 as Long
 			
 			// conserve les index
-			device.addMetavalue("base", [value: indexBase.toString(), label: "Total toutes heures", trace: true, unite: "Wh"])
+			device.addMetavalue(BASE_INDEX_NAME, [value: indexBase.toString(), label: "Total toutes heures", trace: true, unite: defaultMetaConsoUnite()])
 
 			// insère les metavalue pour conso période
-			device.addMetavalue("baseinst", [value: "0", label: "Période toutes heures", trace: true, unite: "Wh"])
+			device.addMetavalue(getConsoNameByIndexName(BASE_INDEX_NAME), [value: "0", label: "Période toutes heures", trace: true, unite: defaultMetaConsoUnite()])
 
 			// essaie de calculer une conso sur la période si un ancien index est trouvé
-			DeviceValue lastIndex = lastIndex()
+			DeviceValue lastIndex = lastIndex(index.dateIndex)
 
 			if (lastIndex) {
 				def conso = (indexBase - lastIndex.value) as Long
-				device.addMetavalue("baseinst", [value: conso.toString()])
+				device.addMetavalue(getConsoNameByIndexName(BASE_INDEX_NAME), [value: conso.toString()])
 			}
 		}
 	}
-
-
-	/**
-	 * Cas spécial pour la double tarification : l'index "principal" est le tarif 
-	 * normal (heure pleine)
-	 *
-	 * @see smarthome.automation.deviceType.Compteur#lastIndex()
-	 */
+	
+	
 	@Override
-	DeviceValue lastIndex() {
-		if (device.dateValue) {
-			// on balaye max sur 1 an pour éviter de scanner toute la base
-			// même si index sur les champs requetes
-			if (isDoubleTarification()) {
-				return DeviceValue.createCriteria().get {
-					eq 'device', device
-					ge 'dateValue', DateUtils.incYear(new Date(), -1)
-					eq 'name', 'hchp'
-					maxResults 1
-					order 'dateValue', 'desc'
-				}
-			} else {
-				return DeviceValue.createCriteria().get {
-					eq 'device', device
-					ge 'dateValue', DateUtils.incYear(new Date(), -1)
-					eq 'name', 'base'
-					maxResults 1
-					order 'dateValue', 'desc'
-				}
-			}
+	protected String getConsoNameByIndexName(String indexName) {
+		if (indexName == HP_INDEX_NAME) {
+			"hpinst"
+		} else if (indexName == HC_INDEX_NAME) {
+			"hcinst"
 		} else {
-			return null
+			"baseinst"
+		}
+	}
+	
+	
+	@Override
+	Collection<DeviceValue> refactoringNextIndex(CompteurIndex compteurIndex) throws SmartHomeException {
+		Collection<DeviceValue> values = []
+		
+		if (isDoubleTarification()) {
+			values << refactoringNextMetaConso(compteurIndex.dateIndex, compteurIndex.index1, 'hchp', null)
+			values << refactoringNextMetaConso(compteurIndex.dateIndex, compteurIndex.index2, 'hchc', null)
+		} else {
+			values << refactoringNextMetaConso(compteurIndex.dateIndex, compteurIndex.index1, 'base', null)
+		}
+		
+		// supprime les valeurs nulles
+		values.findAll()
+	}
+
+
+	@Override
+	DeviceValue lastIndex(Date dateTo) {
+		// on balaye max sur 1 an pour éviter de scanner toute la base
+		// même si index sur les champs requetes
+		if (isDoubleTarification()) {
+			return super.lastIndex(dateTo, HP_INDEX_NAME)
+		} else {
+			return super.lastIndex(dateTo, BASE_INDEX_NAME)
 		}
 	}
 
@@ -630,29 +602,23 @@ class TeleInformation extends Compteur {
 	 * Pour les compteurs double tarif, renvoit l'index heure plein (ie l'index
 	 * principal donc le même que lastIndex())
 	 *
+	 * @param dateTo
 	 * @return
 	 */
-	DeviceValue lastIndexHP() {
-		return lastIndex()
+	DeviceValue lastIndexHP(Date dateTo) {
+		return lastIndex(dateTo)
 	}
 
 
 	/**
 	 * Pour les compteurs double tarif, renvoit l'index heure creuse
 	 * 
+	 * @param dateTo
 	 * @return
 	 */
-	DeviceValue lastIndexHC() {
-		if (device.dateValue && isDoubleTarification()) {
-			// on balaye max sur 1 an pour éviter de scanner toute la base
-			// même si index sur les champs requetes
-			return DeviceValue.createCriteria().get {
-				eq 'device', device
-				ge 'dateValue', DateUtils.incYear(new Date(), -1)
-				eq 'name', 'hchc'
-				maxResults 1
-				order 'dateValue', 'desc'
-			}
+	DeviceValue lastIndexHC(Date dateTo) {
+		if (isDoubleTarification()) {
+			return super.lastIndex(dateTo, HC_INDEX_NAME)
 		} else {
 			return null
 		}
@@ -682,11 +648,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les consos du jour en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 *
-	 * @return
-	 */
 	@Override
 	Map consosJour(Date currentDate = null) {
 		def consos = [optTarif: getOptTarif()]
@@ -715,13 +676,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Consommation moyenne par jour sur une période
-	 *
-	 * @param dateStart
-	 * @param dateEnd
-	 * @return
-	 */
 	@Override
 	Double consoMoyenneJour(Date dateStart, Date dateEnd) {
 		Double consoMoyenne
@@ -745,11 +699,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 *
-	 * @return
-	 */
 	@Override
 	Map consosMois(Date currentDate = null) {
 		def consos = [optTarif: getOptTarif()]
@@ -778,11 +727,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les consos du mois en map indexé par le type d'heure (HC, HP, BASE, etc.)
-	 *
-	 * @return
-	 */
 	@Override
 	Map consosAnnee(Date currentDate = null) {
 		def consos = [optTarif: getOptTarif()]
@@ -811,9 +755,6 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les index sont saisis en kWh, il faut les convertir en Wh
-	 */
 	@Override
 	void bindCompteurIndex(CompteurIndex command) throws SmartHomeException {
 		if (command.highindex1 != null) {
@@ -825,12 +766,6 @@ class TeleInformation extends Compteur {
 	}
 	
 	
-	/**
-	 * Prépare l'objet pour édition dans formulaire
-	 * On convertit les index enregitrés en Wh en Kwh
-	 *
-	 * @param command
-	 */
 	@Override
 	void prepareForEdition(CompteurIndex command) {
 		if (command.index1 != null) {
@@ -842,31 +777,19 @@ class TeleInformation extends Compteur {
 	}
 
 
-	/**
-	 * Les index sont enregistrés en Wh.
-	 * On formatte l'index en kWh
-	 *
-	 */
 	@Override
 	String formatHtmlIndex(Double index) {
+		// Les index sont enregistrés en Wh. On formatte l'index en kWh
 		"""<span class="index-elec-text">${ (index / 1000).round() }</span>"""
 	}
 	
 	
-	/** 
-	 * (non-Javadoc)
-	 *
-	 * @see smarthome.automation.deviceType.Compteur#consoAggregateMetanames()
-	 */
 	@Override
 	protected List consoAggregateMetanames() {
 		['basesum', 'hchcsum', 'hchpsum']
 	}
 
 
-	/**
-	 * 
-	 */
 	@Override
 	List listIndex(DeviceValueCommand command) throws SmartHomeException {
 		List nameList
@@ -887,34 +810,19 @@ class TeleInformation extends Compteur {
 	}
 	
 	
-	/**
-	 * (non-Javadoc)
-	 *
-	 * @return
-	 */
 	@Override
 	protected String defaultFournisseur() {
 		DEFAULT_FOURNISSEUR_ELEC
 	}
 	
 	
-	/**
-	 * Conversion des valeurs enregistrés pour le calcul des prix
-	 *
-	 * @param value
-	 * @return
-	 */
 	@Override
 	Double convertValueForCalculPrix(Double value) {
 		CompteurUtils.convertWhTokWh(value)
 	}
 	
 	
-	/**
-	 * Vrai si compteur connecté sur DataConnect
-	 * 
-	 * @return
-	 */
+	@Override
 	boolean isConnected(GrailsApplication grailsApplication) {
 		device.label == grailsApplication.config.enedis.compteurLabel
 	}

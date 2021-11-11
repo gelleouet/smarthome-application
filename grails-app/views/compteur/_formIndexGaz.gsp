@@ -1,4 +1,4 @@
-<g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
+<g:set var="lastIndex" value="${ compteur.lastIndex(new Date()) }"/>
 
 
 <g:hiddenField name="lastIndex1" value="${ lastIndex?.value }"/>

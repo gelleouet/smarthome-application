@@ -1,3 +1,5 @@
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+
 <app:datatable datatableId="datatableIndex" recordsTotal="${ recordsTotal }">
     <thead>
         <tr>
@@ -11,7 +13,16 @@
 	        <tr>
 	        	<td><app:formatUserDateTime date="${ index.dateValue }"/></td>
 	            <td>${ index.name ?: 'base' }</td>
-	            <td>${ raw(deviceImpl.formatHtmlIndex(index.value)) }</td>
+	            <td>
+	            	<g:if test="${ SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') }">
+	            		<a id="show-compteur-index-dialog-button" data-url="${ g.createLink(action: 'dialogIndex', id: index.id) }">
+							${ raw(deviceImpl.formatHtmlIndex(index.value)) }	            		
+	            		</a>
+	            	</g:if>
+	            	<g:else>
+	            		${ raw(deviceImpl.formatHtmlIndex(index.value)) }
+	            	</g:else>
+				</td>
 	        </tr>
         </g:each>
     </tbody>

@@ -72,14 +72,6 @@ class CompteurIndex implements Serializable {
 			throw new SmartHomeException("Au moins un index doit être renseigné !", this)
 		}
 		
-		if (lastIndex1 && lastIndex1 > index1) {
-			throw new SmartHomeException("Le nouvel index doit être supérieur à l'ancien !", this)
-		}
-
-		if (lastIndex2 && index2 && lastIndex2 > index2) {
-			throw new SmartHomeException("Le nouvel index doit être supérieur à l'ancien !", this)
-		}
-		
 		if (index1 < 0 || (index2 != null && index2 < 0)) {
 			throw new SmartHomeException("Les index ne peuvent pas être négatifs !", this)
 		}

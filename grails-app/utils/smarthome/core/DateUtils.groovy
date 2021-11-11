@@ -407,7 +407,7 @@ class DateUtils {
 	 * Décale l'année sur la date
 	 * 
 	 * @param date
-	 * @param year
+	 * @param inc
 	 * @return
 	 */
 	static Date incYear(Date date, int inc) {
@@ -419,6 +419,26 @@ class DateUtils {
 			}
 		}
 
+		return result
+	}
+	
+	
+	/**
+	 * Décale le mois sur la date
+	 * 
+	 * @param date
+	 * @param inc
+	 * @return
+	 */
+	static Date incMonth(Date date, int inc) {
+		Date result
+		
+		if (date) {
+			use(TimeCategory) {
+				result = date + inc.month
+			}
+		}
+		
 		return result
 	}
 

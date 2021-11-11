@@ -33,8 +33,11 @@ class Compteur extends AbstractDeviceType {
 
 	protected static final String AGGREGATE_METRIC_NAME = "sum"
 	protected static final String META_METRIC_NAME = "conso"
+	// 3 pour au moins faire des saisies tous les 2 mois, au dela, ce n'est plus significatif
+	protected static final int MAX_MONTH_SEARCH_INDEX = 3
 	static final String DEFAULT_CONTRAT = "BASE"
 	static final String DEFAULT_FOURNISSEUR = "Tarif moyen"
+	
 
 	protected static final Map CONTRATS = [
 		(DEFAULT_CONTRAT): 'Heures de base'
@@ -316,7 +319,17 @@ class Compteur extends AbstractDeviceType {
 	 * @return
 	 */
 	String defaultUnite() {
-		return device.metavalue(META_METRIC_NAME)?.unite
+		defaultMetaConsoUnite()
+	}
+	
+	
+	/**
+	 * Unité par défaut pour la meta conso
+	 * 
+	 * @return
+	 */
+	String defaultMetaConsoUnite() {
+		""
 	}
 	
 	
@@ -438,7 +451,8 @@ class Compteur extends AbstractDeviceType {
 	 * device correctement
 	 */
 	protected void addDefaultMetas() {
-		device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation", trace: true])
+		device.addMetavalue(META_METRIC_NAME, [value: "0", label: "Période consommation",
+			trace: true, unite: defaultMetaConsoUnite()])
 	}
 
 
@@ -558,42 +572,197 @@ class Compteur extends AbstractDeviceType {
 	 * @param index
 	 * @throws SmartHomeException
 	 */
-	void parseIndex(CompteurIndex index) throws SmartHomeException {
+	void parseIndex(CompteurIndex compteurIndex) throws SmartHomeException {
 		// met à jour la valeur principale
-		device.value = (index.index1 as Long).toString()
+		device.value = (compteurIndex.index1 as Long).toString()
 
-		// essaie de calculer une conso sur la période si un ancien index est trouvé
-		DeviceValue lastIndex = lastIndex()
 		addDefaultMetas()
+		
+		// essaie de calculer une conso sur la période si un ancien index est trouvé
+		// on vérifie aussi que le nouvel index est bien > à l'ancien (ex si changement de compteur)
+		// !! si pas de nouvelles consos, i lfaut bien penser à reset la meta conso à 0
+		// sinon au moment de l'historisation, c'est l'ancienne valeur qui va être prise en compte
+		// mais c'est géré dans "addDefaultMetas"
+		DeviceValue lastIndex = lastIndex(compteurIndex.dateIndex)
 
 		if (lastIndex) {
-			def conso = (index.index1 - lastIndex.value) as Long
+			Long conso = calculConsoBetweenIndex(compteurIndex.index1, lastIndex.value, compteurIndex.param1) 
 			device.addMetavalue(META_METRIC_NAME, [value: conso.toString()])
 		}
 	}
+	
+	
+	/**
+	 * Calcul la conso entre 2 index
+	 * 
+	 * @param newIndex
+	 * @param lastIndex
+	 * @param param1
+	 * @return
+	 */
+	protected Long calculConsoBetweenIndex(double newIndex, double lastIndex, String param1) throws SmartHomeException {
+		if (newIndex > lastIndex) {
+			(newIndex - lastIndex) as Long
+		} else {
+			0
+		}
+	}
+	
+	
+	/**
+	 * En cas d'ajout d'un index, on doit modifier son voisins plus récent
+	 * pour recalculer sa conso périodique car elle dépendait du précédent index et
+	 * maintenant elle doit tenir de l'index courant
+	 * 
+	 * @param compteurIndex
+	 * @return Collection<DeviceValue>
+	 * @throws SmartHomeException
+	 */
+	Collection<DeviceValue> refactoringNextIndex(CompteurIndex compteurIndex) throws SmartHomeException {
+		DeviceValue nextConso = refactoringNextMetaConso(compteurIndex.dateIndex, compteurIndex.index1, null, compteurIndex.param1)
+		return nextConso ? [nextConso] : []
+	}
+
+	
+	/**
+	 * Refactoring d'une meta sélectionnée par son nom
+	 * 	
+	 * @param dateIndex
+	 * @param valeurIndex
+	 * @param metaNameIndex
+	 * @param param1
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	protected DeviceValue refactoringNextMetaConso(Date dateIndex, double valeurIndex, String metaNameIndex, String param1) throws SmartHomeException {
+		DeviceValue nextIndex = nextIndex(dateIndex, metaNameIndex)
+		DeviceValue nextConso
+		
+		// si index suivant trouvé, on vérifie si une conso avait été calculée
+		// cette conso doit être recherchée sur la même date que l'index
+		if (nextIndex) {
+			// si index postérieur, logiquement sa valeur doit être plus grande
+			if (valeurIndex > nextIndex.value) {
+				throw new SmartHomeException("L'index ${valeurIndex} du ${DateUtils.formatDateUser(dateIndex)} est supérieur à l'index ${nextIndex.value} du ${DateUtils.formatDateUser(nextIndex.dateValue)} !")
+			}
+			
+			nextConso = DeviceValue.findByDate(device, nextIndex.dateValue, getConsoNameByIndexName(metaNameIndex))
+			
+			if (!nextConso ) {
+				nextConso = new DeviceValue(device: device, dateValue: nextIndex.dateValue,
+					name: getConsoNameByIndexName(metaNameIndex))
+			}
+			
+			// mise à jour de la conso périodique
+			nextConso.value = calculConsoBetweenIndex(nextIndex.value, valeurIndex, param1)
+		}
+		
+		return nextConso
+	} 
 
 
+	/**
+	 * Modification d'un index existant et de l'index suivant s'il existe
+	 * 
+	 * @param deviceValue
+	 * @return values qui ont changé et doivent être modifiées
+	 * @throws SmartHomeException
+	 */
+	Collection<DeviceValue> updateIndex(DeviceValue deviceValue) throws SmartHomeException {
+		// par défaut, l'index sera à persister
+		List values = [deviceValue]
+		String consoName = getConsoNameByIndexName(deviceValue.name)
+		
+		// recherche de la meta conso associée
+		DeviceValue consoValue = DeviceValue.findByDate(device, deviceValue.dateValue, consoName)
+		
+		// création si pas déjà fait
+		if (!consoValue) {
+			consoValue = new DeviceValue(device: device, dateValue: deviceValue.dateValue,
+				name: consoName)
+		}
+		
+		// on la référence pour enregistrement des modifs
+		values << consoValue
+		
+		// recalcul de la conso avec l'index antérieur (du même nom)
+		DeviceValue lastIndex = lastIndex(deviceValue.dateValue, deviceValue.name)
+
+		if (lastIndex) {
+			// blocage si l'index est inférieure à l'index précédent
+			if (deviceValue.value < lastIndex.value) {
+				throw new SmartHomeException("L'index ${deviceValue.value} du ${DateUtils.formatDateUser(deviceValue.dateValue)} est inférieur à l'index ${lastIndex.value} du ${DateUtils.formatDateUser(lastIndex.dateValue)} !")
+			}
+			
+			consoValue.value = calculConsoBetweenIndex(deviceValue.value, lastIndex.value, null)
+		}
+		
+		// mise à jour du suivant
+		values << refactoringNextMetaConso(deviceValue.dateValue, deviceValue.value, deviceValue.name, null)
+		
+		// suppression éventuelle des valeurs nulles
+		return values.findAll()
+	}
+	
+	
+	/**
+	 * Donne le nom de la méta conso associé à un index
+	 * 
+	 * @param indexName
+	 * @return
+	 */
+	protected String getConsoNameByIndexName(String indexName) {
+		META_METRIC_NAME
+	}
+	
+	
 	/**
 	 * Le dernier index enregistré sur le device
 	 * Par défaut, la value principale (sans name) est associé à l'index
 	 * 
+	 * @param dateTo la date max pour rechercher l'index (ie la date de l'index
+	 * 	en cours de création) (exclusif)
+	 * @param nom de la meta à rechercher. null par défaut
+	 * 
 	 * @return
 	 */
-	DeviceValue lastIndex() {
+	DeviceValue lastIndex(Date dateTo, String metaName = null) {
 		// si aucune date sur le device, alors aucune value
 		if (device.dateValue) {
-			// on balaye max sur 1 an pour éviter de scanner toute la base
-			// même si index sur les champs requetes
-			return DeviceValue.createCriteria().get {
-				eq 'device', device
-				ge 'dateValue', DateUtils.incYear(new Date(), -1)
-				isNull 'name'
-				maxResults 1
-				order 'dateValue', 'desc'
-			}
+			DeviceValue.lastValueInPeriod(device, lastIndexDateFrom(dateTo), dateTo, metaName)
 		} else {
 			return null
 		}
+	}
+	
+	
+	/**
+	 * Recherche de l'index suivant
+	 *  
+	 * @param dateFrom
+	 * @param metaName
+	 * @return
+	 */
+	DeviceValue nextIndex(Date dateFrom, String metaName = null) {
+		// si aucune date sur le device, alors aucune value
+		if (device.dateValue) {
+			DeviceValue.firstValueAfter(device, dateFrom, metaName)
+		} else {
+			return null
+		}
+	}
+	
+	
+	/**
+	 * Calcul de la date de départ pour la recherche d'un ancien index à partir
+	 * de la date fin. Recherche maxi sur 1 mois.
+	 * 
+	 * 
+	 * @param dateTo
+	 * @return
+	 */
+	protected Date lastIndexDateFrom(Date dateTo) {
+		DateUtils.incMonth(dateTo, -1 * MAX_MONTH_SEARCH_INDEX)
 	}
 
 

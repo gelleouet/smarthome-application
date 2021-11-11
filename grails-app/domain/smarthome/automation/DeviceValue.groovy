@@ -243,6 +243,56 @@ class DeviceValue implements Serializable {
 	
 	
 	/**
+	 * Retrouve la 1er valeur qui suit
+	 *
+	 * @param device
+	 * @param dateDebut exclusif
+	 * @return
+	 */
+	static DeviceValue firstValueAfter(Device device, Date dateDebut, String metaName = null) {
+		return DeviceValue.createCriteria().get {
+			eq "device", device
+			
+			if (metaName) {
+				eq "name", metaName
+			} else {
+				isNull "name"
+			}
+			
+			gt "dateValue", dateDebut
+			
+			order "dateValue", "asc"
+			maxResults 1
+		}
+	}
+	
+	
+	/**
+	 * Retrouve d'une valeur sur une date
+	 *
+	 * @param device
+	 * @param date
+	 * @param metaName
+	 * @return
+	 */
+	static DeviceValue findByDate(Device device, Date date, String metaName = null) {
+		return DeviceValue.createCriteria().get {
+			eq "device", device
+			
+			if (metaName) {
+				eq "name", metaName
+			} else {
+				isNull "name"
+			}
+			
+			eq "dateValue", date
+			
+			maxResults 1
+		}
+	}
+	
+	
+	/**
 	 * Retrouve la dernière valeur sur une période
 	 * 
 	 * @param device

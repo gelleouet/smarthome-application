@@ -14,7 +14,7 @@
 
 
 <g:elseif test="${ compteur instanceof smarthome.automation.deviceType.Compteur }">
-	<g:set var="lastIndex" value="${ compteur.lastIndex() }"/>
+	<g:set var="lastIndex" value="${ compteur.lastIndex(new Date()) }"/>
 	<div class="form-group">
 		<label>Ancien Index (${ compteur.defaultUnite() })</label>
 		<g:field type="number decimal" name="lastIndex1" value="${ lastIndex?.value as Long }" class="form-control" readonly="true"/>

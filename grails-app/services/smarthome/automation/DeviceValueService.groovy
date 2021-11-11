@@ -31,6 +31,22 @@ class DeviceValueService extends AbstractService {
 	public static final int MAX_DAY_PROJECTION_DAY = 31
 
 
+	
+	/**
+	 * Enregistrement de plusieurs valeurs en batch
+	 * 
+	 * @return
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	Collection<DeviceValue> saveAll(Collection<DeviceValue> values) {
+		values?.each { value -> 
+			save(value)
+		}
+		
+		return values
+	}
+	
+	
 	/**
 	 * Ajoute une nouvelle valeur. Si c'est la valeur la plus récente, met à jour le device
 	 * 
