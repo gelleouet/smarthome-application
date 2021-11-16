@@ -18,6 +18,12 @@
 			<div class="card-body">
 			
 				<g:form action="compteurIndexs" name="compteurIndex-form" class="form-inline">
+				
+					<g:each var="sortProperty" in="${ command.sortProperties }" status="status">
+						<g:hiddenField name="sortProperties[${ status }].property" value="${ sortProperty.property }"/>
+						<g:hiddenField name="sortProperties[${ status }].order" value="${ sortProperty.order }"/>
+					</g:each>
+				
 					<div class="row w-100">
 						<div class="col">
 							<g:select name="deviceTypeId" value="${ command?.deviceTypeId }" from="${ compteurTypes }"
@@ -34,36 +40,9 @@
 		
 				<br/>
 			
-				<app:datatable datatableId="datatable" recordsTotal="${ indexs?.totalCount ?: 0 }" paginateForm="compteurIndex-form">
-				    <thead>
-				        <tr>
-				            <th>Propriétaire</th>
-				            <th>Date index</th>
-				            <th>Type</th>
-				            <th>Index 1</th>
-				            <th>Index 2</th>
-				            <th>Param 1</th>
-				            <th class="column-1-buttons"></th>
-				        </tr>
-				    </thead>
-				    <tbody>
-				    	<g:each var="index" in="${ indexs }">
-					        <tr>
-					            <td><g:link action="compteurIndex" id="${ index.id }">${ index.device.user.profil?.libelle } > ${ index.device.user.prenomNom }</g:link></td>
-					            <td><g:formatDate date="${ index.dateIndex }" format="dd/MM/yyyy"/></td>
-					            <td>${ index.device.deviceType.libelle }</td>
-					            <td>${ index.index1 as Long }</td>
-					            <td>${ index.index2 as Long }</td>
-					            <td>${ index.param1 }</td>
-					            <td class="column-1<-buttons command-column">
-					            	<g:link class="btn btn-light confirm-button" title="Supprimer" action="deleteIndex" id="${ index.id }">
-					            		<app:icon name="trash"/>
-					            	</g:link>
-					            </td>
-					        </tr>
-				        </g:each>
-				    </tbody>
-				</app:datatable>
+				<div ajax="true" id="compteurIndexAjax" data-form-id="compteurIndex-form">
+					<g:render template="compteurIndexDatatable"/>
+				</div>
 			</div><!-- div.card-body -->
 			
 		</div> <!-- div.card -->

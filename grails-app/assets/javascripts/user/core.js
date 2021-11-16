@@ -118,6 +118,9 @@ function onStopSortable(event, ui) {
  * Transforme les liens GET en appel Ajax
  */
 function ajaxPagination() {
+	
+	// 1: les paginations en mode ajax
+	// ------------------------------------------------------------------------
 	var divParent = $("div[ajax='true']");
 	
 	if (divParent) {
@@ -143,7 +146,11 @@ function ajaxPagination() {
 		});
 	}
 	
-	var ajaxPaginations = $(".pagination[data-form-id != '']")
+	// 2: les paginations qui doivent passer en POST car associées à un formulaire
+	// ------------------------------------------------------------------------
+	
+	// !! ne pas retraiter les paginations Ajax
+	var ajaxPaginations = $(".pagination[data-form-id != '']").not($("div[ajax] .pagination"))
 	
 	if (ajaxPaginations) {
 		ajaxPaginations.each(function() {
@@ -228,6 +235,7 @@ var errorAjaxFunction = function(jqXHR, textStatus, errorThrown) {
 	$('#ajaxError').show();
 	$('#ajaxError').fadeOut(3000);
 };
+
 
 
 function ajaxSubmitForm(eltSrcId, urlAttr, formId, divDstId, onSuccess) {

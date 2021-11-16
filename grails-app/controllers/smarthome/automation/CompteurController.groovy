@@ -158,6 +158,7 @@ class CompteurController extends AbstractController {
 	def compteurIndexs(CompteurIndexCommand command) {
 		// moteur de recherche en view scope
 		command = parseViewCommand(command)
+		command.bindDefaultSort()
 		command.admin(principal.id) // plugin spring security
 		checkErrors(this, command)
 		
@@ -165,8 +166,13 @@ class CompteurController extends AbstractController {
 		// ne pas oublier de réinjecter la pagination car géré par le command
 		setPagination(command.pagination())
 
-		render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
-			profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])
+		if(request.xhr) {
+			render(template: 'compteurIndexDatatable', model: [command: command, indexs: indexs,
+				profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])
+		} else {
+			render(view: 'compteurIndexs', model: [command: command, indexs: indexs,
+				profils: Profil.list(), compteurTypes: deviceTypeService.listCompteur()])
+		}
 	}
 
 

@@ -7,7 +7,6 @@
 * You're free to add application-wide styles to this file and they'll appear at the top of the
 * compiled file, but it's generally better to create a new file per style scope.
 *
-*= require datatables-1.10.2
 *= require app-stack-classic
 *= require jquery-picklist
 *= require jquery.datetimepicker

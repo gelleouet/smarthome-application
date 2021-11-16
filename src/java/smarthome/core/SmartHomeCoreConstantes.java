@@ -27,4 +27,7 @@ public class SmartHomeCoreConstantes {
 	public static final String EVENT_QUEUE = "smarthome.core.event";
 	public static final String EMAIL_QUEUE = "smarthome.core.email";
 	public static final String CACHE_QUEUE = "smarthome.core.cache";
+	
+	public static final String ORDER_ASC = "asc";
+	public static final String ORDER_DESC = "desc";
 }

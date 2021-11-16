@@ -455,6 +455,7 @@ ul.fancytree-container {
 div .dataTables_info {
 	font-size: small;
 	font-weight: bold;
+	color: #333;
 }
 
 table td.command-column a {

@@ -432,8 +432,7 @@ class CompteurService extends AbstractService {
 			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
 		}
 
-		hql.addOrder("compteurIndex.dateIndex")
-		hql.addOrder("compteurIndex.id")
+		command.addOrder(hql)
 
 		return CompteurIndex.withSession { session ->
 			hql.list(session, command.pagination())

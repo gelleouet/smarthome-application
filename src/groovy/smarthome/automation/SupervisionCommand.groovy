@@ -83,7 +83,6 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			.domainClass(Device)
 		
 		applyCriterion(hql, false, true)
-			.addOrder("user.profil.libelle")
 			.addOrder("user.nom")
 			.addOrder("user.prenom")
 			.addOrder("device.label")
@@ -103,15 +102,16 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 			hql.addCriterion("user.id = :userId", [userId: userId])
 		}
 	
-		if (deviceTypeId) {
-			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: deviceTypeId])
-		}
-	
 		if (joinDevice) {
-			if (profilId) {
-				hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
+		if (deviceTypeId) {
+				hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: deviceTypeId])
 			}
 		}
+		
+		if (profilId) {
+			hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
+		}
+		
 		
 		if (ville) {
 			if (joinHouse) {

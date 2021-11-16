@@ -2,6 +2,7 @@ package smarthome.automation
 
 import grails.validation.Validateable
 import smarthome.core.PaginableCommand
+import smarthome.core.SortCommand
 import smarthome.security.Profil
 import smarthome.security.User
 
@@ -21,6 +22,18 @@ class CompteurIndexCommand extends PaginableCommand implements Serializable {
 	}
 
 
+	@Override
+	Object bindDefaultSort() {
+		if (!sortProperties) {
+			sortProperties = [
+				new SortCommand(property: "user.nom"),
+				new SortCommand(property: "user.prenom"),
+				new SortCommand(property: "compteurIndex.dateIndex")
+			]
+		}
+	}
+		
+	
 	/**
 	 * Bind l'admin et relance les validations
 	 * 

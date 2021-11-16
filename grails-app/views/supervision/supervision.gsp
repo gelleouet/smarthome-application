@@ -38,22 +38,21 @@
 					</div>	
 				</g:form>
 				
-				
 				<app:datatable datatableId="datatable" recordsTotal="${ recordsTotal }" paginateForm="supervision-form">
 				    <thead>
 				        <tr>
-				        	<th>Utilisateur</th>
-				            <th>Objet</th>
-				            <th>Type</th>
-				            <th>Date</th>
-				            <th class="column-2-buttons"></th>
+				        	<th data-orderable="false">Utilisateur</th>
+				            <th data-orderable="false">Objet</th>
+				            <th data-orderable="false">Type</th>
+				            <th data-orderable="false">Date</th>
+				            <th class="column-2-buttons" data-orderable="false"></th>
 				        </tr>
 				    </thead>
 				    <tbody>
 				    	<g:each var="device" in="${ devices }">
 					        <tr>
 					        	<td>
-					        		<g:link controller="user" action="edit" id="${ device.user.id }">${ device.user.profil?.libelle } > ${ device.user.nomPrenom }</g:link>
+					        		<g:link controller="user" action="edit" id="${ device.user.id }">${ device.user.nomPrenom } [${ device.user.profil?.libelle }]</g:link>
 					        	</td>
 					            <td>
 					            	<g:link controller="device" action="edit" id="${ device.id }">${ device.label }</g:link>
