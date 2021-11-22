@@ -3,7 +3,7 @@
 <meta name='layout' content='main' />
 </head>
 
-<body>
+<body onload="onLoadSaisieIndex()">
 	<g:applyLayout name="page-default">
 	
 		<g:set var="compteur" value="${ command.device.newDeviceImpl() }"/>

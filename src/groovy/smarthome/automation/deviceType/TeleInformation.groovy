@@ -528,14 +528,14 @@ class TeleInformation extends Compteur {
 			DeviceValue lastIndexHP = lastIndexHP(index.dateIndex)
 
 			if (lastIndexHP) {
-				def conso = calculConsoBetweenIndex(indexHP, lastIndexHP, index.param1) 
+				def conso = calculConsoBetweenIndex(indexHP, lastIndexHP.value, index.param1) 
 				device.addMetavalue(getConsoNameByIndexName(HP_INDEX_NAME), [value: conso.toString()])
 			}
 
 			DeviceValue lastIndexHC = lastIndexHC(index.dateIndex)
 
 			if (lastIndexHC) {
-				def conso = (indexHC - lastIndexHC.value) as Long
+				def conso = calculConsoBetweenIndex(indexHC, lastIndexHC.value, index.param1) 
 				device.addMetavalue(getConsoNameByIndexName(HC_INDEX_NAME), [value: conso.toString()])
 			}
 		} else {
@@ -551,7 +551,7 @@ class TeleInformation extends Compteur {
 			DeviceValue lastIndex = lastIndex(index.dateIndex)
 
 			if (lastIndex) {
-				def conso = (indexBase - lastIndex.value) as Long
+				def conso = calculConsoBetweenIndex(indexBase, lastIndex.value, index.param1)  
 				device.addMetavalue(getConsoNameByIndexName(BASE_INDEX_NAME), [value: conso.toString()])
 			}
 		}
