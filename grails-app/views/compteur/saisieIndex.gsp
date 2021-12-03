@@ -73,7 +73,7 @@
 									</div>	
 									
 									<div class="btn-group mr-2" role="group">
-										<button class="btn btn-light"><app:icon name="search"/></button>
+										<button id="index-historique-submit-button" class="btn btn-light"><app:icon name="search"/></button>
 									</div>
 								</div>
 							</g:formRemote>

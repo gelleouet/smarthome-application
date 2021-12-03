@@ -34,6 +34,7 @@ class CompteurService extends AbstractService {
 	HouseService houseService
 	DeviceService deviceService
 	DeviceUtilService deviceUtilService
+	DeviceValueService deviceValueService
 	NotificationAccountService notificationAccountService
 	DataConnectService dataConnectService
 	GrailsApplication grailsApplication
@@ -334,7 +335,9 @@ class CompteurService extends AbstractService {
 		// des index antérieurs et postérieurs
 		// A faire APRES la mise à jour du device pour persister les nouvelles metavalues
 		try {
-			deviceUtilService.aggregateValues(compteurImpl.refactoringNextIndex(compteurIndex))
+			Collection siblingValues = compteurImpl.refactoringNextIndex(compteurIndex)
+			deviceValueService.saveAll(siblingValues)
+			deviceUtilService.aggregateValues(siblingValues)
 		} catch (SmartHomeException ex) {
 			// on recatche l'erreur pour passer l'objet command
 			throw new SmartHomeException(ex.message, compteurIndex)
@@ -361,7 +364,37 @@ class CompteurService extends AbstractService {
 		// et le calcul des consos
 		try {
 			// recalcul des consos aggrégées sur toutes les dates qui ont changé
-			deviceUtilService.aggregateValues(compteurImpl.updateIndex(deviceValue))
+			Collection siblingValues = compteurImpl.updateIndex(deviceValue)
+			deviceValueService.saveAll(siblingValues)
+			deviceUtilService.aggregateValues(siblingValues)
+		} catch (SmartHomeException ex) {
+			// on recatche l'erreur pour passer l'objet command
+			throw new SmartHomeException(ex.message, deviceValue)
+		}
+	}
+	
+	
+	/**
+	 * Suppression d'un index
+	 * Les consos associées doivent êre répercutées sur l'index suivant s'il existe
+	 * On fait un recalcul avec index suivant et index antérieur et non pas une simple
+	 * addition de la conso actuelle pour être sur d'avoir des valeurs cohérentes
+	 * 
+	 * @param deviceValue
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void deleteIndex(DeviceValue deviceValue) throws SmartHomeException {
+		Device device = deviceValue.device
+		Compteur compteurImpl = device.newDeviceImpl()
+
+		// on délègue le boulot à l'impl car elle seule connait l'organisation
+		// et le calcul des consos
+		try {
+			// recalcul des consos aggrégées sur toutes les dates qui ont changé
+			Map siblingValues = compteurImpl.deleteIndex(deviceValue)
+			deviceValueService.saveAll(siblingValues.persist)
+			deviceUtilService.aggregateValues(siblingValues.aggregate)
 		} catch (SmartHomeException ex) {
 			// on recatche l'erreur pour passer l'objet command
 			throw new SmartHomeException(ex.message, deviceValue)

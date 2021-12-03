@@ -6,6 +6,9 @@
             <th>Date</th>
             <th>Index</th>
             <th>Valeur</th>
+            <g:if test="${ SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') }">
+            <th class="column-1-buttons"></th>
+            </g:if>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +26,13 @@
 	            		${ raw(deviceImpl.formatHtmlIndex(index.value)) }
 	            	</g:else>
 				</td>
+				<g:if test="${ SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') }">
+	            <td class="column-1<-buttons command-column">
+	            	<a id="compteur-index-delete-button" data-url="${ g.createLink(action: 'deleteIndex', id: index.id) }" class="btn btn-light" title="Supprimer">
+	            		<app:icon name="trash"/>
+	            	</a>
+	            </td>
+	            </g:if>
 	        </tr>
         </g:each>
     </tbody>

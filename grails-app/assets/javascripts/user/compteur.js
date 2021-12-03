@@ -13,10 +13,21 @@ function onLoadSaisieIndex() {
 	$(document).on('click', '#ok-compteur-index-dialog-button', function(event) {
 		ajaxSubmitForm($(this), 'data-url', '#compteur-index-dialog-form', '', function() {
 			hideDialog('compteur-index-dialog')
+			// rafraichit la table
+			$('#index-historique-submit-button').click()
 		})
 	});
 	
 	$(document).on('click', '#cancel-compteur-index-dialog-button', function(event) {
 		hideDialog('compteur-index-dialog')
+	});
+	
+	$(document).on('click', '#compteur-index-delete-button', function(event) {
+		if (confirm("Voulez-vous supprimer l'index ?")) {
+			ajaxGet($(this), 'data-url', {}, '', function() {
+				// rafraichit la table
+				$('#index-historique-submit-button').click()
+			})
+		}
 	});
 }

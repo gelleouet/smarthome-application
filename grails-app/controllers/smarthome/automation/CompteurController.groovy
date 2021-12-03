@@ -235,7 +235,7 @@ class CompteurController extends AbstractController {
 	 * @param index
 	 * @return
 	 */
-	def deleteIndex(CompteurIndex index) {
+	def deleteCompteurIndex(CompteurIndex index) {
 		compteurService.delete(index)
 		redirect(action: 'compteurIndexs')
 	}
@@ -278,6 +278,13 @@ class CompteurController extends AbstractController {
 	@Secured("hasRole('ROLE_ADMIN')")
 	def updateIndex(DeviceValue deviceValue) {
 		compteurService.updateIndex(deviceValue)
+		nop()
+	}
+	
+	
+	@Secured("hasRole('ROLE_ADMIN')")
+	def deleteIndex(DeviceValue deviceValue) {
+		compteurService.deleteIndex(deviceValue)
 		nop()
 	}
 }

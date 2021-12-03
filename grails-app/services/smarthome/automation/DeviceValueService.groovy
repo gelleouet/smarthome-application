@@ -264,6 +264,10 @@ class DeviceValueService extends AbstractService {
 	void aggregateValueDay(Device device, Date dateReference) throws SmartHomeException {
 		AbstractDeviceType deviceImpl = device.deviceImpl
 
+		// Suppression des anciennes valeurs calculées car si des données ont 
+		// été supprimées, les valeurs actuelles ne seront pas mises à jour
+		DeviceValueDay.where { device == device && dateValue == dateReference }.deleteAll()
+		
 		// calcul des données par jour
 		deviceImpl.aggregateValueDay(dateReference).each { mapValue ->
 			for (key in mapValue.keySet()) {
@@ -287,6 +291,10 @@ class DeviceValueService extends AbstractService {
 	void aggregateValueMonth(Device device, Date dateReference) throws SmartHomeException {
 		AbstractDeviceType deviceImpl = device.deviceImpl
 
+		// Suppression des anciennes valeurs calculées car si des données ont
+		// été supprimées, les valeurs actuelles ne seront pas mises à jour
+		DeviceValueMonth.where { device == device && dateValue == dateReference }.deleteAll()
+		
 		// calcul des données par mois
 		deviceImpl.aggregateValueMonth(dateReference).each { mapValue ->
 			for (key in mapValue.keySet()) {

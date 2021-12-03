@@ -20,7 +20,7 @@
 	            <td>${ index.index2 as Long }</td>
 	            <td>${ index.param1 }</td>
 	            <td class="column-1<-buttons command-column">
-	            	<g:link class="btn btn-light confirm-button" title="Supprimer" action="deleteIndex" id="${ index.id }">
+	            	<g:link class="btn btn-light confirm-button" title="Supprimer" action="deleteCompteurIndex" id="${ index.id }">
 	            		<app:icon name="trash"/>
 	            	</g:link>
 	            </td>

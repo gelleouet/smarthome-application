@@ -12,7 +12,7 @@
 		
 			<div class="form-group required">
 				<label>Date</label>
-				<g:field type="date" name="dateValue" value="${ app.formatPicker(date: deviceValue.dateValue) }" class="form-control aui-date-picker" required="true"/>
+				<g:field type="date" name="dateValue" value="${ app.formatPicker(date: deviceValue.dateValue) }" class="form-control aui-date-picker" required="true" readonly="true"/>
 			</div>
 		
 			<div class="form-group required">

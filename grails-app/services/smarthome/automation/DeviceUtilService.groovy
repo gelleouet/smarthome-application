@@ -23,9 +23,6 @@ class DeviceUtilService extends AbstractService {
 	void aggregateValues(Collection<DeviceValue> values) throws SmartHomeException {
 		List dates = []
 		
-		// persistance des valeurs au cas où
-		deviceValueService.saveAll(values)
-		
 		values?.each { deviceValue ->
 			if (!dates.contains(deviceValue.dateValue)) {
 				aggregateSingleDay(deviceValue.device.id, deviceValue.dateValue)

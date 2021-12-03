@@ -628,7 +628,7 @@ class Compteur extends AbstractDeviceType {
 	 * Refactoring d'une meta sélectionnée par son nom
 	 * 	
 	 * @param dateIndex
-	 * @param valeurIndex
+	 * @param valeurIndex ou -1 pour calculer une conso 0
 	 * @param metaNameIndex
 	 * @param param1
 	 * @return
@@ -654,12 +654,70 @@ class Compteur extends AbstractDeviceType {
 			}
 			
 			// mise à jour de la conso périodique
-			nextConso.value = calculConsoBetweenIndex(nextIndex.value, valeurIndex, param1)
+			if (valeurIndex == -1) {
+				nextConso.value = 0.0
+			} else {
+				nextConso.value = calculConsoBetweenIndex(nextIndex.value, valeurIndex, param1)
+			}
 		}
 		
 		return nextConso
 	} 
 
+	
+	/**
+	 * Suppression d'un index
+	 * Les consos associées doivent êre répercutées sur l'index suivant s'il existe
+	 * On fait un recalcul avec index suivant et index antérieur et non pas une simple
+	 * addition de la conso actuelle pour être sur d'avoir des valeurs cohérentes
+	 * 
+	 * @param deviceValue
+	 * @return Map avec 2 enrées [aggregate: liste de values à aggréger, persist: liste de valeurs à persister]
+	 *  on doit séparer ces 2 listes car on ne peut pas insérer les values qui sont supprimées
+	 *  mais elles doivent quand même être aggrégées
+	 * @throws SmartHomeException
+	 */
+	Map deleteIndex(DeviceValue deviceValue) throws SmartHomeException {
+		Map result = [persist: [], aggregate: [deviceValue]]
+		String consoName = getConsoNameByIndexName(deviceValue.name)
+		
+		// suppression de l'index
+		deviceValue.delete()
+		
+		// recherche de la meta conso associée
+		DeviceValue consoValue = DeviceValue.findByDate(device, deviceValue.dateValue, consoName)
+		
+		// la répercussion de la conso sur l'index suivant ne se fait que si
+		// une conso existe. Si pas de conso, c'est surement un 1er index
+		if (consoValue) {
+			// suppression de la conso
+			consoValue.delete()
+		}
+			
+		// recherche de l'index précédent du même nom pour mettre à jour l'index
+		// suivant à partir de celui-ci et non plus à partir de l'index supprimé
+		DeviceValue lastIndex = lastIndex(deviceValue.dateValue, deviceValue.name)
+		DeviceValue nextConso
+		
+		if (lastIndex) {
+			// !! Bien rechercher le suivant à partir de l'index supprimé et non pas
+			// à partir du précédent. Par contre pour le calcul, il faut lui passer la
+			// valeur de l'index du précédent
+			nextConso = refactoringNextMetaConso(deviceValue.dateValue, lastIndex.value, deviceValue.name, null)
+		} else {
+			// si il n'y a pas d'index avant celui supprimé, alors l'index suivant
+			// ne peut pas avoir de conso et donc on force la calcul à mettre 0
+			nextConso = refactoringNextMetaConso(deviceValue.dateValue, -1, deviceValue.name, null)
+		}
+		
+		if (nextConso) {
+			result.persist << nextConso
+			result.aggregate << nextConso
+		}
+		
+		return result
+	}
+	
 
 	/**
 	 * Modification d'un index existant et de l'index suivant s'il existe
