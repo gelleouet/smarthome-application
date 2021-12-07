@@ -79,7 +79,7 @@
 		</div>
 	</div>
 </g:if>
-<g:elseif test="${ ! equipe?.canDisplay() }">
+<g:elseif test="${ ! currentDefi.canDisplay() }">
 	<div class="card flex-fill w-100">
 		<div class="card-body">
 			<g:applyLayout name="messageWarning">

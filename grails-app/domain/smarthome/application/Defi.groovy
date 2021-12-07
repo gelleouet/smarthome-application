@@ -57,4 +57,10 @@ class Defi extends AbstractDefiResultat {
 		ApplicationUtils.autowireBean(defiModel)
 		return defiModel
 	}
+	
+	
+	@Override
+	boolean canDisplay() {
+		valider
+	}
 }

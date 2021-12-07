@@ -44,7 +44,9 @@
 							  	
 							  	<div class="mt-2">
 							  		<div class="btn-group">
-							  			<g:link action="inscription" controller="grandDefi" class="btn btn-primary" params="[defiId: defi.id]"><app:icon name="check-square"/> Je m'inscris</g:link>
+							  			<g:if test="${ defi.actif }">
+							  				<g:link action="inscription" controller="grandDefi" class="btn btn-primary" params="[defiId: defi.id]"><app:icon name="check-square"/> Je m'inscris</g:link>
+							  			</g:if>
 							  			<sec:ifAnyGranted roles="ROLE_ADMIN">
 							  				<g:link action="edit" controller="defi" class="btn btn-primary ml-1" id="${ defi.id }"><app:icon name="edit"/> Modifier</g:link>
 							  			</sec:ifAnyGranted>
