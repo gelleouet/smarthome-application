@@ -38,6 +38,8 @@ import smarthome.core.chart.GoogleDataTableCol
 class TeleInformation extends Compteur {
 
 	static final String DEFAULT_FOURNISSEUR_ELEC = "Tarifs réglementés"
+	static final String DEFAULT_MODELE = "Electronique"
+	static final String DEFAULT_CALCUL_CONSO = "sum-conso"
 	static final String HP_INDEX_NAME = "hchp"
 	static final String HC_INDEX_NAME = "hchc"
 	static final String BASE_INDEX_NAME = "base"
@@ -419,7 +421,7 @@ class TeleInformation extends Compteur {
 		// ne peut pas marcher car une seule valeur et elle va s'annuler
 		// on bascule avec la somme des consos qui est moins précise lorsque le téléinfo
 		// est branché car si une coupure pendant un certain temps, il y a une perte d'info
-		if (device.metadata('aggregate')?.value == 'sum-conso') {
+		if (device.metadata('aggregate')?.value == DEFAULT_CALCUL_CONSO) {
 			// ATTENTION !!! retransformer le name pour rester valide avec l'autre requete
 			// et le chargement des données dans la méthode @see values
 			values.addAll(DeviceValue.executeQuery("""\
@@ -470,7 +472,7 @@ class TeleInformation extends Compteur {
 		// ne peut pas marcher car une seule valeur et elle va s'annuler
 		// on bascule avec la somme des consos qui est moins précise lorsque le téléinfo
 		// est branché car si une coupure pendant un certain temps, il y a une perte d'info
-		if (device.metadata('aggregate')?.value == 'sum-conso') {
+		if (device.metadata('aggregate')?.value == DEFAULT_CALCUL_CONSO) {
 			// ATTENTION !!! retransformer le name pour rester valide avec l'autre requete
 			// et le chargement des données dans la méthode @see values
 			values.addAll(DeviceValue.executeQuery("""\

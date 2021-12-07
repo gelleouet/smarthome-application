@@ -55,6 +55,13 @@
 			            	<g:else>
 			            		<span class="badge badge-dark">FERME</span>
 			            	</g:else>
+			            	
+			            	<g:if test="${ bean.valider }">
+			            		<span class="badge badge-primary">VALIDÉ</span>
+			            	</g:if>
+			            	<g:else>
+			            		<span class="badge badge-dark">EN COURS</span>
+			            	</g:else>
 			            </td>
 			        </tr>
 		        </g:each>

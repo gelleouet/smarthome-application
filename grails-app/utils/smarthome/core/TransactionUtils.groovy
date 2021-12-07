@@ -1,5 +1,6 @@
 package smarthome.core
 
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -28,6 +29,17 @@ class TransactionUtils {
 				}
 			})
 		}
+	}
+	
+	
+	/**
+	 * Exécution d"une closure dans nouvelle transaction
+	 * 
+	 * @param domainClass
+	 * @param closure
+	 */
+	static void withNewTransaction(Class domainClass, Closure closure) {
+		domainClass.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW], closure)
 	}
 
 }

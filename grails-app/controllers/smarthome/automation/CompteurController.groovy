@@ -212,6 +212,24 @@ class CompteurController extends AbstractController {
 		compteurService.validIndex(compteurIndex)
 		redirect(action: 'compteurIndexs')
 	}
+	
+	
+	/**
+	 * Validation en lot sur la recherche
+	 *
+	 * @param command
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	def validAllCompteurIndex(CompteurIndexCommand command) {
+		compteurService.validAll(command)
+		
+		if (request.xhr) {
+			nop()
+		} else {
+			redirect(action: 'compteurIndexs')
+		}
+	}
 
 
 	/**
@@ -235,9 +253,28 @@ class CompteurController extends AbstractController {
 	 * @param index
 	 * @return
 	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
 	def deleteCompteurIndex(CompteurIndex index) {
 		compteurService.delete(index)
 		redirect(action: 'compteurIndexs')
+	}
+	
+	
+	/**
+	 * Suppression en lot sur la recherche
+	 * 
+	 * @param command
+	 * @return
+	 */
+	@Secured("hasAnyRole('ROLE_VALIDATION_INDEX', 'ROLE_ADMIN')")
+	def deleteAllCompteurIndex(CompteurIndexCommand command) {
+		compteurService.deleteAll(command)
+		
+		if (request.xhr) {
+			nop()
+		} else {
+			redirect(action: 'compteurIndexs')
+		}
 	}
 	
 	

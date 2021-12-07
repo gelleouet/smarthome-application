@@ -39,6 +39,10 @@ class AccountCommand {
 	Chauffage chauffageSecondaire
 	ECS ecs
 	Integer nbPersonne
+	
+	// configuration création compte
+	boolean checkUserExist = true
+	boolean defaultAccountLocked = true
 
 
 	static constraints = {

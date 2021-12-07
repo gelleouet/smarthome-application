@@ -24,6 +24,7 @@ import smarthome.core.chart.GoogleDataTableCol
 class CompteurGaz extends Compteur {
 
 	static final String CONFIG_DEFAULT_COEF_CONVERSION = "DEFAULT_COEF_CONVERSION_GAZ"
+	static final String DEFAULT_MODELE = "Gaz"
 	protected static final String META_COEF_CONVERSION = "coefConversion"
 
 

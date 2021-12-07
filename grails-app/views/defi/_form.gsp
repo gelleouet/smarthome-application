@@ -49,3 +49,9 @@
 </label>
 <small class="text-muted">Si désactivé, les inscriptions ne sont plus autorisées</small>
 
+<label class="custom-control custom-checkbox">
+	<g:checkBox name="valider" value="${ defi?.valider }" class="custom-control-input"/>
+	<span class="custom-control-label">Validé ?</span>
+</label>
+<small class="text-muted">Les résultats ne sont visibles que si le défi est validé</small>
+

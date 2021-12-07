@@ -8,6 +8,8 @@ import smarthome.core.SmartHomeException
 
 import org.apache.commons.lang.StringUtils
 import org.hibernate.Query
+import org.hibernate.ScrollMode
+import org.hibernate.ScrollableResults
 import org.hibernate.Session
 
 
@@ -407,6 +409,48 @@ class HQL {
 		}
 		
 		return result
+	}
+	
+	
+	/**
+	 * Méthode plus optimisée pour le traitement de large resultset
+	 * car seule 2 méthodes sont exécutées. Mais le chagrement des données se
+	 * fait au fur et à mesure de l'avancement dans le resultset
+	 * La différence avec les visit c'est qu'il y a autant de requetes que de pages
+	 * 
+	 * @param session
+	 * @param maxPage
+	 * @param closure
+	 */
+	void scroll(Session session, int maxPage, Closure closure) {
+		long totalCount = this.count(session)
+		long idx = 0
+		
+		Query query = createQuery(session, this.build())
+		QueryUtils.bindParameters(query, params)
+		query.setFetchSize(maxPage)
+		query.setReadOnly(true)
+		query.setCacheable(false)
+		
+		ScrollableResults scrollResults = query.scroll(ScrollMode.FORWARD_ONLY)
+		
+		while (scrollResults.next()) {
+			Object value = scrollResults.get(0)
+			closure(value, idx, totalCount)
+			idx++
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param maxPage
+	 * @param closure
+	 */
+	void scroll(int maxPage, Closure closure) {
+		domainClass.withSession { session ->
+			scroll(session, maxPage, closure)
+		}
 	}
 
 

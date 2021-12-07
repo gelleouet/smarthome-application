@@ -1,4 +1,4 @@
-package smarthome.automation.export
+package smarthome.core
 
 import javax.servlet.ServletResponse;
 import smarthome.automation.SupervisionCommand

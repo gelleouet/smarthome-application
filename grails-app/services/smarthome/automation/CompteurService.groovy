@@ -13,8 +13,10 @@ import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousWorkflow
 import smarthome.core.DateUtils
+import smarthome.core.JSONUtils
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
+import smarthome.core.TransactionUtils
 import smarthome.core.query.HQL
 import smarthome.security.User
 
@@ -111,7 +113,7 @@ class CompteurService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void registerCompteurElec(RegisterCompteurCommand command) throws SmartHomeException {
+	Device registerCompteurElec(RegisterCompteurCommand command) throws SmartHomeException {
 		Device compteur
 
 		if (command.compteurModel == "_exist") {
@@ -133,7 +135,7 @@ class CompteurService extends AbstractService {
 						deviceType: DeviceType.findByImplClass(TeleInformation.name))
 
 				compteur.addMetadata('modele', [value: command.compteurModel, label: 'Modèle'])
-				compteur.addMetadata('aggregate', [value: 'sum-conso', label: 'Calcul des données aggrégées'])
+				compteur.addMetadata('aggregate', [value: TeleInformation.DEFAULT_CALCUL_CONSO, label: 'Calcul des données aggrégées'])
 				compteur.addMetadata('fournisseur', [value: Compteur.DEFAULT_FOURNISSEUR, label: 'Fournisseur'])
 
 				compteur.addMetavalue('opttarif', [value: Compteur.DEFAULT_CONTRAT, label: 'Option tarifaire'])
@@ -153,6 +155,8 @@ class CompteurService extends AbstractService {
 
 		// si le compteur est bien créé, on l'associe à la maison principale
 		houseService.bindDefault(command.user, [compteur: compteur])
+		
+		return compteur
 	}
 
 
@@ -163,7 +167,7 @@ class CompteurService extends AbstractService {
 	 * @throws SmartHomeException
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void registerCompteurGaz(RegisterCompteurCommand command) throws SmartHomeException {
+	Device registerCompteurGaz(RegisterCompteurCommand command) throws SmartHomeException {
 		Device compteur
 
 		if (command.compteurModel == "_exist") {
@@ -200,11 +204,13 @@ class CompteurService extends AbstractService {
 
 		// si le compteur est bien créé, on l'associe à la maison principale
 		houseService.bindDefault(command.user, [compteurGaz: compteur])
+		
+		return compteur
 	}
 	
 	
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
-	void registerCompteurEau(RegisterCompteurCommand command) throws SmartHomeException {
+	Device registerCompteurEau(RegisterCompteurCommand command) throws SmartHomeException {
 		Device compteur
 
 		if (command.compteurModel == "_exist") {
@@ -238,6 +244,8 @@ class CompteurService extends AbstractService {
 
 		// si le compteur est bien créé, on l'associe à la maison principale
 		houseService.bindDefault(command.user, [compteurEau: compteur])
+		
+		return compteur
 	}
 
 
@@ -328,8 +336,12 @@ class CompteurService extends AbstractService {
 		// est obligé de scanner une bonne partie de la base pour essayer de trouver
 		// une valeur qui n'existe pas
 		device.dateValue = compteurIndex.dateIndex
-		deviceService.saveAndTriggerChange(device)
-
+		deviceService.save(device)
+		// !! Ne pas passer par la version async car en utilisation par lot,
+		// problème de concurrence avec les workflows
+		deviceValueService.traceValue(JSONUtils.toJSON(device))
+		deviceUtilService.aggregateSingleDay(device.id, compteurIndex.dateIndex)
+		
 		// mise à jour des index voisins car il n'y pas d'ordre d'ajout d'index
 		// donc si insertion d'un index entre 2 autres, il faut recalculer les consos
 		// des index antérieurs et postérieurs
@@ -345,6 +357,22 @@ class CompteurService extends AbstractService {
 		
 		// si tout s'est bien passé, on peut supprimer cette saisie
 		compteurIndex.delete()
+	}
+	
+	
+	/**
+	 * Validation en lot sur la recherche
+	 *
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void validAll(CompteurIndexCommand command) throws SmartHomeException {
+		// on est obligé de tout charger car comme on supprime au fur et à mesure
+		// si on utilse un scroll ou batch, le nombre d'éléments va changer en direct
+		// et cela risque de créer des erreurs
+		command.query().list([:]).each { compteurIndex ->
+			compteurIndex.device.newDeviceImpl().prepareForEdition(compteurIndex)
+			validIndex(compteurIndex)
+		}
 	}
 	
 	
@@ -400,8 +428,23 @@ class CompteurService extends AbstractService {
 			throw new SmartHomeException(ex.message, deviceValue)
 		}
 	}
-
-
+	
+	
+	/**
+	 * Suppression en lot sur la recherche
+	 * 
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void deleteAll(CompteurIndexCommand command) throws SmartHomeException {
+		// on est obligé de tout charger car comme on supprime au fur et à mesure
+		// si on utilse un scroll ou batch, le nombre d'éléments va changer en direct
+		// et cela risque de créer des erreurs
+		command.query().list([:]).each {
+			delete(it)
+		}
+	}
+	
+	
 	/**
 	 * Nombre d'index à valider pour un device
 	 * 
@@ -442,33 +485,7 @@ class CompteurService extends AbstractService {
 	 * @return
 	 */
 	List<CompteurIndex> listCompteurIndex(CompteurIndexCommand command) {
-		HQL hql = new HQL("compteurIndex",	""" 
-			FROM CompteurIndex compteurIndex
-			JOIN FETCH compteurIndex.device device
-			JOIN FETCH device.deviceType deviceType
-			JOIN FETCH device.user user
-			LEFT JOIN FETCH user.profil profil""")
-
-		hql.addCriterion("""user.id in (select userAdmin.user.id from UserAdmin userAdmin
-			where userAdmin.admin.id = :adminId)""", [adminId: command.adminId])
-		
-		if (command.userSearch) {
-			hql.addCriterion("lower(user.username) like :userSearch or lower(user.prenom) like :userSearch or lower(user.nom) like :userSearch",
-				[userSearch: QueryUtils.decorateMatchAll(command.userSearch.toLowerCase())])
-		}
-
-		if (command.deviceTypeId) {
-			hql.addCriterion("deviceType.id = :deviceTypeId", [deviceTypeId: command.deviceTypeId])
-		}
-
-		if (command.profilId) {
-			hql.addCriterion("user.profil.id = :profilId", [profilId: command.profilId])
-		}
-
-		command.addOrder(hql)
-
-		return CompteurIndex.withSession { session ->
-			hql.list(session, command.pagination())
-		}
+		return command.query().list(command.pagination())
 	}
+	
 }

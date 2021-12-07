@@ -15,7 +15,7 @@
 				<g:form action="supervision" name="supervision-form" class="form-inline">
 					
 					<div class="row w-100">
-						<div class="col-10">
+						<div class="col-9">
 							<g:select name="defiId" value="${ command.defiId }" from="${ defis }" class="form-control combobox"
 	            				optionKey="id" optionValue="libelle"  noSelection="['': ' ']"/>
 	            				
@@ -34,6 +34,7 @@
 						</div>
 						<div class="col text-right">
 							<a id="supervision-export-button" class="btn btn-light" data-url="${ g.createLink(action: 'dialogExport') }"><app:icon name="download-cloud"/> Exporter</a>
+							<a id="supervision-import-button" class="btn btn-light" data-url="${ g.createLink(action: 'dialogImport') }"><app:icon name="upload-cloud"/> Importer</a>
 						</div>
 					</div>	
 				</g:form>

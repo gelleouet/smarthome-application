@@ -8,6 +8,8 @@ import smarthome.core.AbstractController;
 import smarthome.core.ConfigService
 import smarthome.core.ExceptionNavigationHandler;
 import smarthome.core.ExportService
+import smarthome.core.ImportCommand
+import smarthome.core.ImportService
 import smarthome.security.Profil
 import smarthome.security.UserService;
 
@@ -18,6 +20,7 @@ class SupervisionController extends AbstractController {
 	DeviceService deviceService
 	DeviceTypeService deviceTypeService
 	ExportService exportService
+	ImportService importService
 	DefiService defiService
 	ConfigService configService
 	
@@ -67,5 +70,28 @@ class SupervisionController extends AbstractController {
 	def export(SupervisionCommand command) {
 		command.adminId = principal.id
 		exportService.export(command, response)
+	}
+	
+	
+	/**
+	 * Dialog paramètres import
+	 *
+	 * @param command
+	 * @return
+	 */
+	def dialogImport() {
+		render (template: 'dialogImport', model: [importImpls: importService.importImpls()])
+	}
+	
+	
+	/**
+	 * Import des données pour un profil admin
+	 *
+	 */
+	@ExceptionNavigationHandler(actionName = "supervision")
+	def importData(ImportCommand command) {
+		command.data = this.parseFile("importFile")
+		importService.importData(command)
+		redirect action: 'supervision'
 	}
 }

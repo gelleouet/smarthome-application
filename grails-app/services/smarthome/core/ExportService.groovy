@@ -3,7 +3,6 @@ package smarthome.core
 import javax.servlet.ServletResponse
 
 import smarthome.automation.SupervisionCommand
-import smarthome.automation.export.DeviceValueExport
 
 /**
  * @author gelleouet <gregory.elleouet@gmail.com>
@@ -21,8 +20,8 @@ class ExportService extends AbstractService {
 	 */
 	Map exportImpls() {
 		[
-			(smarthome.automation.export.UserIndexExcelDeviceValueExport.name): 'Export profils et données',
-			(smarthome.automation.export.UserExcelDeviceValueExport.name): 'Export profils'
+			(smarthome.core.exportImpl.UserIndexExcelDeviceValueExport.name): 'Export profils et données',
+			(smarthome.core.exportImpl.UserExcelDeviceValueExport.name): 'Export profils'
 		]
 	}
 	
@@ -50,7 +49,7 @@ class ExportService extends AbstractService {
 		}
 		
 		if (!command.exportImpl) {
-			throw new SmartHomeException("Veuillez renseigner le modèle d'export !", command)
+			throw new SmartHomeException("Veuillez sélectionner le modèle d'export !", command)
 		}
 
 

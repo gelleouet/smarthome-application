@@ -6,7 +6,9 @@
       <script>def user = smarthome.security.User.findByUsername(context.arg0.username)
 execution.setVariable("user", user)</script>
     </scriptTask>
-    <sequenceFlow id="flow10" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
+    <sequenceFlow id="flow10" name="Code d'enregistrement ?" sourceRef="startevent1" targetRef="scripttask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ context.result != null }]]></conditionExpression>
+    </sequenceFlow>
     <scriptTask id="scripttask2" name="Envoi mail utilisateur" scriptFormat="groovy" activiti:autoStoreVariables="false">
       <script>Map email = [title: 'Activation compte', subject: 'Activation compte', to: context.result.username,
 	bcc: 'gregory.elleouet@gmail.com,ronan.jouve@alec-rennes.org,olivier.roche@alec-rennes.org']
@@ -49,6 +51,9 @@ notificationService.sendEmail(email)</script>
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
         <omgdi:waypoint x="360.0" y="105.0"></omgdi:waypoint>
         <omgdi:waypoint x="360.0" y="170.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="39.0" width="100.0" x="370.0" y="119.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
         <omgdi:waypoint x="360.0" y="225.0"></omgdi:waypoint>

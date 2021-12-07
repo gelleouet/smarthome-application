@@ -1,5 +1,6 @@
 package smarthome.core
 
+import grails.converters.JSON
 import grails.util.GrailsWebUtil;
 
 import javax.servlet.http.HttpServletResponse;
@@ -48,5 +49,54 @@ class JSONUtils {
 	static void write(HttpServletResponse response, Object object) throws SmartHomeException {
 		response.setContentType("${MimeType.JSON.getName()};charset=UTF-8")
 		write(response.writer, object)
+	}
+	
+	
+	/**
+	 * Formattage json d'un objet
+	 *
+	 * @param object
+	 * @param pretty indentation
+	 * @return
+	 */
+	static String toString(Object object, boolean pretty) {
+		new JSON(object).toString(pretty)
+	}
+
+
+	/**
+	 * Formattage json d'un objet
+	 *
+	 * @param object
+	 * @return
+	 */
+	static String toString(Object object) {
+		toString(object, false)
+	}
+
+
+	/**
+	 * Parsing json
+	 *
+	 * @param source
+	 * @return Map
+	 */
+	static Map parse(String source) {
+		if (source) {
+			JSON.parse(source)
+		} else {
+			[:]
+		}
+	}
+	
+	
+	/**
+	 * Conversion objet json
+	 * 
+	 * @param value
+	 * @return
+	 */
+	static Map toJSON(Object value) {
+		parse(toString(value))
 	}
 }

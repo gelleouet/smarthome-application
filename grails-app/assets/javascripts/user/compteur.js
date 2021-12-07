@@ -1,5 +1,19 @@
 function onLoadCompteur() {
+	$(document).on('click', '#compteur-index-valid-all-button', function(event) {
+		if (confirm('Voulez-vous tout valider ?')) {
+			ajaxSubmitForm($(this), 'data-url', '#compteurIndex-form', '', function() {
+				$('#compteurIndex-submit-button').click()
+			})
+		}
+	});
 	
+	$(document).on('click', '#compteur-index-delete-all-button', function(event) {
+		if (confirm('Voulez-vous tout supprimer ?')) {
+			ajaxSubmitForm($(this), 'data-url', '#compteurIndex-form', '', function() {
+				$('#compteurIndex-submit-button').click()
+			})
+		}
+	});
 }
 
 

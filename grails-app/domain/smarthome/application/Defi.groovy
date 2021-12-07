@@ -19,7 +19,8 @@ class Defi extends AbstractDefiResultat {
 	Date actionDebut
 	Date actionFin
 	boolean actif
-	boolean publique
+	boolean publique = true
+	boolean valider = false
 	Set equipes = []
 	Set profils = []
 	String modele // impl DefiModel pour l'affichage
@@ -40,6 +41,7 @@ class Defi extends AbstractDefiResultat {
 		table schema: SmartHomeCoreConstantes.APPLICATION_SCHEMA
 		user index: 'Defi_Idx'
 		publique defaultValue: true
+		valider defaultValue: false
 		//equipes cascade: 'all-delete-orphan'
 		//profils cascade: 'all-delete-orphan'
 	}
