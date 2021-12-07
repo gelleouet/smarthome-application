@@ -102,11 +102,6 @@ class GrandDefi2021CalculRule implements Rule<Defi, Defi> {
 			}
 		}
 		
-		participants.each { participant ->
-			participant.economie_global = NumberUtils.moyenne(participant.economie_electricite,
-					participant.economie_gaz, participant.economie_eau)
-		}
-
 		// si défi pas encore validé, on ne calcule que l'économie au niveau utilisateur
 		// comme ca il peut voir ses économies évoluer au cours du défi
 		// mais les infos des équipes et des classements sont ignorées
@@ -114,6 +109,11 @@ class GrandDefi2021CalculRule implements Rule<Defi, Defi> {
 			return defi
 		}
 		
+		participants.each { participant ->
+			participant.economie_global = NumberUtils.moyenne(participant.economie_electricite,
+					participant.economie_gaz, participant.economie_eau)
+		}
+
 		// calcul des notes par équipe / profil
 		// il s'agit simplement de faire les moyennes des économies des participants
 		// à chaque niveau : catégorie puis équipe

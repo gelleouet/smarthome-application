@@ -22,7 +22,6 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	String exportImpl
 	
 	
-	
 	static constraints = {
 		deviceTypeId nullable: true
 		profilId nullable: true
@@ -111,7 +110,6 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		if (profilId) {
 			hql.addCriterion("user.profil.id = :profilId", [profilId: profilId])
 		}
-		
 		
 		if (ville) {
 			if (joinHouse) {

@@ -59,12 +59,11 @@ class ExportService extends AbstractService {
 		
 		log.info("Start export ${deviceValueExport.class}...")
 		deviceValueExport.init(command, response)
-		
 
 		// on s'assure que le stream est bien fermé à la fin de l'export et en cas d'erreur
 		response.outputStream.withStream {
 			try {
-					deviceValueExport.export(command, it)
+				deviceValueExport.export(command, it)
 			} catch (Exception ex) {
 				log.error("Export ${deviceValueExport.class} : ${ex.message}", ex)
 				throw new SmartHomeException(ex.message, command)

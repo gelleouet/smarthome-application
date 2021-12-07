@@ -4,6 +4,7 @@ package smarthome.core.exportImpl
 import java.io.OutputStream;
 import javax.servlet.ServletResponse;
 
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -44,9 +45,11 @@ import smarthome.security.User;
  */
 class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 
-	private static final log = LogFactory.getLog(this)
+	private static final Log log = LogFactory.getLog(this)
 	private static final String KEY_ROW_IDX = "rowIdx"
+	private static final String KEY_START_MAX_IDX = "startMaxIdx"
 	private static final int MAX_INDEX = 5
+	private static final int START_MAX_INDEX = 54
 	
 	
 	@Autowired
@@ -82,6 +85,7 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 		int startCellIdxEau
 		int startCellIdx
 		int nbIndex
+		int startMaxIndex
 		// maintient des infos de chaque utilisateur pour injecter ensuite les index
 		// ex n° ligne, nombre d'index par compteur, etc.
 		Map<Long, Map> configByUser = [:]
@@ -163,7 +167,7 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 			// reset de compteur de colonnes à chaque ligne et incrément de la ligne pour la future insertion
 			cellIdx = 0
 			row = excelUtils.createRow(sheet, rowIdx)
-			configByUser.put(user.id, [(KEY_ROW_IDX): rowIdx])
+			configByUser.put(user.id, [(KEY_ROW_IDX): rowIdx, (KEY_START_MAX_IDX): START_MAX_INDEX])
 			
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.profil?.libelle)
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(user.nom)
@@ -227,15 +231,17 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 				rowIdx = configUser.get(KEY_ROW_IDX)
 				// calcul indice du compteur
 				nbIndex = configUser.get(deviceValue.device.id) ?: 0
+				startMaxIndex = configUser.get(KEY_START_MAX_IDX)
 				
-				if (nbIndex >= MAX_INDEX) {
-					throw new SmartHomeException("${ MAX_INDEX } index maximum !")
+				if (nbIndex < MAX_INDEX) {
+					excelUtils.createOrGetCell(sheet, rowIdx, startCellIdx + nbIndex).setCellValue(deviceValue.value)
+					configUser.put(deviceValue.device.id, ++nbIndex)
+				} else {
+					log.warn("Index maximum atteint compteur ${deviceValue.device.mac} ligne ${rowIdx+1} !")
+					// ajoute les index en trop en fin de ligne pour que le user puisse les voir
+					excelUtils.createOrGetCell(sheet, rowIdx, startMaxIndex).setCellValue(deviceValue.value)
+					configUser.put(KEY_START_MAX_IDX, ++startMaxIndex)
 				}
-				
-				excelUtils.createOrGetCell(sheet, rowIdx, startCellIdx + nbIndex).setCellValue(deviceValue.value)
-				
-				// enregistre le nouveau nombre d'index
-				configUser.put(deviceValue.device.id, ++nbIndex)
 			}
 		}
 		
