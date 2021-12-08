@@ -37,6 +37,8 @@ class GrandDefi2021CalculRule implements Rule<Defi, Defi> {
 
 	static final Long PROFIL_PARTICULIER_ID = 1L
 	static final Long CHAUFFAGE_ELEC_ID = 1L
+	static final Long CHAUFFAGE_BOIS_ID = 2L
+	static final Long CHAUFFAGE_RESEAU_CHALEUR_ID = 4L
 	static final Long CHAUFFAGE_GN_ID = 6L
 	static final String SUFFIX_USAGE_SPECIFIQUE = "US"
 	static final String SUFFIX_ELECTRICITE = "ELEC"
@@ -218,11 +220,18 @@ class GrandDefi2021CalculRule implements Rule<Defi, Defi> {
 	 * @return
 	 */
 	String groupKeyParticipant(DefiEquipeParticipant participant) {
-		if (participant.house?.chauffage?.id == CHAUFFAGE_ELEC_ID) {
+		// principal elec ou combinaison bois principal et elec secondaire
+		if (participant.house?.chauffage?.id == CHAUFFAGE_ELEC_ID || 
+			(participant.house?.chauffage?.id == CHAUFFAGE_BOIS_ID && participant.house?.chauffageSecondaire?.id == CHAUFFAGE_ELEC_ID)) 
+		{
 			return "${participant.user.profil.id}${SUFFIX_ELECTRICITE}"
-		} else if (participant.house?.chauffage?.id == CHAUFFAGE_GN_ID) {
+		} 
+		else if (participant.house?.chauffage?.id == CHAUFFAGE_GN_ID || participant.house?.chauffage?.id == CHAUFFAGE_RESEAU_CHALEUR_ID)
+		{
 			return "${participant.user.profil.id}${SUFFIX_GAZ_NATUREL}"
-		} else {
+		} 
+		else 
+		{
 			return "${participant.user.profil.id}${SUFFIX_USAGE_SPECIFIQUE}"
 		}
 	}
