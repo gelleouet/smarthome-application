@@ -280,7 +280,7 @@ class GrandDefi2020Model extends AbstractDefiModel {
 					// on charge la maison principale avec le chauffage car il sera
 					// utilisé pour le calcul des notes. Cela évitera d'autres
 					// requêtes en activant l'association
-					House house = houseService.findDefaultByUserFetch(participant.user, ['chauffage'])
+					House house = houseService.findDefaultByUserFetch(participant.user, ['chauffage', 'chauffageSecondaire'])
 					Map consos
 
 					if (house) {

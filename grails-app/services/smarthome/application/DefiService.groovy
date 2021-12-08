@@ -270,7 +270,6 @@ class DefiService extends AbstractService {
 			JOIN FETCH participant.user user
 			JOIN FETCH user.profil profil
 			LEFT JOIN FETCH house.chauffage
-			LEFT JOIN FETCH house.chauffageSecondaire
 		""")
 
 		hql.addCriterion("defiEquipe.defi = :defi", [defi: command.defi])
@@ -292,6 +291,7 @@ class DefiService extends AbstractService {
 		}
 
 		results.collect {
+			// inject l'objet House dans DefiEquipeParticipant
 			it[0].house = it[1]
 			it[0]
 		}
