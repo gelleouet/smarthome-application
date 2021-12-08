@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="Activiti_userService.deleteProfil" name="Activiti_userService.deleteProfil" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <scriptTask id="scripttask2" name="Envoi mail utilisateur" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>def user = smarthome.security.User.read(context.arg0.id)
+
+Map email = [title: 'Suppression compte', subject: 'Suppression compte',
+	to: 'ronan.jouve@alec-rennes.org,stephanie.vetier@alec-rennes.org', bcc: 'gregory.elleouet@gmail.com',
+]
+
+email.message = """
+	&lt;p&gt;Bonjour,&lt;/p&gt;
+	&lt;br/&gt;						
+	&lt;p&gt;L'utilisateur &lt;strong&gt;${user.username}&lt;/strong&gt; a envoyé une demande pour supprimer son compte.&lt;/p&gt;
+	&lt;p&gt;Sans annulattion de sa part, ce compte devra être supprimé dans 30 jours.&lt;/p&gt;
+"""
+
+notificationService.sendEmail(email)</script>
+    </scriptTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow12" sourceRef="scripttask2" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="startevent1" targetRef="scripttask2"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>Workflow : Suppression Compte</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Activiti_userService.deleteProfil">
+    <bpmndi:BPMNPlane bpmnElement="Activiti_userService.deleteProfil" id="BPMNPlane_Activiti_userService.deleteProfil">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="140.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="55.0" width="171.0" x="72.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="140.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="50.0" width="631.0" x="10.0" y="10.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="157.0" y="225.0"></omgdi:waypoint>
+        <omgdi:waypoint x="157.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="157.0" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="157.0" y="170.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

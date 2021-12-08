@@ -486,4 +486,21 @@ class DataConnectService extends AbstractService {
 
 		return device
 	}
+	
+	
+	/**
+	 * Désactivation du service DataConnect pour le user
+	 * 
+	 * @param user
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	void disable(User user) throws SmartHomeException {
+		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
+		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		
+		if (notificationAccount) {
+			delete(notificationAccount)
+		}
+	}
 }

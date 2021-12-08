@@ -106,4 +106,22 @@ class ProfilController extends AbstractController {
 	def formProfil(Profil profil) {
 		render(template: "/profil/${ profil.view }")
 	}
+	
+	
+	def todelete() {
+		render view: 'todelete'
+	}
+	
+	
+	/**
+	 * Suppression définitive du profil
+	 * 
+	 * @return
+	 */
+	def deleteProfil() {
+		// plugin spring security add authenticatedUser property
+		User user = authenticatedUser
+		userService.deleteProfil(user)
+		redirect controller: 'logout'
+	}
 }

@@ -6,7 +6,7 @@
 <body>
 	<g:applyLayout name="page-settings" model="[titre: 'Profil', navigation: 'Compte']">
 	
-		<g:form name="profil-form" controller="profil" method="post">
+		<g:form name="profil-form" controller="profil" action="saveProfil" method="post">
 			
 			<g:hiddenField name="user.id" value="${user.id}" />
 	
@@ -78,8 +78,14 @@
 			
 			<g:include action="templateEditByUser" controller="house" params="[user: user]"/>
 			
-			<g:actionSubmit value="Enregistrer" action="saveProfil" class="btn btn-primary" />
-			
+			<div class="row">
+				<div class="col">
+					<button class="btn btn-primary">Enregistrer</button>
+				</div>
+				<div class="col text-right">
+					<g:link action="todelete" controller="profil" class="btn btn-danger"><app:icon name="user-x"/> Supprimer mon compte</g:link>
+				</div>
+			</div>
 		</g:form>
 	</g:applyLayout>
 </body>

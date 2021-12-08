@@ -2,8 +2,10 @@ package smarthome.security
 
 import org.springframework.transaction.annotation.Transactional
 
+import smarthome.automation.DeviceService
 import smarthome.core.AbstractService
 import smarthome.core.AsynchronousMessage
+import smarthome.core.AsynchronousWorkflow
 import smarthome.core.QueryUtils
 import smarthome.core.SmartHomeException
 import smarthome.security.ChangePasswordCommand
@@ -182,5 +184,25 @@ class UserService extends AbstractService {
 			JOIN userAdmin.user user
 			WHERE userAdmin.admin.id = :adminId
 			ORDER BY user.prenom, user.nom""", [adminId: admin.id])
+	}
+	
+	
+	/**
+	 * Suppresson du profil
+	 * Juste désactivation du compte avant suppression complète ultérieure
+	 * 
+	 * @param user
+	 * @throws SmartHomeException
+	 */
+	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
+	@AsynchronousWorkflow("userService.deleteProfil")
+	void deleteProfil(User user) throws SmartHomeException {
+		user.enabled = false
+		user.accountLocked = true
+		user.passwordExpired = true
+		user.accountExpired = true
+		user.password = UUID.randomUUID()
+		user.lastConnexion = new Date()
+		this.save(user)
 	}
 }

@@ -27,10 +27,14 @@ class RegisterService extends AbstractService {
 		log.info "Demande reset mot de passe ${username}"
 
 		// on vérifie que l'adresse est connue
-		def user = User.findByUsername(username)
+		User user = User.findByUsername(username)
 
 		if (!user) {
-			throw new SmartHomeException("Adresse incorrecte !", username)
+			throw new SmartHomeException("Compte introuvable !", username)
+		}
+		
+		if (!user.enabled) {
+			throw new SmartHomeException("Compte désactivé !", username)
 		}
 
 		// création d'un code d'enregistrement

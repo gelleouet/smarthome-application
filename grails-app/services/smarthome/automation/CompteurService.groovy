@@ -251,6 +251,7 @@ class CompteurService extends AbstractService {
 
 	/**
 	 * Reset du compteur élec associé à la maison
+	 * Le compteur et ses données ne sont pas supprimées
 	 * 
 	 * @param user
 	 * @throws SmartHomeException
@@ -258,6 +259,8 @@ class CompteurService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void resetCompteurElec(User user)  throws SmartHomeException {
 		houseService.bindDefault(user, [compteur: null])
+		// désactivation du service DataConnect s'il existe
+		dataConnectService.disable(user)
 	}
 
 
