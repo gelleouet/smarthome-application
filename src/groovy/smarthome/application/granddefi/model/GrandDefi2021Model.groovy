@@ -1,5 +1,6 @@
 package smarthome.application.granddefi.model
 
+
 /**
  * @author gelleouet <gregory.elleouet@gmail.com>
  *

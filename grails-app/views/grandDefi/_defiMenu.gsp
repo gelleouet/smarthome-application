@@ -23,7 +23,10 @@
 	<div class="col-4">
 		<div class="btn-toolbar justify-content-end">
 			<div class="btn-group">
-				<g:link class="btn btn-danger confirm-button" action="desinscription" params="[defiId: currentDefi?.id]">Se désinscrire</g:link>
+				<g:if test="${ currentDefi?.id }">
+					<g:link class="btn btn-light" action="export" params="['defi.id': currentDefi.id]"><app:icon name="download-cloud"/> Exporter</g:link>
+					<g:link class="btn btn-danger confirm-button" action="desinscription" params="[defiId: currentDefi.id]"><app:icon name="log-out"/> Se désinscrire</g:link>
+				</g:if>			
 			</div>
 		</div>
 	</div>
@@ -71,20 +74,12 @@
 
 
 <g:if test="${ !currentDefi }">
-	<div class="card flex-fill w-100">
-		<div class="card-body">
-			<g:applyLayout name="messageWarning">
-				Vous n'êtes enregistrés sur aucun défi.
-			</g:applyLayout>
-		</div>
-	</div>
+	<g:applyLayout name="messageWarning">
+		Vous n'êtes enregistrés sur aucun défi.
+	</g:applyLayout>
 </g:if>
 <g:elseif test="${ ! currentDefi.canDisplay() }">
-	<div class="card flex-fill w-100">
-		<div class="card-body">
-			<g:applyLayout name="messageWarning">
-				Le défi n'est pas encore terminé. Les résultats seront calculés à la fin de la période d'action.
-			</g:applyLayout>
-		</div>
-	</div>
+	<g:applyLayout name="messageWarning">
+		Le défi n'est pas encore terminé. Les résultats seront calculés à la fin de la période d'action.
+	</g:applyLayout>
 </g:elseif>

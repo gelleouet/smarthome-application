@@ -125,7 +125,7 @@ class DefiService extends AbstractService {
 	 */
 	List<Defi> listByAuthenticatedUser(Map pagination) {
 		User user = User.read(springSecurityService.principal.id)
-		return listByUser(new DefiCommand(user: user, actif: true), pagination)
+		return listByUser(new DefiCommand(user: user), pagination)
 	}
 
 

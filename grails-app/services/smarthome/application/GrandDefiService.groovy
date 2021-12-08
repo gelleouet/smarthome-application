@@ -3,6 +3,8 @@
  */
 package smarthome.application
 
+import javax.servlet.ServletResponse
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.transaction.annotation.Transactional
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
@@ -267,6 +269,23 @@ class GrandDefiService extends AbstractService {
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void desinscriptionDefi(User user, Long defiId) throws SmartHomeException {
 		defiService.desinscription(user, defiId)
+	}
+	
+	
+	/**
+	 * Export des données d'un défi pour un utilisateur
+	 * 
+	 * @param command
+	 * @param response
+	 */
+	void export(DefiCommand command, ServletResponse response) {
+		Map modelMesResultats = modelMesResultats(command)
+		Map modelResultatsEquipe = modelResultatsEquipe(command)
+		Map modelResultatsDefi = modelResultatsDefi(command)
+		Map model = [modelMesResultats: modelMesResultats, modelResultatsEquipe: modelResultatsEquipe,
+			modelResultatsDefi: modelResultatsDefi]
+		
+		modelMesResultats.defiModel.export(command, model, response)
 	}
 
 }

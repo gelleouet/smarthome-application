@@ -3,14 +3,24 @@
  */
 package smarthome.core
 
+import java.awt.Color
+
+import javax.servlet.ServletResponse
+
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.CreationHelper
+import org.apache.poi.ss.usermodel.ExtendedColor
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.ss.util.CellRangeAddress
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.ss.usermodel.FillPatternType
 
@@ -22,10 +32,15 @@ class ExcelUtils {
 	
 	private Workbook workbook
 	private CreationHelper createHelper
-	private Map<Short, CellStyle> headerCellStyleMap = [:]
 	private CellStyle datetimeCellStyle
-	private CellStyle dateCellStyle
+	private Map<String, CellStyle> styleMap = [:]
+	private MimeTypeEnum mimeType
 	
+	
+	
+	ExcelUtils() {
+		
+	}
 	
 	
 	ExcelUtils(Workbook workbook) {
@@ -33,9 +48,129 @@ class ExcelUtils {
 	}
 	
 	
+	ExcelUtils createWorkbook(MimeTypeEnum mimeType) {
+		this.mimeType = mimeType
+		
+		if (mimeType == MimeTypeEnum.EXCEL2007) {
+			this.workbook = new XSSFWorkbook()
+		} else {
+			this.workbook = new HSSFWorkbook()
+		}
+		
+		return this
+	}
+	
 	ExcelUtils build() {
 		createHelper = workbook.getCreationHelper()
 		return this
+	}
+	
+	Sheet createSheet(String name) {
+		workbook.createSheet(name)
+	}
+	
+	
+	void writeTo(OutputStream stream) throws Exception {
+		stream.withStream { outStream ->
+			workbook.write(outStream)
+		}
+	}
+	
+	
+	void writeTo(ServletResponse response, String fileName) throws Exception {
+		response.setContentType(mimeType.mimeType)
+		response.setHeader("Content-Disposition", "attachment; filename=${ fileName }")
+		writeTo(response.outputStream)
+	}
+	
+	
+	/**
+	 * 
+	 * @param sheet
+	 * @param startRow
+	 * @param endRow
+	 * @param startCell
+	 * @param endCell
+	 * @param value
+	 * @param style
+	 * @return
+	 */
+	Cell mergeCell(Sheet sheet, int startRow, int endRow, int startCell, int endCell, String value, Map style = [:]) {
+		for (int idxRow = startRow; idxRow <= endRow; idxRow++) {
+			Row row = createRow(sheet, idxRow)
+			
+			for (int idxCell = startCell; idxCell <= endCell; idxCell++) {
+				createOrGetCell(row, idxCell, style)
+			}
+		}
+		
+		sheet.addMergedRegion(new CellRangeAddress(startRow, endRow, startCell, endCell))
+		
+		Cell cell = createOrGetCell(sheet, startRow, startCell, style)
+		
+		if (value) {
+			cell.setCellValue(value)
+		}
+		
+		return cell
+	}
+	
+	
+	Cell applyStyle(Cell cell, Map style) {
+		if (style?.name) {
+			CellStyle cellStyle = styleMap.get(style.name) 
+			
+			if (!cellStyle) {
+				cellStyle = workbook.createCellStyle()
+				styleMap.put(style.name, cellStyle)
+				
+				if (style.color) {
+					if (style.color instanceof IndexedColors) {
+						cellStyle.setFillForegroundColor(style.color.index)
+					} else if (style.color instanceof Color && cellStyle instanceof XSSFCellStyle) {
+						(cellStyle as XSSFCellStyle).setFillForegroundColor(new XSSFColor(style.color))
+					}
+					cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				}
+				
+				if (style.format) {
+					cellStyle.setDataFormat(createHelper.createDataFormat().getFormat(style.format))
+				}
+				
+				if (style.vAlign) {
+					cellStyle.setVerticalAlignment(style.vAlign)
+				}
+				
+				if (style.hAlign) {
+					cellStyle.setAlignment(style.hAlign)
+				}
+				
+				if (style.wrapped) {
+					cellStyle.setWrapText(true)
+				}
+				
+				if (style.border) {
+					cellStyle.setBorderTop(style.border)
+					cellStyle.setTopBorderColor(IndexedColors.BLACK.index)
+					cellStyle.setBorderBottom(style.border)
+					cellStyle.setBottomBorderColor(IndexedColors.BLACK.index)
+					cellStyle.setBorderRight(style.border)
+					cellStyle.setRightBorderColor(IndexedColors.BLACK.index)
+					cellStyle.setBorderLeft(style.border)
+					cellStyle.setLeftBorderColor(IndexedColors.BLACK.index)
+				}
+			}
+			
+			cell.setCellStyle(cellStyle)
+		}
+		
+		return cell
+	}
+	
+	
+	Cell createHeaderCell(Sheet sheet, int rowIndex, int cellIndex, String label, IndexedColors indexColor) {
+		Row row = createRow(sheet, rowIndex)
+		return createHeaderCell(row, cellIndex, label, indexColor)
 	}
 	
 	
@@ -53,76 +188,54 @@ class ExcelUtils {
 	Cell createHeaderCell(Row row, int cellIndex, String label, IndexedColors indexColor) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(label)
-		CellStyle headerCellStyle = headerCellStyleMap.get(indexColor.index)
-		
-		if (!headerCellStyle) {
-			headerCellStyle = workbook.createCellStyle()
-			headerCellStyle.setFillForegroundColor(indexColor.index)
-			headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			
-			headerCellStyleMap.put(indexColor.index, headerCellStyle)
-		}
-		
-		cell.setCellStyle(headerCellStyle)
-		
-		return cell
+		return applyStyle(cell, [name: indexColor.toString(), color: indexColor])
 	}
 	
 	
 	Cell createDatetimeCell(Row row, int cellIndex, Date date) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(date)
-		
-		if (!datetimeCellStyle) {
-			datetimeCellStyle = workbook.createCellStyle()
-			datetimeCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy h:mm"))
-		}
-		
-		cell.setCellStyle(datetimeCellStyle)
-		
-		return cell
+		return applyStyle(cell, [format: "m/d/yy h:mm"])
 	}
 	
 	
 	Cell createDateCell(Row row, int cellIndex, Date date) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(date.clone().clearTime())
-		
-		if (!dateCellStyle) {
-			dateCellStyle = workbook.createCellStyle()
-			dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"))
-		}
-		
-		cell.setCellStyle(dateCellStyle)
-		
-		return cell
+		return applyStyle(cell, [format: "m/d/yy"])
 	}
 	
 	
-	Cell createOrGetCell(Row row, int cellIndex) {
+	Cell createOrGetCell(Row row, int cellIndex, Map style = [:]) {
 		Cell cell = row.getCell(cellIndex)
 		
 		if (!cell) {
-			cell = row.createCell(cellIndex)
+			cell = applyStyle(row.createCell(cellIndex), style)
 		}
 		
 		return cell
 	}
 	
 	
-	Cell createOrGetCell(Sheet sheet, int rowIndex, int cellIndex) {
+	Cell createOrGetCell(Sheet sheet, int rowIndex, int cellIndex, Map style = [:]) {
 		Row row = sheet.getRow(rowIndex)
 		
 		if (!row) {
 			row = sheet.createRow(rowIndex)
 		}
 		
-		return createOrGetCell(row, cellIndex)
+		return createOrGetCell(row, cellIndex, style)
 	}
 	
 	
 	Row createRow(Sheet sheet, int rowIndex) {
-		return sheet.createRow(rowIndex)
+		Row row = sheet.getRow(rowIndex)
+		
+		if (!row) {
+			row = sheet.createRow(rowIndex)
+		}
+		
+		return row
 	}
 	
 	

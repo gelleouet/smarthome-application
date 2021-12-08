@@ -34,7 +34,7 @@
 							<button id="compteurIndex-submit-button" class="btn btn-light"><app:icon name="search"/></button>
 						</div>
 						<div class="col text-right">
-							<a id="compteur-index-valid-all-button" class="btn btn-primary" data-url="${ g.createLink(action: 'validAllCompteurIndex') }"><app:icon name="check-circle"/> Tout valider</a>
+							<a id="compteur-index-valid-all-button" class="btn btn-light" data-url="${ g.createLink(action: 'validAllCompteurIndex') }"><app:icon name="check-circle"/> Tout valider</a>
 							<a id="compteur-index-delete-all-button" class="btn btn-danger" data-url="${ g.createLink(action: 'deleteAllCompteurIndex') }"><app:icon name="trash"/> Tout supprimer</a>
 						</div>
 					</div>	

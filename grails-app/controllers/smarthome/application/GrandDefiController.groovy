@@ -237,6 +237,17 @@ class GrandDefiController extends AbstractController {
 			Defi defi = Defi.read(defiId)
 			mesresultats(new DefiCommand(defi: defi))
 		}		
-		
+	}
+	
+	
+	/**
+	 * Export d'un défi
+	 * 
+	 * @param command
+	 * @return
+	 */
+	def export(DefiCommand command) {
+		command.user = authenticatedUser // spring security plugin
+		grandDefiService.export(command, response)
 	}
 }

@@ -75,6 +75,7 @@ grails.project.dependency.resolution = {
 
 		compile "org.apache.poi:poi:$poi.version"
 		compile "org.apache.poi:poi-ooxml:$poi.version"
+		compile "org.apache.poi:ooxml-schemas:1.1"
 
 		compile "$camel.groupId:camel-core:$camel.version"
 		compile "$camel.groupId:camel-groovy:$camel.version"

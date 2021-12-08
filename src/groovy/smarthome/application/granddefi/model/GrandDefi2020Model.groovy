@@ -1,9 +1,12 @@
 package smarthome.application.granddefi.model
 
+import javax.servlet.ServletResponse
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.TransactionDefinition
-
+import java.awt.Color
 import groovyx.gpars.GParsPool
+import smarthome.application.AbstractDefiResultat
 import smarthome.application.Defi
 import smarthome.application.DefiCommand
 import smarthome.application.DefiCompteurEnum
@@ -19,6 +22,14 @@ import smarthome.core.ConfigService
 import smarthome.core.NumberUtils
 import smarthome.core.SmartHomeException
 import smarthome.security.Profil
+import smarthome.core.ExcelUtils
+import smarthome.core.MimeTypeEnum
+
+import org.apache.poi.ss.usermodel.BorderStyle
+import org.apache.poi.ss.usermodel.HorizontalAlignment
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.VerticalAlignment
 
 /**
  * !! IMPORTANT : ne pas hériter d'un autre model car sion ils ne peuvent pas évoluer
@@ -30,6 +41,9 @@ import smarthome.security.Profil
 class GrandDefi2020Model extends AbstractDefiModel {
 	
 	protected static final int MAX_CLASSEMENT = 3
+	protected static final long PARTICULIER_PROFIL_ID = 1L
+	protected static final long COMMERCE_PROFIL_ID = 2L
+	protected static final long BATIMENT_PROFIL_ID = 3L
 	
 	@Autowired
 	DefiService defiService
@@ -387,5 +401,272 @@ class GrandDefi2020Model extends AbstractDefiModel {
 		defi.equipes = defiEquipes
 
 		return defi
+	}
+	
+	
+	@Override
+	void export(DefiCommand command, Map modeles, ServletResponse response) throws SmartHomeException {
+		MimeTypeEnum mimeType = MimeTypeEnum.EXCEL2007
+		ExcelUtils excelUtils = new ExcelUtils().createWorkbook(mimeType).build()
+		Sheet sheet = excelUtils.createSheet("Résultats")
+		AbstractDefiResultat resultatBatiment 
+		AbstractDefiResultat resultatCommerce
+		AbstractDefiResultat resultatParticulier
+		
+		Map styleNormal = [name: "styleNormal", border: BorderStyle.THIN]
+		
+		// BLOC MES RESULTATS
+		// ---------------------------------------------------------------------
+		
+		Map styleMesResultats = [name: "styleMesResultats", color: new Color(255, 242, 204), hAlign: HorizontalAlignment.CENTER,
+			vAlign: VerticalAlignment.CENTER, border: BorderStyle.MEDIUM]
+		
+		Map userGlobal = modeles.modelMesResultats.global.consos
+		Map userElec = modeles.modelMesResultats.electricite.consos
+		Map userGaz = modeles.modelMesResultats.gaz.consos
+		Map userEau = modeles.modelMesResultats.eau.consos
+		
+		excelUtils.mergeCell(sheet, 0, 0, 0, 3, "MES RESULTATS", styleMesResultats)
+		
+		excelUtils.mergeCell(sheet, 1, 2, 0, 1, "Consommations globales", styleMesResultats)
+		excelUtils.createOrGetCell(sheet, 1, 2, styleNormal).setCellValue("Mes économies (%)")
+		excelUtils.createOrGetCell(sheet, 1, 3, styleNormal).setCellValue(userGlobal.economie)
+		excelUtils.createOrGetCell(sheet, 2, 2, styleNormal).setCellValue("Mon classement dans le Grand Défi Energie & Eau")
+		excelUtils.createOrGetCell(sheet, 2, 3, styleNormal).setCellValue("${userGlobal.classement} / ${userGlobal.total}")
+		
+		excelUtils.mergeCell(sheet, 3, 8, 0, 1, "Consommations d'électricité", styleMesResultats)
+		excelUtils.createOrGetCell(sheet, 3, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 3, 3, styleNormal).setCellValue(userElec.reference)
+		excelUtils.createOrGetCell(sheet, 4, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 4, 3, styleNormal).setCellValue(userElec.action)
+		excelUtils.createOrGetCell(sheet, 5, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 5, 3, styleNormal).setCellValue(userElec.difference)
+		excelUtils.createOrGetCell(sheet, 6, 2, styleNormal).setCellValue("Evolution de mes consommations (%)")
+		excelUtils.createOrGetCell(sheet, 6, 3, styleNormal).setCellValue(userElec.evolution)
+		excelUtils.createOrGetCell(sheet, 7, 2, styleNormal).setCellValue("Moyenne des évolutions des consommations (%)")
+		excelUtils.createOrGetCell(sheet, 7, 3, styleNormal).setCellValue(userElec.economie)
+		excelUtils.createOrGetCell(sheet, 8, 2, styleNormal).setCellValue("Mes économies (%)")
+		excelUtils.createOrGetCell(sheet, 8, 3, styleNormal).setCellValue(userElec.economie)
+		
+		excelUtils.mergeCell(sheet, 9, 14, 0, 1, "Consommations de gaz", styleMesResultats)
+		excelUtils.createOrGetCell(sheet, 9, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 9, 3, styleNormal).setCellValue(userGaz.reference)
+		excelUtils.createOrGetCell(sheet, 10, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 10, 3, styleNormal).setCellValue(userGaz.action)
+		excelUtils.createOrGetCell(sheet, 11, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 11, 3, styleNormal).setCellValue(userGaz.difference)
+		excelUtils.createOrGetCell(sheet, 12, 2, styleNormal).setCellValue("Evolution de mes consommations (%)")
+		excelUtils.createOrGetCell(sheet, 12, 3, styleNormal).setCellValue(userGaz.evolution)
+		excelUtils.createOrGetCell(sheet, 13, 2, styleNormal).setCellValue("Moyenne des évolutions des consommations (%)")
+		excelUtils.createOrGetCell(sheet, 13, 3, styleNormal).setCellValue(userGaz.moyenne)
+		excelUtils.createOrGetCell(sheet, 14, 2, styleNormal).setCellValue("Mes économies (%)")
+		excelUtils.createOrGetCell(sheet, 14, 3, styleNormal).setCellValue(userGaz.economie)
+		
+		excelUtils.mergeCell(sheet, 15, 20, 0, 1, "Consommations d'eau", styleMesResultats)
+		excelUtils.createOrGetCell(sheet, 15, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 15, 3, styleNormal).setCellValue(userEau.reference)
+		excelUtils.createOrGetCell(sheet, 16, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 16, 3, styleNormal).setCellValue(userEau.action)
+		excelUtils.createOrGetCell(sheet, 17, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 17, 3, styleNormal).setCellValue(userEau.difference)
+		excelUtils.createOrGetCell(sheet, 18, 2, styleNormal).setCellValue("Evolution de mes consommations (%)")
+		excelUtils.createOrGetCell(sheet, 18, 3, styleNormal).setCellValue(userEau.evolution)
+		excelUtils.createOrGetCell(sheet, 19, 2, styleNormal).setCellValue("Moyenne des évolutions des consommations (%)")
+		excelUtils.createOrGetCell(sheet, 19, 3, styleNormal).setCellValue(userEau.moyenne)
+		excelUtils.createOrGetCell(sheet, 20, 2, styleNormal).setCellValue("Mes économies (%)")
+		excelUtils.createOrGetCell(sheet, 20, 3, styleNormal).setCellValue(userEau.economie)
+		
+		// BLOC RESULTATS EQUIPE
+		// ---------------------------------------------------------------------
+		
+		Map styleResultatsEquipe = [name: "styleResultatsEquipe", color: new Color(226, 239, 218), hAlign: HorizontalAlignment.CENTER,
+			vAlign: VerticalAlignment.CENTER, border: BorderStyle.MEDIUM]
+		
+		Map equipeGlobal = modeles.modelResultatsEquipe.global.consos
+		Map equipeElec = modeles.modelResultatsEquipe.electricite.consos
+		Map equipeGaz = modeles.modelResultatsEquipe.gaz.consos
+		Map equipeEau = modeles.modelResultatsEquipe.eau.consos
+		resultatBatiment = findResultatByProfil(equipeGlobal.values, BATIMENT_PROFIL_ID)
+		resultatCommerce = findResultatByProfil(equipeGlobal.values, COMMERCE_PROFIL_ID)
+		resultatParticulier = findResultatByProfil(equipeGlobal.values, PARTICULIER_PROFIL_ID)
+		
+		excelUtils.mergeCell(sheet, 21, 21, 0, 3, "RESULTATS EQUIPE", styleResultatsEquipe)
+		
+		excelUtils.mergeCell(sheet, 22, 26, 0, 1, "Consommations globales", styleResultatsEquipe)
+		excelUtils.createOrGetCell(sheet, 22, 2, styleNormal).setCellValue("Economies Bâtiments publics (%)")
+		excelUtils.createOrGetCell(sheet, 22, 3, styleNormal).setCellValue(resultatBatiment?.economie_global())
+		excelUtils.createOrGetCell(sheet, 23, 2, styleNormal).setCellValue("Economies Commerce (%)")
+		excelUtils.createOrGetCell(sheet, 23, 3, styleNormal).setCellValue(resultatCommerce?.economie_global())
+		excelUtils.createOrGetCell(sheet, 24, 2, styleNormal).setCellValue("Economies Particuliers (%)")
+		excelUtils.createOrGetCell(sheet, 24, 3, styleNormal).setCellValue(resultatParticulier?.economie_global())
+		excelUtils.createOrGetCell(sheet, 25, 2, styleNormal).setCellValue("Economies Equipe (%)")
+		excelUtils.createOrGetCell(sheet, 25, 3, styleNormal).setCellValue(equipeGlobal.economie)
+		excelUtils.createOrGetCell(sheet, 26, 2, styleNormal).setCellValue("Classement de mon équipe dans le Grand Défi Energie et Eau")
+		excelUtils.createOrGetCell(sheet, 26, 3, styleNormal).setCellValue("${equipeGlobal.classement} / ${equipeGlobal.total}")
+		
+		excelUtils.mergeCell(sheet, 27, 30, 0, 1, "Consommations d'électricité", styleResultatsEquipe)
+		excelUtils.createOrGetCell(sheet, 27, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 27, 3, styleNormal).setCellValue(equipeElec.reference)
+		excelUtils.createOrGetCell(sheet, 28, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 28, 3, styleNormal).setCellValue(equipeElec.action)
+		excelUtils.createOrGetCell(sheet, 29, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 29, 3, styleNormal).setCellValue(equipeElec.difference)
+		excelUtils.createOrGetCell(sheet, 30, 2, styleNormal).setCellValue("Economies Equipe (%)")
+		excelUtils.createOrGetCell(sheet, 30, 3, styleNormal).setCellValue(equipeElec.economie)
+		
+		excelUtils.mergeCell(sheet, 31, 34, 0, 1, "Consommations de gaz", styleResultatsEquipe)
+		excelUtils.createOrGetCell(sheet, 31, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 31, 3, styleNormal).setCellValue(equipeGaz.reference)
+		excelUtils.createOrGetCell(sheet, 32, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 32, 3, styleNormal).setCellValue(equipeGaz.action)
+		excelUtils.createOrGetCell(sheet, 33, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 33, 3, styleNormal).setCellValue(equipeGaz.difference)
+		excelUtils.createOrGetCell(sheet, 34, 2, styleNormal).setCellValue("Economies Equipe (%)")
+		excelUtils.createOrGetCell(sheet, 34, 3, styleNormal).setCellValue(equipeGaz.economie)
+		
+		excelUtils.mergeCell(sheet, 35, 38, 0, 1, "Consommations d'eau", styleResultatsEquipe)
+		excelUtils.createOrGetCell(sheet, 35, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 35, 3, styleNormal).setCellValue(equipeEau.reference)
+		excelUtils.createOrGetCell(sheet, 36, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 36, 3, styleNormal).setCellValue(equipeEau.action)
+		excelUtils.createOrGetCell(sheet, 37, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 37, 3, styleNormal).setCellValue(equipeEau.difference)
+		excelUtils.createOrGetCell(sheet, 38, 2, styleNormal).setCellValue("Economies Equipe (%)")
+		excelUtils.createOrGetCell(sheet, 38, 3, styleNormal).setCellValue(equipeEau.economie)
+		
+		// BLOC RESULTATS DEFI
+		// ---------------------------------------------------------------------
+		
+		Map styleResultatsDefi = [name: "styleResultatsDefi", color: new Color(217, 225, 242), hAlign: HorizontalAlignment.CENTER,
+			vAlign: VerticalAlignment.CENTER, border: BorderStyle.MEDIUM, wrapped: true]
+		
+		List classementGlobal = modeles.modelResultatsDefi.global.classement
+		List classementBatiment = modeles.modelResultatsDefi["profil${BATIMENT_PROFIL_ID}"].classement
+		List classementCommerce = modeles.modelResultatsDefi["profil${COMMERCE_PROFIL_ID}"].classement
+		List classementParticulier = modeles.modelResultatsDefi["profil${PARTICULIER_PROFIL_ID}"].classement
+		Map defiEnergie = modeles.modelResultatsDefi.energie.consos
+		Map defiEau = modeles.modelResultatsDefi.eau.consos
+		resultatBatiment = findResultatByProfil(defiEnergie.values, BATIMENT_PROFIL_ID)
+		resultatCommerce = findResultatByProfil(defiEnergie.values, COMMERCE_PROFIL_ID)
+		resultatParticulier = findResultatByProfil(defiEnergie.values, PARTICULIER_PROFIL_ID)
+		
+		excelUtils.mergeCell(sheet, 39, 39, 0, 3, "RESULTATS DEFI", styleResultatsDefi)
+		
+		excelUtils.mergeCell(sheet, 40, 51, 0, 0, "Consommations totales d'énergie", styleResultatsDefi)
+		excelUtils.mergeCell(sheet, 40, 42, 1, 1, "Bâtiment public", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 40, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 40, 3, styleNormal).setCellValue(resultatBatiment?.reference_energie())
+		excelUtils.createOrGetCell(sheet, 41, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 41, 3, styleNormal).setCellValue(resultatBatiment?.action_energie())
+		excelUtils.createOrGetCell(sheet, 42, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 42, 3, styleNormal).setCellValue(resultatBatiment?.difference_energie())
+		excelUtils.mergeCell(sheet, 43, 45, 1, 1, "Commerce", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 43, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 43, 3, styleNormal).setCellValue(resultatCommerce?.reference_energie())
+		excelUtils.createOrGetCell(sheet, 44, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 44, 3, styleNormal).setCellValue(resultatCommerce?.action_energie())
+		excelUtils.createOrGetCell(sheet, 45, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 45, 3, styleNormal).setCellValue(resultatCommerce?.difference_energie())
+		excelUtils.mergeCell(sheet, 46, 48, 1, 1, "Particulier", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 46, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 46, 3, styleNormal).setCellValue(resultatParticulier?.reference_energie())
+		excelUtils.createOrGetCell(sheet, 47, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 47, 3, styleNormal).setCellValue(resultatParticulier?.action_energie())
+		excelUtils.createOrGetCell(sheet, 48, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 48, 3, styleNormal).setCellValue(resultatParticulier?.difference_energie())
+		excelUtils.mergeCell(sheet, 49, 51, 1, 1, "Défi", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 49, 2, styleNormal).setCellValue("Référence (kWh)")
+		excelUtils.createOrGetCell(sheet, 49, 3, styleNormal).setCellValue(defiEnergie.reference)
+		excelUtils.createOrGetCell(sheet, 50, 2, styleNormal).setCellValue("Action (kWh)")
+		excelUtils.createOrGetCell(sheet, 50, 3, styleNormal).setCellValue(defiEnergie.action)
+		excelUtils.createOrGetCell(sheet, 51, 2, styleNormal).setCellValue("Différence (kWh)")
+		excelUtils.createOrGetCell(sheet, 51, 3, styleNormal).setCellValue(defiEnergie.difference)
+		
+		excelUtils.mergeCell(sheet, 52, 63, 0, 0, "Consommations totales d'eau", styleResultatsDefi)
+		excelUtils.mergeCell(sheet, 52, 54, 1, 1, "Bâtiment public", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 52, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 52, 3, styleNormal).setCellValue(resultatBatiment?.reference_eau())
+		excelUtils.createOrGetCell(sheet, 53, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 53, 3, styleNormal).setCellValue(resultatBatiment?.action_eau())
+		excelUtils.createOrGetCell(sheet, 54, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 54, 3, styleNormal).setCellValue(resultatBatiment?.difference_eau())
+		excelUtils.mergeCell(sheet, 55, 57, 1, 1, "Commerce", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 55, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 55, 3, styleNormal).setCellValue(resultatCommerce?.reference_eau())
+		excelUtils.createOrGetCell(sheet, 56, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 56, 3, styleNormal).setCellValue(resultatCommerce?.action_eau())
+		excelUtils.createOrGetCell(sheet, 57, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 57, 3, styleNormal).setCellValue(resultatCommerce?.difference_eau())
+		excelUtils.mergeCell(sheet, 58, 60, 1, 1, "Particulier", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 58, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 58, 3, styleNormal).setCellValue(resultatParticulier?.reference_eau())
+		excelUtils.createOrGetCell(sheet, 59, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 59, 3, styleNormal).setCellValue(resultatParticulier?.action_eau())
+		excelUtils.createOrGetCell(sheet, 60, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 60, 3, styleNormal).setCellValue(resultatParticulier?.difference_eau())
+		excelUtils.mergeCell(sheet, 61, 63, 1, 1, "Défi", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 61, 2, styleNormal).setCellValue("Référence (L)")
+		excelUtils.createOrGetCell(sheet, 61, 3, styleNormal).setCellValue(defiEau.reference)
+		excelUtils.createOrGetCell(sheet, 62, 2, styleNormal).setCellValue("Action (L)")
+		excelUtils.createOrGetCell(sheet, 62, 3, styleNormal).setCellValue(defiEau.action)
+		excelUtils.createOrGetCell(sheet, 63, 2, styleNormal).setCellValue("Différence (L)")
+		excelUtils.createOrGetCell(sheet, 63, 3, styleNormal).setCellValue(defiEau.difference)
+		
+		excelUtils.mergeCell(sheet, 64, 75, 0, 0, "Classement", styleResultatsDefi)
+		excelUtils.mergeCell(sheet, 64, 66, 1, 1, "Général", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 64, 2, styleNormal).setCellValue("1er : ${libelleClassement(classementGlobal, 0) }")
+		excelUtils.createOrGetCell(sheet, 64, 3, styleNormal).setCellValue(economieClassement(classementGlobal, 0))
+		excelUtils.createOrGetCell(sheet, 65, 2, styleNormal).setCellValue("2e : ${libelleClassement(classementGlobal, 1) }")
+		excelUtils.createOrGetCell(sheet, 65, 3, styleNormal).setCellValue(economieClassement(classementGlobal, 1))
+		excelUtils.createOrGetCell(sheet, 66, 2, styleNormal).setCellValue("3e : ${libelleClassement(classementGlobal, 2) }")
+		excelUtils.createOrGetCell(sheet, 66, 3, styleNormal).setCellValue(economieClassement(classementGlobal, 2))
+		excelUtils.mergeCell(sheet, 67, 69, 1, 1, "Bâtiment public", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 67, 2, styleNormal).setCellValue("1er : ${libelleClassement(classementBatiment, 0) }")
+		excelUtils.createOrGetCell(sheet, 67, 3, styleNormal).setCellValue(economieClassement(classementBatiment, 0))
+		excelUtils.createOrGetCell(sheet, 68, 2, styleNormal).setCellValue("2e : ${libelleClassement(classementBatiment, 1) }")
+		excelUtils.createOrGetCell(sheet, 68, 3, styleNormal).setCellValue(economieClassement(classementBatiment, 1))
+		excelUtils.createOrGetCell(sheet, 69, 2, styleNormal).setCellValue("3e : ${libelleClassement(classementBatiment, 2) }")
+		excelUtils.createOrGetCell(sheet, 69, 3, styleNormal).setCellValue(economieClassement(classementBatiment, 2))
+		excelUtils.mergeCell(sheet, 70, 72, 1, 1, "Commerce", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 70, 2, styleNormal).setCellValue("1er : ${libelleClassement(classementCommerce, 0) }")
+		excelUtils.createOrGetCell(sheet, 70, 3, styleNormal).setCellValue(economieClassement(classementCommerce, 0))
+		excelUtils.createOrGetCell(sheet, 71, 2, styleNormal).setCellValue("2e : ${libelleClassement(classementCommerce, 1) }")
+		excelUtils.createOrGetCell(sheet, 71, 3, styleNormal).setCellValue(economieClassement(classementCommerce, 1))
+		excelUtils.createOrGetCell(sheet, 72, 2, styleNormal).setCellValue("3e : ${libelleClassement(classementCommerce, 2) }")
+		excelUtils.createOrGetCell(sheet, 72, 3, styleNormal).setCellValue(economieClassement(classementCommerce, 2))
+		excelUtils.mergeCell(sheet, 73, 75, 1, 1, "Particulier", styleResultatsDefi)
+		excelUtils.createOrGetCell(sheet, 73, 2, styleNormal).setCellValue("1er : ${libelleClassement(classementParticulier, 0) }")
+		excelUtils.createOrGetCell(sheet, 73, 3, styleNormal).setCellValue(economieClassement(classementParticulier, 0))
+		excelUtils.createOrGetCell(sheet, 74, 2, styleNormal).setCellValue("2e : ${libelleClassement(classementParticulier, 1) }")
+		excelUtils.createOrGetCell(sheet, 74, 3, styleNormal).setCellValue(economieClassement(classementParticulier, 1))
+		excelUtils.createOrGetCell(sheet, 75, 2, styleNormal).setCellValue("3e : ${libelleClassement(classementParticulier, 2) }")
+		excelUtils.createOrGetCell(sheet, 75, 3, styleNormal).setCellValue(economieClassement(classementParticulier, 2))
+		
+		
+		// Mise en forme générale do document
+		// ---------------------------------------------------------------------
+		
+		sheet.setColumnWidth(0, 20*256) // 20 caractères d'après la formule POI
+		sheet.setColumnWidth(1, 20*256) // 20 caractères d'après la formule POI
+		sheet.autoSizeColumn(2)
+		
+		excelUtils.writeTo(response, "export-defi-${command.defi.id}-.${mimeType.extension}")
+	}
+	
+	
+	AbstractDefiResultat findResultatByProfil(Collection values, long profilId) {
+		values.find { it.profil.id == profilId }
+	}
+	
+	Map findClassement(Collection values, int idx) {
+		idx < values.size() ? values[idx] : [:]
+	}
+	
+	String libelleClassement(Collection values, int idx) {
+		findClassement(values, idx)?.libelle ?: ""
+	}
+	
+	Double economieClassement(Collection values, int idx) {
+		findClassement(values, idx)?.economie
 	}
 }

@@ -1,6 +1,8 @@
 package smarthome.application.granddefi.model
 
 
+import javax.servlet.ServletResponse
+
 import smarthome.application.Defi
 import smarthome.application.DefiCommand
 import smarthome.core.SmartHomeException
@@ -80,4 +82,15 @@ interface DefiModel {
 	 * @throws SmartHomeException
 	 */
 	Defi calculerConsommations(Defi defi) throws SmartHomeException
+	
+	
+	/**
+	 * Export des données
+	 * 
+	 * @param command
+	 * @param modeles
+	 * @param response
+	 * @throws SmartHomeException
+	 */
+	void export(DefiCommand command, Map modeles, ServletResponse response) throws SmartHomeException
 }
