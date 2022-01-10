@@ -54,6 +54,18 @@ class DataConnectService extends AbstractService {
 
 
 	/**
+	 * Recherche du compte DataConnect pour le user
+	 * 
+	 * @param user
+	 * @return
+	 * @throws SmartHomeException
+	 */
+	NotificationAccount notificationAccount(User user) throws SmartHomeException {
+		notificationAccountService.findByUserAndLibelleSender(user, grailsApplication.config.enedis.appName)
+	}
+	
+	
+	/**
 	 * Appel de l'API Token suite au redirect d'Enedis pour récupérer les tokens
 	 * de connexion
 	 * 
@@ -67,7 +79,7 @@ class DataConnectService extends AbstractService {
 		JSONElement result = dataConnectApi.authorization_code(code)
 
 		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 
 		if (!notificationAccount) {
 			notificationAccount = new NotificationAccount(user: user, notificationAccountSender: accountSender)
@@ -101,8 +113,7 @@ class DataConnectService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	JSONElement refresh_token(User user) throws SmartHomeException {
-		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 
 		if (!notificationAccount) {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
@@ -152,8 +163,7 @@ class DataConnectService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	List<JSONElement> consumptionLoadCurve(User user) throws SmartHomeException {
-		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 
 		if (!notificationAccount) {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
@@ -253,8 +263,7 @@ class DataConnectService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	List<JSONElement> dailyConsumption(User user) throws SmartHomeException {
-		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 
 		if (!notificationAccount) {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
@@ -351,8 +360,7 @@ class DataConnectService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	List<JSONElement> consumptionMaxPower(User user) throws SmartHomeException {
-		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 
 		if (!notificationAccount) {
 			throw new SmartHomeException("Config introuvable pour l'utilisateur !")
@@ -496,8 +504,7 @@ class DataConnectService extends AbstractService {
 	 */
 	@Transactional(readOnly = false, rollbackFor = [SmartHomeException])
 	void disable(User user) throws SmartHomeException {
-		NotificationAccountSender accountSender = notificationAccountSenderService.findByLibelle(grailsApplication.config.enedis.appName)
-		NotificationAccount notificationAccount = notificationAccountService.findByUserAndSender(user, accountSender)
+		NotificationAccount notificationAccount = notificationAccount(user)
 		
 		if (notificationAccount) {
 			delete(notificationAccount)

@@ -32,7 +32,6 @@ class ExcelUtils {
 	
 	private Workbook workbook
 	private CreationHelper createHelper
-	private CellStyle datetimeCellStyle
 	private Map<String, CellStyle> styleMap = [:]
 	private MimeTypeEnum mimeType
 	
@@ -195,14 +194,16 @@ class ExcelUtils {
 	Cell createDatetimeCell(Row row, int cellIndex, Date date) {
 		Cell cell = row.createCell(cellIndex)
 		cell.setCellValue(date)
-		return applyStyle(cell, [format: "m/d/yy h:mm"])
+		return applyStyle(cell, [name: '_dateTimeFormat', format: "m/d/yy h:mm"])
 	}
 	
 	
 	Cell createDateCell(Row row, int cellIndex, Date date) {
 		Cell cell = row.createCell(cellIndex)
+		if (date) {
 		cell.setCellValue(date.clone().clearTime())
-		return applyStyle(cell, [format: "m/d/yy"])
+		}
+		return applyStyle(cell, [name: '_dateFormat', format: "m/d/yy"])
 	}
 	
 	

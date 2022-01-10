@@ -1,5 +1,6 @@
 package smarthome.automation
 
+import smarthome.automation.deviceType.TeleInformation
 import smarthome.core.DateUtils;
 import smarthome.core.PaginableCommand
 import smarthome.core.QueryUtils
@@ -131,7 +132,7 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 	}
 	
 	
-	int visitDeviceValue(int maxPage, Closure closure) {
+	void scrollDeviceValueIndex(int maxPage, Closure closure) {
 		HQL hql = new HQL("deviceValue", """
 			FROM DeviceValue deviceValue
 			JOIN FETCH deviceValue.device device
@@ -142,12 +143,13 @@ class SupervisionCommand extends PaginableCommand implements Serializable {
 		
 		applyCriterion(hql, false, true)
 			.addCriterion("deviceValue.dateValue between :dateDebut and :dateFin", [dateDebut: datetimeDebut(), dateFin: datetimeFin()])
-			.addCriterion("deviceValue.name is null")
+			.addCriterion("(deviceValue.name is null or deviceValue.name in (:elecMetaNames))",
+				[elecMetaNames: [TeleInformation.BASE_INDEX_NAME, TeleInformation.HP_INDEX_NAME]])
 			.addOrder("user.username")
 			.addOrder("device.label")
 			.addOrder("deviceValue.dateValue")
 			
-		return hql.visit(maxPage, closure)
+		hql.scroll(maxPage, closure)
 	}
 	
 	

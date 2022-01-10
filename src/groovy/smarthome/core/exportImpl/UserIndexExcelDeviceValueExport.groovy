@@ -15,10 +15,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.beans.factory.annotation.Autowired
 
+import smarthome.api.DataConnectService
 import smarthome.automation.Chauffage
 import smarthome.automation.DeviceValue;
 import smarthome.automation.ECS
 import smarthome.automation.House
+import smarthome.automation.NotificationAccount
 import smarthome.automation.SupervisionCommand
 import smarthome.automation.deviceType.AbstractDeviceType
 import smarthome.automation.deviceType.Compteur
@@ -54,6 +56,9 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 	
 	@Autowired
 	GrailsApplication grailsApplication
+	
+	@Autowired
+	DataConnectService dataConnectService
 	
 	
 	private Map cacheECS = [:]
@@ -111,6 +116,7 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 		excelUtils.createHeaderCell(row, cellIdx++, "Energie de chauffage principal")
 		excelUtils.createHeaderCell(row, cellIdx++, "Energie de chauffage secondaire")
 		excelUtils.createHeaderCell(row, cellIdx++, "Eau chaude sanitaire")
+		excelUtils.createHeaderCell(row, cellIdx++, "DataConnect (dernière conso)")
 		
 		// ensuite les index et consos du compteur elec
 		startCellIdxElec = cellIdx
@@ -187,6 +193,7 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(chauffage(house.chauffage?.id))
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(chauffage(house.chauffageSecondaire?.id))
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(ecs(house.ecs?.id))
+			excelUtils.createDateCell(row, cellIdx++, lastValueDataConnect(user))
 			
 			rowIdx++
 		}
@@ -197,7 +204,9 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 		// des utilisateurs. Il faut calculer pour chaque index dans quelle colonne l'ajouter
 		// en fonction de son indice. Pour cela, les index doivent être triés chronologiquement
 		
-		int nbValues = command.visitDeviceValue(ApplicationUtils.configMaxBackend(grailsApplication)) { DeviceValue deviceValue ->
+		long nbValues
+		
+		command.scrollDeviceValueIndex(ApplicationUtils.configMaxBackend(grailsApplication)) { DeviceValue deviceValue, idxValue, totalValue  ->
 			// détermination du type de compteur (elec, gaz, eau), ceci afin d'injecter 
 			// les index dans les bonnes colonnes.
 			// Cas spécifique DataConnect : il n'y a pas d'index mais que des consos
@@ -205,6 +214,7 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 			AbstractDeviceType deviceTypeImpl = deviceValue.device.newDeviceImpl()
 			startCellIdx = -1
 			user = deviceValue.device.user
+			nbValues = totalValue
 			
 			// on s'assure que le user est bien présent dans le fichier
 			Map configUser = configByUser.get(user.id)
@@ -218,10 +228,10 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 				if (deviceTypeImpl instanceof CompteurEau) {
 					startCellIdx = startCellIdxEau
 				} else if (deviceTypeImpl instanceof CompteurGaz) {
-					// on  ne traite pas le ADICT car pas d'index
-					
 					startCellIdx = startCellIdxGaz
-				} else if (deviceTypeImpl instanceof TeleInformation) {
+				} else if (deviceTypeImpl instanceof TeleInformation && deviceValue.name) {
+					// l'index des compteurs elec est dans meta base, hc ou hp
+					// ne pas prendre la meta null car c'est la puissance
 					startCellIdx = startCellIdxElec
 				}
 			}
@@ -280,6 +290,22 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 		}
 		
 		return chauffage?.libelle
+	}
+	
+	
+	private Date lastValueDataConnect(User user) {
+		Date dateLastValue
+		NotificationAccount notificationAccount = dataConnectService.notificationAccount(user)
+		
+		if (notificationAccount) {
+			notificationAccount.configToJson()
+			
+			if (notificationAccount.jsonConfig.last_daily_consumption) {
+				dateLastValue = new Date(notificationAccount.jsonConfig.last_daily_consumption)
+			}
+		}
+		
+		return dateLastValue
 	}
 
 }
