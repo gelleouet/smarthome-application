@@ -17,12 +17,14 @@ import org.apache.poi.ss.usermodel.ExtendedColor
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.FormulaEvaluator
 
 /**
  * @author gelleouet <gregory.elleouet@gmail.com>
@@ -32,6 +34,7 @@ class ExcelUtils {
 	
 	private Workbook workbook
 	private CreationHelper createHelper
+	FormulaEvaluator evaluator
 	private Map<String, CellStyle> styleMap = [:]
 	private MimeTypeEnum mimeType
 	
@@ -44,6 +47,10 @@ class ExcelUtils {
 	
 	ExcelUtils(Workbook workbook) {
 		this.workbook = workbook
+	}
+	
+	ExcelUtils(byte[] data) {
+		this.workbook = WorkbookFactory.create(new ByteArrayInputStream(data))
 	}
 	
 	
@@ -61,11 +68,27 @@ class ExcelUtils {
 	
 	ExcelUtils build() {
 		createHelper = workbook.getCreationHelper()
+		evaluator = createHelper.createFormulaEvaluator()
 		return this
 	}
 	
 	Sheet createSheet(String name) {
 		workbook.createSheet(name)
+	}
+	
+	Sheet getSheet(int index) {
+		workbook.getSheetAt(index)
+	}
+	
+	Sheet getSheet(String name) {
+		workbook.getSheet(name)
+	}
+	
+	
+	void close() {
+		if (workbook) {
+			workbook.close()
+		}
 	}
 	
 	
@@ -278,25 +301,34 @@ class ExcelUtils {
 		Cell cell = row.getCell(cellIndex)
 		Object result
 		
-		switch(cell?.cellTypeEnum) {
-			case CellType.BOOLEAN:
-				result = cell.getBooleanCellValue()
-				break
-			case CellType.NUMERIC:
-				if (HSSFDateUtil.isCellDateFormatted(cell)) {
-					result = cell.getDateCellValue()
-				} else {
-					result = new Double(cell.getNumericCellValue())
-					
-					// conversion en type Long si nombre entier
-					if (result.doubleValue() == NumberUtils.round(result, 0)) {
-						result = result.longValue()
+		if (cell) {
+			CellType cellType = evaluator.evaluateFormulaCellEnum(cell)
+			
+			// pas de formule, on prend le type de la cellule
+			if (cellType == CellType._NONE) {
+				cellType = cell.getCellTypeEnum()
+			}
+			
+			switch(cellType) {
+				case CellType.BOOLEAN:
+					result = cell.getBooleanCellValue()
+					break
+				case CellType.NUMERIC:
+					if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						result = cell.getDateCellValue()
+					} else {
+						result = new Double(cell.getNumericCellValue())
+						
+						// conversion en type Long si nombre entier
+						if (result.doubleValue() == NumberUtils.round(result, 0)) {
+							result = result.longValue()
+						}
 					}
-				}
-				break
-			case CellType.STRING:
-				result = cell.getStringCellValue()
-				break
+					break
+				case CellType.STRING:
+					result = cell.getStringCellValue()
+					break
+			}
 		}
 		
 		return result

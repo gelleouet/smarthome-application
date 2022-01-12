@@ -54,7 +54,6 @@ class SmartHomeSecurityUtils {
 		}
 
 		if (!checkPasswordMinLength(password, command) ||
-		!checkPasswordMaxLength(password, command) ||
 		!checkPasswordRegex(password, command)) {
 			return "Le mot de passe n'est pas assez sécurisé"
 		}

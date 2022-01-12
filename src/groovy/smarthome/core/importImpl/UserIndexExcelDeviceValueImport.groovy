@@ -2,10 +2,8 @@ package smarthome.core.importImpl
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Workbook
 import org.springframework.beans.factory.annotation.Autowired
 
 import smarthome.application.GrandDefiService
@@ -55,22 +53,23 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 	
 	@Override
 	void importData(ImportCommand command) throws Exception {
-		Workbook workbook
 		communeList = Commune.list()
 		profilList = Profil.list()
 		chauffageList = Chauffage.list()
 		ecsList = ECS.list()
 		
 		try {
-			workbook = new HSSFWorkbook(new ByteArrayInputStream(command.data))
+			excelUtils = new ExcelUtils(command.data).build()
+			Sheet sheet = excelUtils.getSheet("import")
 			
-			excelUtils = new ExcelUtils(workbook).build()
-			Sheet sheet = workbook.getSheetAt(0)
+			if (!sheet) {
+				throw new SmartHomeException("Feuillet 'import' introuvable !")
+			}
 			
 			log.info "Try importing ${sheet.getLastRowNum()} row(s)..."
 			
 			// 1ère ligne sert d'entete, on démarre à la 2e
-			for (int idxRow=1; idxRow < sheet.getLastRowNum(); idxRow++) {
+			for (int idxRow=1; idxRow <= sheet.getLastRowNum(); idxRow++) {
 				Row row = sheet.getRow(idxRow)
 				
 				// 1. Création des comptes utilisateur et inscription défi
@@ -83,7 +82,8 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 				account.profil = findProfil(excelUtils.getStringCellValue(row, "A"))
 				account.nom = excelUtils.getStringCellValue(row, "B")
 				account.prenom = "-"
-				account.commune = findCommune(excelUtils.getStringCellValue(row, "C"))
+				String communeName = excelUtils.getStringCellValue(row, "C")
+				account.commune = findCommune(communeName)
 				account.username = excelUtils.getStringCellValue(row, "D")
 				account.newPassword = excelUtils.getStringCellValue(row, "E")
 				account.confirmPassword = excelUtils.getStringCellValue(row, "F")
@@ -91,6 +91,10 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 				account.chauffage = findChauffage(excelUtils.getStringCellValue(row, "H"))
 				account.chauffageSecondaire = findChauffage(excelUtils.getStringCellValue(row, "I"))
 				account.ecs = findECS(excelUtils.getStringCellValue(row, "J"))
+				
+				if (!account.commune) {
+					throw new SmartHomeException("Commune '$communeName' introuvable ! (ligne ${idxRow+1})")
+				}
 				
 				if (account.username) {
 					TransactionUtils.withNewTransaction(User) {
@@ -104,67 +108,69 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 					
 					User user = User.findByUsername(account.username)
 					
-					if (user) {
-						RegisterCompteurCommand compteurCommand = new RegisterCompteurCommand(user: user)
-						
-						// Ajout des index elec
-						List indexElec = []
-						ajoutIndexElec(row, "L", "M", indexElec)
-						ajoutIndexElec(row, "N", "O", indexElec)
-						ajoutIndexElec(row, "P", "Q", indexElec)
-						ajoutIndexElec(row, "R", "S", indexElec)
-						ajoutIndexElec(row, "T", "U", indexElec)
-						compteurCommand.compteurModel = TeleInformation.DEFAULT_MODELE
-						
-						if (indexElec) {
-							TransactionUtils.withNewTransaction(Device) {
-								try {
-									Device compteurElec = compteurService.registerCompteurElec(compteurCommand)
-									registerIndex(compteurElec, indexElec)
-								} catch (SmartHomeException ex1) {
-									log.warn("Import index elec ${account.username} : ${ex1.message}")
-								}
+					if (!user) {
+						throw new SmartHomeException("Utilisateur '${account.username}' introuvable ! (ligne ${idxRow+1})")
+					}
+					
+					RegisterCompteurCommand compteurCommand = new RegisterCompteurCommand(user: user)
+					
+					// Ajout des index elec
+					List indexElec = []
+					ajoutIndex(row, "L", "M", indexElec)
+					ajoutIndex(row, "N", "O", indexElec)
+					ajoutIndex(row, "P", "Q", indexElec)
+					ajoutIndex(row, "R", "S", indexElec)
+					ajoutIndex(row, "T", "U", indexElec)
+					compteurCommand.compteurModel = TeleInformation.DEFAULT_MODELE
+					
+					if (indexElec) {
+						TransactionUtils.withNewTransaction(Device) {
+							try {
+								Device compteurElec = compteurService.registerCompteurElec(compteurCommand)
+								registerIndex(compteurElec, indexElec)
+							} catch (SmartHomeException ex1) {
+								log.warn("Import index elec ${account.username} : ${ex1.message}")
 							}
 						}
-						
-						// Ajout des index gaz
-						List indexGaz = []
-						String coefGaz = excelUtils.getStringCellValue(row, "K")
-						ajoutIndex(row, "V", "W", indexGaz, coefGaz)
-						ajoutIndex(row, "X", "Y", indexGaz, coefGaz)
-						ajoutIndex(row, "Z", "AA", indexGaz, coefGaz)
-						ajoutIndex(row, "AB", "AC", indexGaz, coefGaz)
-						ajoutIndex(row, "AD", "AE", indexGaz, coefGaz)
-						compteurCommand.compteurModel = CompteurGaz.DEFAULT_MODELE
-						
-						if (indexGaz) {
-							TransactionUtils.withNewTransaction(Device) {
-								try {
-									Device compteurGaz = compteurService.registerCompteurGaz(compteurCommand)
-									registerIndex(compteurGaz, indexGaz)
-								} catch (SmartHomeException ex1) {
-									log.warn("Import index gaz ${account.username} : ${ex1.message}")
-								}
+					}
+					
+					// Ajout des index gaz
+					List indexGaz = []
+					String coefGaz = excelUtils.getStringCellValue(row, "K")
+					ajoutIndex(row, "V", "W", indexGaz, coefGaz)
+					ajoutIndex(row, "X", "Y", indexGaz, coefGaz)
+					ajoutIndex(row, "Z", "AA", indexGaz, coefGaz)
+					ajoutIndex(row, "AB", "AC", indexGaz, coefGaz)
+					ajoutIndex(row, "AD", "AE", indexGaz, coefGaz)
+					compteurCommand.compteurModel = CompteurGaz.DEFAULT_MODELE
+					
+					if (indexGaz) {
+						TransactionUtils.withNewTransaction(Device) {
+							try {
+								Device compteurGaz = compteurService.registerCompteurGaz(compteurCommand)
+								registerIndex(compteurGaz, indexGaz)
+							} catch (SmartHomeException ex1) {
+								log.warn("Import index gaz ${account.username} : ${ex1.message}")
 							}
 						}
-						
-						// Ajout des index eau
-						List indexEau = []
-						ajoutIndex(row, "AF", "AG", indexEau)
-						ajoutIndex(row, "AH", "AI", indexEau)
-						ajoutIndex(row, "AJ", "AK", indexEau)
-						ajoutIndex(row, "AL", "AM", indexEau)
-						ajoutIndex(row, "AN", "AO", indexEau)
-						compteurCommand.compteurModel = null
-						
-						if (indexEau) {
-							TransactionUtils.withNewTransaction(Device) {
-								try {
-									Device compteurEau = compteurService.registerCompteurEau(compteurCommand)
-									registerIndex(compteurEau, indexEau)
-								} catch (SmartHomeException ex1) {
-									log.warn("Import index eau ${account.username} : ${ex1.message}")
-								}
+					}
+					
+					// Ajout des index eau
+					List indexEau = []
+					ajoutIndex(row, "AF", "AG", indexEau)
+					ajoutIndex(row, "AH", "AI", indexEau)
+					ajoutIndex(row, "AJ", "AK", indexEau)
+					ajoutIndex(row, "AL", "AM", indexEau)
+					ajoutIndex(row, "AN", "AO", indexEau)
+					compteurCommand.compteurModel = null
+					
+					if (indexEau) {
+						TransactionUtils.withNewTransaction(Device) {
+							try {
+								Device compteurEau = compteurService.registerCompteurEau(compteurCommand)
+								registerIndex(compteurEau, indexEau)
+							} catch (SmartHomeException ex1) {
+								log.warn("Import index eau ${account.username} : ${ex1.message}")
 							}
 						}
 					}
@@ -173,7 +179,7 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 		} catch (Exception ex) {
 			throw ex 
 		} finally {
-			workbook?.close()
+			excelUtils?.close()
 		}
 	}
 	
@@ -194,26 +200,17 @@ class UserIndexExcelDeviceValueImport implements DeviceValueImport {
 		ecsList.find { it.libelle == ecsName }
 	}
 	
-	private CompteurIndex ajoutIndexElec(Row row, String idxCellDate, String idxCellIndex, Collection indexList) {
-		CompteurIndex compteurIndex = ajoutIndex(row, idxCellDate, idxCellIndex, indexList)
-		
-		if (compteurIndex) {
-			// les index sont fournis en kWh mais il doit être enregistré en Wh
-			compteurIndex.index1 = compteurIndex.index1 * 1000
-		}
-		
-		return compteurIndex
-	}
-	
 	private CompteurIndex ajoutIndex(Row row, String idxCellDate, String idxCellIndex, Collection indexList, String param = null) {
 		Date dateIndex = excelUtils.getDateCellValue(row, idxCellDate)
-		Long valueIndex = excelUtils.getLongCellValue(row, idxCellIndex)
+		Double valueIndex = excelUtils.getCellValue(row, idxCellIndex)
 		CompteurIndex compteurIndex
 		
 		if (dateIndex && valueIndex) {
 			compteurIndex = new CompteurIndex()
 			compteurIndex.dateIndex = dateIndex
-			compteurIndex.index1 = valueIndex
+			// elec : les index sont fournis en kWh mais il doit être enregistré en Wh (x 1000)
+			// eau/gaz : les index sont fournis en m3 mais il doit être enregistré en dm3 (x 1000)
+			compteurIndex.index1 = valueIndex * 1000
 			compteurIndex.param1 = param
 			
 			indexList << compteurIndex

@@ -167,7 +167,7 @@ class DeviceValueService extends AbstractService {
 
 		DeviceValue value, defaultValue
 		Double doubleValue
-		Device device = Device.read(deviceDatas.id as Long)
+		Device device = Device.get(deviceDatas.id as Long)
 		AbstractDeviceType deviceType = device.newDeviceImpl()
 
 		// On récupère la valeur du device depuis les données brutes
