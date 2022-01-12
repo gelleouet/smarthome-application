@@ -16,6 +16,10 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.beans.factory.annotation.Autowired
 
 import smarthome.api.DataConnectService
+import smarthome.application.Defi
+import smarthome.application.DefiCommand
+import smarthome.application.DefiEquipeParticipant
+import smarthome.application.DefiService
 import smarthome.automation.Chauffage
 import smarthome.automation.DeviceValue;
 import smarthome.automation.ECS
@@ -59,6 +63,9 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 	
 	@Autowired
 	DataConnectService dataConnectService
+	
+	@Autowired
+	DefiService defiService
 	
 	
 	private Map cacheECS = [:]
@@ -164,6 +171,14 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 		excelUtils.createHeaderCell(row, cellIdx++, "GLOBAL - Economies")
 		excelUtils.createHeaderCell(row, cellIdx++, "GLOBAL - Classement")
 		
+		// charge tous les résultats d'un coup pour éviter de requeter par user
+		List<DefiEquipeParticipant> resultatDefiList = []
+		
+		if (command.defiId) {
+			Defi defi =  Defi.get(command.defiId)
+			resultatDefiList = defiService.listParticipantResultat(new DefiCommand(defi: defi), [:])
+		}
+		
 		
 		// PHASE 1 : on commence par créer toutes les lignes pour chaque utilisateur
 		
@@ -194,6 +209,38 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(chauffage(house.chauffageSecondaire?.id))
 			excelUtils.createOrGetCell(row, cellIdx++).setCellValue(ecs(house.ecs?.id))
 			excelUtils.createDateCell(row, cellIdx++, lastValueDataConnect(user))
+			
+			// recherche des infos du défi pour le user
+			// et insertion dans le fichier
+			DefiEquipeParticipant resultatDefi = resultatDefiList.find { it.user.id == user.id }
+			
+			if (resultatDefi) {
+				// résultats elec
+				excelUtils.createOrGetCell(row, startCellIdxElec + 5).setCellValue(resultatDefi.reference_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 6).setCellValue(resultatDefi.action_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 7).setCellValue(resultatDefi.difference_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 8).setCellValue(resultatDefi.evolution_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 9).setCellValue(resultatDefi.moyenne_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 9).setCellValue(resultatDefi.economie_electricite())
+				// résultats gaz
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 5).setCellValue(resultatDefi.reference_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 6).setCellValue(resultatDefi.action_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 7).setCellValue(resultatDefi.difference_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 8).setCellValue(resultatDefi.evolution_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 9).setCellValue(resultatDefi.moyenne_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 9).setCellValue(resultatDefi.economie_gaz())
+				// résultats eau
+				excelUtils.createOrGetCell(row, startCellIdxEau + 5).setCellValue(resultatDefi.reference_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 6).setCellValue(resultatDefi.action_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 7).setCellValue(resultatDefi.difference_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 8).setCellValue(resultatDefi.evolution_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 9).setCellValue(resultatDefi.moyenne_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 9).setCellValue(resultatDefi.economie_eau())
+				// résultat global
+				excelUtils.createOrGetCell(row, cellIdx++).setCellValue(resultatDefi.economie_global())
+				excelUtils.createOrGetCell(row, cellIdx++).setCellValue(resultatDefi.classement_global())
+			}
+			
 			
 			rowIdx++
 		}

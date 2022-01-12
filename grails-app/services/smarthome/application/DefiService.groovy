@@ -73,6 +73,23 @@ class DefiService extends AbstractService {
 	
 	
 	/**
+	 * Recherche d'un défi public entre 2 dates
+	 * 
+	 * @param dateDebut
+	 * @param dateFin
+	 * @return
+	 */
+	Defi findDefiBetweenDate(Date dateDebut, Date dateFin) {
+		return Defi.createCriteria().get() {
+			eq 'publique', true
+			between 'referenceDebut', dateDebut, dateFin
+			order 'referenceDebut'
+			maxResults 1
+		}
+	}
+	
+	
+	/**
 	 * Recherche des défis d'un admin (les défis qu'il a créé)
 	 * 
 	 * @param admin
