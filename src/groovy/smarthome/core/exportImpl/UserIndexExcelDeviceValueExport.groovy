@@ -221,24 +221,24 @@ class UserIndexExcelDeviceValueExport implements DeviceValueExport {
 				excelUtils.createOrGetCell(row, startCellIdxElec + 7).setCellValue(resultatDefi.difference_electricite())
 				excelUtils.createOrGetCell(row, startCellIdxElec + 8).setCellValue(resultatDefi.evolution_electricite())
 				excelUtils.createOrGetCell(row, startCellIdxElec + 9).setCellValue(resultatDefi.moyenne_electricite())
-				excelUtils.createOrGetCell(row, startCellIdxElec + 9).setCellValue(resultatDefi.economie_electricite())
+				excelUtils.createOrGetCell(row, startCellIdxElec + 10).setCellValue(resultatDefi.economie_electricite())
 				// résultats gaz
 				excelUtils.createOrGetCell(row, startCellIdxGaz + 5).setCellValue(resultatDefi.reference_gaz())
 				excelUtils.createOrGetCell(row, startCellIdxGaz + 6).setCellValue(resultatDefi.action_gaz())
 				excelUtils.createOrGetCell(row, startCellIdxGaz + 7).setCellValue(resultatDefi.difference_gaz())
 				excelUtils.createOrGetCell(row, startCellIdxGaz + 8).setCellValue(resultatDefi.evolution_gaz())
 				excelUtils.createOrGetCell(row, startCellIdxGaz + 9).setCellValue(resultatDefi.moyenne_gaz())
-				excelUtils.createOrGetCell(row, startCellIdxGaz + 9).setCellValue(resultatDefi.economie_gaz())
+				excelUtils.createOrGetCell(row, startCellIdxGaz + 10).setCellValue(resultatDefi.economie_gaz())
 				// résultats eau
 				excelUtils.createOrGetCell(row, startCellIdxEau + 5).setCellValue(resultatDefi.reference_eau())
 				excelUtils.createOrGetCell(row, startCellIdxEau + 6).setCellValue(resultatDefi.action_eau())
 				excelUtils.createOrGetCell(row, startCellIdxEau + 7).setCellValue(resultatDefi.difference_eau())
 				excelUtils.createOrGetCell(row, startCellIdxEau + 8).setCellValue(resultatDefi.evolution_eau())
 				excelUtils.createOrGetCell(row, startCellIdxEau + 9).setCellValue(resultatDefi.moyenne_eau())
-				excelUtils.createOrGetCell(row, startCellIdxEau + 9).setCellValue(resultatDefi.economie_eau())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 10).setCellValue(resultatDefi.economie_eau())
 				// résultat global
-				excelUtils.createOrGetCell(row, cellIdx++).setCellValue(resultatDefi.economie_global())
-				excelUtils.createOrGetCell(row, cellIdx++).setCellValue(resultatDefi.classement_global())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 11).setCellValue(resultatDefi.economie_global())
+				excelUtils.createOrGetCell(row, startCellIdxEau + 12).setCellValue(resultatDefi.classement_global())
 			}
 			
 			
