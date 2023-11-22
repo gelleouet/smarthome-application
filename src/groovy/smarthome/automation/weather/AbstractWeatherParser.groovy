@@ -13,7 +13,7 @@ abstract class AbstractWeatherParser implements WeatherParser {
 			return value.toInteger()
 		}	
 		
-		return value.toInteger()
+		return value?.toInteger()
 	}
 	
 	

@@ -1,4 +1,4 @@
-<g:if test="${ house?.location }">
+<g:if test="${ house?.latitude && house?.longitude  }">
 	<g:if test="${ forecast }">
 		<h3>${ house.location }</h3>
 		
@@ -7,7 +7,7 @@
 		</div>
 		
 		<div class="aui-buttons" style="margin-top:10px;">
-			<g:link class="aui-button" action="hourlyForecast" controller="houseWeather" id="${ house.id }">48 heures</g:link>
+			<g:link class="aui-button" action="hourlyForecast" controller="houseWeather" id="${ house.id }">24 heures</g:link>
 			<g:link class="aui-button" action="dailyForecast" controller="houseWeather" id="${ house.id }">7 jours</g:link>
 		</div>
 		
@@ -43,15 +43,15 @@
 		</div>
 	</g:if>
 	<g:else>
-		<p class="label">Veuillez vérifier le lieu d'habitation car les coordonnées GPS n'ont pas pu être calculées</p>
+		<p class="label">Aucune donnée météo trouvée.</p>
 	</g:else>
 </g:if>
 <g:else>
 	<h3>Prévisions météo</h3>
 	
-	<p class="label">Veuillez renseigner <g:link action="profil" controller="profil">le lieu <span class="aui-icon aui-icon-small aui-iconfont-weblink"></span></g:link> de votre habitation principale pour avoir les prévisions météo</p>
+	<p class="label">Veuillez renseigner <g:link action="profil" controller="profil">latitude et longitude <span class="aui-icon aui-icon-small aui-iconfont-weblink"></span></g:link> de votre habitation principale pour avoir les prévisions météo</p>
 </g:else>
 
 <div style="text-align:right; margin-top:10px;">
-	<a style="font-size:x-small; font-weight:bold;" href="https://darksky.net/poweredby/" target="darksky">Powered by Dark Sky</a>
+	<a style="font-size:x-small; font-weight:bold;" href="https://developer.apple.com/weatherkit/get-started/" target="weatherkit">Powered by Apple WeatherKit</a>
 </div>

@@ -1,8 +1,6 @@
 package smarthome.rule
 
-
 import java.util.Map.Entry;
-
 import smarthome.automation.DeviceValue;
 import smarthome.automation.House;
 import smarthome.automation.HouseConso;

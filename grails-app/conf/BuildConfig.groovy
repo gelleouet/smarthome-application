@@ -81,7 +81,9 @@ grails.project.dependency.resolution = {
 		compile "$camel.groupId:camel-spring:$camel.version"
 		compile "$camel.groupId:camel-stream:$camel.version"
 		compile "$camel.groupId:camel-velocity:$camel.version"
-		compile "$camel.groupId:camel-mail:$camel.version"
+		compile("$camel.groupId:camel-mail:$camel.version") {
+			excludes "mail"
+		}
 		compile "$camel.groupId:camel-rabbitmq:$camel.version"
 		compile "$camel.groupId:camel-gson:$camel.version"
 		compile "$camel.groupId:camel-script:$camel.version"
@@ -94,7 +96,7 @@ grails.project.dependency.resolution = {
 		compile "$httpclient.groupId:fluent-hc:$httpclient.version"
 
 		compile ("org.activiti:activiti-engine:$activiti.version") {
-			excludes "spring-beans", "jackson-core"
+			excludes "spring-beans", "jackson-core", "javax.mail"
 		}
 		compile ("org.activiti:activiti-spring:$activiti.version") {
 			excludes "commons-dbcp", "commons-pool"
@@ -102,6 +104,7 @@ grails.project.dependency.resolution = {
 		compile ("$aws.groupId:aws-java-sdk-sns:$aws.version") {
 
 		}
+		compile "com.sun.mail:jakarta.mail:1.6.7"
 	}
 
 	plugins {

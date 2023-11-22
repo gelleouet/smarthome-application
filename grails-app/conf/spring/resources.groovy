@@ -3,7 +3,6 @@ import org.activiti.spring.SpringProcessEngineConfiguration
 import org.activiti.spring.ProcessEngineFactoryBean
 import org.activiti.engine.impl.history.HistoryLevel
 import smarthome.automation.scheduler.SmarthomeScheduler
-import smarthome.plugin.NavigationItemUtils
 import smarthome.security.SmartHomeUserDetailsService
 
 

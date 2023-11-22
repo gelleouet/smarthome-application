@@ -42,7 +42,18 @@ class DateUtils {
 	 * @return
 	 */
 	static Date parseDateIso(String iso) {
-		return new SimpleDateFormat(FORMAT_DATE_ISO).parse(iso)
+		return iso ? new SimpleDateFormat(FORMAT_DATE_ISO).parse(iso) : null
+	}
+
+
+	/**
+	 * Parse datetime ISO
+	 *
+	 * @param date
+	 * @return
+	 */
+	static Date parseDateTimeIso(String iso) {
+		return iso ? new SimpleDateFormat(FORMAT_DATETIME_ISO).parse(iso) : null
 	}
 
 

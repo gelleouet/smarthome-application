@@ -1,7 +1,5 @@
 package smarthome.automation.weather
 
-import java.io.Serializable;
-
 class WeatherHourForecast implements Serializable {
 	Date date
 	Integer temperature

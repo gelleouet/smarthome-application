@@ -39,7 +39,7 @@
 
 	<g:applyLayout name="applicationContent">
 		<div style="text-align:right;">
-			<a style="font-size:x-small; font-weight:bold;" href="https://darksky.net/poweredby/" target="darksky">Powered by Dark Sky</a>
+			<a style="font-size:x-small; font-weight:bold;" href="https://developer.apple.com/weatherkit/get-started/" target="weatherkit">Powered by Apple WeatherKit</a>
 		</div>
 		
 		<div style="overflow-x:auto; margin-top:10px;">

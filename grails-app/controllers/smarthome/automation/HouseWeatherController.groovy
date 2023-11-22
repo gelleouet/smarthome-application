@@ -1,7 +1,6 @@
 package smarthome.automation
 
 import org.springframework.security.access.annotation.Secured;
-
 import smarthome.core.AbstractController;
 import smarthome.security.User;
 

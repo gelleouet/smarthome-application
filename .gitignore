@@ -12,3 +12,5 @@ target-eclipse/
 wrapper/
 /bin/
 /.DS_Store
+.idea
+.slcache

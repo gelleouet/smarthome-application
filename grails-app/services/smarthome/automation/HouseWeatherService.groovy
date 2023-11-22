@@ -76,7 +76,7 @@ class HouseWeatherService extends AbstractService {
 		
 		HouseWeather weather = house.weather()
 		
-		if (!house.location) {
+		if (!house.latitude || !house.longitude) {
 			return weather
 		}
 		
@@ -171,10 +171,12 @@ class HouseWeatherService extends AbstractService {
 	WeatherHourForecast currentHourlyForecast(HouseWeather houseWeather) throws SmartHomeException {
 		WeatherParser parser = weatherParser(houseWeather)
 		Date currentDate = DateUtils.truncHour(new Date())
-		
-		return parser.hourlyForecast().find {
+
+		WeatherHourForecast forecast = parser.hourlyForecast().find {
 			it.date == currentDate
 		}
+
+		return forecast
 	}
 	
 	
@@ -206,10 +208,12 @@ class HouseWeatherService extends AbstractService {
 	WeatherDayForecast currentDailyForecast(HouseWeather houseWeather) throws SmartHomeException {
 		WeatherParser parser = weatherParser(houseWeather)
 		Date currentDate = new Date().clearTime()
-		
-		return parser.dailyForecast().find {
+
+		WeatherDayForecast forecast = parser.dailyForecast().find {
 			it.date == currentDate
 		}
+
+		return forecast
 	}
 	
 	
