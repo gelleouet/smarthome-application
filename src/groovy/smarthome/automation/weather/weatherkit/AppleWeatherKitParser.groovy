@@ -18,6 +18,8 @@ import smarthome.core.SmartHomeException
  */
 class AppleWeatherKitParser extends AbstractWeatherParser {
 
+	private static final TimeZone _defaultTimeZone = TimeZone.getTimeZone("Europe/Paris")
+
 	Map data = [:]
 	Map icons = [
 		'clear-day': [style: 'wi-day-sunny', text: 'Dégagé'],
@@ -92,7 +94,7 @@ class AppleWeatherKitParser extends AbstractWeatherParser {
 			WeatherDayForecast forecast = new WeatherDayForecast()
 			forecasts << forecast
 			
-			forecast.date = toDate(it.forecastEnd)?.clearTime()
+			forecast.date = toDate(it.forecastStart)?.clearTime()
 			forecast.icon = it.icon
 			forecast.style = icons[it.conditionCode]?.style
 			forecast.text = icons[it.conditionCode]?.text
@@ -123,6 +125,9 @@ class AppleWeatherKitParser extends AbstractWeatherParser {
 	 * @return
 	 */
 	Date toDate(def value) {
-		return DateUtils.parseDateTimeIso(value)
+		Calendar calendar = Calendar.getInstance(_defaultTimeZone)
+		Date date = DateUtils.parseDateTimeIso(value)
+		calendar.setTimeInMillis(date.time + _defaultTimeZone.getOffset(date.time))
+		return calendar.time
 	}
 }

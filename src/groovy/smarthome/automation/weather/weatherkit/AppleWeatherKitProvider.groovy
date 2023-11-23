@@ -8,12 +8,12 @@ import smarthome.automation.weather.AbstractWeatherProvider
 import smarthome.core.DateUtils
 import smarthome.core.SmartHomeException
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-
 /**
- * Provider météo DarkSky (ie Forecast.io)
- * 
+ * Provider météo Apple WeatherKit
+ *
+ * https://weatherkit.apple.com/api/v1/availability/47.795017/-3.487062?country=FR
+ * https://weatherkit.apple.com/api/v1/weather/fr_FR/47.795017/-3.487062?timezone=Europe/Paris&dataSets=currentWeather,forecastDaily,forecastHourly,weatherAlerts&hourlyEnd=2023-11-23T23:00:00
+ *
  * @author Gregory
  *
  */
